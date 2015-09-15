@@ -3258,7 +3258,7 @@
                 "MinSize": "2",
                 "MaxSize": "6",
                 "DesiredCapacity": "2",
-				"HealthCheckGracePeriod": "600",
+				"HealthCheckGracePeriod": "900",
                 "HealthCheckType": "ELB",
                 "VPCZoneIdentifier": [
                     {
