@@ -1,332 +1,632 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09",
-
-    "Description" : "Deployed via Cloud-Pricing-Prod-02.js",
-
-    "Parameters" : {
-
-        "PemKey" : {
-            "Description" : "Name of and existing EC2 KeyPair to enable SSH access to the instance",
-            "Type" : "String",
-	        "Default" : "KeyPair-Sysco-CI-Management"
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deployed via Cloud-Pricing-Prod-02.js",
+    "Parameters": {
+        "PemKey": {
+            "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+            "Type": "String",
+            "Default": "KeyPair-Sysco-CI-Management"
         },
-        "Conf1c" : {
-            "Description" : "Confidential us-east-1c subnet",
-            "Type" : "String",
-	        "Default" : "subnet-1ec25b69"
-		},
-        "Conf1d" : {
-            "Description" : "Confidential us-east-1d subnet",
-            "Type" : "String",
-	        "Default" : "subnet-db7bc582"
+        "Conf1c": {
+            "Description": "Confidential us-east-1c subnet",
+            "Type": "String",
+            "Default": "subnet-1ec25b69"
         },
-        "Conf1e" : {
-            "Description" : "Confidential us-east-1e subnet",
-            "Type" : "String",
-	        "Default" : "subnet-a421629e"
+        "Conf1d": {
+            "Description": "Confidential us-east-1d subnet",
+            "Type": "String",
+            "Default": "subnet-db7bc582"
         },
-        "CommonAMI" : {
-            "Description" : "Common Database Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-42437f2a"
+        "Conf1e": {
+            "Description": "Confidential us-east-1e subnet",
+            "Type": "String",
+            "Default": "subnet-a421629e"
         },
-        "CPAS03" : {
-            "Description" : "Admin Console Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-320e0b5a"
+        "CommonAMI": {
+            "Description": "Common Database Instances AMI",
+            "Type": "String",
+            "Default": "ami-42437f2a"
         },
-        "CPFS01" : {
-            "Description" : "File Server Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-c68eb2ae"
+        "CPAS03": {
+            "Description": "Admin Console Instances AMI",
+            "Type": "String",
+            "Default": "ami-320e0b5a"
         },
-        "ODAMI" : {
-            "Description" : "On Demand Database Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-2202074a" 
+        "CPFS01": {
+            "Description": "File Server Instances AMI",
+            "Type": "String",
+            "Default": "ami-c68eb2ae"
         },
-        "BTAMI" : {
-            "Description" : "Batch Database Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-2202074a"
+        "ODAMI": {
+            "Description": "On Demand Database Instances AMI",
+            "Type": "String",
+            "Default": "ami-2202074a"
         },
-        "CPAS02" : {
-            "Description" : "Web Server Instances AMI",
-            "Type" : "String",
-	        "Default" : "ami-d903f6b2"
+        "BTAMI": {
+            "Description": "Batch Database Instances AMI",
+            "Type": "String",
+            "Default": "ami-2202074a"
         },
-        "NATCLIENT" : {
-            "Description" : "nat client sg",
-            "Type" : "String",
-	        "Default" : "sg-1803c47f"
+        "CPAS02": {
+            "Description": "Web Server Instances AMI",
+            "Type": "String",
+            "Default": "ami-1bb1c57e"
         },
-        "VPCID" : {
-            "Description" : "Name of and existing VPC",
-            "Type" : "String",
-	        "Default" : "vpc-99e855fc"
+        "NATCLIENT": {
+            "Description": "nat client sg",
+            "Type": "String",
+            "Default": "sg-1803c47f"
+        },
+        "VPCID": {
+            "Description": "Name of and existing VPC",
+            "Type": "String",
+            "Default": "vpc-99e855fc"
         }
     },
-
-    "Resources" : {
-		"CPWEBSG" : {
-		    "Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-    			"GroupDescription" : "Web Services",
-    			"VpcId" : { "Ref" : "VPCID" },
-    			"SecurityGroupIngress" : [ 
-    			{
-                    "IpProtocol": "tcp",
-                    "FromPort": "80",
-                    "ToPort": "80",
-					"CidrIp": "10.0.0.0/8"
-				},
-				{
-                    "IpProtocol": "tcp",
-                    "FromPort": "3389",
-                    "ToPort": "3389",
-                    "CidrIp": "10.0.0.0/8"
+    "Resources": {
+        "CPWEBSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Web Services",
+                "VpcId": {
+                    "Ref": "VPCID"
                 },
-    			{
-                    "IpProtocol": "tcp",
-                    "FromPort": "443",
-                    "ToPort": "443",
-                    "CidrIp": "10.0.0.0/8"
-                }],
-		        "Tags" : [ 
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cp_web" },
-					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
-					{ "Key" : "Environment", "Value": "Production" },
-					{ "Key" : "Security_Classification", "Value" : "Confidential" },
-					{ "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-					{ "Key" : "Owner", "Value" : "Sheraz Khan" },
-					{ "Key" : "System_Type", "Value": " Networking" },
-					{ "Key" : "Support_Criticality", "Value" : "High" },
-					{ "Key" : "Application_Id", "Value" : "APP-001151" },
-					{ "Key" : "Approver", "Value" : "Sheraz Khan" }
-					]
-      		}   
-		},
-		"IngressAdder":{
-			"DependsOn": "CPWEBSG",
-			"Type": "AWS::EC2::SecurityGroupIngress",
-			"Properties":
-			{
-			    "FromPort" : "-1",
-			    "GroupId" : {"Ref":"CPWEBSG"},
-				"IpProtocol" : "-1",
-				"SourceSecurityGroupId" : {"Ref":"CPWEBSG"},
-				"ToPort" : "-1"
-			}
-		},
-		"CPDBSG" : {
-		    "Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-			    "GroupDescription" : "Database Services",
-			    "VpcId" : { "Ref" : "VPCID" },
-	    		"SecurityGroupIngress" : [ 
-                {
-                    "IpProtocol": "-1",
-                    "FromPort": "-1",
-                    "ToPort": "-1",
-                    "SourceSecurityGroupId": {
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "80",
+                        "ToPort": "80",
+                        "CidrIp": "10.0.0.0/8"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "3389",
+                        "ToPort": "3389",
+                        "CidrIp": "10.0.0.0/8"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "443",
+                        "ToPort": "443",
+                        "CidrIp": "10.0.0.0/8"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sg/vpc_sysco_prod_01/cp_web"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Networking"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "IngressAdder": {
+            "DependsOn": "CPWEBSG",
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "FromPort": "-1",
+                "GroupId": {
+                    "Ref": "CPWEBSG"
+                },
+                "IpProtocol": "-1",
+                "SourceSecurityGroupId": {
+                    "Ref": "CPWEBSG"
+                },
+                "ToPort": "-1"
+            }
+        },
+        "CPDBSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Database Services",
+                "VpcId": {
+                    "Ref": "VPCID"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "-1",
+                        "FromPort": "-1",
+                        "ToPort": "-1",
+                        "SourceSecurityGroupId": {
+                            "Ref": "CPWEBSG"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "3389",
+                        "ToPort": "3389",
+                        "CidrIp": "10.0.0.0/8"
+                    },
+                    {
+                        "IpProtocol": "icmp",
+                        "FromPort": "-1",
+                        "ToPort": "-1",
+                        "CidrIp": "10.0.0.0/8"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "3181",
+                        "ToPort": "3181",
+                        "CidrIp": "10.0.0.0/8"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "1433",
+                        "ToPort": "1433",
+                        "CidrIp": "10.0.0.0/8"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "sg/vpc_sysco_prod_01/cp_db"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Networking"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "IngressAdder2": {
+            "DependsOn": "CPDBSG",
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+                "FromPort": "-1",
+                "GroupId": {
+                    "Ref": "CPDBSG"
+                },
+                "IpProtocol": "-1",
+                "SourceSecurityGroupId": {
+                    "Ref": "CPDBSG"
+                },
+                "ToPort": "-1"
+            }
+        },
+        "MS238CPSQL03": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "CommonAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpsql03"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "MS238CPSQL04": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "CommonAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpsql04"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "MS238CPFS02": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1e",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "CPFS01"
+                },
+                "InstanceType": "m3.large",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1e"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpfs02"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "ADCELB": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Subnets": [
+                    {
+                        "Ref": "Conf1c"
+                    },
+                    {
+                        "Ref": "Conf1d"
+                    }
+                ],
+                "LoadBalancerName": "ac02-cp-prod-sysco",
+                "Scheme": "internal",
+                "SecurityGroups": [
+                    {
                         "Ref": "CPWEBSG"
                     }
-                },								
-			    {
-                    "IpProtocol": "tcp",
-                    "FromPort": "3389",
-                    "ToPort": "3389",
-                    "CidrIp": "10.0.0.0/8"
+                ],
+                "Instances": [
+                    {
+                        "Ref": "MS238CPAC03"
+                    },
+                    {
+                        "Ref": "MS238CPAC04"
+                    }
+                ],
+                "CrossZone": "true",
+                "LBCookieStickinessPolicy": [
+                    {
+                        "PolicyName": "ACELB-Stickyness"
+                    }
+                ],
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "80",
+                        "Protocol": "HTTP",
+                        "PolicyNames": [
+                            "ACELB-Stickyness"
+                        ]
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "80",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing-Admin1",
+                        "PolicyNames": [
+                            "ACELB-Stickyness"
+                        ]
+                    }
+                ],
+                "HealthCheck": {
+                    "Target": "HTTP:80/cloudpricingadmin/healthcheck",
+                    "HealthyThreshold": "3",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "30",
+                    "Timeout": "5"
                 },
-				{
-                    "IpProtocol" : "icmp", 
-			        "FromPort" : "-1",  
-			        "ToPort" : "-1",
-                    "CidrIp": "10.0.0.0/8"
+                "AccessLoggingPolicy": {
+                    "EmitInterval": "60",
+                    "Enabled": "True",
+                    "S3BucketName": "sysco-logs",
+                    "S3BucketPrefix": "ACProd"
                 },
-				{
-                    "IpProtocol" : "tcp", 
-			        "FromPort" : "3181",  
-			        "ToPort" : "3181",
-                    "CidrIp": "10.0.0.0/8"
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ws02-ac-prod-sysco"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Load Balancer"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        },
+        "MS238CPAC03": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "CPAS03"
                 },
-			    {
-                    "IpProtocol": "tcp",
-                    "FromPort": "1433",
-                    "ToPort": "1433",
-                    "CidrIp": "10.0.0.0/8"
-                }],
-		        "Tags" : [ 
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cp_db" },
-					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
-					{ "Key" : "Environment", "Value": "Production" },
-					{ "Key" : "Security_Classification", "Value" : "Confidential" },
-					{ "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-					{ "Key" : "Owner", "Value" : "Sheraz Khan" },
-					{ "Key" : "System_Type", "Value": " Networking" },
-					{ "Key" : "Support_Criticality", "Value" : "High" },
-					{ "Key" : "Application_Id", "Value" : "APP-001151" },
-					{ "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]				
-      		}   
-		},
-		"IngressAdder2":{
-			"DependsOn": "CPDBSG",
-			"Type": "AWS::EC2::SecurityGroupIngress",
-			"Properties":
-			{
-			    "FromPort" : "-1",
-			    "GroupId" : {"Ref":"CPDBSG"},
-			    "IpProtocol" : "-1",
-			    "SourceSecurityGroupId" : {"Ref":"CPDBSG"},
-			    "ToPort" : "-1"
-			}
-		},
-	    "MS238CPSQL03": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpsql03" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "High" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-			    	{ "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]
-			}
-		},
-	    "MS238CPSQL04": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpsql04" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "High" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]
-			}
-		},
-	    "MS238CPFS02": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1e",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "CPFS01"},
-				"InstanceType" : "m3.large",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1e"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpfs02" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": "Database" },
-				    { "Key" : "Support_Criticality", "Value" : "High" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]
-			}
-		},
-	    "ADCELB" : {
-			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
-			"Properties" : {
-				"Subnets" : [{"Ref" : "Conf1c"}, {"Ref" : "Conf1d" }],
-				"LoadBalancerName" : "ac02-cp-prod-sysco",
-				"Scheme" : "internal",
-				"SecurityGroups" : [ {"Ref" : "CPWEBSG"}],
-				"Instances" : [{"Ref" : "MS238CPAC03"}, {"Ref" : "MS238CPAC04" }],			
-				"CrossZone": "true",
-				"LBCookieStickinessPolicy" : [ {
-						"PolicyName" : "ACELB-Stickyness"
-					} ],
-				"Listeners" : [ 
-				{
-	    			"LoadBalancerPort" : "80",
-		    		"InstancePort" :  "80" ,
-		    		"Protocol" : "HTTP",
-					"PolicyNames" : ["ACELB-Stickyness"]
-				},
-				{ 
-				    "LoadBalancerPort" : "443",
-					"InstancePort" : "80" ,
-					"Protocol" : "HTTPS",
-					"SSLCertificateId" : "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing-Admin1",
-					"PolicyNames" : ["ACELB-Stickyness"]
-				}],
-				"HealthCheck" : {
-					"Target" : "HTTP:80/cloudpricingadmin/healthcheck",
-					"HealthyThreshold" : "3",
-					"UnhealthyThreshold" : "2",
-					"Interval" : "30",
-					"Timeout" : "5"
-				},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ws02-ac-prod-sysco" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": "Load Balancer" },
-				    { "Key" : "Support_Criticality", "Value" : "High" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]
-			}
-		},
-
-	    "MS238CPAC03": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "CPAS03"},
-				"InstanceType" : "t2.micro",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPWEBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpac03" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": "Application Server" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+                "InstanceType": "t2.micro",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPWEBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpac03"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Application Server"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -336,33 +636,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "MS238CPAC04": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "CPAS03"},
-				"InstanceType" : "t2.micro",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPWEBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpac04" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": "Application Server" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "MS238CPAC04": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "CPAS03"
+                },
+                "InstanceType": "t2.micro",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPWEBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpac04"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Application Server"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -372,33 +715,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql03": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql003" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql03": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql003"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -408,33 +794,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql04": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql004" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql04": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql004"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -444,33 +873,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql05": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql005" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql05": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql005"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -480,33 +952,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql06": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql006" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql06": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql006"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -516,33 +1031,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql07": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql007" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql07": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql007"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -552,33 +1110,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql08": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql008" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql08": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql008"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -588,33 +1189,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql09": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql009" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql09": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql009"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -624,33 +1268,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql010": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql010" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql010": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql010"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -660,33 +1347,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql011": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql011" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql011": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql011"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -696,33 +1426,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql012": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql012" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql012": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql012"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -732,33 +1505,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql013": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql013" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				 ],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql013": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql013"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -768,33 +1584,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpodsql014": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "ODAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpodsql014" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpodsql014": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql014"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -804,33 +1663,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql03": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql003" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql03": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql003"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -840,33 +1742,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql04": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql004" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql04": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql004"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -876,33 +1821,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql05": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql005" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql05": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql005"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -912,33 +1900,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql06": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql006" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql06": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql006"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -948,33 +1979,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql07": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql007" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql07": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql007"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -984,33 +2058,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql08": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql008" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql08": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql008"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1020,33 +2137,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql09": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql009" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql09": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql009"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1056,33 +2216,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql010": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql010" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql010": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql010"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1092,33 +2295,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql011": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql011" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql011": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql011"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1128,33 +2374,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql012": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql012" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql012": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql012"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1164,33 +2453,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql013": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql013" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql013": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql013"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1200,33 +2532,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql014": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql014" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql014": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql014"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1236,33 +2611,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql015": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql015" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql015": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql015"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1272,33 +2690,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql016": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql016" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql016": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql016"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1308,33 +2769,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql017": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql017" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql017": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql017"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1344,33 +2848,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql018": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql018" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql018": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql018"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1380,33 +2927,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql019": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql019" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql019": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql019"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1416,33 +3006,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql020": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql020" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql020": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql020"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1452,33 +3085,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql021": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"}, 
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1c"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql021" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql021": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1c"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql021"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1488,33 +3164,76 @@
                         ]
                     }
                 }
-			}
-		},
-	    "ms238cpbtsql022": {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1d",
-				"DisableApiTermination" : "true",
-				"ImageId" : {"Ref" : "BTAMI"},
-				"InstanceType" : "m3.xlarge",
-				"KeyName" : {"Ref" : "PemKey"},
-				"SecurityGroupIds" : [{"Ref" : "CPDBSG"},{"Ref" : "NATCLIENT"}],
-				"SubnetId" : {"Ref" : "Conf1d"},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ms238cpbtsql022" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Medium" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				],
-                "UserData"         : {
-                    "Fn::Base64" : {
-                        "Fn::Join" : [
+            }
+        },
+        "ms238cpbtsql022": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+                "ImageId": {
+                    "Ref": "BTAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpbtsql022"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
                             "",
                             [
                                 "<powershell>\n",
@@ -1524,193 +3243,361 @@
                         ]
                     }
                 }
-			}
-		},
-		"WebServerGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
-			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c", "us-east-1d"],
-				"LaunchConfigurationName" : { "Ref" : "WebLaunchConfig" },
-				"MinSize" : "2",
-				"MaxSize" : "6",
-				"DesiredCapacity" : "2",
-				"VPCZoneIdentifier" : [ { "Ref" : "Conf1c" }, { "Ref" : "Conf1d" }],
-				"LoadBalancerNames" : [ { "Ref" : "CPELB" } ],
-				"Tags" : [ 
-					{ "Key" : "Name", "Value": "CP Web Autoscale Instance", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Name", "Value": "Cloud Pricing", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Environment", "Value": "Production", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Security_Classification", "Value" : "Confidential", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Support_Criticality", "Value" : "Medium", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Id", "Value" : "APP-001151", "PropagateAtLaunch" : "true" },
-					{ "Key" : "System_Type", "Value": "Application Server", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Owner", "Value" : "Sheraz Khan", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Approver", "Value" : "Sheraz Khan", "PropagateAtLaunch" : "true" }		  
-				]
-			}
-		},
-		"WebLaunchConfig" : {
-        	"Type" : "AWS::AutoScaling::LaunchConfiguration",
-        	"Metadata" : {
-        		"AWS::CloudFormation::Init" : {
-        			"configSets" : {
-        				"default" : [ "pullScript" ]
-					},
-					"pullScript" : {
-						"files" : {
-                            "c:\\cfn\\cfn-hup.conf" : {
-                                "content" : { "Fn::Join" : ["", [
-                                    "[main]\n",
-                                    "stack=", 
-									{ "Ref" : "AWS::StackName" }, 
-									"\n",
-                                    "region=", { "Ref" : "AWS::Region" }, "\n"
-                                ]]}
+            }
+        },
+        "WebServerGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "AvailabilityZones": [
+                    "us-east-1c",
+                    "us-east-1d"
+                ],
+                "LaunchConfigurationName": {
+                    "Ref": "WebLaunchConfig"
+                },
+                "MinSize": "2",
+                "MaxSize": "6",
+                "DesiredCapacity": "2",
+				"HealthCheckGracePeriod": "600",
+                "HealthCheckType": "ELB",
+                "VPCZoneIdentifier": [
+                    {
+                        "Ref": "Conf1c"
+                    },
+                    {
+                        "Ref": "Conf1d"
+                    }
+                ],
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "CPELB"
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "CP Web Autoscale Instance",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Application Server",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan",
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan",
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            }
+        },
+        "WebLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "configSets": {
+                        "default": [
+                            "pullScript"
+                        ]
+                    },
+                    "pullScript": {
+                        "files": {
+                            "c:\\cfn\\cfn-hup.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[main]\n",
+                                            "stack=",
+                                            {
+                                                "Ref": "AWS::StackName"
+                                            },
+                                            "\n",
+                                            "region=",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+                                }
                             },
-                            "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : {
-                                "content": { "Fn::Join" : ["", [
-                                    "[cfn-auto-reloader-hook]\n",
-                                    "triggers=post.update\n",
-                                    "path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
-                                    "action=cfn-init.exe -v -s ", 
-	                                { "Ref" : "AWS::StackName" },
-                                    " -r WebLaunchConfig",
-                                    " --region ", { "Ref" : "AWS::Region" }, 
-									"\n"
-                                ]]}
+                            "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[cfn-auto-reloader-hook]\n",
+                                            "triggers=post.update\n",
+                                            "path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+                                            "action=cfn-init.exe -v -s ",
+                                            {
+                                                "Ref": "AWS::StackName"
+                                            },
+                                            " -r WebLaunchConfig",
+                                            " --region ",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            "\n"
+                                        ]
+                                    ]
+                                }
                             },
-							"d:\\AutomateDeployment.ps1" : {
-							    "source" : "http://ms240hudson02.na.sysco.net/jenkins-1.5.0/view/Cloud%20Pricing%20Promotion/job/CloudPricing_1.0/lastSuccessfulBuild/artifact/AMI/Deployment/AutomateDeployment.ps1"
-							}
+                            "d:\\AutomateDeployment.ps1": {
+                                "source": "http://ms240hudson02.na.sysco.net/jenkins-1.5.0/view/Cloud%20Pricing%20Promotion/job/CloudPricing_1.0/lastSuccessfulBuild/artifact/AMI/Deployment/AutomateDeployment.ps1"
+                            }
                         },
-					    "commands" : {
-					        "b-execute-script" : {
-						        "command" : "PowerShell.exe -ExecutionPolicy Bypass -File D:\\AutomateDeployment.ps1 WS PROD 5",
-						    	"waitAfterCompletion" : "300"
-						    }
-						}
-					}
-				}
-			},
-			"Properties" : {
-				"KeyName" : { "Ref" : "PemKey" },
-				"ImageId" : {"Ref" : "CPAS02"},
-				"SecurityGroups" : [ { "Ref" : "CPWEBSG" } ],
-				"InstanceType" : "m3.large",
-  				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-    					"<script>\n",
-    					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackName" },
-    					" -r WebLaunchConfig",
-    					" --region ", { "Ref" : "AWS::Region" }, "\n",
-    					"</script>"
-    				]]}
-  				} 
-			}
-		},
-		"WebServerScaleUpPolicy" : {
-			"Type" : "AWS::AutoScaling::ScalingPolicy",
-			"Properties" : {
-				"AdjustmentType" : "ChangeInCapacity",
-				"AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
-				"Cooldown" : "60",
-				"ScalingAdjustment" : "1"
-			}
-		},
-		"WebServerScaleDownPolicy" : {
-			"Type" : "AWS::AutoScaling::ScalingPolicy",
-			"Properties" : {
-				"AdjustmentType" : "ChangeInCapacity",
-				"AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
-				"Cooldown" : "60",
-				"ScalingAdjustment" : "-1"
-			}
-		},
-		"CPUAlarmHigh": {
-			"Type": "AWS::CloudWatch::Alarm",
-			"Properties": {
-				"AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
-				"MetricName": "CPUUtilization",
-				"Namespace": "AWS/EC2",
-				"Statistic": "Average",
-				"Period": "300",
-				"EvaluationPeriods": "2",
-				"Threshold": "90",
-				"AlarmActions": [ { "Ref": "WebServerScaleUpPolicy" } ],
-				"Dimensions": [
-				{
-					"Name": "AutoScalingGroupName",
-					"Value": { "Ref": "WebServerGroup" }
-				}],
-				"ComparisonOperator": "GreaterThanThreshold"
-			}
-		},
-		"CPUAlarmLow": {
-			"Type": "AWS::CloudWatch::Alarm",
-			"Properties": {
-				"AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
-				"MetricName": "CPUUtilization",
-				"Namespace": "AWS/EC2",
-				"Statistic": "Average",
-				"Period": "300",
-				"EvaluationPeriods": "2",
-				"Threshold": "70",
-				"AlarmActions": [ { "Ref": "WebServerScaleDownPolicy" } ],
-				"Dimensions": [
-				{
-					"Name": "AutoScalingGroupName",
-					"Value": { "Ref": "WebServerGroup" }
-				}],
-				"ComparisonOperator": "LessThanThreshold"
-			}
-		},
-		"CPELB" : {
-			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
-			"Properties" : {
-				"Subnets" : [{"Ref" : "Conf1c"}, {"Ref" : "Conf1d" }],
-				"LoadBalancerName" : "ws02-cp-prod-sysco",
-				"Scheme" : "internal",
-				"SecurityGroups" : [ {"Ref" : "CPWEBSG"}],
-				"CrossZone": "true",
-				"ConnectionDrainingPolicy" :
-				{
-					"Enabled" : "true",
-					"Timeout" : "60"
-				},
-				"Listeners" : [ 
-				{
-					"LoadBalancerPort" : "80",
-					"InstancePort" :  "80" ,
-					"Protocol" : "HTTP"
-				},
-				{ 
-				    "LoadBalancerPort" : "443",
-					"InstancePort" : "80" ,
-					"Protocol" : "HTTPS",
-					"SSLCertificateId" : "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing" 	
-				}],
-				"HealthCheck" : 
-				{
-				    "Target" : "HTTP:80/pricerequest/healthcheck",
-					"HealthyThreshold" : "3",
-					"UnhealthyThreshold" : "2",
-					"Interval" : "30",
-					"Timeout" : "5"
-				},
-				"Tags" : [ 
-				    { "Key" : "Name", "Value": "ws02-cp-prod-sysco" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Production" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28840" },
-				    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-				    { "Key" : "System_Type", "Value": "Load Balancer" },
-				    { "Key" : "Support_Criticality", "Value" : "High" },
-				    { "Key" : "Application_Id", "Value" : "APP-001151" },
-				    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-				]
-			}
-		}
-
-	}
+                        "commands": {
+                            "b-execute-script": {
+                                "command": "PowerShell.exe -ExecutionPolicy Bypass -File D:\\AutomateDeployment.ps1 WS PROD 5",
+                                "waitAfterCompletion": "300"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "ImageId": {
+                    "Ref": "CPAS02"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "CPWEBSG"
+                    },
+                                        {
+                        "Ref": "NATCLIENT"
+                    }
+                ],
+                "InstanceType": "m3.large",
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "<script>\n",
+                                "cfn-init.exe -v -s ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " -r WebLaunchConfig",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "</script>"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "WebServerScaleUpPolicy": {
+            "Type": "AWS::AutoScaling::ScalingPolicy",
+            "Properties": {
+                "AdjustmentType": "ChangeInCapacity",
+                "AutoScalingGroupName": {
+                    "Ref": "WebServerGroup"
+                },
+                "Cooldown": "60",
+                "ScalingAdjustment": "1"
+            }
+        },
+        "WebServerScaleDownPolicy": {
+            "Type": "AWS::AutoScaling::ScalingPolicy",
+            "Properties": {
+                "AdjustmentType": "ChangeInCapacity",
+                "AutoScalingGroupName": {
+                    "Ref": "WebServerGroup"
+                },
+                "Cooldown": "60",
+                "ScalingAdjustment": "-1"
+            }
+        },
+        "CPUAlarmHigh": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Properties": {
+                "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
+                "MetricName": "CPUUtilization",
+                "Namespace": "AWS/EC2",
+                "Statistic": "Average",
+                "Period": "300",
+                "EvaluationPeriods": "2",
+                "Threshold": "90",
+                "AlarmActions": [
+                    {
+                        "Ref": "WebServerScaleUpPolicy"
+                    }
+                ],
+                "Dimensions": [
+                    {
+                        "Name": "AutoScalingGroupName",
+                        "Value": {
+                            "Ref": "WebServerGroup"
+                        }
+                    }
+                ],
+                "ComparisonOperator": "GreaterThanThreshold"
+            }
+        },
+        "CPUAlarmLow": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Properties": {
+                "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
+                "MetricName": "CPUUtilization",
+                "Namespace": "AWS/EC2",
+                "Statistic": "Average",
+                "Period": "300",
+                "EvaluationPeriods": "2",
+                "Threshold": "70",
+                "AlarmActions": [
+                    {
+                        "Ref": "WebServerScaleDownPolicy"
+                    }
+                ],
+                "Dimensions": [
+                    {
+                        "Name": "AutoScalingGroupName",
+                        "Value": {
+                            "Ref": "WebServerGroup"
+                        }
+                    }
+                ],
+                "ComparisonOperator": "LessThanThreshold"
+            }
+        },
+        "CPELB": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Subnets": [
+                    {
+                        "Ref": "Conf1c"
+                    },
+                    {
+                        "Ref": "Conf1d"
+                    }
+                ],
+                "LoadBalancerName": "ws02-cp-prod-sysco",
+                "Scheme": "internal",
+                "SecurityGroups": [
+                    {
+                        "Ref": "CPWEBSG"
+                    }
+                ],
+                "CrossZone": "true",
+                "AccessLoggingPolicy": {
+                    "EmitInterval": "60",
+                    "Enabled": "True",
+                    "S3BucketName": "sysco-logs",
+                    "S3BucketPrefix": "CPProd"
+                },
+                "ConnectionDrainingPolicy": {
+                    "Enabled": "true",
+                    "Timeout": "60"
+                },
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "80",
+                        "Protocol": "HTTP"
+                    },
+                    {
+                        "LoadBalancerPort": "443",
+                        "InstancePort": "80",
+                        "Protocol": "HTTPS",
+                        "SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing"
+                    }
+                ],
+				"HealthCheck": {
+                    "Target": "HTTP:80/pricerequest/healthcheck",
+                    "HealthyThreshold": "3",
+                    "UnhealthyThreshold": "2",
+                    "Interval": "30",
+                    "Timeout": "5"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ws02-cp-prod-sysco"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": "Load Balancer"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "High"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ]
+            }
+        }
+    }
 }
