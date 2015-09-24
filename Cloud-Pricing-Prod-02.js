@@ -512,8 +512,8 @@
                 "AccessLoggingPolicy": {
                     "EmitInterval": "60",
                     "Enabled": "True",
-                    "S3BucketName": "sysco-logs",
-                    "S3BucketPrefix": "ACProd"
+                    "S3BucketName": "sysco-prod-log",
+                    "S3BucketPrefix": "ELB"
                 },
                 "Tags": [
                     {
@@ -3525,11 +3525,11 @@
                     }
                 ],
                 "CrossZone": "true",
-                "AccessLoggingPolicy": {
+                 "AccessLoggingPolicy": {
                     "EmitInterval": "60",
                     "Enabled": "True",
-                    "S3BucketName": "sysco-logs",
-                    "S3BucketPrefix": "CPProd"
+                    "S3BucketName": "sysco-prod-log",
+                    "S3BucketPrefix": "ELB"
                 },
                 "ConnectionDrainingPolicy": {
                     "Enabled": "true",
