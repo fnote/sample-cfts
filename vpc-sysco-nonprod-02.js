@@ -631,7 +631,7 @@
 		    	"InstanceType" : "m1.small",
 			    "KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.55",
-			    "SecurityGroupIds" : [{ "Ref" : "WEBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "WEBSG" },"sg-0f7fc468"],
 		    	"SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 			        { "Key" : "Name", "Value": "MS238CPAC01s" },
@@ -656,7 +656,7 @@
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.7",
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 			        { "Key" : "Name", "Value": "MS238CPSQL01s" },
@@ -681,7 +681,7 @@
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.72",
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 		        	{ "Key" : "Name", "Value": "MS238CPSQL02s" },
@@ -708,7 +708,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPBTSQL06s" },
@@ -732,7 +732,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPBTSQL07s" },
@@ -756,7 +756,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 		    	"InstanceType" : "m3.xlarge",
 			    "KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 		        	{ "Key" : "Name", "Value": "MS238CPODSQL06s" },
@@ -780,7 +780,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPODSQL07s" },
@@ -805,7 +805,7 @@
 			    "InstanceType" : "m3.large",
 		    	"KeyName" : {"Ref" : "QAPemKey"},
 			    "PrivateIpAddress" : "10.168.128.169",
-			    "SecurityGroupIds" : [{ "Ref" : "QualityDBSG" }],
+			    "SecurityGroupIds" : [{ "Ref" : "QualityDBSG" },"sg-0f7fc468"],
 			    "SubnetId" : { "Ref" : "QualitySubnet1E1C" },
 		    	"Tags" : [ 
 		        	{ "Key" : "Name", "Value": "MS238CPSQL01q" },
@@ -912,7 +912,7 @@
                 "ImageId" : "ami-184dc970",
                 "InstanceType" : "t2.micro",
                 "KeyName" : {"Ref" : "PemKey"},
-                "SecurityGroupIds" : [{ "Ref" : "NATSG" }],
+                "SecurityGroupIds" : [{ "Ref" : "NATSG" },"sg-0f7fc468"],
                 "SubnetId" : { "Ref" : "PubSub2" },
                 "Tags" : [ 
                     { "Key" : "Name", "Value": "LX238DEVNAT01" },
@@ -1043,7 +1043,7 @@
 				"InstanceType" : "m1.small",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.135",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPAC01d" },
@@ -1069,7 +1069,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.146",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPBTSQL06d" },
@@ -1094,7 +1094,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.148",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPBTSQL07d" },
@@ -1120,7 +1120,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.144",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPODSQL06d" },
@@ -1145,7 +1145,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.145",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPODSQL07d" },
