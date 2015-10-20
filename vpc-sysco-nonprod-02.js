@@ -656,7 +656,7 @@
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.7",
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 			        { "Key" : "Name", "Value": "MS238CPSQL01s" },
@@ -681,7 +681,7 @@
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.72",
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 		        	{ "Key" : "Name", "Value": "MS238CPSQL02s" },
@@ -793,31 +793,6 @@
 			        { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
 			        { "Key" : "System_Type", "Value": "Database" },
 			        { "Key" : "Support_Criticality", "Value" : "Low" }
-		    	]
-			}
-		},
-		"MS238CPSQL01q": {
-		    "Type" : "AWS::EC2::Instance",
-	    	"Properties" : {
-		    	"AvailabilityZone" : "us-east-1c",
-			    "DisableApiTermination" : "true",
-			    "ImageId" : "ami-f85fe390",
-			    "InstanceType" : "m3.large",
-		    	"KeyName" : {"Ref" : "QAPemKey"},
-			    "PrivateIpAddress" : "10.168.128.169",
-			    "SecurityGroupIds" : [{ "Ref" : "QualityDBSG" },"sg-0f7fc468"],
-			    "SubnetId" : { "Ref" : "QualitySubnet1E1C" },
-		    	"Tags" : [ 
-		        	{ "Key" : "Name", "Value": "MS238CPSQL01q" },
-			        { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-			        { "Key" : "Environment", "Value": "Quality" },
-			        { "Key" : "Security_Classification", "Value" : "Confidential" },
-		    	    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-		        	{ "Key" : "System_Type", "Value": "Database" },
-			        { "Key" : "Support_Criticality", "Value" : "Low" },
-			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
-		    	    { "Key" : "Approver", "Value" : "Sheraz Khan" }
 		    	]
 			}
 		},
