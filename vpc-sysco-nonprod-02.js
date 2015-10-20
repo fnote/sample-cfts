@@ -9,6 +9,48 @@
             "Type" : "String",
             "Default" :  "10.0.0.0/8"
         },
+	    "VpcCidr" : {
+            "Description" : "VPC CIDR block (required for creating NAT security group rules for NATing traffic).",
+            "Type" : "String",
+            "Default" : "10.168.128.0/20"
+        },
+	    "NATNodeInstanceType" : {
+            "Description" : "Instance type for NAT nodes.",
+            "Type" : "String",
+            "Default" : "m1.small",
+            "AllowedValues" : [ "t1.micro","t2.small","m1.small","m1.medium","m1.large","m1.xlarge","m2.xlarge","m2.2xlarge","m2.4xlarge","c1.medium","c1.xlarge","cc1.4xlarge","cc2.8xlarge","cg1.4xlarge","t2.small"],
+            "ConstraintDescription" : "must be a valid EC2 instance type."
+        },
+	    "NumberOfPings" : {
+            "Description" : "The number of times the health check will ping the alternate NAT Node",
+            "Type" : "String",
+            "Default" : "3"
+        },
+        "Nat01" : {
+            "Description" : "lx238nonprodnat01 InstanceId",
+            "Type" : "String",
+            "Default" : "i-b215301a"
+        },
+	    "PingTimeout" : {
+            "Description" : "The number of seconds to wait for each ping response before determining that the ping has failed",
+            "Type" : "String",
+            "Default" : "1"
+        },
+	    "WaitBetweenPings" : {
+            "Description" : "The number of seconds to wait between health checks",
+            "Type" : "String",
+            "Default" : "2"
+        },
+	    "WaitForInstanceStop" : {
+            "Description" : "The number of seconds to wait for alternate NAT Node to stop before attempting to stop it again",
+            "Type" : "String",
+            "Default" : "60"
+        },
+	    "WaitForInstanceStart" : {
+            "Description" : "The number of seconds to wait for alternate NAT Node to restart before resuming health checks again",
+            "Type" : "String",
+            "Default" : "300"
+	    },
         "PemKey" : {
             "Description" : "Name of and existing EC2 KeyPair to enable SSH access to the instance",
             "Type" : "String",
@@ -24,12 +66,30 @@
             "Type" : "String",
 	        "Default" : "sg-7874381c"
         },
+        "CheckMKClient" : {
+            "Description" : "allow check mk access",
+            "Type" : "String",
+	        "Default" : "sg-0f7fc468"
+        },
         "DevPemKey" : {
             "Description" : "Name of and existing EC2 KeyPair to enable SSH access to the instance",
             "Type" : "String",
 	        "Default" : "Sysco-DEV"
         }
     },
+    "Mappings" : {
+        "AWSNATAMI" : {
+            "us-east-1"      : { "AMI" : "ami-54cf5c3d" },
+            "us-west-2"      : { "AMI" : "ami-8e27adbe" },
+            "us-west-1"      : { "AMI" : "ami-b63210f3" },
+            "eu-west-1"      : { "AMI" : "ami-3c5f5748" },
+            "ap-southeast-1" : { "AMI" : "ami-ba7538e8" },
+            "ap-southeast-2" : { "AMI" : "ami-b6df4e8c" },
+            "ap-northeast-1" : { "AMI" : "ami-5d7dfa5c" },
+            "sa-east-1"      : { "AMI" : "ami-89c81394" }
+        }
+    },
+  
        "Resources" : {
         "vpcsyscononprod02" : {
 	        "Type" : "AWS::EC2::VPC",
@@ -117,6 +177,258 @@
 				]
         	}
     	},
+    	"NAT1EIP" : {
+		    "Type" : "AWS::EC2::EIP",
+			"Properties" : {
+				"Domain" : "vpc",
+				"InstanceId" : { "Ref" : "Nat01" }
+			}
+		},
+		"NAT2EIP" : {
+			"Type" : "AWS::EC2::EIP",
+			"Properties" : {
+				"Domain" : "vpc",
+				"InstanceId" : { "Ref" : "LX238NonPRODNAT02" }
+			}
+		}, 
+
+		"LX238NonPRODNAT01" : {
+			"Type" : "AWS::EC2::Instance",
+			"Metadata" : {
+				"Comment1" : "Create NAT #1"
+			},
+			"Properties" : {
+				"InstanceType" : { "Ref" : "NATNodeInstanceType" } ,
+				"KeyName" : { "Ref" : "PemKey" },
+			    "IamInstanceProfile" : "Sysco-NATInstanceProfile-1B6IB42AG3NKL" ,
+				"SubnetId" : { "Ref" : "PubSub2" },
+				"SourceDestCheck" : "false",
+				"ImageId" : { "Fn::FindInMap" : [ "AWSNATAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+				"SecurityGroupIds" : [{ "Ref" : "NATSecurityGroup" }],
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "lx238nonprodnat01" },
+					{ "Key" : "Application_Name", "Value": "AWS Foundation" },
+					{ "Key" : "Environment", "Value": "NonProduction" },
+					{ "Key" : "Security_Classification", "Value" : "Confidential" },
+					{ "Key" : "Cost_Center", "Value" : "USFBTECH PO 28842" },
+					{ "Key" : "Owner", "Value" : "Sheraz Khan" },
+					{ "Key" : "System_Type", "Value": "NAT" },
+					{ "Key" : "Support_Criticality", "Value" : "High" },
+					{ "Key" : "Application_Id", "Value" : "APP-001151" },
+					{ "Key" : "Approver", "Value" : "Sheraz Khan" }
+				],
+				"UserData" : { 
+				    "Fn::Base64" : { 
+					    "Fn::Join" : ["", [
+        				    "#!/bin/bash -v\n",
+		            	    "yum update -y aws*\n",
+            			    ". /etc/profile.d/aws-apitools-common.sh\n",
+			        	    "# Configure iptables\n",
+    	    	    	    "/sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE\n",
+	    	    	        "/sbin/iptables-save > /etc/sysconfig/iptables\n",
+        			  	    "# Configure ip forwarding and redirects\n",
+		        		    "echo 1 >  /proc/sys/net/ipv4/ip_forward && echo 0 >  /proc/sys/net/ipv4/conf/eth0/send_redirects\n",
+			                "mkdir -p /etc/sysctl.d/\n",
+    	    	    	    "cat <<EOF > /etc/sysctl.d/nat.conf\n",
+	    	    	        "net.ipv4.ip_forward = 1\n",
+            			    "net.ipv4.conf.eth0.send_redirects = 0\n",
+			                "EOF\n",
+        				    "# Download nat_monitor.sh and configure\n",
+		        		    "cd /root\n",
+			                "wget http://media.amazonwebservices.com/articles/nat_monitor_files/nat_monitor.sh\n",
+    		        	    "# Wait for NAT #2 to boot up and update PrivateRouteTable2\n",
+	        		        "sleep 180\n",
+            			    "NAT_ID=\n",
+			                "# CloudFormation should have updated the PrivateRouteTable2 by now (due to yum update), however loop to make sure\n",
+            			    "while [ \"$NAT_ID\" == \"\" ]; do\n",
+			                "  sleep 60\n",
+            			    "  NAT_ID=`/opt/aws/bin/ec2-describe-route-tables ", { "Ref" : "PrivateRouteTable2" }, 
+			        	    " -U https://ec2.", { "Ref" : "AWS::Region" }, ".amazonaws.com | grep 0.0.0.0/0 | awk '{print $2;}'`\n",
+            			    "  #echo `date` \"-- NAT_ID=$NAT_ID\" >> /tmp/test.log\n",
+            			    "done\n",
+			                "# Update NAT_ID, NAT_RT_ID, and My_RT_ID\n",
+            			    "sed \"s/NAT_ID=/NAT_ID=$NAT_ID/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+			                "sed \"s/NAT_RT_ID=/NAT_RT_ID=",
+        			            { "Ref" : "PrivateRouteTable2" },
+		            	    "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+            			    "sed \"s/My_RT_ID=/My_RT_ID=",
+			                    { "Ref" : "PrivateRouteTable2" },
+            			    "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+			                "sed \"s/EC2_URL=/EC2_URL=https:\\/\\/ec2.",
+            			        { "Ref" : "AWS::Region" }, ".amazonaws.com",
+			                "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+            			    "sed \"s/Num_Pings=3/Num_Pings=",
+			                    { "Ref" : "NumberOfPings" },
+            			    "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+			                "sed \"s/Ping_Timeout=1/Ping_Timeout=",
+            			        { "Ref" : "PingTimeout" },
+			                "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+            			    "sed \"s/Wait_Between_Pings=2/Wait_Between_Pings=",
+			                    { "Ref" : "WaitBetweenPings" },
+            			    "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+			                "sed \"s/Wait_for_Instance_Stop=60/Wait_for_Instance_Stop=",
+            			        { "Ref" : "WaitForInstanceStop" },
+			                "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+            			    "sed \"s/Wait_for_Instance_Start=300/Wait_for_Instance_Start=",
+			                    { "Ref" : "WaitForInstanceStart" },
+            			    "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+			        	    "mv /root/nat_monitor.tmp /root/nat_monitor.sh\n",
+				            "chmod a+x /root/nat_monitor.sh\n",
+            			    "echo '@reboot /root/nat_monitor.sh > /tmp/nat_monitor.log' | crontab\n",
+			                "/root/nat_monitor.sh > /tmp/nat_monitor.log &\n"
+				            ]
+						]
+					}
+				}
+			}
+		},
+				"LX238NonPRODNAT02" : {
+			"Type" : "AWS::EC2::Instance",
+			"Metadata" : {
+				"Comment1" : "Create NAT #2"
+			},
+			"Properties" : {
+				"InstanceType" : { "Ref" : "NATNodeInstanceType" } ,
+				"KeyName" : { "Ref" : "PemKey" },
+				"IamInstanceProfile" : "Sysco-NATInstanceProfile-1B6IB42AG3NKL",
+				"SubnetId" : { "Ref" : "NewPubSub1" },
+				"SourceDestCheck" : "false",
+				"ImageId" : { "Fn::FindInMap" : [ "AWSNATAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
+				"SecurityGroupIds" : [{ "Ref" : "NATSecurityGroup" }],
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "lx238nonprodnat02" },
+					{ "Key" : "Application_Name", "Value": "AWS Foundation" },
+					{ "Key" : "Environment", "Value": "NonProduction" },
+					{ "Key" : "Security_Classification", "Value" : "Confidential" },
+					{ "Key" : "Cost_Center", "Value" : "USFBTECH PO 28842" },
+					{ "Key" : "Owner", "Value" : "Sheraz Khan" },
+					{ "Key" : "System_Type", "Value": "NAT" },
+					{ "Key" : "Support_Criticality", "Value" : "High" },
+					{ "Key" : "Application_Id", "Value" : "APP-001151" },
+					{ "Key" : "Approver", "Value" : "Sheraz Khan" }
+				],
+				"UserData" : { 
+				    "Fn::Base64" : { 
+					    "Fn::Join" : ["", [
+        				    "#!/bin/bash -v\n",
+		            	    "yum update -y aws*\n",
+				            "# Configure iptables\n",
+            			    "/sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE\n",
+			                "/sbin/iptables-save > /etc/sysconfig/iptables\n",
+        				    "# Configure ip forwarding and redirects\n",
+		        		    "echo 1 >  /proc/sys/net/ipv4/ip_forward && echo 0 >  /proc/sys/net/ipv4/conf/eth0/send_redirects\n",
+			                "mkdir -p /etc/sysctl.d/\n",
+            			    "cat <<EOF > /etc/sysctl.d/nat.conf\n",
+			                "net.ipv4.ip_forward = 1\n",
+            			    "net.ipv4.conf.eth0.send_redirects = 0\n",
+			                "EOF\n",
+        				    "# Download nat_monitor.sh and configure\n",
+		        		    "cd /root\n",
+			                "wget http://media.amazonwebservices.com/articles/nat_monitor_files/nat_monitor.sh\n",
+            			    "# Update NAT_ID, NAT_RT_ID, and My_RT_ID\n",
+			                "sed \"s/NAT_ID=/NAT_ID=",
+            			        { "Ref" : "Nat01" },
+			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+            			    "sed \"s/NAT_RT_ID=/NAT_RT_ID=",
+			                    { "Ref" : "PrivateRouteTable2" },
+            			    "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+			                "sed \"s/My_RT_ID=/My_RT_ID=",
+                			    { "Ref" : "PrivateRouteTable2" },
+			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+            			    "sed \"s/EC2_URL=/EC2_URL=https:\\/\\/ec2.",
+			                    { "Ref" : "AWS::Region" }, ".amazonaws.com",
+            			    "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+			                "sed \"s/Num_Pings=3/Num_Pings=",
+                			    { "Ref" : "NumberOfPings" },
+			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+            			    "sed \"s/Ping_Timeout=1/Ping_Timeout=",
+			                    { "Ref" : "PingTimeout" },
+            			    "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+			                "sed \"s/Wait_Between_Pings=2/Wait_Between_Pings=",
+                			    { "Ref" : "WaitBetweenPings" },
+			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+            			    "sed \"s/Wait_for_Instance_Stop=60/Wait_for_Instance_Stop=",
+			                    { "Ref" : "WaitForInstanceStop" },
+            			    "/g\" /root/nat_monitor.tmp > /root/nat_monitor.sh\n",
+			                "sed \"s/Wait_for_Instance_Start=300/Wait_for_Instance_Start=",
+                			    { "Ref" : "WaitForInstanceStart" },
+			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
+        				    "mv /root/nat_monitor.tmp /root/nat_monitor.sh\n",
+		        		    "chmod a+x /root/nat_monitor.sh\n",
+			                "echo '@reboot /root/nat_monitor.sh > /tmp/nat_monitor.log' | crontab\n",
+            			    "/root/nat_monitor.sh >> /tmp/nat_monitor.log &\n"
+				            ]
+						]
+					}
+				}
+			}
+		},
+
+		"NATSecurityGroup" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Rules for allowing access to HA Nodes",
+				"VpcId" : { "Ref" : "vpcsyscononprod02" },
+				"SecurityGroupIngress" : [
+				{ 
+				    "IpProtocol" : "-1", 
+					"FromPort" : "0",  
+					"ToPort" : "65535",  
+					"CidrIp" : { "Ref" : "VpcCidr" }
+				}],
+				"SecurityGroupEgress" : [
+				{ 
+				    "IpProtocol" : "-1", 
+					"FromPort" : "0", 
+					"ToPort" : "65535", 
+					"CidrIp" : "0.0.0.0/0" 
+				}],
+				"Tags" : [ { "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/np_ha_nat" } ]
+			}
+		},
+		"NATAllowICMP" : {
+			"Type" : "AWS::EC2::SecurityGroupIngress",
+			"Properties" : {
+				"GroupId" : { "Ref" : "NATSecurityGroup" },
+				"IpProtocol" : "tcp", 
+			    "FromPort" : "443",  
+			    "ToPort" : "443",  
+			    "SourceSecurityGroupId" : { "Ref" : "NATSecurityGroup" }
+			}
+		},
+		"PrivateRouteTable2" : {
+    	    "Type" : "AWS::EC2::RouteTable",
+        	"Properties" : {
+            	"VpcId" : {"Ref" : "vpcsyscononprod02"},
+			    "Tags" : [ { "Key" : "Name", "Value" : "rt/vpc_sysco_nonprod_02/confidential_02" } ]
+    	    }
+    	},
+		"NewPeeringPrivateRoute2" : {
+			"Type" : "AWS::EC2::Route",
+			"Properties" : {
+				"RouteTableId" : { "Ref" : "PrivateRouteTable2" },
+				"DestinationCidrBlock" : "10.168.160.0/21",
+				"VpcPeeringConnectionId" : "pcx-e73bd28e" 
+			}
+    	},
+	    "NewPrivateRoute" : {
+    	    "Type" : "AWS::EC2::Route",
+	    	"DependsOn" : "AttachVpnGateway",
+        	"Properties" : {
+	            "RouteTableId" : { "Ref" : "PrivateRouteTable2" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "InstanceId" : { "Ref" : "Nat01" }
+        	}
+    	}, 
+	    "NewPrivateRoute2" : {
+    	    "Type" : "AWS::EC2::Route",
+	    	"DependsOn" : "AttachVpnGateway",
+        	"Properties" : {
+	            "RouteTableId" : { "Ref" : "PrivateRouteTable2" },
+                "DestinationCidrBlock" : "10.0.0.0/8",
+				"GatewayId" : { "Ref" : "SyscoVPNGateway" }
+        	}
+    	}, 
 		"SyscoCorpConnectionRoute" : {
 			"Type" : "AWS::EC2::VPNConnectionRoute",
 			"Properties" : {
@@ -631,7 +943,7 @@
 		    	"InstanceType" : "m1.small",
 			    "KeyName" : {"Ref" : "PemKey"},
 			    "PrivateIpAddress" : "10.168.128.55",
-			    "SecurityGroupIds" : [{ "Ref" : "WEBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "WEBSG" }, {"Ref" : "CheckMKClient" }],
 		    	"SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 			        { "Key" : "Name", "Value": "MS238CPAC01s" },
@@ -708,7 +1020,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }, {"Ref" : "CheckMKClient" }],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPBTSQL06s" },
@@ -732,7 +1044,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }, {"Ref" : "CheckMKClient" }],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPBTSQL07s" },
@@ -756,7 +1068,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 		    	"InstanceType" : "m3.xlarge",
 			    "KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG"} , {"Ref" : "CheckMKClient" }],
 			    "SubnetId" : { "Ref" : "snaz1vpcsyscononprod02cptuning" },
 		    	"Tags" : [ 
 		        	{ "Key" : "Name", "Value": "MS238CPODSQL06s" },
@@ -780,7 +1092,7 @@
 			    "ImageId" : "ami-5c2dbc34",
 			    "InstanceType" : "m3.xlarge",
 		    	"KeyName" : {"Ref" : "PemKey"},
-			    "SecurityGroupIds" : [{ "Ref" : "DBSG" },"sg-0f7fc468"],
+			    "SecurityGroupIds" : [{ "Ref" : "DBSG" }, {"Ref" : "CheckMKClient" }],
 			    "SubnetId" : { "Ref" : "snaz2vpcsyscononprod02cptuning" },
 			    "Tags" : [ 
 		    	    { "Key" : "Name", "Value": "MS238CPODSQL07s" },
@@ -887,7 +1199,7 @@
                 "ImageId" : "ami-184dc970",
                 "InstanceType" : "t2.micro",
                 "KeyName" : {"Ref" : "PemKey"},
-                "SecurityGroupIds" : [{ "Ref" : "NATSG" },"sg-0f7fc468"],
+                "SecurityGroupIds" : [{ "Ref" : "NATSG" }, {"Ref" : "CheckMKClient" }],
                 "SubnetId" : { "Ref" : "PubSub2" },
                 "Tags" : [ 
                     { "Key" : "Name", "Value": "LX238DEVNAT01" },
@@ -953,6 +1265,33 @@
 				"GatewayId" : { "Ref" : "SyscoVPNGateway" }
             }
         },
+        "NewPubSub1" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : { "Ref" : "vpcsyscononprod02" },
+                "CidrBlock" : "10.168.130.32/27",
+                "AvailabilityZone" : "us-east-1d",
+                "Tags" : [ 
+                    {"Key" : "Name", "Value" : "sn_public1_useast1d/vpc_sysco_nonprod_02/public"},
+                    {"Key" : "Application_Name", "Value": "ALL" },
+                    { "Key" : "Environment", "Value": "ALL" },
+                    { "Key" : "Security_Classification", "Value" : "Confidential" },
+                    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
+                    { "Key" : "System_Type", "Value": "Networking" },
+                    { "Key" : "Support_Criticality", "Value" : "Low" },
+                    { "Key" : "Application_Id", "Value" : "APP-001151" },
+                    { "Key" : "Owner", "Value" : "Sheraz Khan" },
+                    { "Key" : "Approver", "Value" : "Sheraz Khan" }
+                ]
+            }
+        },
+        "NewPubSubAssoc1" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties" : {
+                "SubnetId" : { "Ref" : "NewPubSub1" },
+                "RouteTableId" : { "Ref" : "PubRT1" }
+            }
+        },
 		"DevPrivateSubnetRouteTableAssociation1" : {
 			"Type" : "AWS::EC2::SubnetRouteTableAssociation",
 			"Properties" : {
@@ -968,7 +1307,15 @@
 				"VpcPeeringConnectionId" : "pcx-e73bd28e" 
 			}
 		},
-		
+
+		"PublicPeeringRoute" : {
+	 		"Type" : "AWS::EC2::Route",
+			"Properties" : {
+				"RouteTableId" : { "Ref" : "PubRT1" },
+				"DestinationCidrBlock" : "10.168.160.0/21",
+				"VpcPeeringConnectionId" : "pcx-e73bd28e" 
+			}
+		},		
 		"DevDBSG": {
 			"Type": "AWS::EC2::SecurityGroup",
 			"Properties": {
@@ -1018,7 +1365,7 @@
 				"InstanceType" : "m1.small",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.135",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, {"Ref" : "CheckMKClient" }],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPAC01d" },
@@ -1044,7 +1391,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.146",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, {"Ref" : "CheckMKClient" }],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPBTSQL06d" },
@@ -1069,7 +1416,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.148",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, {"Ref" : "CheckMKClient" }],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPBTSQL07d" },
@@ -1095,7 +1442,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.144",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, {"Ref" : "CheckMKClient" }],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPODSQL06d" },
@@ -1120,7 +1467,7 @@
 				"InstanceType" : "m3.large",
 				"KeyName" : {"Ref" : "DevPemKey"},
 				"PrivateIpAddress" : "10.168.128.145",
-				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" },"sg-0f7fc468"],
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, {"Ref" : "CheckMKClient" }],
 				"SubnetId" : { "Ref" : "DevSubnet1E1C" },
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPODSQL07d" },
