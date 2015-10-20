@@ -26,6 +26,11 @@
             "Type" : "String",
             "Default" : "3"
         },
+        "NewPubSub1" : {
+            "Description" : "existing public subnet 1",
+            "Type" : "String",
+            "Default" : "subnet-24fed553"
+        },
         "Nat01" : {
             "Description" : "lx238nonprodnat01 InstanceId",
             "Type" : "String",
@@ -181,7 +186,7 @@
 		    "Type" : "AWS::EC2::EIP",
 			"Properties" : {
 				"Domain" : "vpc",
-				"InstanceId" : { "Ref" : "Nat01" }
+				"InstanceId" : { "Ref" : "LX238NonPRODNAT01" }
 			}
 		},
 		"NAT2EIP" : {
@@ -282,7 +287,7 @@
 				}
 			}
 		},
-				"LX238NonPRODNAT02" : {
+	"LX238NonPRODNAT02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Metadata" : {
 				"Comment1" : "Create NAT #2"
@@ -327,7 +332,7 @@
 			                "wget http://media.amazonwebservices.com/articles/nat_monitor_files/nat_monitor.sh\n",
             			    "# Update NAT_ID, NAT_RT_ID, and My_RT_ID\n",
 			                "sed \"s/NAT_ID=/NAT_ID=",
-            			        { "Ref" : "Nat01" },
+            			        { "Ref" : "LX238NonPRODNAT01" },
 			                "/g\" /root/nat_monitor.sh > /root/nat_monitor.tmp\n",
             			    "sed \"s/NAT_RT_ID=/NAT_RT_ID=",
 			                    { "Ref" : "PrivateRouteTable2" },
@@ -411,15 +416,6 @@
 				"VpcPeeringConnectionId" : "pcx-e73bd28e" 
 			}
     	},
-	    "NewPrivateRoute" : {
-    	    "Type" : "AWS::EC2::Route",
-	    	"DependsOn" : "AttachVpnGateway",
-        	"Properties" : {
-	            "RouteTableId" : { "Ref" : "PrivateRouteTable2" },
-                "DestinationCidrBlock" : "0.0.0.0/0",
-                "InstanceId" : { "Ref" : "Nat01" }
-        	}
-    	}, 
 	    "NewPrivateRoute2" : {
     	    "Type" : "AWS::EC2::Route",
 	    	"DependsOn" : "AttachVpnGateway",
@@ -650,7 +646,7 @@
 	        "Properties" : {
    	            "RouteTableId" : { "Ref" : "ConfidentialPrivateRouteTable1" },
                 "DestinationCidrBlock" : "0.0.0.0/0",
-                "InstanceId" : { "Ref" : "LX238DEVNAT01" }
+                "InstanceId" : { "Ref" : "LX238NonPRODNAT01" }
         	}
     	},
 		"ConfidentialPrivateRoute2" : {
@@ -1263,26 +1259,6 @@
                 "RouteTableId" : { "Ref" : "PubRT1" },
                 "DestinationCidrBlock" : "10.0.0.0/8",
 				"GatewayId" : { "Ref" : "SyscoVPNGateway" }
-            }
-        },
-        "NewPubSub1" : {
-            "Type" : "AWS::EC2::Subnet",
-            "Properties" : {
-                "VpcId" : { "Ref" : "vpcsyscononprod02" },
-                "CidrBlock" : "10.168.130.32/27",
-                "AvailabilityZone" : "us-east-1d",
-                "Tags" : [ 
-                    {"Key" : "Name", "Value" : "sn_public1_useast1d/vpc_sysco_nonprod_02/public"},
-                    {"Key" : "Application_Name", "Value": "ALL" },
-                    { "Key" : "Environment", "Value": "ALL" },
-                    { "Key" : "Security_Classification", "Value" : "Confidential" },
-                    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-                    { "Key" : "System_Type", "Value": "Networking" },
-                    { "Key" : "Support_Criticality", "Value" : "Low" },
-                    { "Key" : "Application_Id", "Value" : "APP-001151" },
-                    { "Key" : "Owner", "Value" : "Sheraz Khan" },
-                    { "Key" : "Approver", "Value" : "Sheraz Khan" }
-                ]
             }
         },
         "NewPubSubAssoc1" : {
