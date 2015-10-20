@@ -31,6 +31,11 @@
             "Type" : "String",
             "Default" : "subnet-24fed553"
         },
+        "NatAccessParam" : {
+            "Description" : "Nat access SG ID",
+            "Type" : "String",
+            "Default" : "sg-e151a186"
+        },
         "Nat01" : {
             "Description" : "lx238nonprodnat01 InstanceId",
             "Type" : "String",
@@ -209,7 +214,7 @@
 				"SubnetId" : { "Ref" : "PubSub2" },
 				"SourceDestCheck" : "false",
 				"ImageId" : { "Fn::FindInMap" : [ "AWSNATAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
-				"SecurityGroupIds" : [{ "Ref" : "NATSecurityGroup" }],
+				"SecurityGroupIds" : [{ "Ref" : "NATSG"}, {"Ref" : "CheckMKClient" }],
 				"Tags" : [ 
 					{ "Key" : "Name", "Value": "lx238nonprodnat01" },
 					{ "Key" : "Application_Name", "Value": "AWS Foundation" },
@@ -299,7 +304,7 @@
 				"SubnetId" : { "Ref" : "NewPubSub1" },
 				"SourceDestCheck" : "false",
 				"ImageId" : { "Fn::FindInMap" : [ "AWSNATAMI", { "Ref" : "AWS::Region" }, "AMI" ]},
-				"SecurityGroupIds" : [{ "Ref" : "NATSecurityGroup" }],
+				"SecurityGroupIds" : [{ "Ref" : "NATSG"}, {"Ref" : "CheckMKClient" }],
 				"Tags" : [ 
 					{ "Key" : "Name", "Value": "lx238nonprodnat02" },
 					{ "Key" : "Application_Name", "Value": "AWS Foundation" },
@@ -1158,24 +1163,54 @@
 				    "IpProtocol" : "tcp", 
 					"FromPort" : "443",  
 					"ToPort" : "443",  
-					"SourceSecurityGroupId": "sg-e151a186"
-			    }],
+					"SourceSecurityGroupId": {"Ref": "NatAccessParam"}
+			    },
+                { 
+				    "IpProtocol" : "tcp", 
+					"FromPort" : "80",  
+					"ToPort" : "80",  
+					"SourceSecurityGroupId": {"Ref": "NatAccessParam"}
+			    },
+                { 
+				    "IpProtocol" : "tcp", 
+					"FromPort" : "22",  
+					"ToPort" : "22",  
+					"SourceSecurityGroupId": {"Ref": "NatAccessParam"}
+			    },
+                { 
+				    "IpProtocol" : "tcp", 
+					"FromPort" : "21",  
+					"ToPort" : "21",  
+					"SourceSecurityGroupId": {"Ref": "NatAccessParam"}
+			    }		    			    			    ],
                 "Tags" : [ { "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/nat" } ]
             }
         },
+		"IngressAdder11":{
+			"DependsOn": "DevDBSG",
+			"Type": "AWS::EC2::SecurityGroupIngress",
+			"Properties":
+			{
+			    "FromPort" : "-1",
+				"GroupId" : {"Ref":"NATSG"},
+				"IpProtocol" : "-1",
+				"SourceSecurityGroupId" : {"Ref":"NATSG"},
+				"ToPort" : "-1"
+			}
+		},
         "NatAccess" : {
             "Type" : "AWS::EC2::SecurityGroup",
             "Properties" : {
                 "GroupDescription" : "NAT Access SG",
                 "VpcId" : { "Ref" : "vpcsyscononprod02" },
                 "SecurityGroupEgress" : [
-                { 
-				    "IpProtocol" : "tcp", 
-					"FromPort" : "443",  
-					"ToPort" : "443",  
-            	    "SourceSecurityGroupId": {
-                	    "Ref": "NATSG"
-                	}
+            	{
+                	"IpProtocol": "-1",
+	                "FromPort": "-1",
+    	            "ToPort": "-1",
+        	        "SourceSecurityGroupId": {
+            	        "Ref": "NATSG"
+                	}  
 			    }],
                 "Tags" : [ { "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/nataccess" } ]
             }
