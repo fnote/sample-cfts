@@ -725,7 +725,7 @@
 	        "Properties" : {
    	            "RouteTableId" : { "Ref" : "QualityPrivateRouteTable1" },
                 "DestinationCidrBlock" : "0.0.0.0/0",
-                "InstanceId" : { "Ref" : "LX238DEVNAT01" }
+                "InstanceId" : { "Ref" : "LX238NonPRODNAT01" }
         	}
     	},
 	    "QualityPrivateRoute2" : {
@@ -821,7 +821,7 @@
         	"Properties" : {
 	            "RouteTableId" : { "Ref" : "PrivateRouteTable" },
                 "DestinationCidrBlock" : "0.0.0.0/0",
-                "InstanceId" : { "Ref" : "LX238DEVNAT01" }
+                "InstanceId" : { "Ref" : "LX238NonPRODNAT01" }
         	}
     	},   
 	    "PrivateRoute2" : {
@@ -1141,7 +1141,7 @@
             "Properties" : {
                 "RouteTableId" : { "Ref" : "DevPrivateRouteTable1" },
                 "DestinationCidrBlock" : "0.0.0.0/0",
-                "InstanceId" : { "Ref" : "LX238DEVNAT01" }
+                "InstanceId" : { "Ref" : "LX238NonPRODNAT01" }
             }
         },
         "DevPrivateRoute2" : {
