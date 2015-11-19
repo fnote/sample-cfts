@@ -1829,6 +1829,498 @@
                 }
             }
         },
+		"ms238cpodsql017": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql017"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+		"ms238cpodsql018": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql018"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+		"ms238cpodsql019": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql019"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },		
+		"ms238cpodsql020": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql020"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "USFBTECH PO 28840"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Sheraz Khan"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+		"ms238cpodsql001": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql001"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "7000000347"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Darcy Tomaszewski, Samir Patel, James Owen"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan, Karen Williams "
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+		"ms238cpodsql002": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1d",
+                "DisableApiTermination": "true",
+				"IamInstanceProfile" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+                "ImageId": {
+                    "Ref": "ODAMI"
+                },
+                "InstanceType": "m3.xlarge",
+                "KeyName": {
+                    "Ref": "PemKey"
+                },
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "CPDBSG"
+                    },
+                    {
+                        "Ref": "NATCLIENT"
+                    },"sg-42dc8b26"
+                ],
+                "SubnetId": {
+                    "Ref": "Conf1d"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ms238cpodsql002"
+                    },
+                    {
+                        "Key": "Application_Name",
+                        "Value": "Cloud Pricing"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": "Production"
+                    },
+                    {
+                        "Key": "Security_Classification",
+                        "Value": "Confidential"
+                    },
+                    {
+                        "Key": "Cost_Center",
+                        "Value": "7000000347"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": "Darcy Tomaszewski, Samir Patel, James Owen"
+                    },
+                    {
+                        "Key": "System_Type",
+                        "Value": " Database"
+                    },
+                    {
+                        "Key": "Support_Criticality",
+                        "Value": "Medium"
+                    },
+                    {
+                        "Key": "Application_Id",
+                        "Value": "APP-001151"
+                    },
+                    {
+                        "Key": "Approver",
+                        "Value": "Sheraz Khan, Karen Williams "
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
         "ms238cpbtsql03": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
