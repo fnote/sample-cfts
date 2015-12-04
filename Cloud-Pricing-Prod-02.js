@@ -61,6 +61,29 @@
             "Description": "Name of and existing VPC",
             "Type": "String",
             "Default": "vpc-99e855fc"
+        },
+        "Approver" : {
+            "Description" : "Name of application approver",
+            "Type" : "String",
+            "Default" : "Sheraz Khan Karen Williams",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+        },
+        "Owner" : {
+            "Description" : "Name of application owner",
+            "Type" : "String",
+            "Default" : "Darcy Tomaszewski Samir Patel James Owen",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+        },
+        "CostCenter" : {
+            "Description" : "PO Number for billing",
+            "Type" : "String",
+            "Default" : "7000000347",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
         }
     },
     "Resources": {
@@ -110,11 +133,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -130,7 +153,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -210,11 +233,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -230,7 +253,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -292,11 +315,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -312,7 +335,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -359,11 +382,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -379,7 +402,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -426,11 +449,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -446,7 +469,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -534,11 +557,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -554,7 +577,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }
@@ -601,11 +624,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -621,7 +644,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -680,11 +703,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -700,7 +723,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -759,11 +782,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -779,7 +802,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -838,11 +861,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -858,7 +881,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -917,11 +940,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -937,7 +960,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -996,11 +1019,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1016,7 +1039,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1075,11 +1098,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1095,7 +1118,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1154,11 +1177,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1174,7 +1197,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1233,11 +1256,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1253,7 +1276,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1312,11 +1335,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1332,7 +1355,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1391,11 +1414,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1411,7 +1434,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1470,11 +1493,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1490,7 +1513,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1549,11 +1572,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1569,7 +1592,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1628,11 +1651,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1648,7 +1671,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1708,11 +1731,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1728,7 +1751,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1790,11 +1813,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1810,7 +1833,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1872,11 +1895,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1892,7 +1915,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -1954,11 +1977,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -1974,7 +1997,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2036,11 +2059,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2056,7 +2079,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2118,11 +2141,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2138,7 +2161,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2200,11 +2223,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "7000000347"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Darcy Tomaszewski, Samir Patel, James Owen"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2220,7 +2243,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan, Karen Williams "
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2282,11 +2305,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "7000000347"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Darcy Tomaszewski, Samir Patel, James Owen"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2302,7 +2325,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan, Karen Williams "
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2363,11 +2386,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2383,7 +2406,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2442,11 +2465,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2462,7 +2485,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2521,11 +2544,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2541,7 +2564,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2600,11 +2623,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2620,7 +2643,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2679,11 +2702,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2699,7 +2722,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2758,11 +2781,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2778,7 +2801,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2837,11 +2860,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2857,7 +2880,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2916,11 +2939,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -2936,7 +2959,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -2995,11 +3018,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3015,7 +3038,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3074,11 +3097,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3094,7 +3117,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3153,11 +3176,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3173,7 +3196,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3232,11 +3255,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3252,7 +3275,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3311,11 +3334,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3331,7 +3354,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3390,11 +3413,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3410,7 +3433,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3469,11 +3492,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3489,7 +3512,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3548,11 +3571,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3568,7 +3591,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3627,11 +3650,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3647,7 +3670,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3706,11 +3729,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3726,7 +3749,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3785,11 +3808,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3805,7 +3828,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3864,11 +3887,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -3884,7 +3907,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ],
                 "UserData": {
@@ -3952,7 +3975,7 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840",
+                        "Value" : { "Ref" : "CostCenter" },
                         "PropagateAtLaunch": "true"
                     },
                     {
@@ -3972,12 +3995,12 @@
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan",
+                        "Value" : { "Ref" : "Owner" },
                         "PropagateAtLaunch": "true"
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan",
+                        "Value" : { "Ref" : "Approver" },
                         "PropagateAtLaunch": "true"
                     }
                 ]
@@ -4230,11 +4253,11 @@
                     },
                     {
                         "Key": "Cost_Center",
-                        "Value": "USFBTECH PO 28840"
+                        "Value" : { "Ref" : "CostCenter" }
                     },
                     {
                         "Key": "Owner",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Owner" }
                     },
                     {
                         "Key": "System_Type",
@@ -4250,7 +4273,7 @@
                     },
                     {
                         "Key": "Approver",
-                        "Value": "Sheraz Khan"
+                        "Value" : { "Ref" : "Approver" }
                     }
                 ]
             }

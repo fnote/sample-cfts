@@ -33,7 +33,7 @@
 		"CostCenter" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
-			"Default" : "7000000725",
+			"Default" : "7000000347",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -42,7 +42,7 @@
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
-			"Default" : "Samir Patel",
+			"Default" : "Samir Patel James Owen",
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
@@ -216,7 +216,7 @@
 				"AvailabilityZones" : ["us-east-1c", "us-east-1d"],
 				"LaunchConfigurationName" : { "Ref" : "WebLaunchConfig" },
 				"MinSize" : "1",
-				"MaxSize" : "1",
+				"MaxSize" : "2",
 				"DesiredCapacity" : "1",
 				"HealthCheckType": "EC2",
 				"HealthCheckGracePeriod": "1200",
