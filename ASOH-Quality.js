@@ -1,14 +1,14 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
 
-	"Description" : "Deployed via ASOH-Dev.js that resides in Sysco source control",
+	"Description" : "Deployed via ASOH-Quality.js that resides in Sysco source control",
 
 	"Parameters" : {
 
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default" : "ASOH Dev",
+			"Default" : "ASOH Quality",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -49,7 +49,7 @@
 		"Environment" : {
 			"Description" : "Environment for application",
 			"Type" : "String",
-			"Default" : "Development",
+			"Default" : "Quality",
 			"AllowedValues" : [
 				"Sandbox",
 				"Development",
@@ -63,7 +63,7 @@
 		"EnvironmentShort" : {
 			"Description" : "Environment initials",
 			"Type" : "String",
-			"Default" : "dev",
+			"Default" : "qa",
 			"AllowedValues" : [
 				"sbx",
 				"dev",
@@ -177,6 +177,11 @@
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Public Subnet."
 		},
+		"sgELBPrivate" : {
+			"Description" : "Private ELB Security Group",
+			"Type" : "String",
+			"Default" : "sg-00054a67"
+		},
 		"InstanceProfile" : {
 			"Description" : "Instance Profile Name",
 			"Type" : "String",
@@ -215,12 +220,13 @@
 			"Properties" : {
 				"AvailabilityZones" : ["us-east-1c", "us-east-1d"],
 				"LaunchConfigurationName" : { "Ref" : "WebLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
+				"MinSize" : "2",
+				"MaxSize" : "4",
+				"DesiredCapacity" : "2",
+				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "1200",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
+				"LoadBalancerNames" : [ { "Ref" : "elbWeb" } ],
 				"Tags" : [ 
 					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
@@ -342,16 +348,57 @@
 				"ComparisonOperator" : "LessThanThreshold"
 			}
 		},
+		"elbWeb" : {
+			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties" : {
+				"SecurityGroups" : [{ "Ref" : "sgELBPrivate" }],
+				"Subnets" : [{ "Ref" : "SubnetIdPrivateEastC" },{ "Ref" : "SubnetIdPrivateEastD" }],
+				"Scheme" : "internal",
+				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-wb01-asoh-", { "Ref" : "EnvironmentShort" }]]},
+				"Listeners" : [
+				{
+					"LoadBalancerPort" : "80",
+					"InstancePort" :  "8080" ,
+					"Protocol" : "HTTP"
+				}],
+				"AccessLoggingPolicy": {
+					"EmitInterval": "60",
+					"Enabled": "True",
+					"S3BucketName": "sysco-logs",
+					"S3BucketPrefix": "ELB"
+				},
+				"HealthCheck" : {
+					"Target" : "HTTP:8080/",
+					"HealthyThreshold" : "3",
+					"UnhealthyThreshold" : "2",
+					"Interval" : "30",
+					"Timeout" : "5"
+				},
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "ASOH Mobile App ELB" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
+					{ "Key" : "System_Type", "Value" : "Load Balancer" },
+					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
+				]
+			}
+		},
 		"sgWeb" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "SWMS Mobile App SG",
+				"GroupDescription" : "ASOH App SG",
 				"VpcId" : { "Ref" : "VPCID" },
 				"SecurityGroupIngress" : [ 
 				{
 					"IpProtocol" : "tcp",
 					"FromPort" : "80",
-					"ToPort" : "80"
+					"ToPort" : "80",
+					"SourceSecurityGroupId" : {"Ref":"sgELBPrivate"}
 				},
 				{
 					"IpProtocol" : "tcp",
@@ -362,7 +409,8 @@
 				{  
 					"IpProtocol" : "tcp",
 					"FromPort" : "80",
-					"ToPort" : "8080"
+					"ToPort" : "8080",
+					"SourceSecurityGroupId" : {"Ref":"sgELBPrivate"}
 				},
 				{  
 					"IpProtocol" : "tcp",
@@ -384,7 +432,7 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/swmsmobile_prod_app" },
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_qa_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -397,5 +445,10 @@
 				]
 			}
 		}
-	}
+	},
+	"Outputs" : {
+		"elbWebUrl" : {
+			"Description" : "URL for Web ELB",
+			"Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "elbWeb", "DNSName" ]}]] }
+		}	}
 }
