@@ -186,11 +186,11 @@
 				"SubnetId" : "subnet-b9915fce",
 				"Tags" : [ 
 				    { "Key" : "Name", "Value": "MS238CPBRFS01s" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
+				    { "Key" : "Application_Name", "Value": "Cloud Pricing Non Prod" },
 				    { "Key" : "Environment", "Value": "Tuning" },
 				    { "Key" : "Cost_Center", "Value" : "7000000347" },
 			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
+			        { "Key" : "Owner", "Value" : "Darcy Tomaszewski, Samir Patel, James Owen" },
 			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
 				],
                 "UserData": {
