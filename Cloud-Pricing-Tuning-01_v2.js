@@ -176,6 +176,40 @@
         	"ComparisonOperator": "LessThanThreshold"
         	}
     	},
+		"MS238CPBRFS01s": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"DisableApiTermination" : "true",
+				"ImageId" : "ami-ddf6bfb7",
+				"InstanceType" : "m4.xlarge",
+				"SecurityGroupIds" : ["sg-e151a186","sg-ecd48289","sg-0f7fc468"],
+				"SubnetId" : "subnet-b9915fce",
+				"Tags" : [ 
+				    { "Key" : "Name", "Value": "MS238CPBRFS01s" },
+				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
+				    { "Key" : "Environment", "Value": "Tuning" },
+				    { "Key" : "Cost_Center", "Value" : "7000000347" },
+			        { "Key" : "Application_Id", "Value" : "APP-001151" },
+			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
+			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
+				],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                             [
+                                "<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+                            ]
+                        ]
+                    }
+                }
+
+			}
+		},
 	    "stgCPELB" : {
 			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties" : {
