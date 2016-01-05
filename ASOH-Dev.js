@@ -8,7 +8,7 @@
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default" : "ASOH Dev",
+			"Default" : "ASOH Dev B",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -256,24 +256,34 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
-					"yum update -y aws-cfn-bootstrap\n",
 					
-					"# Install java\n",
-					"yum install -y java-1.7.0-openjdk.x86_64\n",
-					"export JAVA_HOME=\"/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.85-2.6.1.2.el7_1.x86_64/jre\"\n",
+					"# Install wget\n",
+					"yum install -y wget\n",
+					
+					"# Dwonload and Install java\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+					
+					"# Set Server Environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/asoh.sh\"\n",
 
-					"# Install apache\n",
-					"yum install -y httpd.x86_64\n",
-					"yum install -y httpd-devel.x86_64\n",
-					"yum install -y httpd-manual.noarch\n",
-					"yum install -y httpd-tools.x86_64\n",
+					"# Create app folder\n",
+					"cd /home/ec2-user\n",
+					"mkdir apps\n",
+					"chmod -c 777 apps\n",
+					
+					"# Install CodeDeploy\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
 
-					"groupadd www\n",
-					"usermod -a -G www ec2-user\n",
-					"chown -R root:www /var/www\n",
-					"chmod 2775 /var/www\n",
-					"find /var/www -type d -exec chmod 2775 {} +\n",
-					"find /var/www -type f -exec chmod 0664 {} +\n"
+					"# Install smbclient\n",
+					"yum install -y samba-client\n",
+
+					"# yum Updates\n",
+					"yum update -y\n",
+					"# yum update -y aws-cfn-bootstrap\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
@@ -345,7 +355,7 @@
 		"sgWeb" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "SWMS Mobile App SG",
+				"GroupDescription" : "ASOH App SG Dev2",
 				"VpcId" : { "Ref" : "VPCID" },
 				"SecurityGroupIngress" : [ 
 				{
@@ -384,7 +394,7 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/swmsmobile_prod_app" },
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_dev_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },

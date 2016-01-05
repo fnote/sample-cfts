@@ -1,14 +1,14 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
 
-	"Description" : "Deployed via ASOH-Quality.js that resides in Sysco source control",
+	"Description" : "Deployed via ASOH-Prod.js that resides in Sysco source control",
 
 	"Parameters" : {
 
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default" : "ASOH Quality",
+			"Default" : "ASOH Prod",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -49,7 +49,7 @@
 		"Environment" : {
 			"Description" : "Environment for application",
 			"Type" : "String",
-			"Default" : "Quality",
+			"Default" : "Production",
 			"AllowedValues" : [
 				"Sandbox",
 				"Development",
@@ -63,7 +63,7 @@
 		"EnvironmentShort" : {
 			"Description" : "Environment initials",
 			"Type" : "String",
-			"Default" : "qa",
+			"Default" : "prod",
 			"AllowedValues" : [
 				"sbx",
 				"dev",
@@ -111,68 +111,68 @@
 			"ConstraintDescription" : "Must be a valid EC2 instance type."
 		},
 		"VPCID" : {
-			"Description" : "vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Description" : "vpc_sysco_prod_01 CIDR: 10.168.144.0/20",
 			"Type" : "AWS::EC2::VPC::Id",
-			"Default" : "vpc-ff88269a",
+			"Default" : "vpc-99e855fc",
 			"ConstraintDescription" : "Must be a valid VPC."
 		},
 		"NATaccessSG" : {
 			"Description" : "NAT access Security Group",
 			"Type" : "String",
-			"Default" : "sg-e151a186",
+			"Default" : "sg-1803c47f",
 			"ConstraintDescription" : "Must be a valid NAT Security Group."
 		},
 		"CheckMKSG" : {
 			"Description" : "NAT access Security Group",
 			"Type" : "String",
-			"Default" : "sg-0f7fc468",
+			"Default" : "sg-42dc8b26",
 			"ConstraintDescription" : "Must be a valid NAT Security Group."
 		},
 		"KeyName" : {
 			"Description" : "Name of an existing KeyPair",
 			"Type" : "AWS::EC2::KeyPair::KeyName",
-			"Default" : "ASOH_Dev",
+			"Default" : "KeyPair-Sysco-ASOH_Prod",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"SubnetIdPrivateEastC" : {
-			"Description" : "Private subnet for confidential apps in us-east-1c CIDR: 10.168.138.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1c CIDR: 10.168.154.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-b61cbb9d",
+			"Default" : "subnet-1ec25b69",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPrivateEastD" : {
-			"Description" : "Private subnet for confidential apps in us-east-1d CIDR: 10.168.140.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1d CIDR: 10.168.156.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-ea138a9d",
+			"Default" : "subnet-db7bc582",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPrivateEastE" : {
-			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.158.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-2512501f",
+			"Default" : "subnet-a421629e",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPublicEastC" : {
-			"Description" : "Public subnet for the ELB in us-east-1c CIDR: 10.168.130.0/27",
+			"Description" : "Public subnet for the ELB in us-east-1c CIDR: 10.168.151.0/24",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-730a6c58",
+			"Default" : "subnet-1fc25b68",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Public Subnet."
 		},
 		"SubnetIdPublicEastD" : {
-			"Description" : "Public subnet for the ELB in us-east-1d CIDR: 10.168.145.32/28",
+			"Description" : "Public subnet for the ELB in us-east-1d CIDR: 10.168.152.0/24",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-24fed553",
+			"Default" : "subnet-dd7bc584",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Public Subnet."
@@ -180,12 +180,12 @@
 		"sgELBPrivate" : {
 			"Description" : "Private ELB Security Group",
 			"Type" : "String",
-			"Default" : "sg-00054a67"
+			"Default" : "sg-21a19d46"
 		},
 		"InstanceProfile" : {
 			"Description" : "Instance Profile Name",
 			"Type" : "String",
-			"Default" : "Sysco-ApplicationDefaultInstanceProfile-7L7ALUCW6DRW"
+			"Default" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP"
 		},
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
@@ -271,7 +271,7 @@
 					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 					
 					"# Set Server Environment\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/asoh.sh\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
 
 					"# Create app folder\n",
 					"cd /home/ec2-user\n",
@@ -374,7 +374,7 @@
 				"AccessLoggingPolicy": {
 					"EmitInterval": "60",
 					"Enabled": "True",
-					"S3BucketName": "sysco-logs",
+					"S3BucketName": "sysco-prod-log",
 					"S3BucketPrefix": "ELB"
 				},
 				"HealthCheck" : {
@@ -442,7 +442,7 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_qa_app" },
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/asoh_prod_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
