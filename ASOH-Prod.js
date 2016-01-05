@@ -17,7 +17,7 @@
 		"ApplicationId" : {
 			"Description" : "Application ID",
 			"Type" : "String",
-			"Default" : "APP-000000",
+			"Default" : "APP-001151",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -30,7 +30,7 @@
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
-		"CostCenter" : {
+		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
 			"Default" : "7000000347",
@@ -74,16 +74,14 @@
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
-		"SecurityClassification" : {
-			"Description" : "Security Classification for application",
+		"ProjectId" : {
+			"Description" : "Project ID",
 			"Type" : "String",
-			"Default" : "Confidential",
-			"AllowedValues" : [
-				"Very Sensitive",
-				"Confidential",
-				"Public"
-			],
-			"ConstraintDescription" : "Must be a valid Security Classification."
+			"Default" : "PRJ-TBD",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"SupportCriticality" : {
 			"Description" : "Importance for support response times.",
@@ -233,9 +231,9 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "System_Type", "Value" : "Web Server", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" }, "PropagateAtLaunch" : "true" }
 				]
@@ -390,9 +388,9 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "System_Type", "Value" : "Load Balancer" },
 					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
 				]
@@ -447,9 +445,9 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "System_Type", "Value" : "Networking" },
 					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
 				]
