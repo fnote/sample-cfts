@@ -17,7 +17,7 @@
 		"ApplicationId" : {
 			"Description" : "Application ID",
 			"Type" : "String",
-			"Default" : "APP-000000",
+			"Default" : "APP-001151",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -30,7 +30,7 @@
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
-		"CostCenter" : {
+		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
 			"Default" : "7000000347",
@@ -74,29 +74,26 @@
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
-		"SecurityClassification" : {
-			"Description" : "Security Classification for application",
+		"ProjectId" : {
+			"Description" : "Project ID",
 			"Type" : "String",
-			"Default" : "Confidential",
-			"AllowedValues" : [
-				"Very Sensitive",
-				"Confidential",
-				"Public"
-			],
-			"ConstraintDescription" : "Must be a valid Security Classification."
+			"Default" : "BT.001176",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
-		"SupportCriticality" : {
-			"Description" : "Importance for support response times.",
+		"AMIImageId" : {
+			"Description" : "RHEL-7.1_HVM_GA-20150225-x86_64-1-Hourly2-GP2 - ami-12663b7a",
 			"Type" : "String",
-			"Default" : "Low",
-			"AllowedValues" : [
-				"None",
-				"Low",
-				"Medium",
-				"High",
-				"Critical"
-			],
-			"ConstraintDescription" : "Must be a valid support type."
+			"Default" : "ami-12663b7a",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"AMIWebServer": {
+			"Description": "ASOH App AMI V1.00",
+			"Type": "String",
+			"Default": "ami-104c127a"
 		},
 		"InstanceType" : {
 			"Description" : "Application EC2 instance type",
@@ -194,13 +191,6 @@
 			"MinValue" : "10",
 			"MaxValue" : "1024"
 		},
-		"AMIImageId" : {
-			"Description" : "Name of an existing AMI ID to build from, example ami-1643ff72",
-			"Type" : "String",
-			"Default" : "ami-12663b7a",
-			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
-			"ConstraintDescription" : "Must be a valid AMI."
-		},
 		"SubnetAvailabilityZone" : {
 			"Description" : "Availability Zone for subnet",
 			"Type" : "String",
@@ -233,11 +223,10 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "System_Type", "Value" : "Web Server", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -255,7 +244,7 @@
 		"WebLaunchConfig" : {
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
-				"ImageId" : {"Ref" : "AMIImageId"},
+				"ImageId" : {"Ref" : "AMIWebServer"},
 				"InstanceType" : {"Ref" : "InstanceType"},
 				"KeyName" : { "Ref" : "KeyName" },
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
@@ -263,33 +252,10 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
-					"# Install wget\n",
-					"yum install -y wget\n",
+					"# Start ASOH Application\n",
+					"java -Dserver.port=8080 -jar /home/ec2-user/apps/asohws.18.jar > app.18.log &\n"
 					
-					"# Dwonload and Install java\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 					
-					"# Set Server Environment\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/asoh.sh\"\n",
-
-					"# Create app folder\n",
-					"cd /home/ec2-user\n",
-					"mkdir apps\n",
-					"chmod -c 777 apps\n",
-					
-					"# Install CodeDeploy\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
-
-					"# Install smbclient\n",
-					"yum install -y samba-client\n",
-
-					"# yum Updates\n",
-					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
@@ -390,11 +356,10 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
-					{ "Key" : "System_Type", "Value" : "Load Balancer" },
-					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		},
@@ -447,11 +412,10 @@
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
-					{ "Key" : "System_Type", "Value" : "Networking" },
-					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		}

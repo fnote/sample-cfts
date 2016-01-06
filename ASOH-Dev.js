@@ -355,7 +355,7 @@
 		"sgWeb" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "ASOH App SG Dev2",
+				"GroupDescription" : "ASOH App SG Dev",
 				"VpcId" : { "Ref" : "VPCID" },
 				"SecurityGroupIngress" : [ 
 				{
