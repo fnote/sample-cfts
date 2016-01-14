@@ -8,7 +8,7 @@
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default" : "ASOH Dev B",
+			"Default" : "ASOH Dev",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -17,20 +17,13 @@
 		"ApplicationId" : {
 			"Description" : "Application ID",
 			"Type" : "String",
-			"Default" : "APP-000000",
+			"Default" : "APP-001151",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
-		"Owner" : {
-			"Description" : "Name of application owner",
-			"Type" : "String",
-			"Default" : "James Owen",
-			"MinLength" : "1",
-			"MaxLength" : "255"
-		},
-		"CostCenter" : {
+		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
 			"Default" : "7000000347",
@@ -39,10 +32,29 @@
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
+		"AMIImageId" : {
+			"Description" : "RHEL-7.2_HVM_GA-20151112-x86_64-1-Hourly2-GP2 - ami-2051294a",
+			"Type" : "String",
+			"Default" : "ami-2051294a",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"AMIWebServer": {
+			"Description": "ASOH App AMI V1.00",
+			"Type": "String",
+			"Default": "ami-735a0419"
+		},
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
 			"Default" : "Samir Patel James Owen",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+		},
+		"Owner" : {
+			"Description" : "Name of application owner",
+			"Type" : "String",
+			"Default" : "James Owen",
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
@@ -74,29 +86,14 @@
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
-		"SecurityClassification" : {
-			"Description" : "Security Classification for application",
+		"ProjectId" : {
+			"Description" : "Project ID",
 			"Type" : "String",
-			"Default" : "Confidential",
-			"AllowedValues" : [
-				"Very Sensitive",
-				"Confidential",
-				"Public"
-			],
-			"ConstraintDescription" : "Must be a valid Security Classification."
-		},
-		"SupportCriticality" : {
-			"Description" : "Importance for support response times.",
-			"Type" : "String",
-			"Default" : "Low",
-			"AllowedValues" : [
-				"None",
-				"Low",
-				"Medium",
-				"High",
-				"Critical"
-			],
-			"ConstraintDescription" : "Must be a valid support type."
+			"Default" : "BT.001176",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"InstanceType" : {
 			"Description" : "Application EC2 instance type",
@@ -189,13 +186,6 @@
 			"MinValue" : "10",
 			"MaxValue" : "1024"
 		},
-		"AMIImageId" : {
-			"Description" : "Name of an existing AMI ID to build from, example ami-1643ff72",
-			"Type" : "String",
-			"Default" : "ami-12663b7a",
-			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
-			"ConstraintDescription" : "Must be a valid AMI."
-		},
 		"SubnetAvailabilityZone" : {
 			"Description" : "Availability Zone for subnet",
 			"Type" : "String",
@@ -222,16 +212,15 @@
 				"HealthCheckGracePeriod": "1200",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"Tags" : [ 
-					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group 2", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "System_Type", "Value" : "Web Server", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -265,7 +254,8 @@
 					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 					
 					"# Set Server Environment\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/asoh.sh\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=DEV' > /etc/profile.d/asoh.sh\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/asoh.sh\"\n",
 
 					"# Create app folder\n",
 					"cd /home/ec2-user\n",
@@ -281,6 +271,17 @@
 					"# Install smbclient\n",
 					"yum install -y samba-client\n",
 
+					"# Install tomcat\n",
+					"yum install -y tomcat.noarch\n",
+					"yum install -y tomcat-admin-webapps.noarch\n",
+					"yum install -y tomcat-el-2.2-api.noarch\n",
+					"yum install -y tomcat-jsp-2.2-api.noarch\n",
+					"yum install -y tomcat-lib.noarch\n",
+					"yum install -y tomcat-servlet-3.0-api.noarch\n",
+					"yum install -y tomcat-webapps.noarch\n",
+					"yum install -y tomcatjss.noarch\n",
+					"service tomcat start\n",
+					
 					"# yum Updates\n",
 					"yum update -y\n",
 					"# yum update -y aws-cfn-bootstrap\n"
@@ -394,16 +395,15 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_dev_app" },
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_qa_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "CostCenter" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Security_Classification", "Value" : { "Ref" : "SecurityClassification" } },
-					{ "Key" : "System_Type", "Value" : "Networking" },
-					{ "Key" : "Support_Criticality", "Value" : { "Ref" : "SupportCriticality" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		}

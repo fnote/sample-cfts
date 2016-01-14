@@ -23,13 +23,6 @@
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
-		"Owner" : {
-			"Description" : "Name of application owner",
-			"Type" : "String",
-			"Default" : "James Owen",
-			"MinLength" : "1",
-			"MaxLength" : "255"
-		},
 		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
@@ -39,10 +32,29 @@
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
+		"AMIImageId" : {
+			"Description" : "RHEL-7.1_HVM_GA-20150225-x86_64-1-Hourly2-GP2 - ami-12663b7a",
+			"Type" : "String",
+			"Default" : "ami-12663b7a",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"AMIWebServer": {
+			"Description": "ASOH App AMI Build 20",
+			"Type": "String",
+			"Default": "ami-b195ccdb"
+		},
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
 			"Default" : "Samir Patel James Owen",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+		},
+		"Owner" : {
+			"Description" : "Name of application owner",
+			"Type" : "String",
+			"Default" : "James Owen",
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
@@ -74,6 +86,25 @@
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
+		"DnsAppName" : {
+			"Description" : "Name of application",
+			"Type" : "String",
+			"Default" : "asoh",
+			"MinLength" : "1",
+			"MaxLength" : "16",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
+		},
+		"HostedZone" : {
+			"Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
+			"Type" : "String",
+			"Default" : "vpc.na.sysco.net",
+			"AllowedValues" : [
+				"vpc.na.sysco.net",
+				"cloud.sysco.com"
+			],
+			"ConstraintDescription" : "Must be a valid DNS Record in Route53."
+		},
 		"ProjectId" : {
 			"Description" : "Project ID",
 			"Type" : "String",
@@ -82,18 +113,6 @@
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
-		},
-		"AMIImageId" : {
-			"Description" : "RHEL-7.1_HVM_GA-20150225-x86_64-1-Hourly2-GP2 - ami-12663b7a",
-			"Type" : "String",
-			"Default" : "ami-12663b7a",
-			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
-			"ConstraintDescription" : "Must be a valid AMI."
-		},
-		"AMIWebServer": {
-			"Description": "ASOH App AMI V1.00",
-			"Type": "String",
-			"Default": "ami-735a0419"
 		},
 		"InstanceType" : {
 			"Description" : "Application EC2 instance type",
@@ -252,10 +271,11 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
+					"# Set Server Environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
+
 					"# Start ASOH Application\n",
-					"java -Dserver.port=8080 -jar /home/ec2-user/apps/asohws.18.jar > app.18.log &\n"
-					
-					
+					"java -Dserver.port=8080 -jar /home/ec2-user/apps/asohws.20.jar > app.20.log &\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
@@ -323,6 +343,17 @@
 				}],
 				"ComparisonOperator" : "LessThanThreshold"
 			}
+		},
+		"RegionRecord" : {
+				"Type" : "AWS::Route53::RecordSet",
+				"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "HostedZone"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : ["", [{ "Ref" : "DnsAppName" }, ".", {"Ref" : "HostedZone"}, "." ]] },
+				"Type" : "CNAME",
+				"TTL" : "900",
+				"ResourceRecords" : [ { "Fn::GetAtt" : [ "elbWeb", "DNSName" ] } ]
+				}	
 		},
 		"elbWeb" : {
 			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -424,5 +455,10 @@
 		"elbWebUrl" : {
 			"Description" : "URL for Web ELB",
 			"Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "elbWeb", "DNSName" ]}]] }
-		}	}
+		},
+		"Route53DNSName" : {
+			"Description" : "Route 53 URL",
+			"Value" : { "Fn::Join" : ["", ["http://", { "Ref" : "DnsAppName" }, ".", {"Ref" : "HostedZone"}, "." ]] }
+		}
+	}
 }

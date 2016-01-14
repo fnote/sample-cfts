@@ -23,13 +23,6 @@
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
-		"Owner" : {
-			"Description" : "Name of application owner",
-			"Type" : "String",
-			"Default" : "James Owen",
-			"MinLength" : "1",
-			"MaxLength" : "255"
-		},
 		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
@@ -39,10 +32,29 @@
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
+		"AMIImageId" : {
+			"Description" : "RHEL-7.2_HVM_GA-20151112-x86_64-1-Hourly2-GP2 - ami-2051294a",
+			"Type" : "String",
+			"Default" : "ami-2051294a",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"AMIWebServer": {
+			"Description": "ASOH App AMI v1.10",
+			"Type": "String",
+			"Default": "ami-e6277d8c"
+		},
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
 			"Default" : "Samir Patel James Owen",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+		},
+		"Owner" : {
+			"Description" : "Name of application owner",
+			"Type" : "String",
+			"Default" : "James Owen",
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
@@ -82,18 +94,6 @@
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
-		},
-		"AMIImageId" : {
-			"Description" : "RHEL-7.1_HVM_GA-20150225-x86_64-1-Hourly2-GP2 - ami-12663b7a",
-			"Type" : "String",
-			"Default" : "ami-12663b7a",
-			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
-			"ConstraintDescription" : "Must be a valid AMI."
-		},
-		"AMIWebServer": {
-			"Description": "ASOH App AMI V1.00",
-			"Type": "String",
-			"Default": "ami-104c127a"
 		},
 		"InstanceType" : {
 			"Description" : "Application EC2 instance type",
@@ -252,10 +252,12 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
-					"# Start ASOH Application\n",
-					"java -Dserver.port=8080 -jar /home/ec2-user/apps/asohws.18.jar > app.18.log &\n"
-					
-					
+					"# Set Server Environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
+
+					"# Start Tomcat\n",
+					"service tomcat start\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
