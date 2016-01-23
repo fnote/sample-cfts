@@ -39,11 +39,6 @@
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
-		"AMIWebServer": {
-			"Description": "ASOH App AMI v1.10",
-			"Type": "String",
-			"Default": "ami-e6277d8c"
-		},
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
@@ -214,7 +209,7 @@
 				"MaxSize" : "4",
 				"DesiredCapacity" : "2",
 				"HealthCheckType": "ELB",
-				"HealthCheckGracePeriod": "1200",
+				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"LoadBalancerNames" : [ { "Ref" : "elbWeb" } ],
 				"Tags" : [ 
@@ -244,7 +239,7 @@
 		"WebLaunchConfig" : {
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
-				"ImageId" : {"Ref" : "AMIWebServer"},
+				"ImageId" : {"Ref" : "AMIImageId"},
 				"InstanceType" : {"Ref" : "InstanceType"},
 				"KeyName" : { "Ref" : "KeyName" },
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
@@ -252,12 +247,50 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
+					"# Create settings folder\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					
 					"# Set Server Environment\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
+					
+					"# Install wget\n",
+					"yum install -y wget\n",
+					
+					"# Download and Install java\n",
+					"cd /tmp\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+					
+					"# Install smbclient\n",
+					"yum install -y samba-client\n",
 
-					"# Start Tomcat\n",
-					"service tomcat start\n"
+					"# Install tomcat\n",
+					"yum install -y tomcat.noarch\n",
+					"yum install -y tomcat-admin-webapps.noarch\n",
+					"yum install -y tomcat-el-2.2-api.noarch\n",
+					"yum install -y tomcat-jsp-2.2-api.noarch\n",
+					"yum install -y tomcat-lib.noarch\n",
+					"yum install -y tomcat-servlet-3.0-api.noarch\n",
+					"yum install -y tomcat-webapps.noarch\n",
+					"yum install -y tomcatjss.noarch\n",
+					"service tomcat start\n",
+					
+					"chown tomcat -R /settings\n",
+					"chgrp -R -c ec2-user /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"# yum Updates\n",
+					"yum update -y\n",
+					"# yum update -y aws-cfn-bootstrap\n",
+
+					"# Install CodeDeploy\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {

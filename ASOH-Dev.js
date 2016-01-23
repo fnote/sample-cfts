@@ -209,10 +209,10 @@
 				"MaxSize" : "2",
 				"DesiredCapacity" : "1",
 				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "1200",
+				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"Tags" : [ 
-					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group 2", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group Dev", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
@@ -246,28 +246,23 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
+					"# Create settings folder\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					
+					"# Set Server Environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
+					
 					"# Install wget\n",
 					"yum install -y wget\n",
 					
-					"# Dwonload and Install java\n",
+					"# Download and Install java\n",
+					"cd /tmp\n",
 					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
 					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 					
-					"# Set Server Environment\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=DEV' > /etc/profile.d/asoh.sh\"\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/asoh.sh\"\n",
-
-					"# Create app folder\n",
-					"cd /home/ec2-user\n",
-					"mkdir apps\n",
-					"chmod -c 777 apps\n",
-					
-					"# Install CodeDeploy\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
-
 					"# Install smbclient\n",
 					"yum install -y samba-client\n",
 
@@ -282,9 +277,19 @@
 					"yum install -y tomcatjss.noarch\n",
 					"service tomcat start\n",
 					
+					"chown tomcat -R /settings\n",
+					"chgrp -R -c ec2-user /settings\n",
+					"chmod -R -c 777 /settings\n",
+
 					"# yum Updates\n",
 					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n"
+					"# yum update -y aws-cfn-bootstrap\n",
+
+					"# Install CodeDeploy\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
