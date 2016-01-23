@@ -39,11 +39,6 @@
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
-		"AMIWebServer": {
-			"Description": "ASOH App AMI V1.00",
-			"Type": "String",
-			"Default": "ami-735a0419"
-		},
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
