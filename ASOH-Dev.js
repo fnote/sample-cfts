@@ -207,7 +207,7 @@
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"Tags" : [ 
-					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group Dev", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : "ASOH Autoscaling Group Dev", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
@@ -241,15 +241,6 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
 					
-					"# Create settings folder\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					
-					"# Set Server Environment\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
-					
 					"# Install wget\n",
 					"yum install -y wget\n",
 					
@@ -272,19 +263,30 @@
 					"yum install -y tomcatjss.noarch\n",
 					"service tomcat start\n",
 					
+					"# Set Server Environment\n",
+					"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
+					"# sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
+					
+					"# Set Tomcat Environment Variable\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
+
+					"# Create settings folder\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
 					"chown tomcat -R /settings\n",
 					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
-
-					"# yum Updates\n",
-					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n",
 
 					"# Install CodeDeploy\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
-					"./install auto\n"
+					"./install auto\n",
+
+					"# yum Updates\n",
+					"yum update -y\n",
+					"# yum update -y aws-cfn-bootstrap\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
