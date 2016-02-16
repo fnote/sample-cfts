@@ -114,12 +114,12 @@
 				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
 				    { "Key" : "Environment", "Value": "Development" },
 				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH" },
+				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
 				    { "Key" : "System_Type", "Value": "Application Server" },
 				    { "Key" : "Support_Criticality", "Value" : "Low" },
 		     	    { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Mike Tran" },
-			        { "Key" : "Approver", "Value" : "Mike Tran" }
+			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
+			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
 				]
 			}
 		},
@@ -146,12 +146,12 @@
 				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
 				    { "Key" : "Environment", "Value": "Development" },
 				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH" },
+				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
 				    { "Key" : "System_Type", "Value": "Application Server" },
 				    { "Key" : "Support_Criticality", "Value" : "Low" },
 			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Mike Tran" },
-			        { "Key" : "Approver", "Value" : "Mike Tran" }
+			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
+			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
 				]
 			}
 		},
@@ -227,8 +227,8 @@
 			        { "Key" : "Application_Name", "Value": "Cloud Pricing" },
 			        { "Key" : "Environment", "Value": "Quality" },
 			        { "Key" : "Security_Classification", "Value" : "Confidential" },
-			        { "Key" : "Cost_Center", "Value" : "USFBTECH" },
-			        { "Key" : "Owner", "Value" : "Mike Tran" }
+			        { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
+			        { "Key" : "Owner", "Value" : "Sheraz Khan" }
 			    ]
 			}
 		},
@@ -247,12 +247,12 @@
 				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
 				    { "Key" : "Environment", "Value": "Development" },
 				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH" },
+				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
 				    { "Key" : "System_Type", "Value": " Database" },
 				    { "Key" : "Support_Criticality", "Value" : "Low" },
 			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Mike Tran" },
-			        { "Key" : "Approver", "Value" : "Mike Tran" }
+			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
+			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
 				]
 			}
 		}
