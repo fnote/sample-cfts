@@ -1,10 +1,16 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09", 
-
-    "Description" : "Deployed via Cloud-Pricing-Dev-01_v1",
-
-    "Parameters" : {
-
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description" : "Deployed via Cloud-Pricing-Dev-01_v1",
+	"Parameters" : {
+		"PONumber" : {
+			"Description" : "PO Number for billing",
+			"Type" : "String",
+			"Default" : "7000000347",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
+		},
         "PvtSNc" : {
             "Description" : "Private subnet for confidential apps in us-east-1c",
             "Type" : "String",
@@ -20,15 +26,87 @@
             "Type" : "String",
 	        "Default" : "sg-fb6c6b9e"
         },
+		"NATaccessSG" : {
+			"Description" : "NAT access Security Group",
+			"Type" : "String",
+			"Default" : "sg-e151a186",
+			"ConstraintDescription" : "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG" : {
+			"Description" : "NAT access Security Group",
+			"Type" : "String",
+			"Default" : "sg-0f7fc468",
+			"ConstraintDescription" : "Must be a valid NAT Security Group."
+		},
         "CommonAMI" : {
             "Description" : "Name of and existing VPC",
             "Type" : "String",
 	        "Default" : "ami-eed68d86"
         },
+		"ODAMI" : {
+			"Description" : "AMI for OD servers",
+			"Type" : "String",
+			"Default" : "ami-a43d31cc"
+		},
 		"PemKey" : {
             "Description" : "Name of and existing EC2 KeyPair to enable SSH access to the instance",
             "Type" : "String",
 	        "Default" : "Sysco-KP-CP-NonProd"
+		},
+		"ApplicationName" : {
+			"Description" : "Name of application",
+			"Type" : "String",
+			"Default" : "Cloud Pricing Dev",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
+		},
+		"ApplicationId" : {
+			"Description" : "Application ID",
+			"Type" : "String",
+			"Default" : "APP-001151",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
+		},
+		"Approver" : {
+			"Description" : "Name of application approver",
+			"Type" : "String",
+			"Default" : " Sheraz Khan Karen Williams",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+		},
+		"Owner" : {
+			"Description" : "Name of application owner",
+			"Type" : "String",
+			"Default" : "Darcy Tomaszewski Samir Patel James Owen",
+			"MinLength" : "1",
+			"MaxLength" : "255"
+		},
+		"ProjectId" : {
+			"Description" : "Project ID",
+			"Type" : "String",
+			"Default" : "BT.001176",
+			"MinLength" : "1",
+			"MaxLength" : "255",
+			"AllowedPattern" : "[\\x20-\\x7E]*",
+			"ConstraintDescription" : "Must contain only ASCII characters."
+		},
+		"Environment" : {
+			"Description" : "Environment for application",
+			"Type" : "String",
+			"Default" : "Development",
+			"AllowedValues" : [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription" : "Must be a valid environment."
         }
     },
 
@@ -110,16 +188,15 @@
     				]]}
   				},
 				"Tags" : [ 
-				    { "Key" : "Name", "Value": "MS238CPWS04d" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Development" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-				    { "Key" : "System_Type", "Value": "Application Server" },
-				    { "Key" : "Support_Criticality", "Value" : "Low" },
-		     	    { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
-			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
+					{ "Key" : "Name", "Value": "MS238CPWS04d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "System_Type", "Value": "Application Server" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				    	{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 				]
 			}
 		},
@@ -142,16 +219,15 @@
     				]]}
   				},
 				"Tags" : [ 
-				    { "Key" : "Name", "Value": "MS238CPWS03d" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Development" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-				    { "Key" : "System_Type", "Value": "Application Server" },
-				    { "Key" : "Support_Criticality", "Value" : "Low" },
-			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
-			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
+					{ "Key" : "Name", "Value": "MS238CPWS03d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "System_Type", "Value": "Application Server" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				    	{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 				]
 			}
 		},
@@ -223,12 +299,11 @@
 				    "Timeout" : "5"
 				},
 				"Tags" : [ 
-			        { "Key" : "Name", "Value": "elb_ws01/vpc_sysco_nonprod_02/cp_dev" },
-			        { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-			        { "Key" : "Environment", "Value": "Quality" },
-			        { "Key" : "Security_Classification", "Value" : "Confidential" },
-			        { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" }
+					{ "Key" : "Name", "Value": "elb_ws01/vpc_sysco_nonprod_02/cp_dev" },
+					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } }
 			    ]
 			}
 		},
@@ -243,17 +318,128 @@
 				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }],
 				"SubnetId" : { "Ref" : "PvtSNc" },
 				"Tags" : [ 
-				    { "Key" : "Name", "Value": "MS238CPSQL04d" },
-				    { "Key" : "Application_Name", "Value": "Cloud Pricing" },
-				    { "Key" : "Environment", "Value": "Development" },
-				    { "Key" : "Security_Classification", "Value" : "Confidential" },
-				    { "Key" : "Cost_Center", "Value" : "USFBTECH PO 28843" },
-				    { "Key" : "System_Type", "Value": " Database" },
-				    { "Key" : "Support_Criticality", "Value" : "Low" },
-			        { "Key" : "Application_Id", "Value" : "APP-001151" },
-			        { "Key" : "Owner", "Value" : "Sheraz Khan" },
-			        { "Key" : "Approver", "Value" : "Sheraz Khan" }
+					{ "Key" : "Name", "Value": "MS238CPSQL04d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value": "Cloud Pricing" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "System_Type", "Value": " Database" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 				]
+			}
+		},
+		"MS238CPBTSQL01d": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"DisableApiTermination" : "false",
+				"ImageId" : {"Ref" : "ODAMI"},
+				"InstanceType" : "m3.large",
+				"KeyName" : {"Ref" : "PemKey"},
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"SubnetId" : { "Ref" : "PvtSNc" },
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "MS238CPBTSQL01d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "",
+					[
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpbtsql03q -Restart\n",
+						"</powershell>"
+					]]}}
+			}
+		},
+		"MS238CPBTSQL02d": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"DisableApiTermination" : "false",
+				"ImageId" : {"Ref" : "ODAMI"},
+				"InstanceType" : "m3.large",
+				"KeyName" : {"Ref" : "PemKey"},
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"SubnetId" : { "Ref" : "PvtSNc" },
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "MS238CPBTSQL02d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "",
+					[
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpbtsql03q -Restart\n",
+						"</powershell>"
+					]]}}
+			}
+		},
+		"MS238CPODSQL01d": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"DisableApiTermination" : "false",
+				"ImageId" : {"Ref" : "ODAMI"},
+				"InstanceType" : "m3.large",
+				"KeyName" : {"Ref" : "PemKey"},
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"SubnetId" : { "Ref" : "PvtSNc" },
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "MS238CPODSQL01d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "",
+					[
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql03q -Restart\n",
+						"</powershell>"
+					]]}}
+			}
+		},
+		"MS238CPODSQL02d": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"DisableApiTermination" : "false",
+				"ImageId" : {"Ref" : "ODAMI"},
+				"InstanceType" : "m3.large",
+				"KeyName" : {"Ref" : "PemKey"},
+				"SecurityGroupIds" : [{ "Ref" : "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"SubnetId" : { "Ref" : "PvtSNc" },
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "MS238CPODSQL02d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "",
+					[
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql03q -Restart\n",
+						"</powershell>"
+					]]}}
 			}
 		}
 		
