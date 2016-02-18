@@ -64,7 +64,7 @@
 		"qaWEBAMI" : {
 			"Description" : "Cloud Pricing Quality Web Servers Security Group",
 			"Type" : "String",
-			"Default" : "ami-2e724846"
+			"Default" : "ami-e428948c"
 		},
 		"ODAMI" : {
 			"Description" : "AMI for OD servers",
@@ -130,7 +130,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"DisableApiTermination" : "false",
-				"ImageId" : "ami-b68658de",
+				"ImageId" : {"Ref" : "qaWEBAMI"},
 				"InstanceType" : "m3.medium",
 				"KeyName" : {"Ref" : "PemKey"},
 				"SecurityGroupIds" : [{ "Ref" : "qaWEBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
@@ -159,7 +159,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"DisableApiTermination" : "false",
-				"ImageId" : "ami-b68658de",
+				"ImageId" : {"Ref" : "qaWEBAMI"},
 				"InstanceType" : "m3.medium",
 				"KeyName" : {"Ref" : "PemKey"},
 				"SecurityGroupIds" : [{ "Ref" : "qaWEBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
