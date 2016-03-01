@@ -1,14 +1,14 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
 
-	"Description" : "Deployed via ASOH-Dev.js that resides in Sysco source control",
+	"Description" : "Deployed via ASOH-Prod4.js that resides in Sysco source control",
 
 	"Parameters" : {
 
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default" : "ASOH Dev",
+			"Default" : "ASOHT Prod",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -56,7 +56,7 @@
 		"Environment" : {
 			"Description" : "Environment for application",
 			"Type" : "String",
-			"Default" : "Development",
+			"Default" : "Production",
 			"AllowedValues" : [
 				"Sandbox",
 				"Development",
@@ -70,7 +70,7 @@
 		"EnvironmentShort" : {
 			"Description" : "Environment initials",
 			"Type" : "String",
-			"Default" : "dev",
+			"Default" : "prod",
 			"AllowedValues" : [
 				"sbx",
 				"dev",
@@ -103,76 +103,81 @@
 			"ConstraintDescription" : "Must be a valid EC2 instance type."
 		},
 		"VPCID" : {
-			"Description" : "vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Description" : "vpc_sysco_prod_01 CIDR: 10.168.144.0/20",
 			"Type" : "AWS::EC2::VPC::Id",
-			"Default" : "vpc-ff88269a",
+			"Default" : "vpc-99e855fc",
 			"ConstraintDescription" : "Must be a valid VPC."
 		},
 		"NATaccessSG" : {
 			"Description" : "NAT access Security Group",
 			"Type" : "String",
-			"Default" : "sg-e151a186",
+			"Default" : "sg-1803c47f",
 			"ConstraintDescription" : "Must be a valid NAT Security Group."
 		},
 		"CheckMKSG" : {
 			"Description" : "NAT access Security Group",
 			"Type" : "String",
-			"Default" : "sg-0f7fc468",
+			"Default" : "sg-42dc8b26",
 			"ConstraintDescription" : "Must be a valid NAT Security Group."
 		},
 		"KeyName" : {
 			"Description" : "Name of an existing KeyPair",
 			"Type" : "AWS::EC2::KeyPair::KeyName",
-			"Default" : "ASOH_Dev",
+			"Default" : "KeyPair-Sysco-ASOH_Prod",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"SubnetIdPrivateEastC" : {
-			"Description" : "Private subnet for confidential apps in us-east-1c CIDR: 10.168.138.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1c CIDR: 10.168.154.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-b61cbb9d",
+			"Default" : "subnet-1ec25b69",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPrivateEastD" : {
-			"Description" : "Private subnet for confidential apps in us-east-1d CIDR: 10.168.140.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1d CIDR: 10.168.156.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-ea138a9d",
+			"Default" : "subnet-db7bc582",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPrivateEastE" : {
-			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.158.0/23",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-2512501f",
+			"Default" : "subnet-a421629e",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Private Subnet."
 		},
 		"SubnetIdPublicEastC" : {
-			"Description" : "Public subnet for the ELB in us-east-1c CIDR: 10.168.130.0/27",
+			"Description" : "Public subnet for the ELB in us-east-1c CIDR: 10.168.151.0/24",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-730a6c58",
+			"Default" : "subnet-1fc25b68",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Public Subnet."
 		},
 		"SubnetIdPublicEastD" : {
-			"Description" : "Public subnet for the ELB in us-east-1d CIDR: 10.168.145.32/28",
+			"Description" : "Public subnet for the ELB in us-east-1d CIDR: 10.168.152.0/24",
 			"Type" : "AWS::EC2::Subnet::Id",
-			"Default" : "subnet-24fed553",
+			"Default" : "subnet-dd7bc584",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"ConstraintDescription" : "Must be a valid Public Subnet."
 		},
+		"sgELBPrivate" : {
+			"Description" : "Private ELB Security Group",
+			"Type" : "String",
+			"Default" : "sg-21a19d46"
+		},
 		"InstanceProfile" : {
 			"Description" : "Instance Profile Name",
 			"Type" : "String",
-			"Default" : "Sysco-ApplicationDefaultInstanceProfile-7L7ALUCW6DRW"
+			"Default" : "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP"
 		},
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
@@ -195,80 +200,45 @@
 	},
 
 	"Resources" : {
-		"WebServerGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"lx238asohws01" : {
+			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c", "us-east-1d"],
-				"LaunchConfigurationName" : { "Ref" : "WebLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "1200",
-				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
-				"Tags" : [ 
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ASOH Autoscaling Group-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
-				]
-			},
-			"UpdatePolicy" : {
-				"AutoScalingScheduledAction" : {
-					"IgnoreUnmodifiedGroupSizeProperties" : "true"
-				},
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT5M",
-					"WaitOnResourceSignals" : "false"
-				}
-			}
-		},
-		"WebLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
+				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIImageId"},
-				"InstanceType" : {"Ref" : "InstanceType"},
+				"InstanceType" : {"Ref" : "InstanceType" },
 				"KeyName" : { "Ref" : "KeyName" },
-				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"SecurityGroupIds" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId" : {"Ref" : "SubnetIdPrivateEastD"},
+				"BlockDeviceMappings" : [ {
+					"DeviceName" : "/dev/sda1",
+					"Ebs" : {
+						"VolumeSize" : { "Ref" : "RootVolumeSize" },
+						"VolumeType" : "gp2"
+					}
+				} ],
+				"Tags" : [ 
+					{ "Key" : "Name", "Value" : "lx238asohws01" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -xe\n",
-
-					"# yum Updates\n",
+					"#!/bin/bash -v\n",
 					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n",
-					
-					"#Change Name of server to match new hostname\n",
-					"hostname lx238asohws01d.na.sysco.net\n",
-					"cat /dev/null > /etc/HOSTNAME\n",
-					"echo lx238asohws01d.na.sysco.net >> /etc/HOSTNAME","\n",
-					"cat /dev/null > /etc/hostname\n",
-					"echo lx238asohws01d.na.sysco.net >> /etc/hostname","\n",
-					"#Add Users to server\n",
-					"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
-					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
-					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
-					
-
-					"date > /home/ec2-user/starttime\n",
-					"# Install wget\n",
+					"yum update -y aws-cfn-bootstrap\n",
 					"yum install -y wget\n",
-					
+					"yum install -y curl\n",
+
 					"# Download and Install java\n",
 					"cd /tmp\n",
 					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
 					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
-					
-					"# Install smbclient\n",
-					"yum install -y samba-client\n",
 
 					"# Install tomcat\n",
 					"yum install -y tomcat.noarch\n",
@@ -280,108 +250,24 @@
 					"yum install -y tomcat-webapps.noarch\n",
 					"yum install -y tomcatjss.noarch\n",
 					"service tomcat start\n",
-					
-					"# Set Server Environment\n",
-					"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
-					"# sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
-					
-					"# Set Tomcat Environment Variable\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
 
-					"# Create settings folder\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"chown tomcat -R /settings\n",
-					"chgrp -R -c ec2-user /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"# Install CodeDeploy\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
-
-					"date > /home/ec2-user/stoptime\n",
-					"shutdown -r +15 \"Reboot in 15 minutes\"\n"
-				]]}},
-				"BlockDeviceMappings" : [
-				  {
-					"DeviceName" : "/dev/sda1",
-					"Ebs" : {
-						"VolumeSize" : { "Ref" : "RootVolumeSize" },
-						"VolumeType" : "gp2"
-					}
-				  }
-				]
-			}
-		},
-		"WebServerScaleUpPolicy" : {
-			"Type" : "AWS::AutoScaling::ScalingPolicy",
-			"Properties" : {
-				"AdjustmentType" : "ChangeInCapacity",
-				"AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
-				"Cooldown" : "300",
-				"ScalingAdjustment" : "1"
-			}
-		},
-		"WebServerScaleDownPolicy" : {
-			"Type" : "AWS::AutoScaling::ScalingPolicy",
-			"Properties" : {
-				"AdjustmentType" : "ChangeInCapacity",
-				"AutoScalingGroupName" : { "Ref" : "WebServerGroup" },
-				"Cooldown" : "300",
-				"ScalingAdjustment" : "-1"
-			}
-		},
-		"WebCPUAlarmHigh" : {
-			"Type" : "AWS::CloudWatch::Alarm",
-			"Properties" : {
-				"AlarmDescription" : "Scale-up if CPU > 90% for 10 minutes",
-				"MetricName" : "CPUUtilization",
-				"Namespace" : "AWS/EC2",
-				"Statistic" : "Average",
-				"Period" : "300",
-				"EvaluationPeriods" : "2",
-				"Threshold" : "90",
-				"AlarmActions" : [ { "Ref" : "WebServerScaleUpPolicy" } ],
-				"Dimensions" : [
-				{
-					"Name" : "AutoScalingGroupName",
-					"Value" : { "Ref" : "WebServerGroup" }
-				}],
-				"ComparisonOperator" : "GreaterThanThreshold"
-			}
-		},
-		"WebCPUAlarmLow" : {
-			"Type" : "AWS::CloudWatch::Alarm",
-			"Properties" : {
-				"AlarmDescription" : "Scale-down if CPU < 70% for 10 minutes",
-				"MetricName" : "CPUUtilization",
-				"Namespace" : "AWS/EC2",
-				"Statistic" : "Average",
-				"Period" : "300",
-				"EvaluationPeriods" : "2",
-				"Threshold" : "70",
-				"AlarmActions" : [ { "Ref" : "WebServerScaleDownPolicy" } ],
-				"Dimensions" : [
-				{
-					"Name" : "AutoScalingGroupName",
-					"Value" : { "Ref" : "WebServerGroup" }
-				}],
-				"ComparisonOperator" : "LessThanThreshold"
+					"shutdown -r +15 \"Reboot in 15 minutes\"\n",
+					"date > /home/ec2-user/stoptime\n"
+					]]}
+				}
 			}
 		},
 		"sgWeb" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
-				"GroupDescription" : "ASOH App SG Dev",
+				"GroupDescription" : "ASOHT App SG",
 				"VpcId" : { "Ref" : "VPCID" },
 				"SecurityGroupIngress" : [ 
 				{
 					"IpProtocol" : "tcp",
 					"FromPort" : "80",
-					"ToPort" : "80"
+					"ToPort" : "80",
+					"SourceSecurityGroupId" : {"Ref":"sgELBPrivate"}
 				},
 				{
 					"IpProtocol" : "tcp",
@@ -392,7 +278,8 @@
 				{  
 					"IpProtocol" : "tcp",
 					"FromPort" : "80",
-					"ToPort" : "8080"
+					"ToPort" : "8080",
+					"SourceSecurityGroupId" : {"Ref":"sgELBPrivate"}
 				},
 				{  
 					"IpProtocol" : "tcp",
@@ -414,7 +301,7 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/asoh_dev_app" },
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/asoht_prod_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },

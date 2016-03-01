@@ -33,9 +33,9 @@
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"AMIImageId" : {
-			"Description" : "RHEL-7.2_HVM_GA-20151112-x86_64-1-Hourly2-GP2 - ami-2051294a",
+			"Description" : "RHEL7-BaseAMI - ami-c3aee4a6",
 			"Type" : "String",
-			"Default" : "ami-2051294a",
+			"Default" : "ami-c3aee4a6",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -182,7 +182,7 @@
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
 			"Type" : "Number",
-			"Default" : "50",
+			"Default" : "60",
 			"MinValue" : "10",
 			"MaxValue" : "1024"
 		},
@@ -209,11 +209,11 @@
 				"MaxSize" : "4",
 				"DesiredCapacity" : "2",
 				"HealthCheckType": "ELB",
-				"HealthCheckGracePeriod": "300",
+				"HealthCheckGracePeriod": "1200",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"LoadBalancerNames" : [ { "Ref" : "elbWeb" } ],
 				"Tags" : [ 
-					{ "Key" : "Name", "Value" : "ASOH Autoscaling Group QA", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ASOH Autoscaling Group-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
@@ -246,7 +246,24 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -xe\n",
+
+					"# yum Updates\n",
+					"yum update -y\n",
+					"# yum update -y aws-cfn-bootstrap\n",
 					
+					"#Change Name of server to match new hostname\n",
+					"hostname lx238asohws01q.na.sysco.net\n",
+					"cat /dev/null > /etc/HOSTNAME\n",
+					"echo lx238asohws01q.na.sysco.net >> /etc/HOSTNAME","\n",
+					"cat /dev/null > /etc/hostname\n",
+					"echo lx238asohws01q.na.sysco.net >> /etc/hostname","\n",
+					"#Add Users to server\n",
+					"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
+					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+					"date > /home/ec2-user/starttime\n",
 					"# Install wget\n",
 					"yum install -y wget\n",
 					
@@ -290,9 +307,8 @@
 					"chmod +x ./install\n",
 					"./install auto\n",
 
-					"# yum Updates\n",
-					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n"
+					"date > /home/ec2-user/stoptime\n",
+					"shutdown -r +15 \"Reboot in 15 minutes\"\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
@@ -461,5 +477,6 @@
 		"elbWebUrl" : {
 			"Description" : "URL for Web ELB",
 			"Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "elbWeb", "DNSName" ]}]] }
-		}	}
+		}
+	}
 }

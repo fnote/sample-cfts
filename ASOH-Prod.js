@@ -33,9 +33,9 @@
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"AMIImageId" : {
-			"Description" : "RHEL-7.2_HVM_GA-20151112-x86_64-1-Hourly2-GP2 - ami-2051294a",
+			"Description" : "BASE-TOMCAT-RHEL7 - ami-270f334d",
 			"Type" : "String",
-			"Default" : "ami-2051294a",
+			"Default" : "ami-270f334d",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -201,7 +201,7 @@
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
 			"Type" : "Number",
-			"Default" : "50",
+			"Default" : "60",
 			"MinValue" : "10",
 			"MaxValue" : "1024"
 		},
@@ -228,11 +228,11 @@
 				"MaxSize" : "4",
 				"DesiredCapacity" : "2",
 				"HealthCheckType": "ELB",
-				"HealthCheckGracePeriod": "300",
+				"HealthCheckGracePeriod": "1200",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"LoadBalancerNames" : [ { "Ref" : "elbWeb" } ],
 				"Tags" : [ 
-					{ "Key" : "Name", "Value" : "ASOH Web Autoscaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ASOH Autoscaling Group-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
@@ -264,36 +264,34 @@
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -xe\n",
-					
-					"# Install wget\n",
-					"yum install -y wget\n",
-					
-					"# Download and Install java\n",
-					"cd /tmp\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
-					
+					"#!/bin/bash -v\n",
+					"yum update -y\n",
+					"yum update -y aws-cfn-bootstrap\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"#Change Name of server to match new hostname\n",
+					"hostname lx238asohws01.na.sysco.net\n",
+					"cat /dev/null > /etc/HOSTNAME\n",
+					"echo lx238asohws01.na.sysco.net >> /etc/HOSTNAME","\n",
+					"cat /dev/null > /etc/hostname\n",
+					"echo lx238asohws01.na.sysco.net >> /etc/hostname","\n",
+					"#Add Users to server\n",
+					"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
+					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
 					"# Install smbclient\n",
 					"yum install -y samba-client\n",
 
-					"# Install tomcat\n",
-					"yum install -y tomcat.noarch\n",
-					"yum install -y tomcat-admin-webapps.noarch\n",
-					"yum install -y tomcat-el-2.2-api.noarch\n",
-					"yum install -y tomcat-jsp-2.2-api.noarch\n",
-					"yum install -y tomcat-lib.noarch\n",
-					"yum install -y tomcat-servlet-3.0-api.noarch\n",
-					"yum install -y tomcat-webapps.noarch\n",
-					"yum install -y tomcatjss.noarch\n",
-					"service tomcat start\n",
-					
 					"# Set Server Environment\n",
 					"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
 					"# sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
 					
 					"# Set Tomcat Environment Variable\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"PROD\"' >> /etc/tomcat/tomcat.conf\"\n",
 
 					"# Create settings folder\n",
 					"mkdir /settings\n",
@@ -303,15 +301,16 @@
 					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
 
+					"# Start tomcat\n",
+					"service tomcat start\n",
+
 					"# Install CodeDeploy\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
 
-					"# yum Updates\n",
-					"yum update -y\n",
-					"# yum update -y aws-cfn-bootstrap\n"
+					"date > /home/ec2-user/stoptime\n"
 				]]}},
 				"BlockDeviceMappings" : [
 				  {
