@@ -79,14 +79,14 @@
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
-      "Default": " Sheraz Khan Karen Williams",
+      "Default": "Karen Williams",
       "MinLength": "1",
       "MaxLength": "255"
     },
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
-      "Default": "Darcy Tomaszewski Samir Patel James Owen",
+      "Default": "James Owen Mike Rowland",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -720,6 +720,44 @@
               [
                 "<powershell>\n",
                 "Rename-Computer -NewName ms238cpodsql09d -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "MS238CPUP01d": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+        "InstanceType": "c4.large",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "DevDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+          { "Key": "Name", "Value": "MS238CPUP01d" },
+          { "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+          { "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+          { "Key": "Environment", "Value": { "Ref": "Environment" } },
+          { "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+          { "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+          { "Key": "Owner", "Value": { "Ref": "Owner" } },
+          { "Key": "Approver", "Value": { "Ref": "Approver" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPUP01d -Restart\n",
                 "</powershell>"
               ]
             ]
