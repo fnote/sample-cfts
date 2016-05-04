@@ -54,9 +54,9 @@
       "Default": "ami-a43d31cc"
     },
     "AMIUpdateProc": {
-      "Description": "AMI for CP-UpdateProcessor-001 ami-053adb68",
+      "Description": "AMI for CP-UpdateProcessor-002 ami-ecc42481",
       "Type": "String",
-      "Default": "ami-053adb68"
+      "Default": "ami-ecc42481"
     },
     "PemKey": {
       "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
