@@ -732,7 +732,7 @@
         }
       }
     },
-    "MS238CPUP01d": {
+    "MS238CPUPSQL01d": {
 		"Type": "AWS::EC2::Instance",
 		"Properties": {
 		"AvailabilityZone": "us-east-1d",
@@ -747,7 +747,7 @@
 		],
 		"SubnetId": { "Ref": "PvtSNd" },
 		"Tags": [
-			{ "Key": "Name", "Value": "MS238CPUP01d" },
+			{ "Key": "Name", "Value": "MS238CPUPSQL01d" },
 			{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
 			{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
 			{ "Key": "Environment", "Value": { "Ref": "Environment" } },
@@ -762,7 +762,83 @@
               "",
               [
                 "<powershell>\n",
-                "Rename-Computer -NewName MS238CPUP01d -Restart\n",
+                "Rename-Computer -NewName MS238CPUPSQL01d -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "MS238CPIDE01": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+		"AvailabilityZone": "us-east-1d",
+		"DisableApiTermination": "false",
+		"ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "c4.xlarge",
+		"KeyName": { "Ref": "PemKey" },
+		"SecurityGroupIds": [
+			{ "Ref": "DevDBSG" },
+			{ "Ref": "NATaccessSG" },
+			{ "Ref": "CheckMKSG" }
+		],
+		"SubnetId": { "Ref": "PvtSNd" },
+		"Tags": [
+			{ "Key": "Name", "Value": "MS238CPIDE01d" },
+			{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+			{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+			{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+			{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+			{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+			{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+			{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+		],
+		"UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPIDE01 -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "MS238CPIDE02": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+		"AvailabilityZone": "us-east-1d",
+		"DisableApiTermination": "false",
+		"ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "c4.xlarge",
+		"KeyName": { "Ref": "PemKey" },
+		"SecurityGroupIds": [
+			{ "Ref": "DevDBSG" },
+			{ "Ref": "NATaccessSG" },
+			{ "Ref": "CheckMKSG" }
+		],
+		"SubnetId": { "Ref": "PvtSNd" },
+		"Tags": [
+			{ "Key": "Name", "Value": "MS238CPIDE02d" },
+			{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+			{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+			{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+			{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+			{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+			{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+			{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+		],
+		"UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPIDE02 -Restart\n",
                 "</powershell>"
               ]
             ]
