@@ -4,42 +4,47 @@
   "Description": "Deployed via Cloud-Pricing-Tuning-01_v2 - New Relic Pro Agent installed on web servers as well as jar files for JVM",
 
   "Parameters": {
-
+    "PONumber": {
+      "Description": "PO Number for billing",
+      "Type": "String",
+      "Default": "7000000347",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
     "PvtSNc": {
       "Description": "Private subnet for confidential apps in us-east-1c",
       "Type": "String",
       "Default": "subnet-b61cbb9d"
     },
-    "stgWEBSG": {
-      "Description": "Cloud Pricing Tuning Web Servers Security Group",
+    "PvtSNd": {
+      "Description": "Private subnet for confidential apps in us-east-1d",
       "Type": "String",
-      "Default": "sg-14d48271"
+      "Default": "subnet-ea138a9d"
+    },
+    "PvtSNe": {
+	  "Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+      "Type": "String",
+      "Default": "subnet-2512501f",
+      "MinLength" : "1",
+      "MaxLength" : "255",
+      "ConstraintDescription" : "Must be a valid Private Subnet."
     },
     "VPCID": {
       "Description": "Name of and existing VPC",
       "Type": "String",
       "Default": "vpc-ff88269a"
     },
-    "PemKey": {
-      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+    "stgWEBSG": {
+      "Description": "Cloud Pricing Tuning Web Servers Security Group",
       "Type": "String",
-      "Default": "Sysco-KP-CP-NonProd"
-    },
-    "Private2c": {
-      "Description": "Non-Production Confidential us-east-1c subnet",
-      "Type": "String",
-      "Default": "subnet-b61cbb9d"
-    },
-    "Private2d": {
-      "Description": "Non-Production Confidential us-east-1d subnet",
-      "Type": "String",
-      "Default": "subnet-ea138a9d"
+      "Default": "sg-14d48271"
     },
     "TuningDBSG": {
       "Description": "DB security group",
       "Type": "String",
-      "Default": "sg-ecd48289",
-      "ConstraintDescription": "Must be a valid NAT Security Group."
+      "Default": "sg-ecd48289"
     },
     "NATaccessSG": {
       "Description": "NAT access Security Group",
@@ -63,10 +68,30 @@
       "Type": "String",
       "Default": "ami-a43d31cc"
     },
+    "AMIUpdateProc": {
+      "Description": "AMI for CP-UpdateProcessor-002 ami-ecc42481",
+      "Type": "String",
+      "Default": "ami-ecc42481"
+    },
+    "AMIMCP": {
+      "Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
+      "Type" : "String",
+      "Default" : "ami-6da7ab07"
+    },
+    "PemKey": {
+      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "String",
+      "Default": "Sysco-KP-CP-NonProd"
+    },
+    "InstanceProfileMCP": {
+      "Description" : "Instance Profile Name for MCP",
+      "Type" : "String",
+      "Default" : "Application-CP-ServerRole"
+    },
     "ApplicationName": {
       "Description": "Name of application",
       "Type": "String",
-      "Default": "Cloud Pricing Dev",
+      "Default": "Cloud Pricing",
       "MinLength": "1",
       "MaxLength": "255",
       "AllowedPattern": "[\\x20-\\x7E]*",
@@ -84,14 +109,14 @@
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
-      "Default": " Sheraz Khan Karen Williams",
+      "Default": "Karen Williams",
       "MinLength": "1",
       "MaxLength": "255"
     },
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
-      "Default": "Darcy Tomaszewski Samir Patel James Owen",
+      "Default": "James Owen Mike Rowland",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -117,15 +142,6 @@
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
-    },
-    "PONumber": {
-      "Description": "PO Number for billing",
-      "Type": "String",
-      "Default": "7000000347",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
     }
 
   },
@@ -193,21 +209,16 @@
         "SecurityGroups": [ { "Ref": "stgWEBSG" } ],
         "InstanceType": "m3.large",
         "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<script>\n",
-                "cfn-init.exe -v -s ",
-                { "Ref": "AWS::StackName" },
-                " -r WebLaunchConfig",
-                " --region ",
-                { "Ref": "AWS::Region" },
-                "\n",
-                "</script>"
-              ]
-            ]
-          }
+          "Fn::Base64": { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ",
+				{ "Ref": "AWS::StackName" },
+				" -r WebLaunchConfig",
+				" --region ",
+				{ "Ref": "AWS::Region" },
+				"\n",
+				"</script>"
+		  ]]}
         }
       }
     },
@@ -220,61 +231,19 @@
         "MaxSize": "6",
         "DesiredCapacity": "2",
         "VPCZoneIdentifier": [
-          { "Ref": "Private2c" },
-          { "Ref": "Private2d" }
+          { "Ref": "PvtSNc" },
+          { "Ref": "PvtSNd" }
         ],
         "LoadBalancerNames": [ { "Ref": "stgCPELB" } ],
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "CP Tuning Web Autoscale Instance",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": "Cloud Pricing",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Environment",
-            "Value": "Tuning",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Security_Classification",
-            "Value": "Confidential",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Cost_Center",
-            "Value": "USFBTECH PO 28843",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Support_Criticality",
-            "Value": "High",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Application_Id",
-            "Value": "APP-001151",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "System_Type",
-            "Value": "Application Server",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Owner",
-            "Value": "Sheraz Khan",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "Approver",
-            "Value": "Sheraz Khan",
-            "PropagateAtLaunch": "true"
-          }
+          { "Key" : "Name", "Value" : "CP Tuning Web Autoscale Instance", "PropagateAtLaunch" : "true" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" }, "PropagateAtLaunch" : "true" },
+		  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" }, "PropagateAtLaunch" : "true" },
+		  { "Key" : "Environment", "Value" :  { "Ref": "Environment" }, "PropagateAtLaunch" : "true" },
+		  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" }, "PropagateAtLaunch" : "true" }
         ]
       }
     },
@@ -308,10 +277,7 @@
         "Threshold": "90",
         "AlarmActions": [ { "Ref": "WebServerScaleUpPolicy" } ],
         "Dimensions": [
-          {
-            "Name": "AutoScalingGroupName",
-            "Value": { "Ref": "WebServerGroup" }
-          }
+          { "Name": "AutoScalingGroupName", "Value": { "Ref": "WebServerGroup" } }
         ],
         "ComparisonOperator": "GreaterThanThreshold"
       }
@@ -343,37 +309,17 @@
         "ImageId": "ami-470a422d",
         "IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-7L7ALUCW6DRW",
         "InstanceType": "m4.xlarge",
-        "SecurityGroupIds": [ "sg-e151a186", "sg-ecd48289", "sg-0f7fc468" ],
+        "SecurityGroupIds": [ "sg-e151a186", "sg-ecd48289", "sg-0f7fc468", "sg-fb6c6b9e" ],
         "SubnetId": "subnet-b91a1291",
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPBRFS01s"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": "Cloud Pricing Non Prod"
-          },
-          {
-            "Key": "Environment",
-            "Value": "Tuning"
-          },
-          {
-            "Key": "Cost_Center",
-            "Value": "7000000347"
-          },
-          {
-            "Key": "Application_Id",
-            "Value": "APP-001151"
-          },
-          {
-            "Key": "Owner",
-            "Value": "Darcy Tomaszewski, Samir Patel, James Owen"
-          },
-          {
-            "Key": "Approver",
-            "Value": "Sheraz Khan"
-          }
+          { "Key": "Name", "Value": "MS238CPBRFS01s" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -398,47 +344,23 @@
         "AvailabilityZone": "us-east-1c",
         "DisableApiTermination": "false",
         "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
+		"InstanceType": "m3.xlarge",
         "KeyName": { "Ref": "PemKey" },
         "SecurityGroupIds": [
           { "Ref": "TuningDBSG" },
           { "Ref": "NATaccessSG" },
           { "Ref": "CheckMKSG" }
         ],
-        "SubnetId": { "Ref": "Private2c" },
+        "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "ms238cpbtsql08s"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
+          { "Key": "Name", "Value": "ms238cpbtsql08s" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -460,47 +382,23 @@
         "AvailabilityZone": "us-east-1d",
         "DisableApiTermination": "false",
         "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
+		"InstanceType": "m3.xlarge",
         "KeyName": { "Ref": "PemKey" },
         "SecurityGroupIds": [
           { "Ref": "TuningDBSG" },
           { "Ref": "NATaccessSG" },
           { "Ref": "CheckMKSG" }
         ],
-        "SubnetId": { "Ref": "Private2d" },
+        "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "ms238cpbtsql09s"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
+          { "Key": "Name", "Value": "ms238cpbtsql09s" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -522,47 +420,23 @@
         "AvailabilityZone": "us-east-1c",
         "DisableApiTermination": "false",
         "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
+		"InstanceType": "m3.xlarge",
         "KeyName": { "Ref": "PemKey" },
         "SecurityGroupIds": [
           { "Ref": "TuningDBSG" },
           { "Ref": "NATaccessSG" },
           { "Ref": "CheckMKSG" }
         ],
-        "SubnetId": { "Ref": "Private2c" },
+        "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "ms238cpodsql08s"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
+          { "Key" : "Name", "Value": "ms238cpodsql08s" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -584,47 +458,23 @@
         "AvailabilityZone": "us-east-1d",
         "DisableApiTermination": "false",
         "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
+		"InstanceType": "m3.xlarge",
         "KeyName": { "Ref": "PemKey" },
         "SecurityGroupIds": [
           { "Ref": "TuningDBSG" },
           { "Ref": "NATaccessSG" },
           { "Ref": "CheckMKSG" }
         ],
-        "SubnetId": { "Ref": "Private2d" },
+        "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "ms238cpodsql09s"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
+          { "Key": "Name", "Value": "ms238cpodsql09s" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -640,12 +490,260 @@
         }
       }
     },
+	"lx238cpmcp01s" : {
+		"Type" : "AWS::EC2::Instance",
+		"Properties" : {
+			"AvailabilityZone" : "us-east-1d",
+			"ImageId" : {"Ref" : "AMIMCP"},
+			"InstanceType" : "t2.medium",
+			"KeyName" : { "Ref" : "PemKey" },
+			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "lx238cpmcp01s" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+
+				"#Change Name of server to match new hostname\n",
+				"hostname lx238cpmcp01s.na.sysco.net\n",
+				"cat /dev/null > /etc/HOSTNAME\n",
+				"echo lx238cpmcp01s.na.sysco.net >> /etc/HOSTNAME","\n",
+				"cat /dev/null > /etc/hostname\n",
+				"echo lx238cpmcp01s.na.sysco.net >> /etc/hostname","\n",
+				"#Add Users to server\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+				"# Download and Install java\n",
+				"cd /tmp\n",
+				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+				"# Install tomcat\n",
+				"yum install -y tomcat.noarch\n",
+				"yum install -y tomcat-admin-webapps.noarch\n",
+				"yum install -y tomcat-el-2.2-api.noarch\n",
+				"yum install -y tomcat-jsp-2.2-api.noarch\n",
+				"yum install -y tomcat-lib.noarch\n",
+				"yum install -y tomcat-servlet-3.0-api.noarch\n",
+				"yum install -y tomcat-webapps.noarch\n",
+				"yum install -y tomcatjss.noarch\n",
+				"service tomcat start\n",
+
+				"# Install smbclient\n",
+				"yum install -y samba-client\n",
+
+				"# Set Server Environment\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=STG' > /etc/profile.d/cpmcp.sh\"\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=STG' >> /etc/profile.d/cpmcp.sh\"\n",
+				
+				"# Set Tomcat Environment Variable\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"STG\"' >> /etc/tomcat/tomcat.conf\"\n",
+
+				"# Create settings folder\n",
+				"mkdir /settings\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/logs\n",
+				"chown tomcat -R /settings\n",
+				"chgrp -R -c ec2-user /settings\n",
+				"chmod -R -c 777 /settings\n",
+
+				"# Re-Start tomcat\n",
+				"service tomcat restart\n",
+
+				"# Install CodeDeploy\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"# Install Splunk Universal Forwarder\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=s390x&platform=linux&version=6.4.0&product=universalforwarder&filename=splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+				"./bin/splunk restart\n",
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll 10.168.138.162:8000 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server 10.168.138.162:8001 -auth admin:changeme\n",
+
+				"date > /home/ec2-user/stoptime\n"
+				]]}
+			}
+		}
+	},
+	"sgMCP" : {
+		"Type" : "AWS::EC2::SecurityGroup",
+		"Properties" : {
+			"GroupDescription" : "CP MCP App SG",
+			"VpcId" : { "Ref" : "VPCID" },
+			"SecurityGroupIngress" : [ 
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{  
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "8080",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "22",
+				"ToPort" : "22",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{  
+				"IpProtocol" : "icmp",
+				"FromPort" : "-1",
+				"ToPort" : "-1",
+				"CidrIp" : "10.0.0.0/8"
+			}
+			],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "sg/vpc_sysco_stg_01/cpmcp_stg_app" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
+	"CPDBClusterSTG" : {
+		"Type" : "AWS::RDS::DBCluster",
+		"DeletionPolicy" : "Snapshot",
+		"Properties" : {
+			"DatabaseName" : "CPDB_Common01s",
+			"Engine" : "aurora",
+			"MasterUsername" : "svccp000",
+			"MasterUserPassword" : "Cpaws000",
+			"Port" : "3306",
+			"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+			"DBSubnetGroupName" : { "Ref" : "snDB" }
+		}
+	},
+	"DBCommonPrimary" : {
+		"Type" : "AWS::RDS::DBInstance",
+		"Properties" :  {
+			"DBInstanceIdentifier" : "CPDBMasterSTG",
+			"AllowMajorVersionUpgrade" : "true",
+			"DBClusterIdentifier" : { "Ref" : "CPDBClusterSTG" },
+			"DBInstanceClass" : "db.r3.xlarge",
+			"Engine" : "aurora",
+			"DBSubnetGroupName" : { "Ref" : "snDB" },
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
+	"DBCommonReplica01" : {
+		"Type" : "AWS::RDS::DBInstance",
+		"DependsOn": "DBCommonPrimary",
+		"Properties" :  {
+			"DBInstanceIdentifier" : "CPDBReplica01STG",
+			"AllowMajorVersionUpgrade" : "true",
+			"DBClusterIdentifier" : { "Ref" : "CPDBClusterSTG" },
+			"DBInstanceClass" : "db.r3.xlarge",
+			"Engine" : "aurora",
+			"DBSubnetGroupName" : { "Ref" : "snDB" },
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Replica01" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
+	"sgDB" : {
+		"Type" : "AWS::EC2::SecurityGroup",
+		"Properties" : {
+			"GroupDescription" : "Cloud Pricing DB SG",
+			"VpcId" : { "Ref" : "VPCID" },
+			"SecurityGroupIngress" : [
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "3306",
+				"ToPort" : "3306",
+				"CidrIp" : "10.0.0.0/8"
+			}],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "sg/vpc_sysco_stg_01/swmsmobile_stg_db" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
+	"snDB" : {
+		"Type" : "AWS::RDS::DBSubnetGroup",
+		"Properties" : {
+			"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+			"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
     "stgCPELB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "Subnets": [
-          { "Ref": "Private2c" },
-          { "Ref": "Private2d" }
+          { "Ref": "PvtSNc" },
+          { "Ref": "PvtSNd" }
         ],
         "LoadBalancerName": "elb-ws01-cp-tuning",
         "Scheme": "internal",
@@ -671,33 +769,22 @@
           "Timeout": "5"
         },
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "elb_ws01/vpc_sysco_nonprod_02/cp_web_tuning"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": "Cloud Pricing"
-          },
-          {
-            "Key": "Environment",
-            "Value": "Tuning"
-          },
-          {
-            "Key": "Security_Classification",
-            "Value": "Confidential"
-          },
-          {
-            "Key": "Cost_Center",
-            "Value": "USFBTECH PO 28843"
-          },
-          {
-            "Key": "Owner",
-            "Value": "Sheraz Khan"
-          }
+          { "Key": "Name", "Value": "elb_ws01/vpc_sysco_nonprod_02/cp_web_tuning" },
+          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ]
       }
     }
-
+  },
+  "Outputs" : {
+	"dbUrl" : {
+		"Description" : "Endpoint for Common DB",
+		"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPDBClusterSTG", "Endpoint.Address" ]}]] }
+	}
   }
 }

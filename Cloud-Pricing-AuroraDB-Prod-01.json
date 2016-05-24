@@ -1,0 +1,198 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-AuroraDB-Prod-01.js",
+	"Parameters": {
+		"VPCID": {
+			"Description": "Name of and existing VPC",
+			"Type": "String",
+			"Default": "vpc-99e855fc"
+		},
+    "PvtSNc": {
+      "Description": "Private subnet for confidential apps in us-east-1c",
+      "Type": "String",
+      "Default": "subnet-1ec25b69"
+    },
+    "PvtSNd": {
+      "Description": "Private subnet for confidential apps in us-east-1d",
+      "Type": "String",
+      "Default": "subnet-db7bc582"
+    },
+    "PvtSNe": {
+      "Description": "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+      "Type": "String",
+      "Default": "subnet-a421629e",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "ConstraintDescription": "Must be a valid Private Subnet."
+    },
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Karen Williams",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "James Owen Mike Rowland",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Production",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Tuning",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"CPDBClusterPROD" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPDB_Common01",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" }
+			}
+		},
+		"DBCommonPrimary" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPDBMasterPROD",
+				"AllowMajorVersionUpgrade" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
+				"DBInstanceClass" : "db.r3.xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"DBCommonReplica01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DBCommonPrimary",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPDBReplica01PROD",
+				"AllowMajorVersionUpgrade" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
+				"DBInstanceClass" : "db.r3.xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Replica01" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"sgDB" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Cloud Pricing DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3306",
+					"ToPort" : "3306",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/swmsmobile_prod_db" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"snDB" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+				"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		}
+	},
+	"Outputs" : {
+		"dbUrl" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPDBClusterPROD", "Endpoint.Address" ]}]] }
+		}
+	}
+}

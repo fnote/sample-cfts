@@ -177,7 +177,7 @@
 		"InstanceProfile" : {
 			"Description" : "Instance Profile Name",
 			"Type" : "String",
-			"Default" : "Sysco-ApplicationDefaultInstanceProfile-7L7ALUCW6DRW"
+			"Default" : "Application-CP-ServerRole"
 		},
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
