@@ -219,84 +219,6 @@
         }
       }
     },
-    "MS238CPWS04d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "true",
-        "ImageId": "ami-9ae1cdf2",
-        "InstanceType": "m3.medium",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [ { "Ref": "DevWEBSG" } ],
-        "SubnetId": { "Ref": "PvtSNc" },
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<script>\n",
-                "cfn-init.exe -v -s ",
-                { "Ref": "AWS::StackName" },
-                " -r WebLaunchConfig",
-                " --region ",
-                { "Ref": "AWS::Region" },
-                "\n",
-                "</script>"
-              ]
-            ]
-          }
-        },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPWS04d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
-        ]
-      }
-    },
-    "MS238CPWS03d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "true",
-        "ImageId": "ami-9ae1cdf2",
-        "InstanceType": "m3.medium",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [ { "Ref": "DevWEBSG" } ],
-        "SubnetId": { "Ref": "PvtSNc" },
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<script>\n",
-                "cfn-init.exe -v -s ",
-                { "Ref": "AWS::StackName" },
-                " -r WebLaunchConfig",
-                " --region ",
-                { "Ref": "AWS::Region" },
-                "\n",
-                "</script>"
-              ]
-            ]
-          }
-        },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPWS03d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
-        ]
-      }
-    },
 	"MS238CPWS05d": {
 		"Type": "AWS::EC2::Instance",
 		"Properties": {
@@ -371,6 +293,43 @@
 			]
 		}
 	},
+	"MS238CPAC02d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "true",
+			"ImageId": "ami-fad83697",
+			"InstanceType": "m3.medium",
+			"KeyName": { "Ref": "PemKey" },
+			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"UserData": {
+				"Fn::Base64": { "Fn::Join" : [ "", [
+					"<powershell>\n",
+					"Rename-Computer -NewName MS238CPAC02d -Restart\n",
+					"</powershell>",
+					"<script>\n",
+					"cfn-init.exe -v -s ",
+					{ "Ref": "AWS::StackName" },
+					" -r WebLaunchConfig",
+					" --region ",
+					{ "Ref": "AWS::Region" },
+					"\n",
+					"</script>>\n"
+				]]}
+			},
+			"Tags": [
+				{ "Key" : "Name", "Value" : "MS238CPAC02d" },
+				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			]
+		}
+	},
     "DevWEBSG": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -423,8 +382,6 @@
         "Scheme": "internal",
         "CrossZone": "true",
         "Instances": [
-          { "Ref": "MS238CPWS03d" },
-          { "Ref": "MS238CPWS04d" },
           { "Ref": "MS238CPWS05d" },
           { "Ref": "MS238CPWS06d" }
         ],
