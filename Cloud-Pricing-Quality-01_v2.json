@@ -2,24 +2,6 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Deployed via Cloud-Pricing-Quality-01_v2.json - Web, OD, Batch servers included.",
   "Parameters": {
-    "ApplicationName": {
-      "Description": "Name of application",
-      "Type": "String",
-      "Default": "Cloud Pricing QA-UOM",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
-    "ApplicationId": {
-      "Description": "Application ID",
-      "Type": "String",
-      "Default": "APP-001151",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
     "PONumber": {
       "Description": "PO Number for billing",
       "Type": "String",
@@ -29,15 +11,28 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
+    "Private2c": {
+      "Description": "Non-Production Confidential us-east-1c subnet",
+      "Type": "String",
+      "Default": "subnet-b61cbb9d"
+    },
+    "Private2d": {
+      "Description": "Non-Production Confidential us-east-1d subnet",
+      "Type": "String",
+      "Default": "subnet-ea138a9d"
+    },
+    "Private2e": {
+	  "Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+      "Type": "String",
+      "Default": "subnet-2512501f",
+      "MinLength" : "1",
+      "MaxLength" : "255",
+      "ConstraintDescription" : "Must be a valid Private Subnet."
+    },
     "VPCID": {
       "Description": "Name of and existing VPC",
       "Type": "String",
       "Default": "vpc-ff88269a"
-    },
-    "QualityDBSG": {
-      "Description": "Cloud Pricing Quality DB Servers Security Group",
-      "Type": "String",
-      "Default": "sg-ecd48289"
     },
     "qaWEBSG": {
       "Description": "Cloud Pricing Quality Web Servers Security Group",
@@ -66,15 +61,48 @@
       "Type": "String",
       "Default": "ami-a43d31cc"
     },
-    "Private2c": {
-      "Description": "Non-Production Confidential us-east-1c subnet",
+    "AMIUpdateProc": {
+      "Description": "AMI for CP-UpdateProcessor-002 ami-ecc42481",
       "Type": "String",
-      "Default": "subnet-b61cbb9d"
+      "Default": "ami-ecc42481"
     },
-    "Private2d": {
-      "Description": "Non-Production Confidential us-east-1d subnet",
+    "AMIMCP": {
+      "Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
+      "Type" : "String",
+      "Default" : "ami-6da7ab07"
+    },
+    "PemKey": {
+      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
       "Type": "String",
-      "Default": "subnet-ea138a9d"
+      "Default": "Sysco-KP-CP-NonProd"
+    },
+    "InstanceProfileMCP": {
+      "Description" : "Instance Profile Name for MCP",
+      "Type" : "String",
+      "Default" : "Application-CP-ServerRole"
+    },
+    "ApplicationName": {
+      "Description": "Name of application",
+      "Type": "String",
+      "Default": "Cloud Pricing QA-UOM",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "ApplicationId": {
+      "Description": "Application ID",
+      "Type": "String",
+      "Default": "APP-001151",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "QualityDBSG": {
+      "Description": "Cloud Pricing Quality DB Servers Security Group",
+      "Type": "String",
+      "Default": "sg-ecd48289"
     },
     "PubSNc": {
       "Description": "Public subnet for the ELB in us-east-1c CIDR: 10.168.130.0/27",
@@ -86,22 +114,17 @@
       "Type": "String",
       "Default": "subnet-24fed553"
     },
-    "PemKey": {
-      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "String",
-      "Default": "Sysco-KP-CP-NonProd"
-    },
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
-      "Default": " Sheraz Khan Karen Williams",
+      "Default": "Karen Williams",
       "MinLength": "1",
       "MaxLength": "255"
     },
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
-      "Default": "Darcy Tomaszewski Samir Patel James Owen",
+      "Default": "James Owen Mike Rowland",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -144,40 +167,16 @@
           { "Ref": "CheckMKSG" }
         ],
         "SubnetId": { "Ref": "Private2c" },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPWS03q"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
-        ],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPWS03q" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -206,40 +205,16 @@
           { "Ref": "CheckMKSG" }
         ],
         "SubnetId": { "Ref": "Private2c" },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPAC03q"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
-        ],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPAC03q" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -268,40 +243,16 @@
           { "Ref": "CheckMKSG" }
         ],
         "SubnetId": { "Ref": "Private2c" },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPSQL03q"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
-        ],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPSQL03q" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -330,40 +281,16 @@
           { "Ref": "CheckMKSG" }
         ],
         "SubnetId": { "Ref": "Private2c" },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPBTSQL03q"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
-        ],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPBTSQL03q" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -392,40 +319,16 @@
           { "Ref": "CheckMKSG" }
         ],
         "SubnetId": { "Ref": "Private2c" },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "MS238CPODSQL03q"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          }
-        ],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL03q" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -440,6 +343,159 @@
         }
       }
     },
+	"lx238cpmcp01q" : {
+		"Type" : "AWS::EC2::Instance",
+		"Properties" : {
+			"AvailabilityZone" : "us-east-1d",
+			"ImageId" : {"Ref" : "AMIMCP"},
+			"InstanceType" : "t2.medium",
+			"KeyName" : { "Ref" : "PemKey" },
+			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SubnetId": { "Ref": "Private2d" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "lx238cpmcp01q" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+
+				"#Change Name of server to match new hostname\n",
+				"hostname lx238cpmcp01q.na.sysco.net\n",
+				"cat /dev/null > /etc/HOSTNAME\n",
+				"echo lx238cpmcp01q.na.sysco.net >> /etc/HOSTNAME","\n",
+				"cat /dev/null > /etc/hostname\n",
+				"echo lx238cpmcp01q.na.sysco.net >> /etc/hostname","\n",
+				"#Add Users to server\n",
+				"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+				"# Download and Install java\n",
+				"cd /tmp\n",
+				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+				"# Install tomcat\n",
+				"yum install -y tomcat.noarch\n",
+				"yum install -y tomcat-admin-webapps.noarch\n",
+				"yum install -y tomcat-el-2.2-api.noarch\n",
+				"yum install -y tomcat-jsp-2.2-api.noarch\n",
+				"yum install -y tomcat-lib.noarch\n",
+				"yum install -y tomcat-servlet-3.0-api.noarch\n",
+				"yum install -y tomcat-webapps.noarch\n",
+				"yum install -y tomcatjss.noarch\n",
+				"service tomcat start\n",
+
+				"# Install smbclient\n",
+				"yum install -y samba-client\n",
+
+				"# Set Server Environment\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=DEV' > /etc/profile.d/cpmcp.sh\"\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/cpmcp.sh\"\n",
+				
+				"# Set Tomcat Environment Variable\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
+
+				"# Create settings folder\n",
+				"mkdir /settings\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/logs\n",
+				"chown tomcat -R /settings\n",
+				"chgrp -R -c ec2-user /settings\n",
+				"chmod -R -c 777 /settings\n",
+
+				"# Re-Start tomcat\n",
+				"service tomcat restart\n",
+
+				"# Install CodeDeploy\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"# Install Splunk Universal Forwarder\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=s390x&platform=linux&version=6.4.0&product=universalforwarder&filename=splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+				"./bin/splunk restart\n",
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll 10.168.138.162:8000 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server 10.168.138.162:8001 -auth admin:changeme\n",
+
+				"date > /home/ec2-user/stoptime\n"
+				]]}
+			}
+		}
+	},
+	"sgMCP" : {
+		"Type" : "AWS::EC2::SecurityGroup",
+		"Properties" : {
+			"GroupDescription" : "CP MCP App SG",
+			"VpcId" : { "Ref" : "VPCID" },
+			"SecurityGroupIngress" : [ 
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{  
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "8080",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "22",
+				"ToPort" : "22",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{  
+				"IpProtocol" : "icmp",
+				"FromPort" : "-1",
+				"ToPort" : "-1",
+				"CidrIp" : "10.0.0.0/8"
+			}
+			],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "sg/vpc_sysco_qa_01/cpmcp_qa_app" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			]
+		}
+	},
     "publicELBsg": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -477,44 +533,16 @@
             "CidrIp": "96.228.152.146/32"
           }
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "sg/vpc_sysco_nonprod_02/cloudpricing_qa_public_elb"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": { "Ref": "ApplicationName" }
-          },
-          {
-            "Key": "Application_Id",
-            "Value": { "Ref": "ApplicationId" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          },
-          {
-            "Key": "Approver",
-            "Value": { "Ref": "Approver" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "Project_ID",
-            "Value": { "Ref": "ProjectId" }
-          },
-          {
-            "Key": "System_Type",
-            "Value": "Network"
-          }
-        ]
+		"Tags": [
+			{ "Key" : "Name", "Value": "sg/vpc_sysco_nonprod_02/cloudpricing_qa_public_elb" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		]
       }
     },
     "privateCPELB": {
@@ -550,28 +578,16 @@
           "Interval": "30",
           "Timeout": "5"
         },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "elb_priv_ws01/vpc_sysco_nonprod_02/cp_qa"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": "Cloud Pricing"
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          }
-        ]
+		"Tags": [
+			{ "Key" : "Name", "Value": "elb_priv_ws01/vpc_sysco_nonprod_02/cp_qa" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		]
       }
     },
     "publicCPELB": {
@@ -605,28 +621,16 @@
           "Interval": "30",
           "Timeout": "5"
         },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "elb_priv_ws01/vpc_sysco_nonprod_02/cp_qa"
-          },
-          {
-            "Key": "Application_Name",
-            "Value": "Cloud Pricing"
-          },
-          {
-            "Key": "Environment",
-            "Value": { "Ref": "Environment" }
-          },
-          {
-            "Key": "PO_Number",
-            "Value": { "Ref": "PONumber" }
-          },
-          {
-            "Key": "Owner",
-            "Value": { "Ref": "Owner" }
-          }
-        ]
+		"Tags": [
+			{ "Key" : "Name", "Value": "elb_priv_ws01/vpc_sysco_nonprod_02/cp_qa" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+		]
       }
     }
   }
