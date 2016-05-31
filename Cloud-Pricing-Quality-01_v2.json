@@ -79,7 +79,7 @@
     "InstanceProfileMCP": {
       "Description" : "Instance Profile Name for MCP",
       "Type" : "String",
-      "Default" : "Application-CP-ServerRole"
+      "Default" : "Application-CP-MCPServerRole"
     },
     "ApplicationName": {
       "Description": "Name of application",
@@ -148,6 +148,18 @@
         "Staging",
         "Training",
         "Production"
+      ],
+      "ConstraintDescription": "Must be a valid environment."
+    },
+    "EnvironmentShort": {
+      "Description": "Environment for application",
+      "Type": "String",
+      "Default": "QA",
+      "AllowedValues": [
+        "DEV",
+        "QA",
+        "STG",
+        "PROD"
       ],
       "ConstraintDescription": "Must be a valid environment."
     }
@@ -376,6 +388,9 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01q.na.sysco.net\n",
@@ -409,11 +424,14 @@
 				"yum install -y samba-client\n",
 
 				"# Set Server Environment\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=DEV' > /etc/profile.d/cpmcp.sh\"\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "' > /etc/profile.d/cpmcp.sh\"\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/cpmcp.sh\"\n",
 				
 				"# Set Tomcat Environment Variable\n",
-				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"' >> /etc/tomcat/tomcat.conf\"\n",
+
+				"# Set Tomcat Set JVM Heap\n",
+				"sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"' >> /etc/tomcat/tomcat.conf\"\n",
 
 				"# Create settings folder\n",
 				"mkdir /settings\n",
