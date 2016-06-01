@@ -40,13 +40,13 @@
       "Default": "sg-fb6c6b9e"
     },
     "NATaccessSG": {
-      "Description": "NAT access Security Group",
+      "Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
       "Type": "String",
       "Default": "sg-e151a186",
       "ConstraintDescription": "Must be a valid NAT Security Group."
     },
     "CheckMKSG": {
-      "Description": "NAT access Security Group",
+      "Description": "CheckMK Security Group",
       "Type": "String",
       "Default": "sg-0f7fc468",
       "ConstraintDescription": "Must be a valid NAT Security Group."
@@ -79,7 +79,7 @@
     "InstanceProfileMCP": {
       "Description" : "Instance Profile Name for MCP",
       "Type" : "String",
-      "Default" : "Application-CP-ServerRole"
+      "Default" : "Application-CP-MCPServerRole"
     },
     "ApplicationName": {
       "Description": "Name of application",
@@ -135,9 +135,20 @@
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
+    },
+    "EnvironmentShort": {
+      "Description": "Environment for application",
+      "Type": "String",
+      "Default": "DEV",
+      "AllowedValues": [
+        "DEV",
+        "QA",
+        "STG",
+        "PROD"
+      ],
+      "ConstraintDescription": "Must be a valid environment."
     }
   },
-
   "Resources": {
     "WebLaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -356,10 +367,14 @@
           }
         ],
         "Tags": [
-          {
-            "Key": "Name",
-            "Value": "sg/vpc_sysco_nonprod_02/cp_web_dev"
-          }
+			{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/cp_web_dev" },
+			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ]
       }
     },
@@ -409,11 +424,11 @@
 			{ "Key" : "Name", "Value" : "elb_ws01/vpc_sysco_nonprod_02/cp_dev" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ]
       }
     },
@@ -431,11 +446,11 @@
 			{ "Key" : "Name", "Value" : "MS238CPSQL04d" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ]
       }
     },
@@ -457,11 +472,11 @@
 			{ "Key" : "Name", "Value" : "ms238cpbtsql08d" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -495,11 +510,11 @@
 			{ "Key" : "Name", "Value" : "ms238cpbtsql09d" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -533,11 +548,11 @@
 			{ "Key" : "Name", "Value" : "ms238cpodsql08d" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -571,11 +586,11 @@
 			{ "Key" : "Name", "Value" : "ms238cpodsql09d" },
 			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -612,11 +627,11 @@
 				{ "Key" : "Name", "Value" : "lx238cpmcp01d" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
@@ -624,6 +639,9 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01d.na.sysco.net\n",
@@ -643,25 +661,26 @@
 				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 
 				"# Install tomcat\n",
-				"yum install -y tomcat.noarch\n",
-				"yum install -y tomcat-admin-webapps.noarch\n",
-				"yum install -y tomcat-el-2.2-api.noarch\n",
-				"yum install -y tomcat-jsp-2.2-api.noarch\n",
-				"yum install -y tomcat-lib.noarch\n",
-				"yum install -y tomcat-servlet-3.0-api.noarch\n",
-				"yum install -y tomcat-webapps.noarch\n",
-				"yum install -y tomcatjss.noarch\n",
-				"service tomcat start\n",
+				"groupadd tomcat\n",
+				"useradd tomcat -b /app -g tomcat -e \"\"\n",
+				"cd /tmp\n",
+				"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
+				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
+				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
+				"/usr/local/tomcat7/startup.sh\n",
 
 				"# Install smbclient\n",
 				"yum install -y samba-client\n",
 
 				"# Set Server Environment\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=DEV' > /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "' > /etc/profile.d/cpmcp.sh\"\n",
 				"# sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/cpmcp.sh\"\n",
 				
 				"# Set Tomcat Environment Variable\n",
-				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"DEV\"' >> /etc/tomcat/tomcat.conf\"\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"' >> /usr/local/tomcat7/conf/tomcat.conf\"\n",
+
+				"# Set Tomcat Set JVM Heap\n",
+				"sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"' >> /usr/local/tomcat7/conf/tomcat.conf\"\n",
 
 				"# Create settings folder\n",
 				"mkdir /settings\n",
@@ -672,7 +691,23 @@
 				"chmod -R -c 777 /settings\n",
 
 				"# Re-Start tomcat\n",
-				"service tomcat restart\n",
+				"/usr/local/tomcat7/shutdown.sh\n",
+				"/usr/local/tomcat7/startup.sh\n",
+
+				"# Install Splunk Universal Forwarder\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+				"./bin/splunk restart\n",
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8000 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com:9997 -auth admin:changeme\n",
 
 				"# Install CodeDeploy\n",
 				"yum install ruby -y\n",
@@ -680,21 +715,6 @@
 				"chmod +x ./install\n",
 				"./install auto\n",
 				
-				"# Install Splunk Universal Forwarder\n",
-				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=s390x&platform=linux&version=6.4.0&product=universalforwarder&filename=splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
-				"cd /opt/splunkforwarder\n",
-				"./bin/splunk start --accept-license\n",
-				"./bin/splunk enable boot-start\n",
-				"./bin/splunk restart\n",
-				"# Configure to run as a deployment client\n",
-				"./bin/splunk set deploy-poll 10.168.138.162:8000 -auth admin:changeme\n",
-
-				"# Configure forwarder to send logs to Splunk Indexer\n",
-				"./bin/splunk add forward-server 10.168.138.162:8001 -auth admin:changeme\n",
-
 				"date > /home/ec2-user/stoptime\n"
 				]]}
 			}
@@ -735,12 +755,12 @@
 				{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/cpmcp_dev_app" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
 		}
 	},
@@ -770,11 +790,11 @@
 				{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
 		}
 	},
@@ -794,11 +814,11 @@
 				{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/swmsmobile_dev_db" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
 		}
 	},
@@ -811,11 +831,11 @@
 				{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
 		}
 	},
