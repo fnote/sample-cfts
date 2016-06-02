@@ -667,7 +667,7 @@
 				"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
 				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
 				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
-				"/usr/local/tomcat7/startup.sh\n",
+				"/usr/local/tomcat7/bin/startup.sh\n",
 
 				"# Install smbclient\n",
 				"yum install -y samba-client\n",
@@ -691,8 +691,8 @@
 				"chmod -R -c 777 /settings\n",
 
 				"# Re-Start tomcat\n",
-				"/usr/local/tomcat7/shutdown.sh\n",
-				"/usr/local/tomcat7/startup.sh\n",
+				"/usr/local/tomcat7/bin/shutdown.sh\n",
+				"/usr/local/tomcat7/bin/startup.sh\n",
 
 				"# Install Splunk Universal Forwarder\n",
 				"cd /tmp\n",
