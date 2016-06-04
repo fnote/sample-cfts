@@ -142,10 +142,20 @@
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
+    },
+    "EnvironmentShort": {
+      "Description": "Environment for application",
+      "Type": "String",
+      "Default": "STG",
+      "AllowedValues": [
+        "DEV",
+        "QA",
+        "STG",
+        "PROD"
+      ],
+      "ConstraintDescription": "Must be a valid environment."
     }
-
   },
-
   "Resources": {
     "WebLaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -523,6 +533,9 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01s.na.sysco.net\n",
@@ -541,25 +554,28 @@
 				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 
 				"# Install tomcat\n",
-				"yum install -y tomcat.noarch\n",
-				"yum install -y tomcat-admin-webapps.noarch\n",
-				"yum install -y tomcat-el-2.2-api.noarch\n",
-				"yum install -y tomcat-jsp-2.2-api.noarch\n",
-				"yum install -y tomcat-lib.noarch\n",
-				"yum install -y tomcat-servlet-3.0-api.noarch\n",
-				"yum install -y tomcat-webapps.noarch\n",
-				"yum install -y tomcatjss.noarch\n",
-				"service tomcat start\n",
+				"groupadd tomcat\n",
+				"useradd tomcat -b /app -g tomcat -e \"\"\n",
+				"cd /tmp\n",
+				"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
+				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
+				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
 
 				"# Install smbclient\n",
 				"yum install -y samba-client\n",
 
 				"# Set Server Environment\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=STG' > /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
 				"# sh -c \"echo 'export SERVER_ENVIRONMENT=STG' >> /etc/profile.d/cpmcp.sh\"\n",
 				
 				"# Set Tomcat Environment Variable\n",
-				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"STG\"' >> /etc/tomcat/tomcat.conf\"\n",
+				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+				"# Set Tomcat Set JVM Heap\n",
+				"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+				"# Start Tomcat\n",
+				"# /usr/local/tomcat7/bin/startup.sh\n",
 
 				"# Create settings folder\n",
 				"mkdir /settings\n",
@@ -569,8 +585,21 @@
 				"chgrp -R -c ec2-user /settings\n",
 				"chmod -R -c 777 /settings\n",
 
-				"# Re-Start tomcat\n",
-				"service tomcat restart\n",
+				"# Install Splunk Universal Forwarder\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+				"./bin/splunk restart\n",
+
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8000 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com:9997 -auth admin:changeme\n",
 
 				"# Install CodeDeploy\n",
 				"yum install ruby -y\n",
@@ -578,21 +607,6 @@
 				"chmod +x ./install\n",
 				"./install auto\n",
 				
-				"# Install Splunk Universal Forwarder\n",
-				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=s390x&platform=linux&version=6.4.0&product=universalforwarder&filename=splunkforwarder-6.4.0-f2c836328108-linux-s390x.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.0-f2c836328108-linux-2.6-x86_64.rpm\n",
-				"cd /opt/splunkforwarder\n",
-				"./bin/splunk start --accept-license\n",
-				"./bin/splunk enable boot-start\n",
-				"./bin/splunk restart\n",
-				"# Configure to run as a deployment client\n",
-				"./bin/splunk set deploy-poll 10.168.138.162:8000 -auth admin:changeme\n",
-
-				"# Configure forwarder to send logs to Splunk Indexer\n",
-				"./bin/splunk add forward-server 10.168.138.162:8001 -auth admin:changeme\n",
-
 				"date > /home/ec2-user/stoptime\n"
 				]]}
 			}
