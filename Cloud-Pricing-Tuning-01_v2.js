@@ -86,7 +86,7 @@
     "InstanceProfileMCP": {
       "Description" : "Instance Profile Name for MCP",
       "Type" : "String",
-      "Default" : "Application-CP-ServerRole"
+      "Default" : "Application-CP-MCPServerRole"
     },
     "ApplicationName": {
       "Description": "Name of application",
