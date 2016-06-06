@@ -156,6 +156,7 @@
       "ConstraintDescription": "Must be a valid environment."
     }
   },
+
   "Resources": {
     "WebLaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -533,6 +534,7 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
+				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
@@ -596,10 +598,11 @@
 				"./bin/splunk restart\n",
 
 				"# Configure to run as a deployment client\n",
-				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8000 -auth admin:changeme\n",
+				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8089 -auth admin:changeme\n",
 
 				"# Configure forwarder to send logs to Splunk Indexer\n",
 				"./bin/splunk add forward-server internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
 
 				"# Install CodeDeploy\n",
 				"yum install ruby -y\n",

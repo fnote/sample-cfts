@@ -639,6 +639,7 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
+				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
@@ -650,6 +651,7 @@
 				"cat /dev/null > /etc/hostname\n",
 				"echo lx238cpmcp01d.na.sysco.net >> /etc/hostname","\n",
 				"#Add Users to server\n",
+				"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
 				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
@@ -699,13 +701,13 @@
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
-				"./bin/splunk restart\n",
 
 				"# Configure to run as a deployment client\n",
-				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8000 -auth admin:changeme\n",
+				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8089 -auth admin:changeme\n",
 
 				"# Configure forwarder to send logs to Splunk Indexer\n",
 				"./bin/splunk add forward-server internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
 
 				"# Install CodeDeploy\n",
 				"yum install ruby -y\n",
