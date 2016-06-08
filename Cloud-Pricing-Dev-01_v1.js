@@ -235,7 +235,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1c",
 			"DisableApiTermination": "true",
-			"ImageId": "ami-2379964e",
+			"ImageId": "ami-483bc325",
 			"InstanceType": "m3.medium",
 			"KeyName": { "Ref": "PemKey" },
 			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
@@ -272,7 +272,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "true",
-			"ImageId": "ami-2379964e",
+			"ImageId": "ami-483bc325",
 			"InstanceType": "m3.medium",
 			"KeyName": { "Ref": "PemKey" },
 			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
