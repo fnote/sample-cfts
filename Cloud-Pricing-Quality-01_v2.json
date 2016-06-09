@@ -170,7 +170,7 @@
       "Properties": {
         "AvailabilityZone": "us-east-1c",
         "DisableApiTermination": "false",
-        "ImageId": { "Ref": "qaWEBAMI" },
+        "ImageId": "ami-483bc325",
         "InstanceType": "m3.medium",
         "KeyName": { "Ref": "PemKey" },
         "SecurityGroupIds": [
