@@ -2386,7 +2386,7 @@
 					"Ref": "CPELB"
 				}],
 				"Tags": [
-				  { "Key" : "Name", "Value": "CP Web Autoscale Instance" },
+				  { "Key" : "Name", "Value": "CP Web Autoscale Instance", "PropagateAtLaunch": "true" },
 				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" }, "PropagateAtLaunch": "true" },
 				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" }, "PropagateAtLaunch": "true" },
 				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" }, "PropagateAtLaunch": "true" },
