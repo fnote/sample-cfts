@@ -52,15 +52,31 @@
 			"Type": "String",
 			"Default": "ami-1bb1c57e"
 		},
+		"AMIMCP": {
+			"Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
+			"Type" : "String",
+			"Default" : "ami-6da7ab07"
+		},
 		"NATCLIENT": {
 			"Description": "nat client sg",
 			"Type": "String",
 			"Default": "sg-1803c47f"
 		},
+		"CheckMKSG": {
+			"Description": "NAT access Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
 		"VPCID": {
 			"Description": "Name of and existing VPC",
 			"Type": "String",
 			"Default": "vpc-99e855fc"
+		},
+		"InstanceProfileMCP": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-CP-MCPServerRole"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -123,6 +139,18 @@
 				"Tuning",
 				"Training",
 				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "PROD",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		}
@@ -1500,6 +1528,179 @@
 					}
 				}
 
+			}
+		},
+		"lx238cpmcp01" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1d",
+				"ImageId" : {"Ref" : "AMIMCP"},
+				"InstanceType" : "t2.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"SubnetId": { "Ref": "Conf1d" },
+				"BlockDeviceMappings" : [ {
+					"DeviceName" : "/dev/sda1",
+					"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+					}
+				} ],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpmcp01" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+					"yum install -y sysstat\n",
+
+					"# Install smbclient\n",
+					"yum install -y samba-client\n",
+
+					"####################################\n",
+					"# Change Name of server to match new hostname\n",
+					"####################################\n",
+					"hostname lx238cpmcp01.na.sysco.net\n",
+					"echo lx238cpmcp01.na.sysco.net > /etc/hostname","\n",
+
+					"####################################\n",
+					"# Add Users to server\n",
+					"####################################\n",
+					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+					"####################################\n",
+					"# Download and Install java\n",
+					"####################################\n",
+					"# Download and Install java\n",
+					"cd /tmp\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+					"####################################\n",
+					"# Install tomcat\n",
+					"####################################\n",
+					"groupadd tomcat\n",
+					"useradd tomcat -b /app -g tomcat -e \"\"\n",
+					"cd /tmp\n",
+					"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
+					"tar xzf apache-tomcat-7.0.68.tar.gz\n",
+					"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
+
+					"# Set Server Environment\n",
+					"#-----------------------------------\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpws.sh\n",
+
+					"# Set Tomcat Environment Variable\n",
+					"#-----------------------------------\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+					"# Set Tomcat Set JVM Heap\n",
+					"#-----------------------------------\n",
+					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"chown tomcat -R /settings\n",
+					"chgrp -R -c ec2-user /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"####################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"#-----------------------------------\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+					"# Poll deployment server every 15 minutes\n",
+					"echo phoneHomeIntervalInSecs = 900 >> /opt/splunkforwarder/etc/system/local/deploymentclient.conf\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"#-----------------------------------\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"sgMCP" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP MCP App SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{  
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{  
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpws_prod_app" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
 			}
 		},
 		"ms238cpbtsql03": {
