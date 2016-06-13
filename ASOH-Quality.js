@@ -70,14 +70,14 @@
 		"EnvironmentShort" : {
 			"Description" : "Environment initials",
 			"Type" : "String",
-			"Default" : "qa",
+			"Default" : "QA",
 			"AllowedValues" : [
-				"sbx",
-				"dev",
-				"qa",
-				"stg",
-				"trn",
-				"prod"
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"TRN",
+				"PROD"
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
