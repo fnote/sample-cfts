@@ -33,9 +33,9 @@
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"AMIImageId" : {
-			"Description" : "BASE-TOMCAT-RHEL7 - ami-270f334d",
+			"Description" : "20160323-RHEL-7-2-BASE - ami-27a3af4d",
 			"Type" : "String",
-			"Default" : "ami-270f334d",
+			"Default" : "ami-27a3af4d",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -70,14 +70,14 @@
 		"EnvironmentShort" : {
 			"Description" : "Environment initials",
 			"Type" : "String",
-			"Default" : "prod",
+			"Default" : "PROD",
 			"AllowedValues" : [
-				"sbx",
-				"dev",
-				"qa",
-				"stg",
-				"trn",
-				"prod"
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"TRN",
+				"PROD"
 			],
 			"ConstraintDescription" : "Must be a valid environment."
 		},
@@ -201,7 +201,7 @@
 		"RootVolumeSize" : {
 			"Description" : "Size (GB) of root EBS volume for application instance",
 			"Type" : "Number",
-			"Default" : "60",
+			"Default" : "65",
 			"MinValue" : "10",
 			"MaxValue" : "1024"
 		},
@@ -228,7 +228,7 @@
 				"MaxSize" : "4",
 				"DesiredCapacity" : "2",
 				"HealthCheckType": "ELB",
-				"HealthCheckGracePeriod": "1200",
+				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastD" }],
 				"LoadBalancerNames" : [ { "Ref" : "elbWeb" } ],
 				"Tags" : [ 
@@ -263,37 +263,77 @@
 				"KeyName" : { "Ref" : "KeyName" },
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"BlockDeviceMappings" : [ {
+					"DeviceName" : "/dev/sda1",
+					"Ebs" : {
+						"VolumeSize" : { "Ref" : "RootVolumeSize" },
+						"VolumeType" : "gp2"
+					}
+				} ],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"yum update -y\n",
-					"yum update -y aws-cfn-bootstrap\n",
+				"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
-
-					"#Change Name of server to match new hostname\n",
-					"hostname lx238asohws01.na.sysco.net\n",
-					"cat /dev/null > /etc/HOSTNAME\n",
-					"echo lx238asohws01.na.sysco.net >> /etc/HOSTNAME","\n",
-					"cat /dev/null > /etc/hostname\n",
-					"echo lx238asohws01.na.sysco.net >> /etc/hostname","\n",
-					"#Add Users to server\n",
-					"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
-					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
-					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+					"yum install -y sysstat\n",
 
 					"# Install smbclient\n",
 					"yum install -y samba-client\n",
 
-					"# Set Server Environment\n",
-					"# sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=PROD' > /etc/profile.d/asoh.sh\"\n",
-					"# sh -c \"echo 'export SERVER_ENVIRONMENT=PROD' >> /etc/profile.d/asoh.sh\"\n",
-					
-					"# Set Tomcat Environment Variable\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"PROD\"' >> /etc/tomcat/tomcat.conf\"\n",
+					"##############################################\n",
+					"#Change hostname to include ip address\n",
+					"##############################################\n",
+					"sh -c \"hostname  asoh-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\"\n",
+					"sh -c \"echo  asoh-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\" > /etc/hostname\n",
 
+					"####################################\n",
+					"#Add Users to server\n",
+					"####################################\n",
+					"useradd -m -g aix -c \"James Owen, Cloud Pricing Team\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Cloud Pricing Team\" mrow7849\n",
+					"useradd -m -g aix -c \"Fernando Nieto, Cloud Pricing Team\" fnie6886\n",
+					"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+					"####################################\n",
+					"# Download and Install java\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+					"####################################\n",
+					"# Install tomcat\n",
+					"####################################\n",
+					"groupadd tomcat\n",
+					"useradd tomcat -b /app -g tomcat -e \"\"\n",
+					"cd /tmp\n",
+					"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
+					"tar xzf apache-tomcat-7.0.68.tar.gz\n",
+					"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
+					
+					"# Set Server Environment\n",
+					"#-----------------------------------\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/asoh.sh\n",
+
+					"# Set Tomcat Environment Variable\n",
+					"#-----------------------------------\n",
+					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+					"# Set Tomcat Set JVM Heap\n",
+					"#-----------------------------------\n",
+					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+
+					"# Start Tomcat\n",
+					"#-----------------------------------\n",
+					"# /usr/local/tomcat7/bin/startup.sh\n",
+
+					"####################################\n",
 					"# Create settings folder\n",
+					"####################################\n",
 					"mkdir /settings\n",
 					"mkdir /settings/properties\n",
 					"mkdir /settings/logs\n",
@@ -301,26 +341,47 @@
 					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
 
-					"# Start tomcat\n",
-					"service tomcat start\n",
+					"####################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
 
+					"# Configure inputs.conf with local IP (For autoscaling groups)\n",
+					"#-----------------------------------\n",
+					"# echo [default] > /opt/splunkforwarder/etc/system/local/inputs.conf\n",
+					"# sh -c \"echo 'host='cptest_$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)\" >> /opt/splunkforwarder/etc/system/local/inputs.conf\n",
+					"# echo [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> /opt/splunkforwarder/etc/system/local/inputs.conf\n",
+					"# echo disabled = 0 >> /opt/splunkforwarder/etc/system/local/inputs.conf\n",
+
+					"# Configure to run as a deployment client\n",
+					"#-----------------------------------\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+					"# Poll deployment server every 15 minutes\n",
+					"echo phoneHomeIntervalInSecs = 900 >> /opt/splunkforwarder/etc/system/local/deploymentclient.conf\n",
+					"# echo [deployment-client] >> /opt/splunkforwarder/etc/system/local/deploymentclient.conf\n",
+					"# sh -c \"echo 'clientName='cptest_$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)\" >> /opt/splunkforwarder/etc/system/local/deploymentclient.conf\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"#-----------------------------------\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
 					"# Install CodeDeploy\n",
+					"####################################\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
 
 					"date > /home/ec2-user/stoptime\n"
-				]]}},
-				"BlockDeviceMappings" : [
-				  {
-					"DeviceName" : "/dev/sda1",
-					"Ebs" : {
-						"VolumeSize" : { "Ref" : "RootVolumeSize" },
-						"VolumeType" : "gp2"
-					}
-				  }
-				]
+				]]}}
 			}
 		},
 		"WebServerScaleUpPolicy" : {
@@ -396,7 +457,7 @@
 				"SecurityGroups" : [{ "Ref" : "sgELBPrivate" }],
 				"Subnets" : [{ "Ref" : "SubnetIdPrivateEastC" },{ "Ref" : "SubnetIdPrivateEastD" }],
 				"Scheme" : "internal",
-				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-wb01-asoh-", { "Ref" : "EnvironmentShort" }]]},
+				"LoadBalancerName" : "elb-wb01-asoh-prod",
 				"Listeners" : [
 				{
 					"LoadBalancerPort" : "80",
