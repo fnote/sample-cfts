@@ -53,9 +53,9 @@
 			"Default": "ami-1bb1c57e"
 		},
 		"AMIMCP": {
-			"Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
+			"Description" : "20160323-RHEL-7-2-BASE",
 			"Type" : "String",
-			"Default" : "ami-6da7ab07"
+			"Default" : "ami-27a3af4d"
 		},
 		"NATCLIENT": {
 			"Description": "nat client sg",
@@ -65,7 +65,7 @@
 		"CheckMKSG": {
 			"Description": "NAT access Security Group",
 			"Type": "String",
-			"Default": "sg-0f7fc468",
+			"Default": "sg-42dc8b26",
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
 		"VPCID": {
@@ -1672,7 +1672,7 @@
 					"ToPort" : "80",
 					"CidrIp" : "10.0.0.0/8"
 				},
-				{  
+				{
 					"IpProtocol" : "tcp",
 					"FromPort" : "80",
 					"ToPort" : "8080",
@@ -1684,7 +1684,7 @@
 					"ToPort" : "22",
 					"CidrIp" : "10.0.0.0/8"
 				},
-				{  
+				{
 					"IpProtocol" : "icmp",
 					"FromPort" : "-1",
 					"ToPort" : "-1",
