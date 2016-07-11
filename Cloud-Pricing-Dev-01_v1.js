@@ -720,6 +720,104 @@
 			}
 		}
 	},
+	"lx238cpjp01d" : {
+		"Type" : "AWS::EC2::Instance",
+		"Properties" : {
+			"AvailabilityZone" : "us-east-1d",
+			"ImageId" : {"Ref" : "AMIMCP"},
+			"InstanceType" : "t2.medium",
+			"KeyName" : { "Ref" : "PemKey" },
+			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+			"IamInstanceProfile" : "Application-CP-ServerRole",
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "lx238cpjp01d" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+				"yum install -y sysstat\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
+
+				"#Change Name of server to match new hostname\n",
+				"hostname lx238cpjp01d.na.sysco.net\n",
+				"cat /dev/null > /etc/HOSTNAME\n",
+				"echo lx238cpjp01d.na.sysco.net >> /etc/HOSTNAME","\n",
+				"cat /dev/null > /etc/hostname\n",
+				"echo lx238cpjp01d.na.sysco.net >> /etc/hostname","\n",
+
+				"#Add Users to server\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+				"# Download and Install java\n",
+				"cd /tmp\n",
+				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+				"# Install smbclient\n",
+				"yum install -y samba-client\n",
+
+				"# Set Server Environment\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/cpmcp.sh\"\n",
+				
+				"# Create settings folder\n",
+				"mkdir /settings\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/logs\n",
+				"chown tomcat -R /settings\n",
+				"chgrp -R -c ec2-user /settings\n",
+				"chmod -R -c 777 /settings\n",
+
+				"# Install Splunk Universal Forwarder\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
+
+				"# Install CodeDeploy\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"date > /home/ec2-user/stoptime\n"
+				]]}
+			}
+		}
+	},
 	"sgMCP" : {
 		"Type" : "AWS::EC2::SecurityGroup",
 		"Properties" : {
@@ -866,6 +964,40 @@
               [
                 "<powershell>\n",
                 "Rename-Computer -NewName MS238CPUPSQL01d -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+	},
+	"MS238CPUPSQL02d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+		"AvailabilityZone": "us-east-1d",
+		"DisableApiTermination": "false",
+		"ImageId": { "Ref": "AMIUpdateProc" },
+		"InstanceType": "c4.large",
+		"KeyName": { "Ref": "PemKey" },
+		"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+		"SubnetId": { "Ref": "PvtSNd" },
+		"Tags": [
+			{ "Key": "Name", "Value": "MS238CPUPSQL02d" },
+			{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+			{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+			{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+			{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+			{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+			{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+			{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+		],
+		"UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPUPSQL02d -Restart\n",
                 "</powershell>"
               ]
             ]
