@@ -48,7 +48,7 @@
 			"Default": "ami-2202074a"
 		},
 		"CPAS02": {
-			"Description": "Web Server Instances AMI",
+			"Description": "Web Server Instances AMI - ami-f2c142e5",
 			"Type": "String",
 			"Default": "ami-1bb1c57e"
 		},
@@ -2610,40 +2610,19 @@
 					"pullScript": {
 						"files": {
 							"c:\\cfn\\cfn-hup.conf": {
-								"content": {
-									"Fn::Join": [
-										"", [
-											"[main]\n",
-											"stack=", {
-												"Ref": "AWS::StackName"
-											},
-											"\n",
-											"region=", {
-												"Ref": "AWS::Region"
-											},
-											"\n"
-										]
-									]
-								}
+								"content": { "Fn::Join": [ "", [
+									"[main]\n",
+									"stack=", { "Ref": "AWS::StackName" }, "\n",
+									"region=", { "Ref": "AWS::Region" }, "\n"
+								]]}
 							},
 							"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
-								"content": {
-									"Fn::Join": [
-										"", [
-											"[cfn-auto-reloader-hook]\n",
-											"triggers=post.update\n",
-											"path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
-											"action=cfn-init.exe -v -s ", {
-												"Ref": "AWS::StackName"
-											},
-											" -r WebLaunchConfig",
-											" --region ", {
-												"Ref": "AWS::Region"
-											},
-											"\n"
-										]
-									]
-								}
+								"content" : { "Fn::Join" : [ "", [
+									"[cfn-auto-reloader-hook]\n",
+									"triggers=post.update\n",
+									"path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
+									"action=cfn-init.exe -v -s ", { "Ref": "AWS::StackName" }, " -r WebLaunchConfig --region ", { "Ref": "AWS::Region"},"\n"
+								]]}
 							},
 							"d:\\AutomateDeployment.ps1": {
 								"source": "http://ms240hudson02.na.sysco.net/jenkins-1.5.0/view/Cloud%20Pricing%20Promotion/job/CloudPricing_1.0/lastSuccessfulBuild/artifact/AMI/Deployment/AutomateDeployment.ps1"
@@ -2659,36 +2638,15 @@
 				}
 			},
 			"Properties": {
-				"KeyName": {
-					"Ref": "PemKey"
-				},
-				"ImageId": {
-					"Ref": "CPAS02"
-				},
-				"SecurityGroups": [{
-					"Ref": "CPWEBSG"
-				}, {
-					"Ref": "NATCLIENT"
-				}],
+				"KeyName" : { "Ref" : "PemKey" },
+				"ImageId": { "Ref": "CPAS02" },
+				"SecurityGroupIds" : [{ "Ref" : "CPWEBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"InstanceType": "m3.large",
-				"UserData": {
-					"Fn::Base64": {
-						"Fn::Join": [
-							"", [
-								"<script>\n",
-								"cfn-init.exe -v -s ", {
-									"Ref": "AWS::StackName"
-								},
-								" -r WebLaunchConfig",
-								" --region ", {
-									"Ref": "AWS::Region"
-								},
-								"\n",
-								"</script>"
-							]
-						]
-					}
-				}
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref": "AWS::StackName" }," -r WebLaunchConfig --region ", { "Ref": "AWS::Region" },"\n",
+					"</script>"
+				]]}}
 			}
 		},
 		"WebServerScaleUpPolicy": {
