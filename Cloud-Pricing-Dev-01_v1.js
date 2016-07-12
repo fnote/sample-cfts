@@ -728,7 +728,7 @@
 			"InstanceType" : "t2.medium",
 			"KeyName" : { "Ref" : "PemKey" },
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-			"IamInstanceProfile" : "Application-CP-ServerRole",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
