@@ -47,10 +47,10 @@
 			"Type": "String",
 			"Default": "ami-2202074a"
 		},
-		"CPAS02": {
+		"CPAS17": {
 			"Description": "Web Server Instances AMI - ami-f2c142e5",
 			"Type": "String",
-			"Default": "ami-1bb1c57e"
+			"Default": "ami-f2c142e5"
 		},
 		"AMIMCP": {
 			"Description" : "20160323-RHEL-7-2-BASE",
@@ -2566,26 +2566,15 @@
 		"WebServerGroup": {
 			"Type": "AWS::AutoScaling::AutoScalingGroup",
 			"Properties": {
-				"AvailabilityZones": [
-					"us-east-1c",
-					"us-east-1d"
-				],
-				"LaunchConfigurationName": {
-					"Ref": "WebLaunchConfig"
-				},
+				"AvailabilityZones": [ "us-east-1c", "us-east-1d" ],
+				"LaunchConfigurationName": { "Ref": "WebLaunchConfig"},
 				"MinSize": "2",
 				"MaxSize": "6",
 				"DesiredCapacity": "2",
 				"HealthCheckGracePeriod": "900",
 				"HealthCheckType": "ELB",
-				"VPCZoneIdentifier": [{
-					"Ref": "Conf1c"
-				}, {
-					"Ref": "Conf1d"
-				}],
-				"LoadBalancerNames": [{
-					"Ref": "CPELB"
-				}],
+				"VPCZoneIdentifier": [{ "Ref": "Conf1c" }, { "Ref": "Conf1d" }],
+				"LoadBalancerNames": [{ "Ref": "CPELB" }],
 				"Tags": [
 				  { "Key" : "Name", "Value": "CP Web Autoscale Instance", "PropagateAtLaunch": "true" },
 				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" }, "PropagateAtLaunch": "true" },
@@ -2621,7 +2610,7 @@
 									"[cfn-auto-reloader-hook]\n",
 									"triggers=post.update\n",
 									"path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
-									"action=cfn-init.exe -v -s ", { "Ref": "AWS::StackName" }, " -r WebLaunchConfig --region ", { "Ref": "AWS::Region"},"\n"
+									"action=cfn-init.exe -v -s ", { "Ref": "AWS::StackName" }, " -r WebLaunchConfig --region ", { "Ref": "AWS::Region" },"\n"
 								]]}
 							},
 							"d:\\AutomateDeployment.ps1": {
@@ -2639,8 +2628,8 @@
 			},
 			"Properties": {
 				"KeyName" : { "Ref" : "PemKey" },
-				"ImageId": { "Ref": "CPAS02" },
-				"SecurityGroupIds" : [{ "Ref" : "CPWEBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
+				"ImageId": { "Ref": "CPAS17" },
+				"SecurityGroups" : [{ "Ref" : "CPWEBSG" }, { "Ref" : "NATCLIENT" }],
 				"InstanceType": "m3.large",
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"<script>\n",
