@@ -1124,7 +1124,7 @@
 		"ms238cpodsql017": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-				"AvailabilityZone": "us-east-1d",
+				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "true",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
@@ -1216,7 +1216,7 @@
 		"ms238cpodsql019": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-				"AvailabilityZone": "us-east-1d",
+				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "true",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
@@ -1308,7 +1308,7 @@
 		"ms238cpodsql001": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-				"AvailabilityZone": "us-east-1d",
+				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "true",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
@@ -1400,7 +1400,7 @@
 		"ms238cpodsql021": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-				"AvailabilityZone": "us-east-1d",
+				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "true",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
