@@ -901,7 +901,7 @@
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpjp01d.na.sysco.net\n",
-				"echo lx238cpjp01d.na.sysco.net >> /etc/hostname","\n",
+				"echo lx238cpjp01d.na.sysco.net > /etc/hostname","\n",
 				"# sh -c \"hostname  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 				"#sh -c \"echo  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -1124,12 +1124,13 @@
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpjp03d.na.sysco.net\n",
-				"cat /dev/null > /etc/HOSTNAME\n",
-				"echo lx238cpjp03d.na.sysco.net >> /etc/HOSTNAME","\n",
-				"cat /dev/null > /etc/hostname\n",
-				"echo lx238cpjp03d.na.sysco.net >> /etc/hostname","\n",
+				"echo lx238cpjp03d.na.sysco.net > /etc/hostname","\n",
+				"#sh -c \"hostname  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+				"#sh -c \"echo  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
+				"####################################\n",
 				"#Add Users to server\n",
+				"####################################\n",
 				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
@@ -1141,7 +1142,9 @@
 				"usermod svccp000 -a -G cloudpricing\n",
 				"usermod svccp000 -a -G root\n",
 
+				"####################################\n",
 				"# Download and Install java\n",
+				"####################################\n",
 				"cd /tmp\n",
 				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
 				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
@@ -1157,11 +1160,13 @@
 				"mkdir /settings\n",
 				"mkdir /settings/properties\n",
 				"mkdir /settings/logs\n",
-				"chown tomcat -R /settings\n",
-				"chgrp -R -c ec2-user /settings\n",
+				"chown svccp000 -R /settings\n",
+				"chgrp -R -c cloudpricing /settings\n",
 				"chmod -R -c 777 /settings\n",
 
+				"####################################\n",
 				"# Install Splunk Universal Forwarder\n",
+				"####################################\n",
 				"cd /tmp\n",
 				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
 				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
@@ -1177,7 +1182,9 @@
 				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 				"./bin/splunk restart\n",
 
+				"####################################\n",
 				"# Install CodeDeploy\n",
+				"####################################\n",
 				"yum install ruby -y\n",
 				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 				"chmod +x ./install\n",
@@ -1331,7 +1338,6 @@
 						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
 						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
 						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
-						"ECHO Test01 = 0 >> \"C:\\temp\\inputs.conf\"\n",
 						
 						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
 						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
