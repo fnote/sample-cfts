@@ -47,13 +47,13 @@
       "Default": "sg-ecd48289"
     },
     "NATaccessSG": {
-      "Description": "NAT access Security Group",
+      "Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
       "Type": "String",
       "Default": "sg-e151a186",
       "ConstraintDescription": "Must be a valid NAT Security Group."
     },
     "CheckMKSG": {
-      "Description": "NAT access Security Group",
+      "Description": "CheckMK Security Group",
       "Type": "String",
       "Default": "sg-0f7fc468",
       "ConstraintDescription": "Must be a valid NAT Security Group."
@@ -69,9 +69,9 @@
       "Default": "ami-a43d31cc"
     },
     "AMIUpdateProc": {
-      "Description": "AMI for CP-UpdateProcessor-002 ami-ecc42481",
+      "Description": "AMI for CP-UpdateProcessor-008 (ami-16119f01)",
       "Type": "String",
-      "Default": "ami-ecc42481"
+      "Default": "ami-16119f01"
     },
     "AMIMCP": {
       "Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
@@ -83,10 +83,20 @@
       "Type": "String",
       "Default": "Sysco-KP-CP-NonProd"
     },
+    "PemKey2": {
+      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+      "Type": "String",
+      "Default": "KeyPair-Sysco-CloudPricing-NonProd"
+    },
     "InstanceProfileMCP": {
       "Description" : "Instance Profile Name for MCP",
       "Type" : "String",
       "Default" : "Application-CP-MCPServerRole"
+    },
+    "InstanceProfileUpdateServer": {
+      "Description" : "Instance Profile Name for Update Server",
+      "Type" : "String",
+      "Default" : "Application-CP-UpdateServerRole"
     },
     "ApplicationName": {
       "Description": "Name of application",
@@ -364,14 +374,14 @@
         ],
         "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
-          { "Key": "Name", "Value": "ms238cpbtsql08s" },
-          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			{ "Key": "Name", "Value" : "ms238cpbtsql08s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -402,14 +412,14 @@
         ],
         "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
-          { "Key": "Name", "Value": "ms238cpbtsql09s" },
-          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			{ "Key" : "Name", "Value" : "ms238cpbtsql09s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -440,14 +450,14 @@
         ],
         "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
-          { "Key" : "Name", "Value": "ms238cpodsql08s" },
-          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			{ "Key" : "Name", "Value" : "ms238cpodsql08s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -478,14 +488,14 @@
         ],
         "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
-          { "Key": "Name", "Value": "ms238cpodsql09s" },
-          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-          { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-          { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			{ "Key" : "Name", "Value" : "ms238cpodsql09s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
         ],
         "UserData": {
           "Fn::Base64": {
@@ -507,7 +517,7 @@
 			"AvailabilityZone" : "us-east-1d",
 			"ImageId" : {"Ref" : "AMIMCP"},
 			"InstanceType" : "t2.medium",
-			"KeyName" : { "Ref" : "PemKey" },
+			"KeyName" : { "Ref" : "PemKey2" },
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
@@ -522,11 +532,11 @@
 				{ "Key" : "Name", "Value" : "lx238cpmcp01s" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
@@ -541,13 +551,13 @@
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01s.na.sysco.net\n",
-				"cat /dev/null > /etc/HOSTNAME\n",
-				"echo lx238cpmcp01s.na.sysco.net >> /etc/HOSTNAME","\n",
-				"cat /dev/null > /etc/hostname\n",
-				"echo lx238cpmcp01s.na.sysco.net >> /etc/hostname","\n",
+				"echo lx238cpmcp01s.na.sysco.net > /etc/hostname","\n",
+				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
+				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\" > /etc/hostname\n",
 				"#Add Users to server\n",
 				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
 				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
 
 				"# Download and Install java\n",
@@ -605,6 +615,143 @@
 				"./bin/splunk restart\n",
 
 				"# Install CodeDeploy\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"date > /home/ec2-user/stoptime\n"
+				]]}
+			}
+		}
+	},
+	"JobProcessorGroup" : {
+		"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"Properties" : {
+			"AvailabilityZones" : ["us-east-1d"],
+			"LaunchConfigurationName" : { "Ref" : "JobProcessorLaunchConfig" },
+			"MinSize" : "1",
+			"MaxSize" : "2",
+			"DesiredCapacity" : "1",
+			"HealthCheckType": "EC2",
+			"HealthCheckGracePeriod": "300",
+			"VPCZoneIdentifier" : [ { "Ref" : "PvtSNd" } ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "lx238cpjp01s", "PropagateAtLaunch" : "true" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" }
+			]
+		},
+		"UpdatePolicy" : {
+			"AutoScalingScheduledAction" : {
+				"IgnoreUnmodifiedGroupSizeProperties" : "true"
+			},
+			"AutoScalingRollingUpdate" : {
+				"MinInstancesInService" : "1",
+				"MaxBatchSize" : "1",
+				"PauseTime" : "PT5M",
+				"WaitOnResourceSignals" : "false"
+			}
+		}
+	},
+	"JobProcessorLaunchConfig" : {
+		"Type" : "AWS::AutoScaling::LaunchConfiguration",
+		"Properties" : {
+			"ImageId" : {"Ref" : "AMIMCP"},
+			"InstanceType" : "t2.medium",
+			"KeyName" : { "Ref" : "PemKey2" },
+			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+				"yum install -y sysstat\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
+
+				"#Change Name of server to match new hostname\n",
+				"hostname lx238cpjp01s.na.sysco.net\n",
+				"echo lx238cpjp01s.na.sysco.net > /etc/hostname","\n",
+				"# sh -c \"hostname  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
+				"#sh -c \"echo  cpjp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\" > /etc/hostname\n",
+
+				"####################################\n",
+				"#Add Users to server\n",
+				"####################################\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+				"#Create Linux users and groups\n",
+				"useradd svccp000 -p Cpaws000\n",
+				"groupadd cloudpricing\n",
+				"usermod svccp000 -a -G cloudpricing\n",
+				"usermod svccp000 -a -G root\n",
+
+				"####################################\n",
+				"# Download and Install java\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+				"# Install smbclient\n",
+				"yum install -y samba-client\n",
+
+				"# Set Server Environment\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=STG' >> /etc/profile.d/cpmcp.sh\"\n",
+				
+				"# Create settings folder\n",
+				"mkdir /settings\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/logs\n",
+				"mkdir /opt/cloudpricing\n",
+				"chown svccp000 -R /settings\n",
+				"chown svccp000 -R /opt/cloudpricing\n",
+				"chgrp -R -c cloudpricing /settings\n",
+				"chgrp -R -c cloudpricing /opt/cloudpricing\n",
+				"chmod -R -c 777 /settings\n",
+				"chmod -R -c 777 /opt/cloudpricing\n",
+
+				"####################################\n",
+				"# Install Splunk Universal Forwarder\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+
+				"# Configure to run as a deployment client\n",
+				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
+
+				"####################################\n",
+				"# Install CodeDeploy\n",
+				"####################################\n",
 				"yum install ruby -y\n",
 				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 				"chmod +x ./install\n",
@@ -796,7 +943,163 @@
           { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
         ]
       }
-    }
+    },
+	"MS238CPUPSQL01s": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPUPSQL01s.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01s --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-7.0.70-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-7.0.70-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "c4.large",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "TuningDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPUPSQL01s" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01s --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
+		}
+	},
+	"MS238CPUPSQL02s": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPUPSQL02s.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02s --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-7.0.70-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-7.0.70-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "c4.large",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "TuningDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPUPSQL02s" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02s --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
+		}
+	}
   },
   "Outputs" : {
 	"dbUrl" : {

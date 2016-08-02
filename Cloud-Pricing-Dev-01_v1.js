@@ -62,9 +62,9 @@
       "Default": "ami-a43d31cc"
     },
     "AMIUpdateProc": {
-      "Description": "AMI for CP-UpdateProcessor-003 ami-71f17c66",
+      "Description": "AMI for CP-UpdateProcessor-008 (ami-16119f01)",
       "Type": "String",
-      "Default": "ami-ecc42481"
+      "Default": "ami-16119f01"
     },
     "AMIMCP": {
       "Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
@@ -442,28 +442,6 @@
         ]
       }
     },
-    "MS238CPSQL04d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "true",
-        "ImageId": { "Ref": "CommonAMI" },
-        "InstanceType": "m3.large",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [ { "Ref": "DevDBSG" } ],
-        "SubnetId": { "Ref": "PvtSNc" },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPSQL04d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ]
-      }
-    },
     "MS238CPBTSQL08d": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
@@ -480,8 +458,8 @@
         "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
 			{ "Key" : "Name", "Value" : "ms238cpbtsql08d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
@@ -518,8 +496,8 @@
         "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
 			{ "Key" : "Name", "Value" : "ms238cpbtsql09d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
@@ -556,8 +534,8 @@
         "SubnetId": { "Ref": "PvtSNc" },
         "Tags": [
 			{ "Key" : "Name", "Value" : "ms238cpodsql08d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
@@ -594,8 +572,8 @@
         "SubnetId": { "Ref": "PvtSNd" },
         "Tags": [
 			{ "Key" : "Name", "Value" : "ms238cpodsql09d" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
@@ -656,14 +634,14 @@
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01d.na.sysco.net\n",
-				"cat /dev/null > /etc/HOSTNAME\n",
-				"echo lx238cpmcp01d.na.sysco.net >> /etc/HOSTNAME","\n",
-				"cat /dev/null > /etc/hostname\n",
-				"echo lx238cpmcp01d.na.sysco.net >> /etc/hostname","\n",
+				"echo lx238cpmcp01d.na.sysco.net > /etc/hostname","\n",
+				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
+
 				"#Add Users to server\n",
-				"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
 				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
 				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
 
 				"# Download and Install java\n",
@@ -771,10 +749,10 @@
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp02d.na.sysco.net\n",
-				"cat /dev/null > /etc/HOSTNAME\n",
-				"echo lx238cpmcp02d.na.sysco.net >> /etc/HOSTNAME","\n",
-				"cat /dev/null > /etc/hostname\n",
-				"echo lx238cpmcp02d.na.sysco.net >> /etc/hostname","\n",
+				"echo lx238cpmcp02d.na.sysco.net > /etc/hostname","\n",
+				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
+
 				"#Add Users to server\n",
 				"useradd -m -g aix -c \"Ezequiel Pitty, 2ndWatch Team\" zpit7073\n",
 				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
