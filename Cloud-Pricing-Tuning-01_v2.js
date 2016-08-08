@@ -166,7 +166,6 @@
       "ConstraintDescription": "Must be a valid environment."
     }
   },
-
   "Resources": {
     "WebLaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
@@ -259,9 +258,9 @@
         "Tags": [
           { "Key" : "Name", "Value" : "CP Tuning Web Autoscale Instance", "PropagateAtLaunch" : "true" },
           { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" }, "PropagateAtLaunch" : "true" },
-		  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" }, "PropagateAtLaunch" : "true" },
-		  { "Key" : "Environment", "Value" :  { "Ref": "Environment" }, "PropagateAtLaunch" : "true" },
-		  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "Environment", "Value" :  { "Ref": "Environment" }, "PropagateAtLaunch" : "true" },
+          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" }, "PropagateAtLaunch" : "true" },
           { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" }, "PropagateAtLaunch" : "true" },
           { "Key" : "Owner", "Value" : { "Ref": "Owner" }, "PropagateAtLaunch" : "true" },
           { "Key" : "Approver", "Value" : { "Ref": "Approver" }, "PropagateAtLaunch" : "true" }
@@ -716,8 +715,8 @@
 				"yum install -y samba-client\n",
 
 				"# Set Server Environment\n",
-				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT=STG' >> /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpjp.sh\n",
+				"# sh -c \"echo 'export SERVER_ENVIRONMENT=STG' >> /etc/profile.d/cpjp.sh\"\n",
 				
 				"# Create settings folder\n",
 				"mkdir /settings\n",
@@ -935,7 +934,7 @@
         "Tags": [
           { "Key": "Name", "Value": "elb_ws01/vpc_sysco_nonprod_02/cp_web_tuning" },
           { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-		  { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
           { "Key" : "Environment", "Value":  { "Ref": "Environment" } },
           { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
           { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
@@ -999,7 +998,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
-			"ImageId": "ami-16119f01",
+			"ImageId": { "Ref" : "AMIUpdateProc" },
 			"InstanceType": "c4.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
@@ -1077,7 +1076,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
-			"ImageId": "ami-16119f01",
+			"ImageId": { "Ref" : "AMIUpdateProc" },
 			"InstanceType": "c4.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
