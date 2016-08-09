@@ -343,6 +343,14 @@
 				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
 				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
 
+				"####################################\n",
+				"# Add CORS\n",
+				"####################################\n",
+				"oldpattern=\"</web-app>\"\n",
+				"newpattern=\"<filter> <filter-name>CorsFilter</filter-name>  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class></filter><filter-mapping>  <filter-name>CorsFilter</filter-name>  <url-pattern>/*</url-pattern></filter-mapping>  </web-app>\"\n",
+				"filename=\"/usr/local/tomcat7/conf/web.xml\"\n",
+				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
+
 				"# Set Server Environment\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
