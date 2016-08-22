@@ -58,9 +58,9 @@
 			"Default": "ami-f2c142e5"
 		},
 		"AMIUpdateProc": {
-		  "Description": "AMI for CP-UpdateProcessor-008 (ami-33c45a24)",
+		  "Description": "AMI for CP-UpdateProcessor-008 (ami-72650265)",
 		  "Type": "String",
-		  "Default": "ami-33c45a24"
+		  "Default": "ami-72650265"
 		},
 		"AMIMCP": {
 			"Description" : "20160323-RHEL-7-2-BASE",
