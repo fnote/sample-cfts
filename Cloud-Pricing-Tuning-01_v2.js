@@ -13,6 +13,15 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
+    "PONumberIBM": {
+      "Description": "PO Number for billing IBM",
+      "Type": "String",
+      "Default": "70000031016",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
     "PvtSNc": {
       "Description": "Private subnet for confidential apps in us-east-1c",
       "Type": "String",
@@ -107,6 +116,15 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
+    "ApplicationNameIBM": {
+      "Description": "Name of application IBM",
+      "Type": "String",
+      "Default": "IBM Test Lab Performance Testing",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
     "ApplicationId": {
       "Description": "Application ID",
       "Type": "String",
@@ -120,6 +138,13 @@
       "Description": "Name of application approver",
       "Type": "String",
       "Default": "Karen Williams",
+      "MinLength": "1",
+      "MaxLength": "255"
+    },
+    "ApproverIBM": {
+      "Description": "Name of application approver IBM",
+      "Type": "String",
+      "Default": "Brigette Radulovich Janice Rogers",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -434,6 +459,158 @@
         }
       }
     },
+    "ms238cpbtsql51s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpbtsql51s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpbtsql51s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpbtsql52s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpbtsql52s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpbtsql52s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpbtsql53s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpbtsql53s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpbtsql53s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpbtsql54s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpbtsql54s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpbtsql54s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
     "ms238cpodsql08s": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
@@ -503,6 +680,310 @@
               [
                 "<powershell>\n",
                 "Rename-Computer -NewName ms238cpodsql09s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql51s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql51s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql51s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql52s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql52s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql52s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql53s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql53s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql53s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql54s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql54s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql54s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql55s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql55s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql55s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql56s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql56s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql56s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql57s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql57s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql57s -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "ms238cpodsql58s": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": { "Ref": "ODAMI" },
+		"InstanceType": "m3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "TuningDBSG" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "ms238cpodsql58s" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName ms238cpodsql58s -Restart\n",
                 "</powershell>"
               ]
             ]
