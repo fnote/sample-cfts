@@ -240,6 +240,215 @@
         }
       }
     },
+	"PriceWebServiceGroup" : {
+		"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"Properties" : {
+			"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
+			"LaunchConfigurationName" : { "Ref" : "PriceWebServiceLaunchConfig" },
+			"MinSize" : "1",
+			"DesiredCapacity" : "1",
+			"MaxSize" : "2",
+			"HealthCheckType": "ELB",
+			"HealthCheckGracePeriod": "300",
+			"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
+			"LoadBalancerNames" : [ { "Ref" : "PriceWebServiceELB" } ],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" }
+			]
+		},
+		"UpdatePolicy" : {
+			"AutoScalingScheduledAction" : {
+				"IgnoreUnmodifiedGroupSizeProperties" : "true"
+			},
+			"AutoScalingRollingUpdate" : {
+				"MinInstancesInService" : "1",
+				"MaxBatchSize" : "1",
+				"PauseTime" : "PT5M",
+				"WaitOnResourceSignals" : "false"
+			}
+		}
+	},
+	"PriceWebServiceLaunchConfig" : {
+		"Type" : "AWS::AutoScaling::LaunchConfiguration",
+		"Properties" : {
+			"ImageId" : {"Ref" : "AMIMCP"},
+			"InstanceType" : "t2.medium",
+			"KeyName" : { "Ref" : "PemKey2" },
+			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "60",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+				"yum install -y sysstat\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
+
+				"# Install smbclient\n",
+				"yum install -y samba-client\n",
+
+				"##############################################\n",
+				"#Change hostname to include IP Address\n",
+				"##############################################\n",
+				"# hostname lx238cpwebsvc01d.na.sysco.net\n",
+				"# echo lx238cpwebsvc01d.na.sysco.net > /etc/hostname","\n",
+				"sh -c \"hostname  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+				"sh -c \"echo  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
+
+				"####################################\n",
+				"#Add Users to server\n",
+				"####################################\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+				"useradd -m -g aix -c \"Ravi Goli, App Dev\" rgol4427\n",
+
+				"#Create Linux users and groups\n",
+				"useradd svccp000 -p Cpaws000\n",
+				"groupadd cloudpricing\n",
+				"usermod svccp000 -a -G cloudpricing\n",
+				"usermod svccp000 -a -G root\n",
+
+				"####################################\n",
+				"# Download and Install java\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
+				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+
+				"####################################\n",
+				"# Install tomcat\n",
+				"####################################\n",
+				"groupadd tomcat\n",
+				"useradd tomcat -b /app -g tomcat -e \"\"\n",
+				"cd /tmp\n",
+				"wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz\n",
+				"tar xzf apache-tomcat-8.5.4.tar.gz\n",
+				"mv apache-tomcat-8.5.4 /usr/local/tomcat8\n",
+
+				"####################################\n",
+				"# Add CORS\n",
+				"####################################\n",
+				"oldpattern=\"</web-app>\"\n",
+				"newpattern=\"<filter> <filter-name>CorsFilter</filter-name>  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class></filter><filter-mapping>  <filter-name>CorsFilter</filter-name>  <url-pattern>/*</url-pattern></filter-mapping>  </web-app>\"\n",
+				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
+				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
+
+				"# Set Server Environment\n",
+				"#-----------------------------------\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+
+				"# Set Tomcat Environment Variable\n",
+				"#-----------------------------------\n",
+				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
+
+				"# Set Tomcat Set JVM Heap\n",
+				"#-----------------------------------\n",
+				"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
+
+				"# Start Tomcat\n",
+				"#-----------------------------------\n",
+				"/usr/local/tomcat8/bin/startup.sh\n",
+
+				"####################################\n",
+				"# Create settings folder\n",
+				"####################################\n",
+				"mkdir /settings\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/logs\n",
+				"chown svccp000 -R /settings\n",
+				"chgrp -R -c cloudpricing /settings\n",
+				"chmod -R -c 777 /settings\n",
+
+				"####################################\n",
+				"# Install Splunk Universal Forwarder\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+
+				"# Configure to run as a deployment client\n",
+				"#-----------------------------------\n",
+				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"#-----------------------------------\n",
+				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
+
+				"####################################\n",
+				"# Install CodeDeploy\n",
+				"####################################\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"date > /home/ec2-user/stoptime\n"
+				]]}
+			}
+		}
+	},
+	"PriceWebServiceELB": {
+		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+		"Properties": {
+			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+			"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice-", { "Ref" : "EnvironmentShort" }]]},
+			"Scheme": "internal",
+			"CrossZone": "true",
+			"SecurityGroups": [ { "Ref": "DevWEBSG" } ],
+			"Listeners": [
+				{
+					"LoadBalancerPort": "80",
+					"InstancePort": "8080",
+					"Protocol": "HTTP"
+				},
+				{
+					"LoadBalancerPort": "443",
+					"InstancePort": "8080",
+					"Protocol": "TCP"
+				}
+			],
+			"HealthCheck": {
+				"Target" : "HTTP:8080/",
+				"HealthyThreshold": "3",
+				"UnhealthyThreshold": "7",
+				"Interval": "120",
+				"Timeout": "15"
+			},
+			"Tags": [
+				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-WebService-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			]
+		}
+	},
 	"PriceConsoleGroup" : {
 		"Type" : "AWS::AutoScaling::AutoScalingGroup",
 		"Properties" : {
@@ -251,9 +460,9 @@
 			"HealthCheckType": "ELB",
 			"HealthCheckGracePeriod": "300",
 			"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
-			"LoadBalancerNames" : [ { "Ref" : "CPACDEVELB" } ],
+			"LoadBalancerNames" : [ { "Ref" : "PriceConsoleELB" } ],
 			"Tags" : [
-				{ "Key" : "Name", "Value" : "CP Dev Console AutoScaling Group", "PropagateAtLaunch" : "true" },
+				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Console AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
@@ -339,16 +548,16 @@
 				"groupadd tomcat\n",
 				"useradd tomcat -b /app -g tomcat -e \"\"\n",
 				"cd /tmp\n",
-				"wget http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.68/bin/apache-tomcat-7.0.68.tar.gz\n",
-				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
-				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
+				"wget http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.4/bin/apache-tomcat-8.5.4.tar.gz\n",
+				"tar xzf apache-tomcat-8.5.4.tar.gz\n",
+				"mv apache-tomcat-8.5.4 /usr/local/tomcat8\n",
 
 				"####################################\n",
 				"# Add CORS\n",
 				"####################################\n",
 				"oldpattern=\"</web-app>\"\n",
 				"newpattern=\"<filter> <filter-name>CorsFilter</filter-name>  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class></filter><filter-mapping>  <filter-name>CorsFilter</filter-name>  <url-pattern>/*</url-pattern></filter-mapping>  </web-app>\"\n",
-				"filename=\"/usr/local/tomcat7/conf/web.xml\"\n",
+				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
 				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
 
 				"# Set Server Environment\n",
@@ -357,16 +566,15 @@
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
-				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
 
 				"# Set Tomcat Set JVM Heap\n",
 				"#-----------------------------------\n",
-				"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+				"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
 
 				"# Start Tomcat\n",
 				"#-----------------------------------\n",
-				"/usr/local/tomcat7/bin/startup.sh\n",
-
+				"/usr/local/tomcat8/bin/startup.sh\n",
 				
 				"####################################\n",
 				"# Create settings folder\n",
@@ -411,11 +619,11 @@
 			}
 		}
 	},
-	"CPACDEVELB": {
+	"PriceConsoleELB": {
 		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 		"Properties": {
 			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
-			"LoadBalancerName": "elb-ac01-cp-dev",
+			"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-console-", { "Ref" : "EnvironmentShort" }]]},
 			"Scheme": "internal",
 			"CrossZone": "true",
 			"SecurityGroups": [ { "Ref": "DevWEBSG" } ],
@@ -439,7 +647,7 @@
 				"Timeout": "5"
 			},
 			"Tags": [
-				{ "Key" : "Name", "Value" : "elb_ac01/vpc_sysco_nonprod_02/cp_dev" },
+				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-Console-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
@@ -1506,11 +1714,15 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
-			"ImageId": { "Ref": "ODAMI" },
+			"ImageId": "ami-35c43858",
 			"InstanceType": "c4.xlarge",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" },{ "Ref": "CheckMKSG" } ],
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [{
+				"DeviceName": "/dev/sda1",
+				"Ebs": { "VolumeSize": "500", "VolumeType": "gp2" }
+			}],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE03d" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
