@@ -419,7 +419,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.micro",
 				"KeyName" : { "Ref" : "PemKey2" },
 				"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
