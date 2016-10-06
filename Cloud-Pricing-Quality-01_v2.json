@@ -340,14 +340,6 @@
 				"tar xzf apache-tomcat-8.5.4.tar.gz\n",
 				"mv apache-tomcat-8.5.4 /usr/local/tomcat8\n",
 
-				"####################################\n",
-				"# Add CORS\n",
-				"####################################\n",
-				"oldpattern=\"</web-app>\"\n",
-				"newpattern=\"<filter> <filter-name>CorsFilter</filter-name>  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class></filter><filter-mapping>  <filter-name>CorsFilter</filter-name>  <url-pattern>/*</url-pattern></filter-mapping>  </web-app>\"\n",
-				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
-				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
-
 				"# Set Server Environment\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
