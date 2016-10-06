@@ -488,7 +488,7 @@
 		"Type" : "AWS::AutoScaling::LaunchConfiguration",
 		"Properties" : {
 			"ImageId" : {"Ref" : "AMIMCP"},
-			"InstanceType" : "t2.medium",
+			"InstanceType" : "t2.micro",
 			"KeyName" : { "Ref" : "PemKey2" },
 			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -658,117 +658,6 @@
 			]
 		}
 	},
-	"MS238CPWS05d": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "true",
-			"ImageId": "ami-483bc325",
-			"InstanceType": "m3.medium",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNc" },
-			"UserData": {
-				"Fn::Base64": { "Fn::Join" : [ "", [
-					"<script>\n",
-					"cfn-init.exe -v -s ",
-					{ "Ref": "AWS::StackName" },
-					" -r WebLaunchConfig",
-					" --region ",
-					{ "Ref": "AWS::Region" },
-					"\n",
-					"</script>>\n",
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPWS05d -Restart\n",
-					"</powershell>"
-				]]}
-			},
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPWS05d" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			]
-		}
-	},
-	"MS238CPWS06d": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1d",
-			"DisableApiTermination": "true",
-			"ImageId": "ami-483bc325",
-			"InstanceType": "m3.medium",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNd" },
-			"UserData": {
-				"Fn::Base64": { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPWS06d -Restart\n",
-					"</powershell>",
-					"<script>\n",
-					"cfn-init.exe -v -s ",
-					{ "Ref": "AWS::StackName" },
-					" -r WebLaunchConfig",
-					" --region ",
-					{ "Ref": "AWS::Region" },
-					"\n",
-					"</script>>\n"
-				]]}
-			},
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPWS06d" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			]
-		}
-	},
-	"MS238CPAC02d": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1d",
-			"DisableApiTermination": "true",
-			"ImageId": "ami-fad83697",
-			"InstanceType": "m3.medium",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds" : [ { "Ref" : "DevWEBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNd" },
-			"UserData": {
-				"Fn::Base64": { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPAC02d -Restart\n",
-					"</powershell>",
-					"<script>\n",
-					"cfn-init.exe -v -s ",
-					{ "Ref": "AWS::StackName" },
-					" -r WebLaunchConfig",
-					" --region ",
-					{ "Ref": "AWS::Region" },
-					"\n",
-					"</script>>\n"
-				]]}
-			},
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPAC02d" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			]
-		}
-	},
     "DevWEBSG": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
@@ -815,49 +704,6 @@
         "IpProtocol": "-1",
         "SourceSecurityGroupId": { "Ref": "DevWEBSG" },
         "ToPort": "-1"
-      }
-    },
-    "CPDEVELB": {
-      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-      "Properties": {
-        "Subnets": [ { "Ref": "PvtSNc" } ],
-        "LoadBalancerName": "elb-ws01-cp-dev",
-        "Scheme": "internal",
-        "CrossZone": "true",
-        "Instances": [
-          { "Ref": "MS238CPWS05d" },
-          { "Ref": "MS238CPWS06d" }
-        ],
-        "SecurityGroups": [ { "Ref": "DevWEBSG" } ],
-        "Listeners": [
-          {
-            "LoadBalancerPort": "80",
-            "InstancePort": "80",
-            "Protocol": "HTTP"
-          },
-          {
-            "LoadBalancerPort": "443",
-            "InstancePort": "443",
-            "Protocol": "TCP"
-          }
-        ],
-        "HealthCheck": {
-          "Target": "HTTP:80/pricerequest/healthcheck",
-          "HealthyThreshold": "10",
-          "UnhealthyThreshold": "2",
-          "Interval": "30",
-          "Timeout": "5"
-        },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "elb_ws01/vpc_sysco_nonprod_02/cp_dev" },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ]
       }
     },
     "MS238CPBTSQL08d": {

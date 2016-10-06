@@ -192,161 +192,6 @@
     }
   },
   "Resources": {
-    "WebLaunchConfig": {
-      "Type": "AWS::AutoScaling::LaunchConfiguration",
-      "Metadata": {
-        "AWS::CloudFormation::Init": {
-          "configSets": {
-            "default": [ "pullScript" ]
-          },
-          "pullScript": {
-            "files": {
-              "c:\\cfn\\cfn-hup.conf": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "[main]\n",
-                      "stack=",
-                      { "Ref": "AWS::StackName" },
-                      "\n",
-                      "region=",
-                      { "Ref": "AWS::Region" },
-                      "\n"
-                    ]
-                  ]
-                }
-              },
-              "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
-                "content": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "[cfn-auto-reloader-hook]\n",
-                      "triggers=post.update\n",
-                      "path=Resources.WebLaunchConfig.Metadata.AWS::CloudFormation::Init\n",
-                      "action=cfn-init.exe -v -s ",
-                      { "Ref": "AWS::StackName" },
-                      " -r WebLaunchConfig",
-                      " --region ",
-                      { "Ref": "AWS::Region" },
-                      "\n"
-                    ]
-                  ]
-                }
-              },
-              "d:\\AutomateDeployment.ps1": {
-                "source": "http://ms240hudson02.na.sysco.net/jenkins-1.5.0/view/Cloud%20Pricing%20Promotion/job/CloudPricing_1.0/lastSuccessfulBuild/artifact/AMI/Deployment/AutomateDeployment.ps1"
-              }
-            },
-            "commands": {
-              "b-execute-script": {
-                "command": "PowerShell.exe -ExecutionPolicy Bypass -File D:\\AutomateDeployment.ps1 WS STG 5",
-                "waitAfterCompletion": "300"
-              }
-            }
-          }
-        }
-      },
-      "Properties": {
-        "KeyName": { "Ref": "PemKey" },
-        "ImageId": "ami-2e724846",
-        "SecurityGroups": [ { "Ref": "stgWEBSG" } ],
-        "InstanceType": "m3.large",
-        "UserData": {
-          "Fn::Base64": { "Fn::Join" : [ "", [
-				"<script>\n",
-				"cfn-init.exe -v -s ",
-				{ "Ref": "AWS::StackName" },
-				" -r WebLaunchConfig",
-				" --region ",
-				{ "Ref": "AWS::Region" },
-				"\n",
-				"</script>"
-		  ]]}
-        }
-      }
-    },
-    "WebServerGroup": {
-      "Type": "AWS::AutoScaling::AutoScalingGroup",
-      "Properties": {
-        "AvailabilityZones": [ "us-east-1c", "us-east-1d" ],
-        "LaunchConfigurationName": { "Ref": "WebLaunchConfig" },
-        "MinSize": "2",
-        "MaxSize": "6",
-        "DesiredCapacity": "2",
-        "VPCZoneIdentifier": [
-          { "Ref": "PvtSNc" },
-          { "Ref": "PvtSNd" }
-        ],
-        "LoadBalancerNames": [ { "Ref": "stgCPELB" } ],
-        "Tags": [
-          { "Key" : "Name", "Value" : "CP Tuning Web Autoscale Instance", "PropagateAtLaunch" : "true" },
-          { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "Environment", "Value" :  { "Ref": "Environment" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "Owner", "Value" : { "Ref": "Owner" }, "PropagateAtLaunch" : "true" },
-          { "Key" : "Approver", "Value" : { "Ref": "Approver" }, "PropagateAtLaunch" : "true" }
-        ]
-      }
-    },
-    "WebServerScaleUpPolicy": {
-      "Type": "AWS::AutoScaling::ScalingPolicy",
-      "Properties": {
-        "AdjustmentType": "ChangeInCapacity",
-        "AutoScalingGroupName": { "Ref": "WebServerGroup" },
-        "Cooldown": "60",
-        "ScalingAdjustment": "1"
-      }
-    },
-    "WebServerScaleDownPolicy": {
-      "Type": "AWS::AutoScaling::ScalingPolicy",
-      "Properties": {
-        "AdjustmentType": "ChangeInCapacity",
-        "AutoScalingGroupName": { "Ref": "WebServerGroup" },
-        "Cooldown": "60",
-        "ScalingAdjustment": "-1"
-      }
-    },
-    "CPUAlarmHigh": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "Properties": {
-        "AlarmDescription": "Scale-up if CPU > 90% for 10 minutes",
-        "MetricName": "CPUUtilization",
-        "Namespace": "AWS/EC2",
-        "Statistic": "Average",
-        "Period": "300",
-        "EvaluationPeriods": "2",
-        "Threshold": "90",
-        "AlarmActions": [ { "Ref": "WebServerScaleUpPolicy" } ],
-        "Dimensions": [
-          { "Name": "AutoScalingGroupName", "Value": { "Ref": "WebServerGroup" } }
-        ],
-        "ComparisonOperator": "GreaterThanThreshold"
-      }
-    },
-    "CPUAlarmLow": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "Properties": {
-        "AlarmDescription": "Scale-down if CPU < 70% for 10 minutes",
-        "MetricName": "CPUUtilization",
-        "Namespace": "AWS/EC2",
-        "Statistic": "Average",
-        "Period": "300",
-        "EvaluationPeriods": "2",
-        "Threshold": "70",
-        "AlarmActions": [ { "Ref": "WebServerScaleDownPolicy" } ],
-        "Dimensions": [
-          {
-            "Name": "AutoScalingGroupName",
-            "Value": { "Ref": "WebServerGroup" }
-          }
-        ],
-        "ComparisonOperator": "LessThanThreshold"
-      }
-    },
 	"PriceWebServiceGroup" : {
 		"Type" : "AWS::AutoScaling::AutoScalingGroup",
 		"Properties" : {
@@ -358,7 +203,7 @@
 			"HealthCheckType": "ELB",
 			"HealthCheckGracePeriod": "300",
 			"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
-			"LoadBalancerNames" : [ { "Ref" : "PriceWebServiceELB" } ],
+			"LoadBalancerNames" : [ { "Ref" : "PriceWebServiceELB" }, { "Ref" : "stgCPELB" } ],
 			"Tags" : [
 				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
@@ -386,7 +231,7 @@
 		"Type" : "AWS::AutoScaling::LaunchConfiguration",
 		"Properties" : {
 			"ImageId" : {"Ref" : "AMIMCP"},
-			"InstanceType" : "t2.medium",
+			"InstanceType" : "t2.large",
 			"KeyName" : { "Ref" : "PemKey2" },
 			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -1803,10 +1648,7 @@
     "stgCPELB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "Subnets": [
-          { "Ref": "PvtSNc" },
-          { "Ref": "PvtSNd" }
-        ],
+        "Subnets": [ { "Ref": "PvtSNc" }, { "Ref": "PvtSNd" } ],
         "LoadBalancerName": "elb-ws01-cp-tuning",
         "Scheme": "internal",
         "CrossZone": "true",

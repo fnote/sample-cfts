@@ -248,7 +248,7 @@
 			"HealthCheckType": "ELB",
 			"HealthCheckGracePeriod": "300",
 			"VPCZoneIdentifier" : [ { "Ref" : "Private2c" }, { "Ref" : "Private2d" } ],
-			"LoadBalancerNames" : [ { "Ref" : "PriceWebServiceELB" } ],
+			"LoadBalancerNames" : [ { "Ref" : "PriceWebServiceELB" }, { "Ref" : "privateCPELB" }, { "Ref" : "publicCPELB" } ],
 			"Tags" : [
 				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
@@ -485,7 +485,7 @@
 		"Type" : "AWS::AutoScaling::LaunchConfiguration",
 		"Properties" : {
 			"ImageId" : {"Ref" : "AMIMCP"},
-			"InstanceType" : "t2.medium",
+			"InstanceType" : "t2.micro",
 			"KeyName" : { "Ref" : "PemKey2" },
 			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -1178,31 +1178,25 @@
 	"privateCPELB": {
 		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 		"Properties": {
-			"Subnets": [
-				{ "Ref": "Private2c" },
-				{ "Ref": "Private2d" }
-			],
+			"Subnets" : [{ "Ref" : "Private2c" },{ "Ref" : "Private2d" }],
 			"LoadBalancerName": "internal-elb-ws01-cp-qa",
 			"Scheme": "internal",
-			"Instances": [
-				{ "Ref": "MS238CPWS03q" }
-			],
 			"CrossZone": "true",
 			"SecurityGroups": [ { "Ref": "qaWEBSG" } ],
 			"Listeners": [
 			{
 				"LoadBalancerPort": "80",
-				"InstancePort": "80",
+				"InstancePort": "8080",
 				"Protocol": "HTTP"
 			},
 			{
 				"LoadBalancerPort": "443",
-				"InstancePort": "443",
+				"InstancePort": "8080",
 				"Protocol": "TCP"
 			}
 			],
 			"HealthCheck": {
-				"Target": "HTTP:80/pricerequest/healthcheck",
+				"Target": "TCP:22",
 				"HealthyThreshold": "10",
 				"UnhealthyThreshold": "2",
 				"Interval": "30",
@@ -1223,24 +1217,20 @@
 	"publicCPELB": {
 		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 		"Properties": {
-			"Subnets": [
-				{ "Ref": "PubSNc" },
-				{ "Ref": "PubSNd" }
-			],
+		"Subnets" : [{ "Ref" : "PubSNc" },{ "Ref" : "PubSNd" }],
 		"LoadBalancerName": "elb-public-ws01-cp-qa",
 		"CrossZone": "true",
-		"Instances": [ { "Ref": "MS238CPWS03q" } ],
 		"SecurityGroups": [ { "Ref": "publicELBsg" } ],
 		"Listeners": [
 			{
 				"LoadBalancerPort": "443",
-				"InstancePort": "80",
+				"InstancePort": "8080",
 				"Protocol": "HTTPS",
 				"SSLCertificateId": "arn:aws:iam::885523507357:server-certificate/cloudpricing-qa.cloud.sysco.com"
 			}
 		],
 		"HealthCheck": {
-			"Target": "HTTP:80/pricerequest/healthcheck",
+			"Target": "TCP:22",
 			"HealthyThreshold": "10",
 			"UnhealthyThreshold": "2",
 			"Interval": "30",
