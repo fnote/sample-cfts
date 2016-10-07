@@ -377,9 +377,9 @@
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceConsoleLaunchConfig" },
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "2",
+				"MinSize" : "2",
+				"DesiredCapacity" : "2",
+				"MaxSize" : "4",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "Conf1c" }, { "Ref" : "Conf1d" } ],
