@@ -549,6 +549,7 @@
 				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-console-", { "Ref" : "EnvironmentShort" }]]},
 				"Scheme": "internal",
 				"CrossZone": "true",
+				"LBCookieStickinessPolicy": [{ "PolicyName": "CPConsole-Stickyness" }],
 				"SecurityGroups": [ { "Ref": "CPWEBSG" } ],
 				"Listeners": [
 					{
