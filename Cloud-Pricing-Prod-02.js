@@ -559,8 +559,10 @@
 					},
 					{
 						"LoadBalancerPort": "443",
-						"InstancePort": "8080",
-						"Protocol": "TCP"
+						"InstancePort": "80",
+						"Protocol": "HTTPS",
+						"SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing-Admin1",
+						"PolicyNames": [ "ACELB-Stickyness" ]
 					}
 				],
 				"HealthCheck": {
