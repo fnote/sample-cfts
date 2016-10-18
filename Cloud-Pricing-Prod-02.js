@@ -557,6 +557,12 @@
 						"InstancePort": "8080",
 						"Protocol": "HTTP",
 						"PolicyNames": [ "CPConsole-Stickyness" ]
+					},
+					{
+						"LoadBalancerPort": "443",
+						"InstancePort": "8080",
+						"Protocol": "TCP",
+						"PolicyNames": [ "CPConsole-Stickyness" ]
 					}
 				],
 				"HealthCheck": {
