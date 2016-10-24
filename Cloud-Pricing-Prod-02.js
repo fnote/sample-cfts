@@ -277,6 +277,7 @@
 					"# Set Server Environment\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx4096M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
