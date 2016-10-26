@@ -1098,7 +1098,7 @@
 				}
 			} ],
 			"Tags" : [
-				{ "Key" : "Name", "Value" : "lx238cpsync01dd" },
+				{ "Key" : "Name", "Value" : "lx238cpsync01d" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
