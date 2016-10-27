@@ -1448,7 +1448,8 @@
 
 				"# Set Server Environment\n",
 				"#-----------------------------------\n",
-				"sh -c \"echo 'export SERVER_ENVIRONMENT=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1461,13 +1462,6 @@
 				"# Start Tomcat\n",
 				"#-----------------------------------\n",
 				"/usr/local/tomcat8/bin/startup.sh\n",
-				
-				"####################################\n",
-				"# Install MySQL \n",
-				"####################################\n",
-				"cd /tmp\n",
-				"wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.15-1.el7.x86_64.rpm-bundle.tar\n",
-				"tar xzf mysql-5.7.15-1.el7.x86_64.rpm-bundle.tar\n",
 
 				"####################################\n",
 				"# Create settings folder\n",

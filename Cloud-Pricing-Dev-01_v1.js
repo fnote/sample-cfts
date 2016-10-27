@@ -1167,7 +1167,8 @@
 
 				"# Set Server Environment\n",
 				"#-----------------------------------\n",
-				"sh -c \"echo 'export SERVER_ENVIRONMENT=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1202,9 +1203,9 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
