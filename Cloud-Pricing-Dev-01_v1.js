@@ -112,14 +112,14 @@
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
-      "Default": "Karen Williams",
+      "Default": "Owen.James@corp.sysco.com",
       "MinLength": "1",
       "MaxLength": "255"
     },
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
-      "Default": "James Owen Mike Rowland",
+      "Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
       "MinLength": "1",
       "MaxLength": "255"
     },
