@@ -1371,6 +1371,7 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
+			"PrivateIpAddress" : "10.168.140.108",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -1446,7 +1447,7 @@
 				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
 				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
 
-				"# Set Server Environment\n",
+				"# Set Tomcat Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
@@ -1454,10 +1455,6 @@
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
 				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-
-				"# Set Tomcat Set JVM Heap\n",
-				"#-----------------------------------\n",
-				"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
 
 				"# Start Tomcat\n",
 				"#-----------------------------------\n",
@@ -1467,8 +1464,9 @@
 				"# Create settings folder\n",
 				"####################################\n",
 				"mkdir /settings\n",
-				"mkdir /settings/properties\n",
 				"mkdir /settings/logs\n",
+				"mkdir /settings/properties\n",
+				"mkdir /settings/output\n",
 				"chown svccp000 -R /settings\n",
 				"chgrp -R -c cloudpricing /settings\n",
 				"chmod -R -c 777 /settings\n",
