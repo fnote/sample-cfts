@@ -175,68 +175,6 @@
     }
   },
 	"Resources": {
-	"MS238CPWS03q": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": "ami-483bc325",
-			"InstanceType": "m3.medium",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [
-				{ "Ref": "qaWEBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPWS03q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Rename-Computer -NewName ms238cpws03q -Restart\n",
-				"</powershell>"
-			]]}}
-		}
-	},
-	"MS238CPAC03q": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": { "Ref": "qaWEBAMI" },
-			"InstanceType": "m3.medium",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [
-				{ "Ref": "qaWEBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPAC03q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Rename-Computer -NewName ms238cpac03q -Restart\n",
-				"</powershell>"
-			]]}}
-		}
-	},
 	"PriceWebServiceGroup" : {
 		"Type" : "AWS::AutoScaling::AutoScalingGroup",
 		"Properties" : {
@@ -293,13 +231,12 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
-				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
 
-				"# Install smbclient\n",
-				"yum install -y samba-client\n",
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"##############################################\n",
 				"#Change hostname to include IP Address\n",
@@ -340,7 +277,7 @@
 				"tar xzf apache-tomcat-8.5.4.tar.gz\n",
 				"mv apache-tomcat-8.5.4 /usr/local/tomcat8\n",
 
-				"# Set Server Environment\n",
+				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
@@ -371,9 +308,9 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
@@ -495,13 +432,12 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
-				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
 
-				"# Install smbclient\n",
-				"yum install -y samba-client\n",
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"##############################################\n",
 				"#Change hostname to include IP Address\n",
@@ -550,9 +486,10 @@
 				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
 				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
 
-				"# Set Server Environment\n",
+				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms256M -Xmx512M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -580,9 +517,9 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
@@ -648,68 +585,6 @@
 			]
 		}
 	},
-	"MS238CPBTSQL03q": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": { "Ref": "ODAMI" },
-			"InstanceType": "m3.large",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [
-				{ "Ref": "QualityDBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPBTSQL03q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Rename-Computer -NewName ms238cpbtsql03q -Restart\n",
-				"</powershell>"
-			]]}}
-		}
-	},
-	"MS238CPODSQL03q": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": { "Ref": "ODAMI" },
-			"InstanceType": "m3.large",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [
-				{ "Ref": "QualityDBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPODSQL03q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName ms238cpodsql03q -Restart\n",
-					"</powershell>"
-			]]}}
-		}
-	},
 	"lx238cpmcp01q" : {
 		"Type" : "AWS::EC2::Instance",
 		"Properties" : {
@@ -720,6 +595,7 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "Private2d" },
+			"PrivateIpAddress" : "10.168.140.106",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -731,11 +607,11 @@
 				{ "Key" : "Name", "Value" : "lx238cpmcp01q" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
@@ -743,10 +619,12 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
-				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
+
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpmcp01q.na.sysco.net\n",
@@ -779,12 +657,10 @@
 				"tar xzf apache-tomcat-7.0.68.tar.gz\n",
 				"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
 
-				"# Install smbclient\n",
-				"yum install -y samba-client\n",
-
-				"# Set Server Environment\n",
+				"# Set System Environment and Tomcat JVM Heap size\n",
+				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
-				"# sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
 				
 				"# Set Tomcat Environment Variable\n",
 				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
@@ -803,24 +679,29 @@
 				"chgrp -R -c ec2-user /settings\n",
 				"chmod -R -c 777 /settings\n",
 
+				"####################################\n",
 				"# Install Splunk Universal Forwarder\n",
+				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
-				"./bin/splunk restart\n",
 
 				"# Configure to run as a deployment client\n",
-				"./bin/splunk set deploy-poll internal-SyscoSplunkDployProdELB-prod-1536191272.us-east-1.elb.amazonaws.com:8089 -auth admin:changeme\n",
+				"#-----------------------------------\n",
+				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
 
 				"# Configure forwarder to send logs to Splunk Indexer\n",
-				"./bin/splunk add forward-server internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com:9997 -auth admin:changeme\n",
+				"#-----------------------------------\n",
+				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 				"./bin/splunk restart\n",
 
+				"####################################\n",
 				"# Install CodeDeploy\n",
+				"####################################\n",
 				"yum install ruby -y\n",
 				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 				"chmod +x ./install\n",
@@ -865,13 +746,12 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
-				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
 
-				"# Install smbclient\n",
-				"yum install -y samba-client\n",
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"##############################################\n",
 				"#Change hostname to include IP Address\n",
@@ -917,7 +797,7 @@
 				"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
 				"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
 
-				"# Set Tomcat Environment and Tomcat JVM Heap size\n",
+				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
@@ -1029,10 +909,12 @@
 				"yum update -y aws-cfn-bootstrap\n",
 				"yum update -y wget\n",
 				"yum update -y curl\n",
-				"yum install -y sysstat\n",
 				
 				"# Set Timezone\n",
 				"timedatectl set-timezone UTC\n",
+
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"#Change Name of server to match new hostname\n",
 				"hostname lx238cpjp01q.na.sysco.net\n",
@@ -1061,9 +943,6 @@
 				"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
 				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 
-				"# Install smbclient\n",
-				"yum install -y samba-client\n",
-
 				"# Set Server Environment\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
 				"# sh -c \"echo 'export SERVER_ENVIRONMENT=QA' >> /etc/profile.d/cpmcp.sh\"\n",
@@ -1084,17 +963,19 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.0&product=universalforwarder&filename=splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.5.0-59c8927def0f-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
 
 				"# Configure to run as a deployment client\n",
+				"#-----------------------------------\n",
 				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
 
 				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"#-----------------------------------\n",
 				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 				"./bin/splunk restart\n",
 
@@ -1109,84 +990,6 @@
 				"date > /home/ec2-user/stoptime\n"
 				]]}
 			}
-		}
-	},
-	"MS238CPUPSQL02q": {
-		"Type": "AWS::EC2::Instance",
-		"Metadata" : {
-			"AWS::CloudFormation::Init" : { "config" : {
-				"files" : {
-					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
-						"[main]\n",
-						"stack=", { "Ref" : "AWS::StackId" }, "\n",
-						"region=", { "Ref" : "AWS::Region" }, "\n"
-					]]}},
-					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
-						"[cfn-auto-reloader-hook]\n",
-						"triggers=post.update\n",
-						"path=Resources.MS238CPUPSQL02q.Metadata.AWS::CloudFormation::Init\n",
-						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02q --region ", { "Ref" : "AWS::Region" }, "\n"
-					]]}},
-					"C:\\temp\\apache-tomcat-7.0.70-windows-x64.zip" :
-						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70-windows-x64.zip" },
-					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
-						"cd \\temp\n",
-						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
-						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
-						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
-						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
-						
-						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
-						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
-						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
-						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
-						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
-
-						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
-						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
-						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
-						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
-
-						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-7.0.70-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
-
-						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
-						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n"
-					]]}}
-				},
-				"commands" : {
-					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
-				},
-				"services" : { "windows" : { "cfn-hup" : {
-					"enabled" : "true",
-					"ensureRunning" : "true",
-					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
-				}}}
-			}}
-		},
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": "ami-16119f01",
-			"InstanceType": "c4.large",
-			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
-			"KeyName": { "Ref": "PemKey2" },
-			"SecurityGroupIds": [ { "Ref": "QualityDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPUPSQL02q" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
-			],
-			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-				"<script>\n",
-				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02q --region ", { "Ref" : "AWS::Region" }, "\n",
-				"</script>"
-			]]}}
 		}
 	},
 	"sgMCP" : {
@@ -1223,13 +1026,161 @@
 				{ "Key" : "Name", "Value" : "sg/vpc_sysco_qa_01/cpmcp_qa_app" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
+		}
+	},
+	"MS238CPBTSQL03q": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": { "Ref": "ODAMI" },
+			"InstanceType": "m3.large",
+			"KeyName": { "Ref": "PemKey" },
+			"SecurityGroupIds": [
+				{ "Ref": "QualityDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "Private2c" },
+			"Tags": [
+				{ "Key" : "Name", "Value" : "MS238CPBTSQL03q" },
+				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpbtsql03q -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+	},
+	"MS238CPODSQL03q": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": { "Ref": "ODAMI" },
+			"InstanceType": "m3.large",
+			"KeyName": { "Ref": "PemKey" },
+			"SecurityGroupIds": [
+				{ "Ref": "QualityDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "Private2c" },
+			"Tags": [
+				{ "Key" : "Name", "Value" : "MS238CPODSQL03q" },
+				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"Rename-Computer -NewName ms238cpodsql03q -Restart\n",
+					"</powershell>"
+			]]}}
+		}
+	},
+	"MS238CPUPSQL02q": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPUPSQL02q.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02q --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\tomcat8.exe\" //US/Tomcat8 --Description=\"Apache Tomcat 8.0.33 Server - http://tomcat.apache.org/ FN: updated Tomcat Initial memory:10240M Maximum memory:10240M\" --JvmMs=10240 --JvmMx=10240\n",
+
+						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-7.0.69\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-7.0.69\\bin\\service.bat\" remove\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "r3.large",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "QualityDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "Private2c" },
+			"PrivateIpAddress" : "10.168.138.41",
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPUPSQL02q" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02q --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
 		}
 	},
 	"publicELBsg": {
