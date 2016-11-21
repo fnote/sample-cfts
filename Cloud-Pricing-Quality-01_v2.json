@@ -1139,11 +1139,7 @@
 						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
 
 						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
-						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
-						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\tomcat8.exe\" //US/Tomcat8 --Description=\"Apache Tomcat 8.0.33 Server - http://tomcat.apache.org/ FN: updated Tomcat Initial memory:10240M Maximum memory:10240M\" --JvmMs=10240 --JvmMx=10240\n",
-
-						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-7.0.69\n",
-						"\"C:\\Program Files\\Tomcat\\apache-tomcat-7.0.69\\bin\\service.bat\" remove\n"
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n"
 					]]}}
 				},
 				"commands" : {
