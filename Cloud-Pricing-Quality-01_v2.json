@@ -1157,7 +1157,7 @@
 			"AvailabilityZone": "us-east-1c",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-16119f01",
-			"InstanceType": "r3.large",
+			"InstanceType": "r4.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "QualityDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
