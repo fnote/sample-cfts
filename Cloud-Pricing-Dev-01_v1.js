@@ -1415,7 +1415,7 @@
         }
       }
     },
-	"MS238CPUPSQL05d": {
+	"MS238CPUPSQL01d": {
 		"Type": "AWS::EC2::Instance",
 		"Metadata" : {
 			"AWS::CloudFormation::Init" : { "config" : {
@@ -1428,11 +1428,11 @@
 					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
 						"[cfn-auto-reloader-hook]\n",
 						"triggers=post.update\n",
-						"path=Resources.MS238CPUPSQL05d.Metadata.AWS::CloudFormation::Init\n",
-						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL05d --region ", { "Ref" : "AWS::Region" }, "\n"
+						"path=Resources.MS238CPUPSQL01d.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01d --region ", { "Ref" : "AWS::Region" }, "\n"
 					]]}},
-					"C:\\temp\\apache-tomcat-7.0.70-windows-x64.zip" :
-						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70-windows-x64.zip" },
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
 					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
 						"cd \\temp\n",
 						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
@@ -1475,14 +1475,14 @@
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-16119f01",
-			"InstanceType": "c4.large",
+			"InstanceType": "r3.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
 			"PrivateIpAddress" : "10.168.141.235",
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPUPSQL05d" },
+				{ "Key": "Name", "Value": "MS238CPUPSQL01d" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
 				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
 				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
@@ -1493,12 +1493,12 @@
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
-				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL05d --region ", { "Ref" : "AWS::Region" }, "\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01d --region ", { "Ref" : "AWS::Region" }, "\n",
 				"</script>"
 			]]}}
 		}
 	},
-	"MS238CPUPSQL06d": {
+	"MS238CPUPSQL02d": {
 		"Type": "AWS::EC2::Instance",
 		"Metadata" : {
 			"AWS::CloudFormation::Init" : { "config" : {
@@ -1511,11 +1511,11 @@
 					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
 						"[cfn-auto-reloader-hook]\n",
 						"triggers=post.update\n",
-						"path=Resources.MS238CPUPSQL06d.Metadata.AWS::CloudFormation::Init\n",
-						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL06d --region ", { "Ref" : "AWS::Region" }, "\n"
+						"path=Resources.MS238CPUPSQL02d.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02d --region ", { "Ref" : "AWS::Region" }, "\n"
 					]]}},
-					"C:\\temp\\apache-tomcat-7.0.70-windows-x64.zip" :
-						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.70/bin/apache-tomcat-7.0.70-windows-x64.zip" },
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
 					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
 						"cd \\temp\n",
 						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
@@ -1558,14 +1558,14 @@
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-16119f01",
-			"InstanceType": "c4.large",
+			"InstanceType": "r3.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
 			"PrivateIpAddress" : "10.168.141.15",
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPUPSQL06d" },
+				{ "Key": "Name", "Value": "MS238CPUPSQL02d" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
 				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
 				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
@@ -1576,7 +1576,7 @@
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
-				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL06d --region ", { "Ref" : "AWS::Region" }, "\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02d --region ", { "Ref" : "AWS::Region" }, "\n",
 				"</script>"
 			]]}}
 		}
