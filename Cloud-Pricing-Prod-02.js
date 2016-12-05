@@ -1677,8 +1677,7 @@
 		"ms238cpodsql023": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-				"AvailabilityZone": "us-east-1d",
-				"DisableApiTermination": "true",
+				"AvailabilityZone": "us-east-1c",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
 					"Ref": "ODAMI"
@@ -1724,7 +1723,6 @@
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
 				"AvailabilityZone": "us-east-1d",
-				"DisableApiTermination": "true",
 				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
 				"ImageId": {
 					"Ref": "ODAMI"
