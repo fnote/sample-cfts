@@ -1692,7 +1692,7 @@
 					"Ref": "NATCLIENT"
 				}, "sg-42dc8b26"],
 				"SubnetId": {
-					"Ref": "Conf1d"
+					"Ref": "Conf1c"
 				},
 				"Tags": [
 				  { "Key" : "Name", "Value": "ms238cpodsql023" },
