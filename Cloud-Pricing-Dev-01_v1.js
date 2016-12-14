@@ -1698,6 +1698,37 @@
 				"</powershell>"
 			]]}}
 		}
+	},
+	"MS238CPIDE04d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-d03d65c7",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [{
+				"DeviceName": "/dev/sda1",
+				"Ebs": { "VolumeSize": "500", "VolumeType": "gp2" }
+			}],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE04d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"<powershell>\n",
+				"Rename-Computer -NewName MS238CPIDE04d -Restart\n",
+				"</powershell>"
+			]]}}
+		}
 	}
   },
   "Outputs" : {
