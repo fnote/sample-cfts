@@ -1472,15 +1472,14 @@
 			}}
 		},
 		"Properties": {
-			"AvailabilityZone": "us-east-1d",
+			"AvailabilityZone": "us-east-1c",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-16119f01",
 			"InstanceType": "r4.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.235",
+			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL01d" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
@@ -1555,15 +1554,14 @@
 			}}
 		},
 		"Properties": {
-			"AvailabilityZone": "us-east-1d",
+			"AvailabilityZone": "us-east-1e",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-16119f01",
 			"InstanceType": "r4.large",
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.15",
+			"SubnetId": { "Ref": "PvtSNe" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL02d" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
