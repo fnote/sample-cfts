@@ -874,7 +874,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -956,7 +956,7 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx6144M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
@@ -1015,7 +1015,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -1097,7 +1097,7 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx6144M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
