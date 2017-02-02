@@ -220,16 +220,15 @@
 			"ConstraintDescription" : "Must be a valid Availability zone."
 		}
 	},
-
 	"Resources" : {
 		"ApiGatewayGroup" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1c", "us-east-1e" ],
 				"LaunchConfigurationName" : { "Ref" : "ApiGatewayLaunchConfig" },
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "2",
+				"MinSize" : "2",
+				"DesiredCapacity" : "2",
+				"MaxSize" : "4",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "SubnetIdPrivateEastC" }, { "Ref" : "SubnetIdPrivateEastE" } ],
@@ -353,9 +352,9 @@
 					"# Install Splunk Universal Forwarder\n",
 					"####################################\n",
 					"cd /tmp\n",
-					"wget -O splunkforwarder-6.5.1-f74036626f0c-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.1&product=universalforwarder&filename=splunkforwarder-6.5.1-f74036626f0c-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-6.5.1-f74036626f0c-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-6.5.1-f74036626f0c-linux-2.6-x86_64.rpm\n",
+					"wget -O splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.2&product=universalforwarder&filename=splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-6.5.2-67571ef4b87d-linux-2.6-x86_64.rpm\n",
 					"cd /opt/splunkforwarder\n",
 					"./bin/splunk start --accept-license\n",
 					"./bin/splunk enable boot-start\n",
@@ -551,11 +550,11 @@
 				"ReplicationGroupDescription" : { "Fn::Join" : ["", ["cloud-pricing-redis-", { "Ref" : "EnvironmentShort" }]]},
 				"Engine": "redis",
 				"NumNodeGroups" : "1",
-				"ReplicasPerNodeGroup" : "0",
-				"AutomaticFailoverEnabled": false,
+				"ReplicasPerNodeGroup" : "1",
+				"AutomaticFailoverEnabled": true,
 				"AutoMinorVersionUpgrade": true,
 				"CacheSubnetGroupName" : { "Ref" : "snRedis" },
-				"CacheNodeType": "cache.t2.small",
+				"CacheNodeType": "cache.m3.medium",
 				"CacheParameterGroupName": "default.redis3.2",
 				"SecurityGroupIds": [ { "Ref" : "sgRedis" } ],
 				"Tags": [
@@ -582,7 +581,7 @@
 		},
 		"redisEndPoint" : {
 			"Description" : "Redis ReadEndPoints",
-			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "RedisCache", "ReadEndPoint.Addresses" ]}]] }
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "RedisCache", "ReadEndPoint.Addresses"      ]}]] }
 		}
 	}
 }
