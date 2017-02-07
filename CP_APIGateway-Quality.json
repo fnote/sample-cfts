@@ -90,7 +90,7 @@
 		"InstanceType" : {
 			"Description" : "Application EC2 instance type",
 			"Type" : "String",
-			"Default" : "t2.micro",
+			"Default" : "t2.medium",
 			"AllowedValues" : [
 				"t2.micro",
 				"t2.medium",
@@ -256,11 +256,67 @@
 				}
 			}
 		},
+		"ServerScaleUpPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "ApiGatewayGroup" },
+				"Cooldown" : "300",
+				"ScalingAdjustment" : "1"
+			}
+		},
+		"ServerCPUAlarmHigh" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"Properties" : {
+				"AlarmDescription" : "Scale-up if CPU > 90% for 10 minutes",
+				"MetricName" : "CPUUtilization",
+				"Namespace" : "AWS/EC2",
+				"Statistic" : "Average",
+				"Period" : "300",
+				"EvaluationPeriods" : "2",
+				"Threshold" : "90",
+				"AlarmActions" : [ { "Ref" : "ServerScaleUpPolicy" } ],
+				"Dimensions" : [
+				{
+					"Name" : "AutoScalingGroupName",
+					"Value" : { "Ref" : "ApiGatewayGroup" }
+				}],
+				"ComparisonOperator" : "GreaterThanThreshold"
+			}
+		},
+		"ServerScaleDownPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "ApiGatewayGroup" },
+				"Cooldown" : "300",
+				"ScalingAdjustment" : "-1"
+			}
+		},
+		"ServerCPUAlarmLow" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"Properties" : {
+				"AlarmDescription" : "Scale-down if CPU < 70% for 10 minutes",
+				"MetricName" : "CPUUtilization",
+				"Namespace" : "AWS/EC2",
+				"Statistic" : "Average",
+				"Period" : "300",
+				"EvaluationPeriods" : "2",
+				"Threshold" : "70",
+				"AlarmActions" : [ { "Ref" : "ServerScaleDownPolicy" } ],
+				"Dimensions" : [
+				{
+					"Name" : "AutoScalingGroupName",
+					"Value" : { "Ref" : "ApiGatewayGroup" }
+				}],
+				"ComparisonOperator" : "LessThanThreshold"
+			}
+		},
 		"ApiGatewayLaunchConfig" : {
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "AMIImageId"},
-				"InstanceType" : "t2.micro",
+				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "KeyName" },
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"BlockDeviceMappings" : [ {
@@ -430,14 +486,10 @@
 				"SecurityGroups": [ { "Ref": "sgWeb" } ],
 				"Listeners": [
 					{
-						"Protocol": "HTTP",
-						"LoadBalancerPort": "80",
-						"InstancePort": "8080"
-					},
-					{
-						"Protocol": "TCP",
+						"Protocol": "HTTPS",
 						"LoadBalancerPort": "443",
-						"InstancePort": "8080"
+						"InstancePort": "8080",
+						"SSLCertificateId": "arn:aws:iam::885523507357:server-certificate/cloudpricing-qa.cloud.sysco.com02-2017"
 					}
 				],
 				"HealthCheck": {
