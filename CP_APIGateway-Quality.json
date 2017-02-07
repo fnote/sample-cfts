@@ -5,7 +5,7 @@
 		"ApplicationName" : {
 			"Description" : "Name of application",
 			"Type" : "String",
-			"Default": "Cloud Pricing",
+			"Default": "UOM Services",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -14,7 +14,7 @@
 		"ApplicationId" : {
 			"Description" : "Application ID",
 			"Type" : "String",
-			"Default": "APP-001151",
+			"Default": "APP-001911",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -23,7 +23,7 @@
 		"PONumber" : {
 			"Description" : "PO Number for billing",
 			"Type" : "String",
-			"Default" : "7000000347",
+			"Default" : "7000003106",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -39,7 +39,7 @@
 		"Approver" : {
 			"Description" : "Name of application approver",
 			"Type" : "String",
-			"Default" : "Owen.James@corp.sysco.com",
+			"Default" : "Radulovich.Brigitte@corp.sysco.com",
 			"MinLength" : "1",
 			"MaxLength" : "255"
 		},
@@ -81,7 +81,7 @@
 		"ProjectId" : {
 			"Description" : "Project ID",
 			"Type" : "String",
-			"Default" : "BT.001176",
+			"Default" : "BT:001911",
 			"MinLength" : "1",
 			"MaxLength" : "255",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
@@ -121,7 +121,7 @@
 		"KeyName" : {
 			"Description" : "Name of an existing KeyPair",
 			"Type" : "AWS::EC2::KeyPair::KeyName",
-			"Default" : "ASOH_Dev",
+			"Default" : "KeyPair-Sysco-CloudPricing-NonProd",
 			"MinLength" : "1",
 			"AllowedPattern" : "[\\x20-\\x7E]*",
 			"MaxLength" : "255",
