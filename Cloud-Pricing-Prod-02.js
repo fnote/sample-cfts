@@ -57,6 +57,11 @@
 		  "Type": "String",
 		  "Default": "ami-72650265"
 		},
+		"AMIUpdateProc009": {
+		  "Description": "AMI for CP-UpdateProcessor-009 (ami-34519022)",
+		  "Type": "String",
+		  "Default": "ami-34519022"
+		},
 		"AMIMCP": {
 			"Description" : "20160323-RHEL-7-2-BASE",
 			"Type" : "String",
@@ -5023,6 +5028,1236 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL15 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL16": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL16.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL16 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL16" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL16 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL17": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL17.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL17 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL17" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL17 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL18": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL18.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL18 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL18" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL18 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL19": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL19.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL19 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL19" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL19 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL20": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL20.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL20 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL20" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL20 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL21": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL21.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL21 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL21" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL21 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL22": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL22.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL22 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL22" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL22 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL23": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL23.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL23 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL23" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL23 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL24": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL24.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL24 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL24" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL24 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL25": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL25.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL25 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL25" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL25 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL26": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL26.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL26 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL26" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL26 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL27": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL27.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL27 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL27" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL27 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL28": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL28.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL28 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL28" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL28 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL29": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL29.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL29 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1e" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL29" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL29 --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL30": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL30.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL30 --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-prod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref" : "AMIUpdateProc009" },
+				"InstanceType": "c3.xlarge",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL30" },
+					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL30 --region ", { "Ref" : "AWS::Region" }, "\n",
 					"</script>"
 				]]}}
 			}
