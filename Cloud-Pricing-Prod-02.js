@@ -57,10 +57,10 @@
 		  "Type": "String",
 		  "Default": "ami-72650265"
 		},
-		"AMIUpdateProc011": {
-		  "Description": "AMI for CP-UpdateProcessor-011 (ami-196eae0f)",
+		"AMIUpdateProc012": {
+		  "Description": "AMI for CP-UpdateProcessor-012 (ami-08d01f1e)",
 		  "Type": "String",
-		  "Default": "ami-196eae0f"
+		  "Default": "ami-08d01f1e"
 		},
 		"AMIMCP": {
 			"Description" : "20160323-RHEL-7-2-BASE",
@@ -5091,7 +5091,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5173,7 +5173,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5255,7 +5255,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5337,7 +5337,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5419,7 +5419,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5501,7 +5501,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5583,7 +5583,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5665,7 +5665,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5747,7 +5747,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5829,7 +5829,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5911,7 +5911,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -5993,7 +5993,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -6075,7 +6075,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -6157,7 +6157,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
@@ -6239,7 +6239,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "AMIUpdateProc011" },
+				"ImageId": { "Ref" : "AMIUpdateProc012" },
 				"InstanceType": "r3.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
