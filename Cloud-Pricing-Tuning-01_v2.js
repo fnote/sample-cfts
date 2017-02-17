@@ -285,6 +285,12 @@
 				"rpm -ivh jdk-8u45-linux-x64.rpm\n",
 
 				"####################################\n",
+				"# Increase open file limits\n",
+				"####################################\n",
+				"sh -c \"echo \\\"*   soft   nofile   10240\\\" >> /etc/security/limits.conf\"\n",
+				"sh -c \"echo \\\"*   hard   nofile   20240\\\" >> /etc/security/limits.conf\"\n",
+
+				"####################################\n",
 				"# Install tomcat\n",
 				"####################################\n",
 				"groupadd tomcat\n",
