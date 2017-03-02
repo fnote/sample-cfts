@@ -880,11 +880,12 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 				"SubnetId": { "Ref": "Conf1c" },
+				"PrivateIpAddress" : "10.168.155.199",
 				"BlockDeviceMappings" : [ {
 					"DeviceName" : "/dev/sda1",
 					"Ebs" : {
@@ -962,7 +963,7 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx3072\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms6144M -Xmx6144\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
@@ -1021,11 +1022,12 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 				"SubnetId": { "Ref": "Conf1d" },
+				"PrivateIpAddress" : "10.168.157.54",
 				"BlockDeviceMappings" : [ {
 					"DeviceName" : "/dev/sda1",
 					"Ebs" : {
@@ -1103,7 +1105,7 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx3072\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms6144M -Xmx6144\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
