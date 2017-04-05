@@ -311,7 +311,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "AMIImageId"},
-				"InstanceType" : "t2.micro",
+				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "KeyName" },
 				"SecurityGroups" : [{ "Ref" : "sgWeb" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -574,7 +574,7 @@
 				"AutomaticFailoverEnabled": false,
 				"AutoMinorVersionUpgrade": true,
 				"CacheSubnetGroupName" : { "Ref" : "snRedis" },
-				"CacheNodeType": "cache.t2.small",
+				"CacheNodeType": "cache.m3.medium",
 				"CacheParameterGroupName": "default.redis3.2",
 				"SecurityGroupIds": [ { "Ref" : "sgRedis" } ],
 				"Tags": [
