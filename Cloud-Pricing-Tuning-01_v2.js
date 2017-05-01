@@ -231,7 +231,7 @@
 		"Type" : "AWS::AutoScaling::LaunchConfiguration",
 		"Properties" : {
 			"ImageId" : {"Ref" : "AMIMCP"},
-			"InstanceType" : "t2.large",
+			"InstanceType" : "r4.large",
 			"KeyName" : { "Ref" : "PemKey2" },
 			"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },

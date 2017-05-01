@@ -958,7 +958,7 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1100,7 +1100,7 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1242,7 +1242,7 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
-				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",

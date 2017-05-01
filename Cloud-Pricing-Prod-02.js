@@ -750,7 +750,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -1593,7 +1593,7 @@
 				"KeyName" : { "Ref" : "PemKey2" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"SubnetId": { "Ref": "Conf1c" },
+				"SubnetId": { "Ref": "Conf1d" },
 				"BlockDeviceMappings" : [ {
 					"DeviceName" : "/dev/sda1",
 					"Ebs" : {
