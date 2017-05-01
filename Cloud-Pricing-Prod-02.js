@@ -210,7 +210,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.large",
+				"InstanceType" : "r4.large",
 				"KeyName" : { "Ref" : "PemKey2" },
 				"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -282,8 +282,8 @@
 
 					"# Set Server Environment\n",
 					"#-----------------------------------\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx4096M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
 
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
@@ -311,9 +311,9 @@
 					"# Install Splunk Universal Forwarder\n",
 					"####################################\n",
 					"cd /tmp\n",
-					"wget -O splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.4.1&product=universalforwarder&filename=splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-6.4.1-debde650d26e-linux-2.6-x86_64.rpm\n",
+					"wget -O splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.3&product=universalforwarder&filename=splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm\n",
 					"cd /opt/splunkforwarder\n",
 					"./bin/splunk start --accept-license\n",
 					"./bin/splunk enable boot-start\n",
