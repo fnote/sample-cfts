@@ -818,17 +818,14 @@
 					"tar xzf apache-tomcat-7.0.68.tar.gz\n",
 					"mv apache-tomcat-7.0.68 /usr/local/tomcat7\n",
 
-					"# Set Server Environment\n",
-					"#-----------------------------------\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpws.sh\n",
-
 					"# Set Tomcat Environment Variable\n",
 					"#-----------------------------------\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
 
-					"# Set Tomcat Set JVM Heap\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
-					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms6144M -Xmx6144M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
