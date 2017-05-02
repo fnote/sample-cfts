@@ -750,7 +750,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.large",
+				"InstanceType" : "t2.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -2240,52 +2240,6 @@
 								"<powershell>\n",
 								"Rename-Computer -NewName ms238cpbtsql010 -Restart\n",
 								"</powershell>"
-							]
-						]
-					}
-				}
-			}
-		},
-		"ms238cpodsql022": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1d",
-				"DisableApiTermination": "true",
-				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
-				"ImageId": {
-					"Ref": "ODAMI"
-				},
-				"InstanceType": "m3.xlarge",
-				"KeyName": {
-					"Ref": "PemKey"
-				},
-				"SecurityGroupIds": [{
-					"Ref": "CPDBSG"
-				}, {
-					"Ref": "NATCLIENT"
-				}, "sg-42dc8b26"],
-				"SubnetId": {
-					"Ref": "Conf1d"
-				},
-				"Tags": [
-				  { "Key" : "Name", "Value": "ms238cpodsql022" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				],
-				"UserData": {
-					"Fn::Base64": {
-						"Fn::Join": [
-							"", [
-								"<powershell>\n",
-								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
-								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
-								"</powershell>"
-
 							]
 						]
 					}
