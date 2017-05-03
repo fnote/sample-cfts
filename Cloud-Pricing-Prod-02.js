@@ -1443,7 +1443,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey2" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -1586,7 +1586,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
 				"ImageId" : {"Ref" : "AMIMCP"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey2" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
