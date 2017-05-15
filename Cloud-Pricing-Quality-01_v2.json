@@ -314,9 +314,9 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.5.3&product=universalforwarder&filename=splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.5.3-36937ad027d4-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.6.0-1c4f3bbe1aea-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.0&product=universalforwarder&filename=splunkforwarder-6.6.0-1c4f3bbe1aea-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.6.0-1c4f3bbe1aea-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.6.0-1c4f3bbe1aea-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
@@ -1321,37 +1321,6 @@
 				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
 				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
-		}
-	},
-	"MS238CPBTSQL03q": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": { "Ref": "ODAMI" },
-			"InstanceType": "m3.large",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [
-				{ "Ref": "QualityDBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "Private2c" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPBTSQL03q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Rename-Computer -NewName ms238cpbtsql03q -Restart\n",
-				"</powershell>"
-			]]}}
 		}
 	},
 	"MS238CPODSQL03q": {
