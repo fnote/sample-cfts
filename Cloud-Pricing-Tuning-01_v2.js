@@ -1513,6 +1513,132 @@
         }
       }
     },
+    "MS238CPODSQL11S": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1c",
+        "DisableApiTermination": "false",
+        "ImageId": "ami-22ceb134",
+		"InstanceType": "r3.xlarge",
+        "KeyName": { "Ref": "PemKey2" },
+        "SecurityGroupIds": [
+          { "Ref": "sgDBOD" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNc" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL11S" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPODSQL11S -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "MS238CPODSQL12S": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": "ami-22ceb134",
+		"InstanceType": "r3.xlarge",
+        "KeyName": { "Ref": "PemKey" },
+        "SecurityGroupIds": [
+          { "Ref": "sgDBOD" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+        "Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL12S" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPODSQL12S -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+    },
+	"sgDBOD" : {
+		"Type" : "AWS::EC2::SecurityGroup",
+		"Properties" : {
+			"GroupDescription" : "CP OD DB SG",
+			"VpcId" : { "Ref" : "VPCID" },
+			"SecurityGroupIngress" : [ 
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "3389",
+				"ToPort" : "3389",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "1501",
+				"ToPort" : "1512",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "80",
+				"ToPort" : "80",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "tcp",
+				"FromPort" : "8080",
+				"ToPort" : "8080",
+				"CidrIp" : "10.0.0.0/8"
+			},
+			{
+				"IpProtocol" : "icmp",
+				"FromPort" : "-1",
+				"ToPort" : "-1",
+				"CidrIp" : "10.0.0.0/8"
+			}
+			],
+			"Tags" : [
+				{ "Key" : "Name", "Value" : "sg/vpc_sysco_stg_01/cpdbod_stg_app" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			]
+		}
+	},
     "ms238cpodsql51s": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
