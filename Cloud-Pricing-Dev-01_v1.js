@@ -271,9 +271,16 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"#sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" >> /etc/environment\n",
 				"#sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
-				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
+				"sh -c \"echo 'CATALINA_HOME=\\\"/usr/local/tomcat8\\\"'\" >> /etc/environment\n",
+				
+				"####################################\n",
+				"# Setting cronjobs for Tomcat\n",
+				"####################################\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
+				"sh -c \"printf \\\"@reboot /bin/sleep 20; /settings/tomcat.sh start;\n45 12 * * * /settings/tomcat.sh restart;\n\\\" > /etc/cron.d/tomcat\n\" "
 
 				"# Set Tomcat to restart after every reboot\n",
 				"sh -c echo \"@reboot logger \\\"SYSTEM REBOOTED..Starting Tomcat...\\\" && /usr/local/tomcat8/bin/startup.sh\" | crontab - \n",
@@ -485,6 +492,8 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" >> /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms256M -Xmx512M\\\"'\" >> /etc/environment\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms256M -Xmx512M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
 
 				"# Set Tomcat Environment Variable\n",
@@ -704,6 +713,8 @@
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
 				
 				"# Set Tomcat Environment Variable\n",
 				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
@@ -824,6 +835,8 @@
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
 				
 				"# Set Tomcat Environment Variable\n",
 				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat7/conf/tomcat.conf\n",
@@ -964,7 +977,9 @@
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
-
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
+				
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
 				"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
@@ -1106,6 +1121,8 @@
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1248,6 +1265,8 @@
 				"#-----------------------------------\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsync.sh\n",
 				"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpsync.sh\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 				"# Set Tomcat Environment Variable\n",
 				"#-----------------------------------\n",
@@ -1393,6 +1412,8 @@
 				"# Set Server Environment\n",
 				"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
 				"# sh -c \"echo 'export SERVER_ENVIRONMENT=DEV' >> /etc/profile.d/cpmcp.sh\"\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+				"# sh -c \"echo 'SERVER_ENVIRONMENT=DEV' >> /etc/environment\"\n",
 				
 				"# Create settings folder\n",
 				"mkdir /settings\n",
