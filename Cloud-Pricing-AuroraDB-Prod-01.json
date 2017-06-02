@@ -110,7 +110,7 @@
 				"DBInstanceIdentifier" : "CPDBMasterPROD",
 				"AllowMajorVersionUpgrade" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.xlarge",
+				"DBInstanceClass" : "db.r3.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -132,7 +132,7 @@
 				"DBInstanceIdentifier" : "CPDBReplica01PROD",
 				"AllowMajorVersionUpgrade" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.xlarge",
+				"DBInstanceClass" : "db.r3.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
