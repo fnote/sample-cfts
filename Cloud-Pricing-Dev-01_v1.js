@@ -638,7 +638,7 @@
         "ToPort": "-1"
       }
     },
-	"lx238cpmcp01d" : {
+	"lx238cpmcp05d" : {
 		"Type" : "AWS::EC2::Instance",
 		"Properties" : {
 			"AvailabilityZone" : "us-east-1d",
@@ -656,7 +656,7 @@
 				}
 			} ],
 			"Tags" : [
-				{ "Key" : "Name", "Value" : "lx238cpmcp01d" },
+				{ "Key" : "Name", "Value" : "lx238cpmcp05d" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
@@ -679,8 +679,8 @@
 				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"#Change Name of server to match new hostname\n",
-				"hostname lx238cpmcp01d.na.sysco.net\n",
-				"echo lx238cpmcp01d.na.sysco.net > /etc/hostname","\n",
+				"hostname lx238cpmcp05d.na.sysco.net\n",
+				"echo lx238cpmcp05d.na.sysco.net > /etc/hostname","\n",
 				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -766,7 +766,7 @@
 			}
 		}
 	},
-	"lx238cpmcp02d" : {
+	"lx238cpmcp04d" : {
 		"Type" : "AWS::EC2::Instance",
 		"Properties" : {
 			"AvailabilityZone" : "us-east-1d",
@@ -784,7 +784,7 @@
 				}
 			} ],
 			"Tags" : [
-				{ "Key" : "Name", "Value" : "lx238cpmcp02d" },
+				{ "Key" : "Name", "Value" : "lx238cpmcp04d" },
 				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
@@ -807,8 +807,8 @@
 				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"#Change Name of server to match new hostname\n",
-				"hostname lx238cpmcp02d.na.sysco.net\n",
-				"echo lx238cpmcp02d.na.sysco.net > /etc/hostname","\n",
+				"hostname lx238cpmcp04d.na.sysco.net\n",
+				"echo lx238cpmcp04d.na.sysco.net > /etc/hostname","\n",
 				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -898,7 +898,6 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.143",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -1042,7 +1041,6 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.145",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -1186,7 +1184,6 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.145",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -1330,7 +1327,6 @@
 			"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
 			"SubnetId": { "Ref": "PvtSNd" },
-			"PrivateIpAddress" : "10.168.141.147",
 			"BlockDeviceMappings" : [ {
 				"DeviceName" : "/dev/sda1",
 				"Ebs" : {
@@ -2320,6 +2316,48 @@
 			]]}}
 		}
 	},
+	"MS238CPIDE05d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-782ab66e",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "200",
+					"VolumeType" : "gp2"
+				},
+				"DeviceName" : "xvdb",
+				"Ebs" : {
+					"VolumeSize" : "200",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE05d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"Rename-Computer -NewName MS238CPIDE05d -Restart\n",
+					"</powershell>"
+				]]}
+			}
+		}
+    },
 	"lx238cpide04d": {
 		"Type": "AWS::EC2::Instance",
 		"Properties": {
@@ -2361,8 +2399,8 @@
 				"yum install -y sysstat lsof mlocate samba-client\n",
 
 				"#Change Name of server to match new hostname\n",
-				"hostname lx238cpmcp01d.na.sysco.net\n",
-				"echo lx238cpmcp01d.na.sysco.net > /etc/hostname","\n",
+				"hostname lx238cpide04d.na.sysco.net\n",
+				"echo lx238cpide04d.na.sysco.net > /etc/hostname","\n",
 				"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 				"#sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -2451,7 +2489,8 @@
 			]]}}
 		}
 	}
-  },
+
+	},
   "Outputs" : {
 	"dbUrl" : {
 		"Description" : "Endpoint for Common DB",
