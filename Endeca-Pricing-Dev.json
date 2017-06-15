@@ -309,8 +309,8 @@
 					"# Download and Install java\n",
 					"####################################\n",
 					"cd /tmp\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u45-linux-x64.rpm\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
 
 					"####################################\n",
 					"# Increase open file limits\n",
@@ -434,7 +434,7 @@
 		"EndecaCPELBPublic": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
-				"Subnets" : [{ "Ref" : "SubnetIdPublicEastC" },{ "Ref" : "SubnetIdPublicEastD" }],
+				"Subnets" : [{ "Ref" : "SubnetIdPublicEastC" },{ "Ref" : "SubnetIdPublicEastD02" }],
 				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-endeca-public-", { "Ref" : "EnvironmentShort" }]]},
 				"Scheme": "internet-facing",
 				"CrossZone": "true",
