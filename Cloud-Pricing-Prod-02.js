@@ -3315,7 +3315,6 @@
         }
       }
     },
-		"ms238cpodsql046": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "AvailabilityZone": "us-east-1d",
