@@ -30,9 +30,9 @@
 			"ConstraintDescription" : "Must contain only ASCII characters."
 		},
 		"AMIImageId" : {
-			"Description" : "20160323-RHEL-7-2-BASE - ami-27a3af4d",
+			"Description" : "20170702-RHEL-7-2-BASE (ami-b6d9e7a0)",
 			"Type" : "String",
-			"Default" : "ami-27a3af4d",
+			"Default" : "ami-b6d9e7a0",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},

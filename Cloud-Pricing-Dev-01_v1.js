@@ -51,11 +51,6 @@
       "Default": "sg-0f7fc468",
       "ConstraintDescription": "Must be a valid NAT Security Group."
     },
-    "CommonAMI": {
-      "Description": "Name of and existing VPC",
-      "Type": "String",
-      "Default": "ami-eed68d86"
-    },
     "ODAMI": {
       "Description": "AMI for OD servers",
       "Type": "String",
@@ -67,9 +62,9 @@
       "Default": "ami-16119f01"
     },
     "AMIMCP": {
-      "Description" : "20160323-RHEL-7-2-BASE - ami-6da7ab07",
+      "Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
       "Type" : "String",
-      "Default" : "ami-6da7ab07"
+      "Default" : "ami-b5a79ea3"
     },
     "PemKey": {
       "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
@@ -271,7 +266,7 @@
 				"# Set System Environment and Tomcat JVM Heap size\n",
 				"#-----------------------------------\n",
 				"#sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
-				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" >> /etc/environment\n",
+				"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /etc/environment\n",
 				"#sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
 				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
 				"sh -c \"echo 'CATALINA_HOME=\\\"/usr/local/tomcat8\\\"'\" >> /etc/environment\n",
@@ -279,7 +274,6 @@
 				"####################################\n",
 				"# Setting cronjobs for Tomcat\n",
 				"####################################\n",
-				"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
 				"sh -c \"printf \\\"@reboot /bin/sleep 20; /settings/tomcat.sh start;\n45 12 * * * /settings/tomcat.sh restart;\n\\\" > /etc/cron.d/tomcat\n\" ",
 
 				"# Set Tomcat to restart after every reboot\n",
@@ -311,9 +305,9 @@
 				"# Install Splunk Universal Forwarder\n",
 				"####################################\n",
 				"cd /tmp\n",
-				"wget -O splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.1&product=universalforwarder&filename=splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm&wget=true'\n",
-				"chmod 744 splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm\n",
-				"rpm -i splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm\n",
+				"wget -O splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
 				"cd /opt/splunkforwarder\n",
 				"./bin/splunk start --accept-license\n",
 				"./bin/splunk enable boot-start\n",
@@ -335,7 +329,9 @@
 				"chmod +x ./install\n",
 				"./install auto\n",
 				
-				"date > /home/ec2-user/stoptime\n"
+				"date > /home/ec2-user/stoptime\n",
+				"sleep 120",
+				"reboot"
 				]]}
 			}
 		}
@@ -2506,7 +2502,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
-			"ImageId" : {"Ref" : "AMIMCP"},
+			"ImageId" : "ami-6da7ab07",
 			"InstanceType": "t2.xlarge",
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
@@ -2637,7 +2633,7 @@
 		"Properties": {
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
-			"ImageId" : {"Ref" : "AMIMCP"},
+			"ImageId" : "ami-6da7ab07",
 			"InstanceType": "t2.xlarge",
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
