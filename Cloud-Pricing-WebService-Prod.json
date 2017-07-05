@@ -1,59 +1,58 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-WebService-Quality.json",
+	"Description": "Deployed via Cloud-Pricing-WebService-Prod.json",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
 			"Type": "String",
-			"Default": "7000003106",
+			"Default": "7000002358",
 			"MinLength": "1",
 			"MaxLength": "255",
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
 		"PvtSNc": {
-			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Description": "Confidential us-east-1c subnet",
 			"Type": "String",
-			"Default": "subnet-b61cbb9d"
+			"Default": "subnet-1ec25b69"
 		},
 		"PvtSNd": {
-			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Description": "Confidential us-east-1d subnet",
 			"Type": "String",
-			"Default": "subnet-ea138a9d"
+			"Default": "subnet-db7bc582"
 		},
 		"PvtSNe": {
-			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Description": "Confidential us-east-1e subnet",
 			"Type": "String",
-			"Default": "subnet-2512501f"
+			"Default": "subnet-a421629e"
 		},
 		"VPCID": {
-			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Description": "Name of and existing VPC",
 			"Type": "String",
-			"Default": "vpc-ff88269a"
+			"Default": "vpc-99e855fc"
 		},
 		"NATaccessSG": {
-			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Description": "NAT access Security Group",
 			"Type": "String",
-			"Default": "sg-e151a186",
-			"ConstraintDescription": "Must be a valid NAT Security Group."
+			"Default": "sg-1803c47f"
 		},
 		"CheckMKSG": {
 			"Description": "CheckMK Security Group",
 			"Type": "String",
-			"Default": "sg-0f7fc468",
+			"Default": "sg-42dc8b26",
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
 		"CommonAMI": {
-			"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
+			"Description" : "20170702-RHEL-7-2-BASE (ami-b6d9e7a0)",
 			"Type": "String",
-			"Default" : "ami-b5a79ea3",
+			"Default" : "ami-b6d9e7a0",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
 		"PemKey": {
 			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
 			"Type": "String",
-			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"InstanceProfileMCP": {
 			"Description" : "Instance Profile Name for MCP",
@@ -63,7 +62,7 @@
 		"ApplicationName": {
 			"Description": "Name of application",
 			"Type": "String",
-			"Default": "Cloud Pricing QA-UOM",
+			"Default": "Cloud Pricing",
 			"MinLength": "1",
 			"MaxLength": "255",
 			"AllowedPattern": "[\\x20-\\x7E]*",
@@ -81,7 +80,7 @@
 		"Approver": {
 			"Description": "Name of application approver",
 			"Type": "String",
-			"Default": "Radulovich.Brigitte@corp.sysco.com",
+			"Default": "Owen.James@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -104,12 +103,12 @@
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "Quality",
+			"Default": "Production",
 			"AllowedValues": [
 				"Sandbox",
 				"Development",
 				"Quality",
-				"Staging",
+				"Tuning",
 				"Training",
 				"Production"
 			],
@@ -118,7 +117,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "QA",
+			"Default": "PROD",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -134,9 +133,9 @@
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceWebServiceLaunchConfig" },
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "2",
+				"MinSize" : "4",
+				"DesiredCapacity" : "4",
+				"MaxSize" : "8",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
@@ -195,10 +194,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"# hostname lx238cpwebsvc01q.na.sysco.net\n",
-					"# echo lx238cpwebsvc01q.na.sysco.net > /etc/hostname","\n",
-					"sh -c \"hostname  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
-					"sh -c \"echo  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
+					"# hostname lx238cpwebsvc01.na.sysco.net\n",
+					"# echo lx238cpwebsvc01.na.sysco.net > /etc/hostname","\n",
+					"sh -c \"hostname  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\"\n",
+					"sh -c \"echo  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\" > /etc/hostname\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
@@ -206,6 +205,13 @@
 					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+
+					"#Create Linux users and groups\n",
+					"useradd svccp000 -p Cpaws000\n",
+					"groupadd cloudpricing\n",
+					"usermod svccp000 -a -G aix\n",
+					"usermod svccp000 -a -G cloudpricing\n",
+					"usermod svccp000 -a -G root\n",
 
 					"##############################################\n",
 					"# Download and Install java\n",
@@ -233,9 +239,9 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xm1024M -Xmx8196M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
@@ -335,9 +341,9 @@
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceConsoleLaunchConfig" },
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "2",
+				"MinSize" : "2",
+				"DesiredCapacity" : "2",
+				"MaxSize" : "4",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
@@ -396,10 +402,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"# hostname lx238cpconsole01q.na.sysco.net\n",
-					"# echo lx238cpconsole01q.na.sysco.net > /etc/hostname","\n",
-					"sh -c \"hostname  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
-					"sh -c \"echo  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
+					"# hostname lx238cpconsole01.na.sysco.net\n",
+					"# echo lx238cpconsole01.na.sysco.net > /etc/hostname","\n",
+					"sh -c \"hostname  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\"\n",
+					"sh -c \"echo  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\" > /etc/hostname\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
@@ -407,6 +413,13 @@
 					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+
+					"#Create Linux users and groups\n",
+					"useradd svccp000 -p Cpaws000\n",
+					"groupadd cloudpricing\n",
+					"usermod svccp000 -a -G aix\n",
+					"usermod svccp000 -a -G cloudpricing\n",
+					"usermod svccp000 -a -G root\n",
 
 					"##############################################\n",
 					"# Download and Install java\n",
@@ -487,7 +500,7 @@
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
-
+					
 					"date > /home/ec2-user/stoptime\n",
 					"reboot\n"
 					]]}
@@ -513,7 +526,9 @@
 					{
 						"LoadBalancerPort": "443",
 						"InstancePort": "8080",
-						"Protocol": "tcp"
+						"Protocol": "HTTPS",
+						"SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing-Admin1",
+						"PolicyNames": [ "CPConsole-Stickyness" ]
 					}
 				],
 				"HealthCheck": {
