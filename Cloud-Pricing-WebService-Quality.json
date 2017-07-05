@@ -3,133 +3,130 @@
 	"Description": "Deployed via Cloud-Pricing-WebService-Quality.json",
 	"Parameters": {
 		"PONumber": {
-		"Description": "PO Number for billing",
-		"Type": "String",
-		"Default": "7000002358",
-		"MinLength": "1",
-		"MaxLength": "255",
-		"AllowedPattern": "[\\x20-\\x7E]*",
-		"ConstraintDescription": "Must contain only ASCII characters."
-	},
-	"PvtSNc": {
-		"Description": "Private subnet for confidential apps in us-east-1c",
-		"Type": "String",
-		"Default": "subnet-b61cbb9d"
-	},
-	"PvtSNd": {
-		"Description": "Private subnet for confidential apps in us-east-1d",
-		"Type": "String",
-		"Default": "subnet-ea138a9d"
-	},
-	"PvtSNe": {
-		"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
-		"Type": "String",
-		"Default": "subnet-2512501f",
-		"MinLength" : "1",
-		"MaxLength" : "255",
-		"ConstraintDescription" : "Must be a valid Private Subnet."
-	},
-	"VPCID": {
-		"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
-		"Type": "String",
-		"Default": "vpc-ff88269a"
-	},
-	"NATaccessSG": {
-		"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
-		"Type": "String",
-		"Default": "sg-e151a186",
-		"ConstraintDescription": "Must be a valid NAT Security Group."
-	},
-	"CheckMKSG": {
-		"Description": "CheckMK Security Group",
-		"Type": "String",
-		"Default": "sg-0f7fc468",
-		"ConstraintDescription": "Must be a valid NAT Security Group."
-	},
-	"CommonAMI": {
-		"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
-		"Type" : "String",
-		"Default" : "ami-b5a79ea3",
-		"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
-		"ConstraintDescription" : "Must be a valid AMI."
-	},
-	"PemKey": {
-		"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
-		"Type": "String",
-		"Default": "KeyPair-Sysco-CloudPricing-NonProd"
-	},
-	"InstanceProfileMCP": {
-		"Description" : "Instance Profile Name for MCP",
-		"Type" : "String",
-		"Default" : "Application-CP-MCPServerRole"
-	},
-	"ApplicationName": {
-		"Description": "Name of application",
-		"Type": "String",
-		"Default": "Cloud Pricing QA-UOM",
-		"MinLength": "1",
-		"MaxLength": "255",
-		"AllowedPattern": "[\\x20-\\x7E]*",
-		"ConstraintDescription": "Must contain only ASCII characters."
-	},
-	"ApplicationId": {
-		"Description": "Application ID",
-		"Type": "String",
-		"Default": "APP-001151",
-		"MinLength": "1",
-		"MaxLength": "255",
-		"AllowedPattern": "[\\x20-\\x7E]*",
-		"ConstraintDescription": "Must contain only ASCII characters."
-	},
-	"Approver": {
-		"Description": "Name of application approver",
-		"Type": "String",
-		"Default": "Radulovich.Brigitte@corp.sysco.com",
-		"MinLength": "1",
-		"MaxLength": "255"
-	},
-	"Owner": {
-		"Description": "Name of application owner",
-		"Type": "String",
-		"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
-		"MinLength": "1",
-		"MaxLength": "255"
-	},
-	"ProjectId": {
-		"Description": "Project ID",
-		"Type": "String",
-		"Default": "BT.001176",
-		"MinLength": "1",
-		"MaxLength": "255",
-		"AllowedPattern": "[\\x20-\\x7E]*",
-		"ConstraintDescription": "Must contain only ASCII characters."
-	},
-	"Environment": {
-	"Description": "Environment for application",
-		"Type": "String",
-		"Default": "Quality",
-		"AllowedValues": [
-			"Sandbox",
-			"Development",
-			"Quality",
-			"Staging",
-			"Training",
-			"Production"
-		],
-		"ConstraintDescription": "Must be a valid environment."
-	},
-	"EnvironmentShort": {
-		"Description": "Environment for application",
-		"Type": "String",
-		"Default": "QA",
-		"AllowedValues": [
-			"DEV",
-			"QA",
-			"STG",
-			"PROD"
-		],
-		"ConstraintDescription": "Must be a valid environment."
-	}
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000003106",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-b61cbb9d"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-ea138a9d"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-2512501f"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CommonAMI": {
+			"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
+			"Type": "String",
+			"Default" : "ami-b5a79ea3",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"InstanceProfileMCP": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-CP-MCPServerRole"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing QA-UOM",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Radulovich.Brigitte@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Quality",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "QA",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
 	},
 	"Resources": {
 		"PriceWebServiceGroup" : {
@@ -146,13 +143,13 @@
 				"LoadBalancerNames" : [{ "Ref" : "PriceWebServiceELB" }],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			},
 			"UpdatePolicy" : {
@@ -184,54 +181,48 @@
 				} ],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
+
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
-					
-					"# Set Timezone\n",
-					"timedatectl set-timezone UTC\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate samba-client\n",
 
 					"##############################################\n",
-					"#Change hostname to include IP Address\n",
+					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
 					"# hostname lx238cpwebsvc01q.na.sysco.net\n",
 					"# echo lx238cpwebsvc01q.na.sysco.net > /etc/hostname","\n",
 					"sh -c \"hostname  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
 					"sh -c \"echo  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
 
-					"####################################\n",
-					"#Add Users to server\n",
-					"####################################\n",
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
 					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
 
-					"#Create Linux users and groups\n",
-					"useradd svccp000 -p Cpaws000\n",
-					"groupadd cloudpricing\n",
-					"usermod svccp000 -a -G cloudpricing\n",
-					"usermod svccp000 -a -G root\n",
-
-					"####################################\n",
+					"##############################################\n",
 					"# Download and Install java\n",
-					"####################################\n",
+					"##############################################\n",
 					"cd /tmp\n",
 					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
 					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Increase open file limits\n",
-					"####################################\n",
+					"##############################################\n",
 					"sh -c \"echo \\\"*   soft   nofile   10240\\\" >> /etc/security/limits.conf\"\n",
 					"sh -c \"echo \\\"*   hard   nofile   20240\\\" >> /etc/security/limits.conf\"\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install tomcat\n",
-					"####################################\n",
+					"##############################################\n",
 					"groupadd tomcat\n",
 					"useradd tomcat -b /app -g tomcat -e \"\"\n",
 					"cd /tmp\n",
@@ -241,35 +232,26 @@
 
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
-					"#sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /etc/environment\n",
-					"#sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'CATALINA_HOME=\\\"/usr/local/tomcat8\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
-					"####################################\n",
-					"sh -c \"printf \\\"@reboot /bin/sleep 20; /settings/tomcat.sh start;\n45 12 * * * /settings/tomcat.sh restart;\n\\\" > /etc/cron.d/tomcat\n\" ",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh;\n%s 12 * * * root /sbin/reboot;\n' $((${RANDOM}%60)) > /etc/cron.d/tomcat\n",
 
-					"# Set Tomcat to restart after every reboot\n",
-					"sh -c echo \"@reboot logger \\\"SYSTEM REBOOTED..Starting Tomcat...\\\" && /usr/local/tomcat8/bin/startup.sh\" | crontab - \n",
-				
-					"# Set Tomcat Environment Variable\n",
-					"#-----------------------------------\n",
+					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-
-					"# Set Tomcat Set JVM Heap\n",
-					"#-----------------------------------\n",
 					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
 
 					"# Start Tomcat\n",
-					"#-----------------------------------\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Create settings folder\n",
-					"####################################\n",
+					"##############################################\n",
 					"mkdir /settings\n",
 					"mkdir /settings/properties\n",
 					"mkdir /settings/logs\n",
@@ -277,9 +259,9 @@
 					"chgrp -R -c cloudpricing /settings\n",
 					"chmod -R -c 777 /settings\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install Splunk Universal Forwarder\n",
-					"####################################\n",
+					"##############################################\n",
 					"cd /tmp\n",
 					"wget -O splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'\n",
 					"chmod 744 splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
@@ -289,25 +271,22 @@
 					"./bin/splunk enable boot-start\n",
 
 					"# Configure to run as a deployment client\n",
-					"#-----------------------------------\n",
 					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
 
 					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"#-----------------------------------\n",
 					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 					"./bin/splunk restart\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install CodeDeploy\n",
-					"####################################\n",
+					"##############################################\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
 					
 					"date > /home/ec2-user/stoptime\n",
-					"sleep 120",
-					"reboot"
+					"reboot\n"
 					]]}
 				}
 			}
@@ -315,8 +294,8 @@
 		"PriceWebServiceELB": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
-			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
-			"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice2-", { "Ref" : "EnvironmentShort" }]]},
+				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice2-", { "Ref" : "EnvironmentShort" }]]},
 				"Scheme": "internal",
 				"CrossZone": "true",
 				"SecurityGroups": [ { "Ref": "sgELB" } ],
@@ -343,11 +322,11 @@
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-WebService-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		},
@@ -365,13 +344,13 @@
 				"LoadBalancerNames" : [{ "Ref" : "PriceConsoleELB" }],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Console AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			},
 			"UpdatePolicy" : {
@@ -403,48 +382,42 @@
 				} ],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
+
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
-				
-					"# Set Timezone\n",
-					"timedatectl set-timezone UTC\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate samba-client\n",
 
 					"##############################################\n",
-					"#Change hostname to include IP Address\n",
+					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
 					"# hostname lx238cpconsole01q.na.sysco.net\n",
 					"# echo lx238cpconsole01q.na.sysco.net > /etc/hostname","\n",
 					"sh -c \"hostname  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
 					"sh -c \"echo  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
 
-					"####################################\n",
-					"#Add Users to server\n",
-					"####################################\n",
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
 					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
 
-					"#Create Linux users and groups\n",
-					"useradd svccp000 -p Cpaws000\n",
-					"groupadd cloudpricing\n",
-					"usermod svccp000 -a -G cloudpricing\n",
-					"usermod svccp000 -a -G root\n",
-
-					"####################################\n",
+					"##############################################\n",
 					"# Download and Install java\n",
-					"####################################\n",
+					"##############################################\n",
 					"cd /tmp\n",
 					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
 					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install tomcat\n",
-					"####################################\n",
+					"##############################################\n",
 					"groupadd tomcat\n",
 					"useradd tomcat -b /app -g tomcat -e \"\"\n",
 					"cd /tmp\n",
@@ -452,9 +425,9 @@
 					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
 					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Add CORS\n",
-					"####################################\n",
+					"##############################################\n",
 					"oldpattern=\"</web-app>\"\n",
 					"newpattern=\"<filter> <filter-name>CorsFilter</filter-name>  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class></filter><filter-mapping>  <filter-name>CorsFilter</filter-name>  <url-pattern>/*</url-pattern></filter-mapping>  </web-app>\"\n",
 					"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
@@ -463,25 +436,25 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" >> /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx1536M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx1536M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/environment\n",
 
-					"# Set Tomcat Environment Variable\n",
-					"#-----------------------------------\n",
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh;\n%s 12 * * * root /sbin/reboot;\n' $((${RANDOM}%60)) > /etc/cron.d/tomcat\n",
+
+					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-
-					"# Set Tomcat Set JVM Heap\n",
-					"#-----------------------------------\n",
 					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
 
 					"# Start Tomcat\n",
-					"#-----------------------------------\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
 					
-					"####################################\n",
+					"##############################################\n",
 					"# Create settings folder\n",
-					"####################################\n",
+					"##############################################\n",
 					"mkdir /settings\n",
 					"mkdir /settings/properties\n",
 					"mkdir /settings/logs\n",
@@ -489,9 +462,9 @@
 					"chgrp -R -c cloudpricing /settings\n",
 					"chmod -R -c 777 /settings\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install Splunk Universal Forwarder\n",
-					"####################################\n",
+					"##############################################\n",
 					"cd /tmp\n",
 					"wget -O splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'\n",
 					"chmod 744 splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
@@ -501,23 +474,22 @@
 					"./bin/splunk enable boot-start\n",
 
 					"# Configure to run as a deployment client\n",
-					"#-----------------------------------\n",
 					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
 
 					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"#-----------------------------------\n",
 					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 					"./bin/splunk restart\n",
 
-					"####################################\n",
+					"##############################################\n",
 					"# Install CodeDeploy\n",
-					"####################################\n",
+					"##############################################\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
-					
-					"date > /home/ec2-user/stoptime\n"
+
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
 					]]}
 				}
 			}
@@ -530,16 +502,19 @@
 				"Scheme": "internal",
 				"CrossZone": "true",
 				"SecurityGroups": [ { "Ref": "sgELB" } ],
+				"LBCookieStickinessPolicy": [{ "PolicyName": "CPConsole-Stickyness" }],
 				"Listeners": [
 					{
 						"LoadBalancerPort": "80",
 						"InstancePort": "8080",
-						"Protocol": "HTTP"
+						"Protocol": "HTTP",
+						"PolicyNames": [ "CPConsole-Stickyness" ]
 					},
 					{
 						"LoadBalancerPort": "443",
 						"InstancePort": "8080",
-						"Protocol": "TCP"
+						"Protocol": "TCP",
+						"PolicyNames": [ "CPConsole-Stickyness" ]
 					}
 				],
 				"HealthCheck": {
@@ -553,11 +528,11 @@
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-Console-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		},
@@ -585,9 +560,9 @@
 					"CidrIp" : "10.0.0.0/8"
 				}],
 				"Tags": [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/cp_web_qa" },
-					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/cp_elb_", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
 					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
@@ -628,14 +603,14 @@
 				}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/cpwebsvc_qa" },
-					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/cpwebsvc_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
 				]
 			}
 		}
