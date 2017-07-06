@@ -391,12 +391,12 @@
 				}
 			}
 		},
-		"lx238cpsyncbase02d" : {
+		"lx238cpsyncbase04d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.large",
+				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -409,7 +409,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncbase02d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncbase04d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -434,8 +434,8 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncbase02d.na.sysco.net\n",
-					"echo lx238cpsyncbase02d.na.sysco.net > /etc/hostname","\n",
+					"hostname lx238cpsyncbase04d.na.sysco.net\n",
+					"echo lx238cpsyncbase04d.na.sysco.net > /etc/hostname","\n",
 					"# sh -c \"hostname  cpsync-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"# sh -c \"echo  cpsync-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -466,9 +466,9 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms6144M -Xmx6144M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms6144M -Xmx6144M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
@@ -520,7 +520,7 @@
 				}
 			}
 		},
-		"lx238cpsyncpmt02d" : {
+		"lx238cpsyncpmt04d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -538,7 +538,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpmt02d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpmt04d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -563,8 +563,8 @@
 					"####################################\n",
 					"# Change Name of server to match new hostname\n",
 					"####################################\n",
-					"hostname lx238cpsyncpmt02d.na.sysco.net\n",
-					"echo lx238cpsyncpmt02d.na.sysco.net > /etc/hostname","\n",
+					"hostname lx238cpsyncpmt04d.na.sysco.net\n",
+					"echo lx238cpsyncpmt04d.na.sysco.net > /etc/hostname","\n",
 					"# sh -c \"hostname  cpsyncpmt-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"# sh -c \"echo  cpsyncpmt-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -595,9 +595,9 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
@@ -651,7 +651,7 @@
 				}
 			}
 		},
-		"lx238cpsyncagm02d" : {
+		"lx238cpsyncagm04d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -669,7 +669,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncagm02d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncagm04d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -694,8 +694,8 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncagm02d.na.sysco.net\n",
-					"echo lx238cpsyncagm02d.na.sysco.net > /etc/hostname","\n",
+					"hostname lx238cpsyncagm04d.na.sysco.net\n",
+					"echo lx238cpsyncagm04d.na.sysco.net > /etc/hostname","\n",
 					"# sh -c \"hostname  cpsyncagm-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"# sh -c \"echo  cpsyncamt-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -726,9 +726,9 @@
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms6144M -Xmx6144M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms6144M -Xmx6144M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 				
 					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
@@ -783,7 +783,7 @@
 				}
 			}
 		},
-		"lx238cpsynccost02d" : {
+		"lx238cpsynccost04d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -801,7 +801,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsynccost02d" },
+					{ "Key" : "Name", "Value" : "lx238cpsynccost04d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -826,8 +826,8 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsynccost02d.na.sysco.net\n",
-					"echo lx238cpsynccost02d.na.sysco.net > /etc/hostname","\n",
+					"hostname lx238cpsynccost04d.na.sysco.net\n",
+					"echo lx238cpsynccost04d.na.sysco.net > /etc/hostname","\n",
 					"# sh -c \"hostname  cpsynccost-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"# sh -c \"echo  cpsynccost-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
 
@@ -857,10 +857,10 @@
 
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"#-----------------------------------\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpYYY.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpYYY.sh\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpmcp.sh\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/profile.d/cpmcp.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms2048M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 					"# Set Tomcat Environment Variable & JVM Heap\n",
 					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
