@@ -420,7 +420,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsync03" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncbase03" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -555,7 +555,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsync04" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncbase04" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },

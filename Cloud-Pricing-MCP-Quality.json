@@ -129,7 +129,7 @@
 		}
 	},
 	"Resources": {
-		"lx238cpmcp02q" : {
+		"lx238cpmcp03q" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1d",
@@ -147,7 +147,7 @@
 					}
 				} ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpmcp02q" },
+					{ "Key" : "Name", "Value" : "lx238cpmcp03q" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -172,8 +172,8 @@
 					"####################################\n",
 					"# Change Name of server to match new hostname\n",
 					"####################################\n",
-					"hostname lx238cpmcp02q.na.sysco.net\n",
-					"echo lx238cpmcp02q.na.sysco.net > /etc/hostname","\n",
+					"hostname lx238cpmcp03q.na.sysco.net\n",
+					"echo lx238cpmcp03q.na.sysco.net > /etc/hostname","\n",
 					"# sh -c \"hostname  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
 					"# sh -c \"echo  cpmcp-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
 
