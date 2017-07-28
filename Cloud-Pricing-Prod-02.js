@@ -2548,6 +2548,96 @@
 				}
 			}
 		},
+		"ms238cpodsql055": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": {
+					"Ref": "ODAMI"
+				},
+				"InstanceType": "c4.xlarge",
+				"KeyName": {
+					"Ref": "PemKey"
+				},
+				"SecurityGroupIds": [{
+					"Ref": "CPDBSG"
+				}, {
+					"Ref": "NATCLIENT"
+				}, "sg-42dc8b26"],
+				"SubnetId": {
+					"Ref": "Conf1c"
+				},
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql055" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"", [
+								"<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+							]
+						]
+					}
+				}
+			}
+		},
+		"ms238cpodsql056": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": {
+					"Ref": "ODAMI"
+				},
+				"InstanceType": "c4.xlarge",
+				"KeyName": {
+					"Ref": "PemKey"
+				},
+				"SecurityGroupIds": [{
+					"Ref": "CPDBSG"
+				}, {
+					"Ref": "NATCLIENT"
+				}, "sg-42dc8b26"],
+				"SubnetId": {
+					"Ref": "Conf1d"
+				},
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql056" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"", [
+								"<powershell>\n",
+								"Read-S3Object -BucketName sysco-prod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+								"</powershell>"
+
+							]
+						]
+					}
+				}
+			}
+		},
 		"MS238CPUPSQL16": {
 			"Type": "AWS::EC2::Instance",
 			"Metadata" : {

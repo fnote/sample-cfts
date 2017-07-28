@@ -517,6 +517,580 @@
         }
       }
     },
+    	"MS238CPODSQL13S": {
+	"Type": "AWS::EC2::Instance",
+	"Properties": {
+		"AvailabilityZone": "us-east-1c",
+		"DisableApiTermination": "false",
+		"EbsOptimized" : "true",
+		"ImageId": "ami-2f2e0839",
+		"InstanceType": "r4.xlarge",
+		"KeyName": { "Ref": "PemKey2" },
+		"SecurityGroupIds": [
+		  { "Ref": "sgDBOD" },
+		  { "Ref": "NATaccessSG" },
+		  { "Ref": "CheckMKSG" }
+		],
+		"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [ 
+			{
+					"DeviceName" : "/dev/sda1",
+					"Ebs" : {
+					"VolumeSize" : "300",
+					"VolumeType" : "gp2"
+					}
+				}
+				],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL13S" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+		],
+		"UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPODSQL13S -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+	},
+	    	"MS238CPODSQL14S": {
+	"Type": "AWS::EC2::Instance",
+	"Properties": {
+		"AvailabilityZone": "us-east-1c",
+		"DisableApiTermination": "false",
+		"EbsOptimized" : "true",
+		"ImageId": "ami-2f2e0839",
+		"InstanceType": "r4.xlarge",
+		"KeyName": { "Ref": "PemKey2" },
+		"SecurityGroupIds": [
+		  { "Ref": "sgDBOD" },
+		  { "Ref": "NATaccessSG" },
+		  { "Ref": "CheckMKSG" }
+		],
+		"SubnetId": { "Ref": "PvtSNc" },
+		"BlockDeviceMappings" : [ 
+			{
+					"DeviceName" : "/dev/sda1",
+					"Ebs" : {
+					"VolumeSize" : "300",
+					"VolumeType" : "gp2"
+					}
+				}			
+				],
+		"Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL14S" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+		],
+		"UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "<powershell>\n",
+                "Rename-Computer -NewName MS238CPODSQL14S -Restart\n",
+                "</powershell>"
+              ]
+            ]
+          }
+        }
+      }
+	},
+	"ms238cpodsqlbase": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-d47102c2",
+			"InstanceType": "c4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsqlbase" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			]
+		}
+	},
+	"ms238cpodsql60s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "r4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql60s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql60s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+	"ms238cpodsql61s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "r4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql61s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql61s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    	"ms238cpodsql62s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "m4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql62s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql62s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+		"ms238cpodsql63s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "m4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql63s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql63s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    "ms238cpodsql64s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "c4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql64s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql64s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    "ms238cpodsql65s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "c4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql65s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql65s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    "ms238cpodsql66s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "i3.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql66s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql66s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    "ms238cpodsql67s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "i3.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql67s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql67s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+        "ms238cpodsql68s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-feecb185",
+			"InstanceType": "i3.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql68s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql68s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+            "ms238cpodsql69s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": "ami-feecb185",
+			"InstanceType": "i3.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql69s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql69s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },         
+    "ms238cpodsql70s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": { "Ref": "ODAMI" },
+			"InstanceType": "r4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql70s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql70s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
+    "ms238cpodsql71s": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"EbsOptimized" : "true",
+			"ImageId": { "Ref": "ODAMI" },
+			"InstanceType": "r4.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [
+				{ "Ref": "TuningDBSG" },
+				{ "Ref": "NATaccessSG" },
+				{ "Ref": "CheckMKSG" }
+			],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"BlockDeviceMappings" : [{
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+						"VolumeSize" : "300",
+						"VolumeType" : "gp2"
+					}
+			}],
+			"Tags": [
+				{ "Key" : "Name", "Value" : "ms238cpodsql71s" },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+			],
+			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName ms238cpodsql71s -Restart\n",
+				"</powershell>"
+			]]}}
+		}
+    },
 	"sgDBOD" : {
 		"Type" : "AWS::EC2::SecurityGroup",
 		"Properties" : {
