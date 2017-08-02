@@ -52,6 +52,21 @@
 			"Type": "String",
 			"Default": "ami-2202074a"
 		},
+		"SQL2016AMI": {
+			"Description": "Microsoft Windows Server 2016 with SQL Server Standard - ami-c2e5ebd4",
+			"Type": "String",
+			"Default": "ami-c2e5ebd4"
+		},
+		"CPOD006AMI": {
+			"Description": "CP-OnDemand-006 - ami-7102270a",
+			"Type": "String",
+			"Default": "ami-7102270a"
+		},
+		"CPOD008AMI": {
+			"Description": "CP-OnDemand-008 - ami-127f5869",
+			"Type": "String",
+			"Default": "ami-127f5869"
+		},
 		"AMIUpdateProc012": {
 		  "Description": "AMI for CP-UpdateProcessor-012 (ami-08d01f1e)",
 		  "Type": "String",
@@ -775,6 +790,149 @@
 							]
 						]
 					}
+				}
+			}
+		},
+		"ms238cpodsql000": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": { "Ref": "SQL2016AMI" },
+				"InstanceType": "m4.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
+				"SubnetId": { "Ref": "Conf1c" },
+				"BlockDeviceMappings": [
+					{ "DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" } }
+				],
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql000" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"ms238cpodsql00B": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": { "Ref": "CPOD006AMI" },
+				"InstanceType": "m4.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
+				"SubnetId": { "Ref": "Conf1c" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql00B" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"ms238cpodsql00C": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": { "Ref": "CPOD006AMI" },
+				"InstanceType": "m4.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
+				"SubnetId": { "Ref": "Conf1c" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql00C" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"ms238cpodsql001": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": { "Ref": "CPOD008AMI" },
+				"InstanceType": "r4.xlarge",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
+				"SubnetId": { "Ref": "Conf1c" },
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql001" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				],
+				"UserData": {
+					"Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql001 -Restart\n",
+						"</powershell>"
+					]]}
+				}
+			}
+		},
+		"ms238cpodsql002": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
+				"ImageId": { "Ref": "CPOD008AMI" },
+				"InstanceType": "r4.xlarge",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
+				"SubnetId": { "Ref": "Conf1d" },
+				"Tags": [
+				  { "Key" : "Name", "Value": "ms238cpodsql002" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				],
+				"UserData": {
+					"Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql002 -Restart\n",
+						"</powershell>"
+					]]}
 				}
 			}
 		},

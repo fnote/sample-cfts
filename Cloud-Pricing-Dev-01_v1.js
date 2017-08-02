@@ -508,6 +508,45 @@
         }
       }
     },
+    "MS238CPODSQL00d": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1d",
+        "DisableApiTermination": "false",
+        "ImageId": "ami-1a54450c",
+        "InstanceType": "t2.large",
+        "KeyName": { "Ref": "PemKey2" },
+        "SecurityGroupIds": [
+          { "Ref": "sgDBOD" },
+          { "Ref": "NATaccessSG" },
+          { "Ref": "CheckMKSG" }
+        ],
+        "SubnetId": { "Ref": "PvtSNd" },
+		"BlockDeviceMappings": [
+			{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+			{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+			{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+			{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+			{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+			{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+		],
+        "Tags": [
+			{ "Key" : "Name", "Value" : "MS238CPODSQL00d" },
+			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+        ],
+		"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+				"<powershell>\n",
+				"Rename-Computer -NewName MS238CPODSQL00d -Restart\n",
+				"</powershell>"
+		]]}}
+	}
+	},
 	"sgDBOD" : {
 		"Type" : "AWS::EC2::SecurityGroup",
 		"Properties" : {
@@ -990,6 +1029,43 @@
 				"Fn::Base64": { "Fn::Join": [ "", [
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPIDE05d -Restart\n",
+					"</powershell>"
+				]]}
+			}
+		}
+    },
+	"MS238CPIDE06d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-1a54450c",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "400",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE06d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"Rename-Computer -NewName MS238CPIDE06d -Restart\n",
 					"</powershell>"
 				]]}
 			}
