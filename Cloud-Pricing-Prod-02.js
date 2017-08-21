@@ -3650,6 +3650,68 @@
 				}
 			}
 		},
+		"sgDBOD" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP OD DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [ 
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3181",
+					"ToPort" : "3181",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1433",
+					"ToPort" : "1433",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1501",
+					"ToPort" : "1512",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8080",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpdbod_prod_app" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
 		"MS238CPUPSQL01": {
 			"Type": "AWS::EC2::Instance",
 			"Metadata" : {
@@ -3713,7 +3775,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL01" },
@@ -3798,7 +3860,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL02" },
@@ -3883,7 +3945,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL03" },
@@ -3968,7 +4030,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL04" },
@@ -4053,7 +4115,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL05" },
@@ -4138,7 +4200,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL06" },
@@ -4223,7 +4285,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL07" },
@@ -4308,7 +4370,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL08" },
@@ -4393,7 +4455,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL09" },
@@ -4478,7 +4540,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL10" },
@@ -4563,7 +4625,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL11" },
@@ -4648,7 +4710,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL12" },
@@ -4733,7 +4795,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL13" },
@@ -4818,7 +4880,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL14" },
@@ -4903,7 +4965,7 @@
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "CPDBSG" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL15" },
