@@ -151,200 +151,6 @@
 		}
 	},
 	"Resources": {
-		"PriceWebServiceELB": {
-			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-			"Properties": {
-				"Subnets" : [{ "Ref" : "Conf1c" },{ "Ref" : "Conf1d" }],
-				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice-", { "Ref" : "EnvironmentShort" }]]},
-				"Scheme": "internal",
-				"CrossZone": "true",
-				"SecurityGroups": [ { "Ref": "CPWEBSG" } ],
-				"Listeners": [
-					{
-						"LoadBalancerPort": "80",
-						"InstancePort": "8080",
-						"Protocol": "HTTP"
-					},
-					{
-						"LoadBalancerPort": "443",
-						"InstancePort": "8080",
-						"Protocol": "TCP"
-					}
-				],
-				"HealthCheck": {
-					"Target" : "HTTP:8080/",
-					"HealthyThreshold": "3",
-					"UnhealthyThreshold": "7",
-					"Interval": "120",
-					"Timeout": "15"
-				},
-				"Tags": [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-WebService-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				]
-			}
-		},
-		"PriceConsoleELB": {
-			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-			"Properties": {
-				"Subnets" : [{ "Ref" : "Conf1c" },{ "Ref" : "Conf1d" }],
-				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-console-", { "Ref" : "EnvironmentShort" }]]},
-				"Scheme": "internal",
-				"CrossZone": "true",
-				"SecurityGroups": [ { "Ref": "CPWEBSG" } ],
-				"LBCookieStickinessPolicy": [{ "PolicyName": "CPConsole-Stickyness" }],
-				"Listeners": [
-					{
-						"LoadBalancerPort": "80",
-						"InstancePort": "8080",
-						"Protocol": "HTTP",
-						"PolicyNames": [ "CPConsole-Stickyness" ]
-					},
-					{
-						"LoadBalancerPort": "443",
-						"InstancePort": "8080",
-						"Protocol": "HTTPS",
-						"SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/Cloud-Pricing-Admin1",
-						"PolicyNames": [ "CPConsole-Stickyness" ]
-					}
-				],
-				"HealthCheck": {
-					"Target" : "HTTP:8080/",
-					"HealthyThreshold": "3",
-					"UnhealthyThreshold": "7",
-					"Interval": "120",
-					"Timeout": "15"
-				},
-				"Tags": [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-Console-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				]
-			}
-		},
-		"CPWEBSG": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "Web Services",
-				"VpcId": {
-					"Ref": "VPCID"
-				},
-				"SecurityGroupIngress": [{
-					"IpProtocol": "tcp",
-					"FromPort": "80",
-					"ToPort": "80",
-					"CidrIp": "10.0.0.0/8"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "3389",
-					"ToPort": "3389",
-					"CidrIp": "10.0.0.0/8"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "10.0.0.0/8"
-				}],
-				"Tags": [
-				  { "Key" : "Name", "Value": "sg/vpc_sysco_prod_01/cp_web" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
-			}
-		},
-		"IngressAdder": {
-			"DependsOn": "CPWEBSG",
-			"Type": "AWS::EC2::SecurityGroupIngress",
-			"Properties": {
-				"FromPort": "-1",
-				"GroupId": {
-					"Ref": "CPWEBSG"
-				},
-				"IpProtocol": "-1",
-				"SourceSecurityGroupId": {
-					"Ref": "CPWEBSG"
-				},
-				"ToPort": "-1"
-			}
-		},
-		"CPDBSG": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "Database Services",
-				"VpcId": {
-					"Ref": "VPCID"
-				},
-				"SecurityGroupIngress": [{
-					"IpProtocol": "-1",
-					"FromPort": "-1",
-					"ToPort": "-1",
-					"SourceSecurityGroupId": {
-						"Ref": "CPWEBSG"
-					}
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "3389",
-					"ToPort": "3389",
-					"CidrIp": "10.0.0.0/8"
-				}, {
-					"IpProtocol": "icmp",
-					"FromPort": "-1",
-					"ToPort": "-1",
-					"CidrIp": "10.0.0.0/8"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "3181",
-					"ToPort": "3181",
-					"CidrIp": "10.0.0.0/8"
-				}, {
-					"IpProtocol": "tcp",
-					"FromPort": "1433",
-					"ToPort": "1433",
-					"CidrIp": "10.0.0.0/8"
-				}],
-				"Tags": [
-				  { "Key" : "Name", "Value": "sg/vpc_sysco_prod_01/cp_db" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
-			}
-		},
-		"IngressAdder2": {
-			"DependsOn": "CPDBSG",
-			"Type": "AWS::EC2::SecurityGroupIngress",
-			"Properties": {
-				"FromPort": "-1",
-				"GroupId": {
-					"Ref": "CPDBSG"
-				},
-				"IpProtocol": "-1",
-				"SourceSecurityGroupId": {
-					"Ref": "CPDBSG"
-				},
-				"ToPort": "-1"
-			}
-		},
 		"MS238CPBRFS01": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
@@ -384,164 +190,6 @@
 					}
 				}
 
-			}
-		},
-		"sgMCP" : {
-			"Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-				"GroupDescription" : "CP MCP App SG",
-				"VpcId" : { "Ref" : "VPCID" },
-				"SecurityGroupIngress" : [
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "80",
-					"ToPort" : "80",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "80",
-					"ToPort" : "8080",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "22",
-					"ToPort" : "22",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "icmp",
-					"FromPort" : "-1",
-					"ToPort" : "-1",
-					"CidrIp" : "10.0.0.0/8"
-				}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpws_prod_app" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
-				]
-			}
-		},
-		"ms238cpodsql000": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
-				"ImageId": { "Ref": "SQL2016AMI" },
-				"InstanceType": "m4.large",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
-				"SubnetId": { "Ref": "Conf1c" },
-				"BlockDeviceMappings": [
-					{ "DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" } }
-				],
-				"Tags": [
-				  { "Key" : "Name", "Value": "ms238cpodsql000" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
-			}
-		},
-		"ms238cpodsql00B": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
-				"ImageId": { "Ref": "CPOD006AMI" },
-				"InstanceType": "m4.large",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
-				"SubnetId": { "Ref": "Conf1c" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-				],
-				"Tags": [
-				  { "Key" : "Name", "Value": "ms238cpodsql00B" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
-			}
-		},
-		"ms238cpodsql00C": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
-				"ImageId": { "Ref": "CPOD006AMI" },
-				"InstanceType": "m4.large",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
-				"SubnetId": { "Ref": "Conf1c" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
-				],
-				"Tags": [
-				  { "Key" : "Name", "Value": "ms238cpodsql00C" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
-			}
-		},
-		"ms238cpodsql00D": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"IamInstanceProfile": "Sysco-ApplicationDefaultInstanceProfile-47RRMF15XFMP",
-				"ImageId": "ami-7102270a",
-				"InstanceType": "m4.large",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [{ "Ref": "CPDBSG" }, { "Ref": "NATCLIENT" }, "sg-42dc8b26"],
-				"SubnetId": { "Ref": "Conf1c" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }}
-				],
-				"Tags": [
-				  { "Key" : "Name", "Value": "ms238cpodsql00D" },
-				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
-				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
-				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
 			}
 		},
 		"ms238cpodsql001": {
@@ -1652,99 +1300,6 @@
 						"</powershell>"
 					]]}
 				}
-			}
-		},
-		"sgDBOD" : {
-			"Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-				"GroupDescription" : "CP OD DB SG",
-				"VpcId" : { "Ref" : "VPCID" },
-				"SecurityGroupIngress" : [ 
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "3389",
-					"ToPort" : "3389",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "3181",
-					"ToPort" : "3181",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "1433",
-					"ToPort" : "1433",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "1501",
-					"ToPort" : "1512",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "80",
-					"ToPort" : "80",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "tcp",
-					"FromPort" : "8080",
-					"ToPort" : "8080",
-					"CidrIp" : "10.0.0.0/8"
-				},
-				{
-					"IpProtocol" : "icmp",
-					"FromPort" : "-1",
-					"ToPort" : "-1",
-					"CidrIp" : "10.0.0.0/8"
-				}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpdbod_prod_app" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				]
-			}
-		},
-		"MS238CPUPSQL00": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP014AMI" },
-				"InstanceType": "r4.large",
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATCLIENT" }, { "Ref" : "CheckMKSG" } ],
-				"SubnetId": { "Ref": "Conf1c" },
-				"Tags": [
-					{ "Key": "Name", "Value": "MS238CPUPSQL00" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-					"<script>\n",
-					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL00 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPUPSQL00 -Restart\n",
-					"</powershell>"
-				]]}}
 			}
 		},
 		"MS238CPUPSQL01": {
@@ -3020,6 +2575,223 @@
 					"Rename-Computer -NewName MS238CPUPSQL15 -Restart\n",
 					"</powershell>"
 				]]}}
+			}
+		},
+		"sgMCP" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP MCP App SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpws_prod_app" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"sgDBOD" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP OD DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [ 
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3181",
+					"ToPort" : "3181",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1433",
+					"ToPort" : "1433",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1501",
+					"ToPort" : "1512",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8080",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpdbod_prod_app" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
+		"CPWEBSG": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Web Services",
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "3389",
+					"ToPort": "3389",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "10.0.0.0/8"
+				}],
+				"Tags": [
+				  { "Key" : "Name", "Value": "sg/vpc_sysco_prod_01/cp_web" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"IngressAdder": {
+			"DependsOn": "CPWEBSG",
+			"Type": "AWS::EC2::SecurityGroupIngress",
+			"Properties": {
+				"FromPort": "-1",
+				"GroupId": {
+					"Ref": "CPWEBSG"
+				},
+				"IpProtocol": "-1",
+				"SourceSecurityGroupId": {
+					"Ref": "CPWEBSG"
+				},
+				"ToPort": "-1"
+			}
+		},
+		"CPDBSG": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Database Services",
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "-1",
+					"FromPort": "-1",
+					"ToPort": "-1",
+					"SourceSecurityGroupId": {
+						"Ref": "CPWEBSG"
+					}
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "3389",
+					"ToPort": "3389",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "icmp",
+					"FromPort": "-1",
+					"ToPort": "-1",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "3181",
+					"ToPort": "3181",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "1433",
+					"ToPort": "1433",
+					"CidrIp": "10.0.0.0/8"
+				}],
+				"Tags": [
+				  { "Key" : "Name", "Value": "sg/vpc_sysco_prod_01/cp_db" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"IngressAdder2": {
+			"DependsOn": "CPDBSG",
+			"Type": "AWS::EC2::SecurityGroupIngress",
+			"Properties": {
+				"FromPort": "-1",
+				"GroupId": {
+					"Ref": "CPDBSG"
+				},
+				"IpProtocol": "-1",
+				"SourceSecurityGroupId": {
+					"Ref": "CPDBSG"
+				},
+				"ToPort": "-1"
 			}
 		}
 	}
