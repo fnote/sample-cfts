@@ -1204,7 +1204,7 @@
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-bd3ba0aa",
-			"InstanceType": "c4.xlarge",
+			"InstanceType": "t2.xlarge",
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" },{ "Ref": "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
