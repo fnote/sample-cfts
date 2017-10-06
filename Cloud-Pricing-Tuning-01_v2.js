@@ -691,32 +691,6 @@
         }
       }
 	},
-	"ms238cpodsqlbase": {
-		"Type": "AWS::EC2::Instance",
-		"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": "ami-d47102c2",
-			"InstanceType": "c4.xlarge",
-			"KeyName": { "Ref": "PemKey2" },
-			"SecurityGroupIds": [
-				{ "Ref": "TuningDBSG" },
-				{ "Ref": "NATaccessSG" },
-				{ "Ref": "CheckMKSG" }
-			],
-			"SubnetId": { "Ref": "PvtSNc" },
-			"Tags": [
-				{ "Key" : "Name", "Value" : "ms238cpodsqlbase" },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
 	"sgDBOD" : {
 		"Type" : "AWS::EC2::SecurityGroup",
 		"Properties" : {
@@ -778,44 +752,6 @@
 				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
 			]
 		}
-	},
-	"ms238cpodsql51s": {
-	"Type": "AWS::EC2::Instance",
-		"Properties": {
-		"AvailabilityZone": "us-east-1d",
-		"DisableApiTermination": "false",
-		"ImageId": { "Ref": "ODAMI" },
-		"InstanceType": "m3.xlarge",
-		"KeyName": { "Ref": "PemKey" },
-		"SecurityGroupIds": [
-		  { "Ref": "TuningDBSG" },
-		  { "Ref": "NATaccessSG" },
-		  { "Ref": "CheckMKSG" }
-		],
-		"SubnetId": { "Ref": "PvtSNd" },
-		"Tags": [
-			{ "Key" : "Name", "Value" : "ms238cpodsql51s" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationNameIBM" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumberIBM" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "ApproverIBM" } }
-		],
-		"UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<powershell>\n",
-                "Rename-Computer -NewName ms238cpodsql51s -Restart\n",
-                "</powershell>"
-              ]
-            ]
-          }
-        }
-      }
 	},
 	"MS238CPUPSQL01s": {
 		"Type": "AWS::EC2::Instance",
