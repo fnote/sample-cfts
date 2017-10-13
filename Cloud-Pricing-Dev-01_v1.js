@@ -1599,6 +1599,108 @@
 				"date > /home/ec2-user/stoptime\n"
 			]]}}
 		}
+	},
+	"lx238cpodsql02d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId" : "ami-6da7ab07",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings" : [ {
+				"DeviceName" : "/dev/sda1",
+				"Ebs" : {
+					"VolumeSize" : "200",
+					"VolumeType" : "gp2"
+				}
+			} ],
+			"Tags": [
+				{ "Key": "Name", "Value": "lx238cpodsql02d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"#!/bin/bash -v\n",
+				"date > /home/ec2-user/starttime\n",
+				"yum update -y aws-cfn-bootstrap\n",
+				"yum update -y wget\n",
+				"yum update -y curl\n",
+				
+				"# Set Timezone\n",
+				"timedatectl set-timezone UTC\n",
+
+				"# Install lsof locate and smbclient\n",
+				"yum install -y sysstat lsof mlocate samba-client\n",
+
+				"#Change Name of server to match new hostname\n",
+				"hostname lx238cpodsql02d.na.sysco.net\n",
+				"echo lx238cpodsql02d.na.sysco.net > /etc/hostname","\n",
+				"# sh -c \"hostname  cpodsql-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+				"#sh -c \"echo  cpodsql-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\" > /etc/hostname\n",
+
+				"####################################\n",
+				"#Add Users to server\n",
+				"####################################\n",
+				"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+				"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+				"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+				"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
+
+				"####################################\n",
+				"# Download and Install MS SQL Server 2017\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"# curl https://packages.microsoft.com/config/rhel/7/mssql-server.repo > /etc/yum.repos.d/mssql-server.repo\n",
+				"# yum install -y mssql-server\n",
+				"curl -o /etc/yum.repos.d/mssql-server.repo https://packages.microsoft.com/config/rhel/7/mssql-server-2017.repo\n",
+				"yum install -y mssql-server\n",
+				"# Setup /opt/mssql/bin/mssql-conf setup",
+
+				"####################################\n",
+				"# Increase open file limits\n",
+				"####################################\n",
+				"sh -c \"echo \\\"*   soft   nofile   10240\\\" >> /etc/security/limits.conf\"\n",
+				"sh -c \"echo \\\"*   hard   nofile   20240\\\" >> /etc/security/limits.conf\"\n",
+
+				"####################################\n",
+				"# Install Splunk Universal Forwarder\n",
+				"####################################\n",
+				"cd /tmp\n",
+				"wget -O splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.1&product=universalforwarder&filename=splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm&wget=true'\n",
+				"chmod 744 splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm\n",
+				"rpm -i splunkforwarder-6.6.1-aeae3fe0c5af-linux-2.6-x86_64.rpm\n",
+				"cd /opt/splunkforwarder\n",
+				"./bin/splunk start --accept-license\n",
+				"./bin/splunk enable boot-start\n",
+
+				"# Configure to run as a deployment client\n",
+				"#-----------------------------------\n",
+				"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+				"# Configure forwarder to send logs to Splunk Indexer\n",
+				"#-----------------------------------\n",
+				"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+				"./bin/splunk restart\n",
+
+				"####################################\n",
+				"# Install CodeDeploy\n",
+				"####################################\n",
+				"yum install ruby -y\n",
+				"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+				"chmod +x ./install\n",
+				"./install auto\n",
+				
+				"date > /home/ec2-user/stoptime\n"
+			]]}}
+		}
 	}
 
 	},
