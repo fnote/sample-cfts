@@ -26,6 +26,11 @@
 			"Type": "String",
 			"Default": "subnet-a421629e"
 		},
+		"CD1c" : {
+			"Description" : "Management Confidential_01 us-east-1c subnet",
+			"Type" : "String",
+			"Default" : "subnet-9e3944e9"
+		},
 		"VPCID": {
 			"Description": "Name of and existing VPC",
 			"Type": "String",
@@ -41,6 +46,21 @@
 			"Type": "String",
 			"Default": "sg-42dc8b26",
 			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"VPCMGTID" : {
+			"Description" : "Management VPC",
+			"Type" : "String",
+			"Default" : "vpc-54e55831"
+		},
+		"NATClientMGTSG" : {
+			"Description" : "NAT Client Security Group",
+			"Type" : "String",
+			"Default" : "sg-8efbe9ea"
+		},
+		"CISG" : {
+			"Description" : "CI servers Security Group",
+			"Type" : "String",
+			"Default" : "sg-ef72c18b"
 		},
 		"SQL2016AMI": {
 			"Description": "Microsoft Windows Server 2016 with SQL Server Standard - ami-c2e5ebd4",
@@ -151,6 +171,45 @@
 		}
 	},
 	"Resources": {
+		"ms238mgmtcim02": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : "ami-5648ad2c",
+				"InstanceType" : "t2.xlarge",
+				"KeyName" : {"Ref" : "PemKey2"},
+				"SecurityGroupIds": [{ "Ref": "CPCICDSG" }, { "Ref": "CISG" }, { "Ref": "NATClientMGTSG" } ],
+				"SubnetId": { "Ref": "CD1c" },
+				"IamInstanceProfile" : "Sysco-DevOpsInstanceProfile-PPXXSBIRK3JN",
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "80", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "500", "VolumeType": "gp2" }}
+				],
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "ms238mgmtcim02" },
+					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				],
+				"UserData" : {
+					"Fn::Base64" : {
+						"Fn::Join" : [
+							"",
+							[
+								"<powershell>\n",
+								"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+								"Rename-Computer -NewName ms238mgmtcim02 -Restart\n",
+								"</powershell>"
+							]
+						]
+					}
+				}
+			}
+		},
 		"MS238CPBRFS01": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
@@ -6931,6 +6990,54 @@
 					"IpProtocol": "tcp",
 					"FromPort": "1433",
 					"ToPort": "1433",
+					"CidrIp": "10.0.0.0/8"
+				}],
+				"Tags": [
+				  { "Key" : "Name", "Value": "sg/vpc_sysco_prod_01/cp_db" },
+				  { "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+				  { "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+				  { "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+				  { "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+				  { "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
+				  { "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+				  { "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+				]
+			}
+		},
+		"CPCICDSG": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Database Services",
+				"VpcId": { "Ref": "VPCMGTID" },
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "1433",
+					"ToPort": "1433",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "3389",
+					"ToPort": "3389",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "3181",
+					"ToPort": "3181",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "8080",
+					"ToPort": "8080",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "icmp",
+					"FromPort": "-1",
+					"ToPort": "-1",
 					"CidrIp": "10.0.0.0/8"
 				}],
 				"Tags": [
