@@ -1332,7 +1332,7 @@
 				]]}
 			}
 		}
-    },
+	},
 	"MS238CPIDE06d": {
 		"Type": "AWS::EC2::Instance",
 		"Properties": {
@@ -1369,7 +1369,379 @@
 				]]}
 			}
 		}
-    },
+	},
+	"MS238CPIDE11d": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPIDE11d.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE11d --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+						"C:\\temp\\UpdateCP.cmd\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "t2.xlarge",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE11d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE11d --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
+		}
+	},
+	"MS238CPIDE12d": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPIDE12d.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE12d --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+						"C:\\temp\\UpdateCP.cmd\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "t2.xlarge",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE12d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE12d --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
+		}
+	},
+	"MS238CPIDE13d": {
+		"Type": "AWS::EC2::Instance",
+		"Metadata" : {
+			"AWS::CloudFormation::Init" : { "config" : {
+				"files" : {
+					"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+						"[main]\n",
+						"stack=", { "Ref" : "AWS::StackId" }, "\n",
+						"region=", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+						"[cfn-auto-reloader-hook]\n",
+						"triggers=post.update\n",
+						"path=Resources.MS238CPIDE13d.Metadata.AWS::CloudFormation::Init\n",
+						"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE13d --region ", { "Ref" : "AWS::Region" }, "\n"
+					]]}},
+					"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+						{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+					"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+						"cd \\temp\n",
+						"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+						"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+						"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+						
+						"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+						"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+						"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+						"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+						"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+						"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+						"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+						"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+						"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+						"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+						"C:\\temp\\UpdateCP.cmd\n"
+					]]}}
+				},
+				"commands" : {
+					"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+				},
+				"services" : { "windows" : { "cfn-hup" : {
+					"enabled" : "true",
+					"ensureRunning" : "true",
+					"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+				}}}
+			}}
+		},
+		"Properties": {
+			"AvailabilityZone": "us-east-1c",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-16119f01",
+			"InstanceType": "t2.xlarge",
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNc" },
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE13d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+				"<script>\n",
+				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE13d --region ", { "Ref" : "AWS::Region" }, "\n",
+				"</script>"
+			]]}}
+		}
+	},
+	"MS238CPIDE21d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-93bf43e9",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [
+				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+			],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE21d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPIDE21d -Restart\n",
+					"</powershell>"
+				]]}
+			}
+		}
+	},
+	"MS238CPIDE22d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-93bf43e9",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [
+				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+			],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE22d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPIDE22d -Restart\n",
+					"</powershell>"
+				]]}
+			}
+		}
+	},
+	"MS238CPIDE23d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-93bf43e9",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [
+				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+				{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+			],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE23d" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPIDE23d -Restart\n",
+					"</powershell>"
+				]]}
+			}
+		}
+	},
 	"lx238cpide04d": {
 		"Type": "AWS::EC2::Instance",
 		"Properties": {
