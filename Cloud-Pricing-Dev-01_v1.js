@@ -1204,7 +1204,7 @@
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-bd3ba0aa",
-			"InstanceType": "t2.xlarge",
+			"InstanceType": "t2.2xlarge",
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" },{ "Ref": "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
@@ -1213,7 +1213,7 @@
 				"Ebs": { "VolumeSize": "750", "VolumeType": "gp2" }
 			}],
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE02d" },
+				{ "Key": "Name", "Value": "MS238CPIDE02d James" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
 				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
 				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
