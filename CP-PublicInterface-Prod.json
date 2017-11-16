@@ -441,7 +441,7 @@
 						"Protocol": "HTTPS",
 						"LoadBalancerPort": "443",
 						"InstancePort": "80",
-						"SSLCertificateId": "arn:aws:iam::467936237394:server-certificate/cloudpricing.cloud.sysco.com02-2017"
+						"SSLCertificateId": "arn:aws:acm:us-east-1:467936237394:certificate/04aa73a0-81f1-4baa-b86d-99755442f43a"
 					}
 				],
 				"HealthCheck": {
