@@ -1204,7 +1204,7 @@
 			"AvailabilityZone": "us-east-1d",
 			"DisableApiTermination": "false",
 			"ImageId": "ami-bd3ba0aa",
-			"InstanceType": "t2.xlarge",
+			"InstanceType": "t2.2xlarge",
 			"KeyName": { "Ref": "PemKey2" },
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" },{ "Ref": "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
@@ -1275,7 +1275,7 @@
 				"Ebs": { "VolumeSize": "500", "VolumeType": "gp2" }
 			}],
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE04d" },
+				{ "Key": "Name", "Value": "MS238CPIDE04d Sagar" },
 				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
 				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
 				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
@@ -1368,6 +1368,37 @@
 					"</powershell>"
 				]]}
 			}
+		}
+	},
+	"MS238CPIDE07d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-d03d65c7",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref": "NATaccessSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [{
+				"DeviceName": "/dev/sda1",
+				"Ebs": { "VolumeSize": "500", "VolumeType": "gp2" }
+			}],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE07d Sagar" },
+				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
+				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
+				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
+				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
+				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
+				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
+				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+			],
+			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+				"<powershell>\n",
+				"Rename-Computer -NewName MS238CPIDE07d -Restart\n",
+				"</powershell>"
+			]]}}
 		}
 	},
 	"MS238CPIDE11d": {
