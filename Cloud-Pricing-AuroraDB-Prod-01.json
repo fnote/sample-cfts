@@ -109,9 +109,12 @@
 			"Properties" :  {
 				"DBInstanceIdentifier" : "CPDBMasterPROD",
 				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.2xlarge",
+				"DBInstanceClass" : "db.r3.4xlarge",
 				"Engine" : "aurora",
+				"MonitoringInterval" : 30,
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
@@ -131,9 +134,12 @@
 			"Properties" :  {
 				"DBInstanceIdentifier" : "CPDBReplica01PROD",
 				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.2xlarge",
+				"DBInstanceClass" : "db.r3.4xlarge",
 				"Engine" : "aurora",
+				"MonitoringInterval" : 30,
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Replica01" },
