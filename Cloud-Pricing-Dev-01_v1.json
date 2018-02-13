@@ -1,731 +1,582 @@
 {
-  "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Deployed via Cloud-Pricing-Dev-01_v1",
-  "Parameters": {
-    "PONumber": {
-      "Description": "PO Number for billing",
-      "Type": "String",
-      "Default": "7000000347",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
-    "PvtSNc": {
-      "Description": "Private subnet for confidential apps in us-east-1c",
-      "Type": "String",
-      "Default": "subnet-b61cbb9d"
-    },
-    "PvtSNd": {
-      "Description": "Private subnet for confidential apps in us-east-1d",
-      "Type": "String",
-      "Default": "subnet-ea138a9d"
-    },
-    "PvtSNe": {
-	  "Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
-      "Type": "String",
-      "Default": "subnet-2512501f",
-      "MinLength" : "1",
-      "MaxLength" : "255",
-      "ConstraintDescription" : "Must be a valid Private Subnet."
-    },
-    "VPCID": {
-      "Description": "Name of and existing VPC",
-      "Type": "String",
-      "Default": "vpc-ff88269a"
-    },
-    "DevDBSG": {
-      "Description": "DB security group",
-      "Type": "String",
-      "Default": "sg-fb6c6b9e"
-    },
-    "NATaccessSG": {
-      "Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
-      "Type": "String",
-      "Default": "sg-e151a186",
-      "ConstraintDescription": "Must be a valid NAT Security Group."
-    },
-    "CheckMKSG": {
-      "Description": "CheckMK Security Group",
-      "Type": "String",
-      "Default": "sg-0f7fc468",
-      "ConstraintDescription": "Must be a valid NAT Security Group."
-    },
-    "ODAMI": {
-      "Description": "AMI for OD servers",
-      "Type": "String",
-      "Default": "ami-a43d31cc"
-    },
-    "AMIUpdateProc": {
-      "Description": "AMI for CP-UpdateProcessor-008 (ami-16119f01)",
-      "Type": "String",
-      "Default": "ami-16119f01"
-    },
-    "AMIMCP": {
-      "Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
-      "Type" : "String",
-      "Default" : "ami-b5a79ea3"
-    },
-    "PemKey": {
-      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "String",
-      "Default": "Sysco-KP-CP-NonProd"
-    },
-    "PemKey2": {
-      "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
-      "Type": "String",
-      "Default": "KeyPair-Sysco-CloudPricing-NonProd"
-    },
-    "InstanceProfileMCP": {
-      "Description" : "Instance Profile Name for MCP",
-      "Type" : "String",
-      "Default" : "Application-CP-MCPServerRole"
-    },
-    "InstanceProfileUpdateServer": {
-      "Description" : "Instance Profile Name for Update Server",
-      "Type" : "String",
-      "Default" : "Application-CP-UpdateServerRole"
-    },
-    "ApplicationName": {
-      "Description": "Name of application",
-      "Type": "String",
-      "Default": "Cloud Pricing",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
-    "ApplicationId": {
-      "Description": "Application ID",
-      "Type": "String",
-      "Default": "APP-001151",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
-    "Approver": {
-      "Description": "Name of application approver",
-      "Type": "String",
-      "Default": "Owen.James@corp.sysco.com",
-      "MinLength": "1",
-      "MaxLength": "255"
-    },
-    "Owner": {
-      "Description": "Name of application owner",
-      "Type": "String",
-      "Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
-      "MinLength": "1",
-      "MaxLength": "255"
-    },
-    "ProjectId": {
-      "Description": "Project ID",
-      "Type": "String",
-      "Default": "BT.001176",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "AllowedPattern": "[\\x20-\\x7E]*",
-      "ConstraintDescription": "Must contain only ASCII characters."
-    },
-    "Environment": {
-      "Description": "Environment for application",
-      "Type": "String",
-      "Default": "Development",
-      "AllowedValues": [
-        "Sandbox",
-        "Development",
-        "Quality",
-        "Staging",
-        "Training",
-        "Production"
-      ],
-      "ConstraintDescription": "Must be a valid environment."
-    },
-    "EnvironmentShort": {
-      "Description": "Environment for application",
-      "Type": "String",
-      "Default": "DEV",
-      "AllowedValues": [
-        "DEV",
-        "QA",
-        "STG",
-        "PROD"
-      ],
-      "ConstraintDescription": "Must be a valid environment."
-    }
-  },
-  "Resources": {
-	"PriceWebServiceELB": {
-		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-		"Properties": {
-			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
-			"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice-", { "Ref" : "EnvironmentShort" }]]},
-			"Scheme": "internal",
-			"CrossZone": "true",
-			"SecurityGroups": [ { "Ref": "DevWEBSG" } ],
-			"Listeners": [
-				{
-					"LoadBalancerPort": "80",
-					"InstancePort": "8080",
-					"Protocol": "HTTP"
-				},
-				{
-					"LoadBalancerPort": "443",
-					"InstancePort": "8080",
-					"Protocol": "TCP"
-				}
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-Dev-01_v1.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-b61cbb9d"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-ea138a9d"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-2512501f"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CommonAMI": {
+			"Description" : "CISGoldAWSL-02022018 - ami-6690911c",
+			"Type": "String",
+			"Default" : "ami-6690911c",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"DevDBSG": {
+			"Description": "DB security group",
+			"Type": "String",
+			"Default": "sg-fb6c6b9e"
+		},
+		"ODAMI": {
+			"Description": "AMI for OD servers",
+			"Type": "String",
+			"Default": "ami-a43d31cc"
+		},
+		"AMIUpdateProc": {
+			"Description": "AMI for CP-UpdateProcessor-008 (ami-16119f01)",
+			"Type": "String",
+			"Default": "ami-16119f01"
+		},
+		"AMIMCP": {
+			"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
+			"Type" : "String",
+			"Default" : "ami-b5a79ea3"
+		},
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "Sysco-KP-CP-NonProd"
+		},
+		"PemKey2": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"InstanceProfileMCP": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-CP-MCPServerRole"
+		},
+		"InstanceProfileUpdateServer": {
+			"Description" : "Instance Profile Name for Update Server",
+			"Type" : "String",
+			"Default" : "Application-CP-UpdateServerRole"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Development",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
 			],
-			"HealthCheck": {
-				"Target" : "HTTP:8080/",
-				"HealthyThreshold": "3",
-				"UnhealthyThreshold": "7",
-				"Interval": "120",
-				"Timeout": "15"
-			},
-			"Tags": [
-				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-WebService-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
-	"PriceConsoleELB": {
-		"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-		"Properties": {
-			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
-			"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-console-", { "Ref" : "EnvironmentShort" }]]},
-			"Scheme": "internal",
-			"CrossZone": "true",
-			"SecurityGroups": [ { "Ref": "DevWEBSG" } ],
-			"Listeners": [
-				{
-					"LoadBalancerPort": "80",
-					"InstancePort": "8080",
-					"Protocol": "HTTP"
-				},
-				{
-					"LoadBalancerPort": "443",
-					"InstancePort": "8080",
-					"Protocol": "TCP"
-				}
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "DEV",
+			"AllowedValues": [
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
 			],
-			"HealthCheck": {
-				"Target" : "HTTP:8080/",
-				"HealthyThreshold": "3",
-				"UnhealthyThreshold": "2",
-				"Interval": "120",
-				"Timeout": "5"
-			},
-			"Tags": [
-				{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-Console-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
+			"ConstraintDescription": "Must be a valid environment."
 		}
 	},
-    "DevWEBSG": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "Dev web services security group",
-        "VpcId": { "Ref": "VPCID" },
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "10.0.0.0/8"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "443",
-            "ToPort": "443",
-            "CidrIp": "10.0.0.0/8"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "3389",
-            "ToPort": "3389",
-            "CidrIp": "10.0.0.0/8"
-          }
-        ],
-        "Tags": [
-			{ "Key" : "Name", "Value" : "sg/vpc_sysco_nonprod_02/cp_web_dev" },
-			{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-        ]
-      }
-    },
-    "IngressAdder1": {
-      "DependsOn": "DevWEBSG",
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "FromPort": "-1",
-        "GroupId": { "Ref": "DevWEBSG" },
-        "IpProtocol": "-1",
-        "SourceSecurityGroupId": { "Ref": "DevWEBSG" },
-        "ToPort": "-1"
-      }
-    },
-	"CPDBClusterDEV" : {
-		"Type" : "AWS::RDS::DBCluster",
-		"DeletionPolicy" : "Snapshot",
-		"Properties" : {
-			"DatabaseName" : "CPDB_Common01d",
-			"Engine" : "aurora",
-			"MasterUsername" : "svccp000",
-			"MasterUserPassword" : "Cpaws000",
-			"Port" : "3306",
-			"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
-			"DBSubnetGroupName" : { "Ref" : "snDB" }
-		}
-	},
-	"DBCommonPrimary" : {
-		"Type" : "AWS::RDS::DBInstance",
-		"Properties" :  {
-			"DBInstanceIdentifier" : "CPDBMasterDEV",
-			"AllowMajorVersionUpgrade" : "true",
-			"DBClusterIdentifier" : { "Ref" : "CPDBClusterDEV" },
-			"DBInstanceClass" : "db.r3.large",
-			"Engine" : "aurora",
-			"DBSubnetGroupName" : { "Ref" : "snDB" },
-			"Tags" : [
-				{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
-	"sgDB" : {
-		"Type" : "AWS::EC2::SecurityGroup",
-		"Properties" : {
-			"GroupDescription" : "Cloud Pricing DB SG",
-			"VpcId" : { "Ref" : "VPCID" },
-			"SecurityGroupIngress" : [
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "3306",
-				"ToPort" : "3306",
-				"CidrIp" : "10.0.0.0/8"
-			}],
-			"Tags" : [
-				{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/swmsmobile_dev_db" },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
-	"snDB" : {
-		"Type" : "AWS::RDS::DBSubnetGroup",
-		"Properties" : {
-			"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
-			"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
-			"Tags" : [
-				{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
-    "MS238CPBTSQL08d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "false",
-        "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [
-          { "Ref": "DevDBSG" },
-          { "Ref": "NATaccessSG" },
-          { "Ref": "CheckMKSG" }
-        ],
-        "SubnetId": { "Ref": "PvtSNc" },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "ms238cpbtsql08d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<powershell>\n",
-                "Rename-Computer -NewName ms238cpbtsql08d -Restart\n",
-                "</powershell>"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "MS238CPODSQL01d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "false",
-        "ImageId": "ami-4129033a",
-        "InstanceType": "t2.large",
-        "KeyName": { "Ref": "PemKey2" },
-        "SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-        "SubnetId": { "Ref": "PvtSNc" },
-		"BlockDeviceMappings": [
-			{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
-		],
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPODSQL01d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-		"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
-				"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
-				"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
-				"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
-				"Rename-Computer -NewName MS238CPODSQL01d -Restart\n",
-				"</powershell>"
-		]]}}
-	}
-	},
-    "MS238CPODSQL02d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1d",
-        "DisableApiTermination": "false",
-        "ImageId": "ami-4129033a",
-        "InstanceType": "t2.large",
-        "KeyName": { "Ref": "PemKey2" },
-        "SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-        "SubnetId": { "Ref": "PvtSNd" },
-		"BlockDeviceMappings": [
-			{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
-		],
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPODSQL02d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-		"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
-				"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
-				"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
-				"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
-				"Rename-Computer -NewName MS238CPODSQL02d -Restart\n",
-				"</powershell>"
-		]]}}
-	}
-	},
-    "MS238CPODSQL08d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1c",
-        "DisableApiTermination": "false",
-        "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [
-          { "Ref": "DevDBSG" },
-          { "Ref": "NATaccessSG" },
-          { "Ref": "CheckMKSG" }
-        ],
-        "SubnetId": { "Ref": "PvtSNc" },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "ms238cpodsql08d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<powershell>\n",
-                "Rename-Computer -NewName ms238cpodsql08d -Restart\n",
-                "</powershell>"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "MS238CPODSQL09d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1d",
-        "DisableApiTermination": "false",
-        "ImageId": { "Ref": "ODAMI" },
-        "InstanceType": "m3.large",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [
-          { "Ref": "DevDBSG" },
-          { "Ref": "NATaccessSG" },
-          { "Ref": "CheckMKSG" }
-        ],
-        "SubnetId": { "Ref": "PvtSNd" },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "ms238cpodsql09d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<powershell>\n",
-                "Rename-Computer -NewName ms238cpodsql09d -Restart\n",
-                "</powershell>"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "MS238CPODSQL11d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1d",
-        "DisableApiTermination": "false",
-        "ImageId": "ami-a9acd0bf",
-        "InstanceType": "m3.large",
-        "KeyName": { "Ref": "PemKey" },
-        "SecurityGroupIds": [
-          { "Ref": "sgDBOD" },
-          { "Ref": "NATaccessSG" },
-          { "Ref": "CheckMKSG" }
-        ],
-        "SubnetId": { "Ref": "PvtSNd" },
-        "Tags": [
-			{ "Key" : "Name", "Value" : "ms238cpodsql11d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-        "UserData": {
-          "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "<powershell>\n",
-                "Rename-Computer -NewName ms238cpodsql11d -Restart\n",
-                "</powershell>"
-              ]
-            ]
-          }
-        }
-      }
-    },
-    "MS238CPODSQL00d": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1d",
-        "DisableApiTermination": "false",
-        "ImageId": "ami-1a54450c",
-        "InstanceType": "t2.large",
-        "KeyName": { "Ref": "PemKey2" },
-        "SecurityGroupIds": [
-          { "Ref": "sgDBOD" },
-          { "Ref": "NATaccessSG" },
-          { "Ref": "CheckMKSG" }
-        ],
-        "SubnetId": { "Ref": "PvtSNd" },
-		"BlockDeviceMappings": [
-			{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-		],
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPODSQL00d" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-		"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Rename-Computer -NewName MS238CPODSQL00d -Restart\n",
-				"</powershell>"
-		]]}}
-	}
-	},
-    "MS238CPODSQL00f": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "AvailabilityZone": "us-east-1d",
-        "DisableApiTermination": "false",
-        "ImageId": "ami-1a54450c",
-        "InstanceType": "t2.large",
-        "KeyName": { "Ref": "PemKey2" },
-        "SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-        "SubnetId": { "Ref": "PvtSNd" },
-		"BlockDeviceMappings": [
-			{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-			{"DeviceName": "xvde", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-			{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }}
-		],
-        "Tags": [
-			{ "Key" : "Name", "Value" : "MS238CPODSQL00f" },
-			{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-			{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-			{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-			{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-			{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-			{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-			{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-        ],
-		"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-				"<powershell>\n",
-				"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
-				"Initialize-Disk -Number 2 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
-				"Initialize-Disk -Number 3 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
-				"Initialize-Disk -Number 4 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
-				"Initialize-Disk -Number 5 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
-				"</powershell>"
-		]]}}
-	}
-	},
-	"sgDBOD" : {
-		"Type" : "AWS::EC2::SecurityGroup",
-		"Properties" : {
-			"GroupDescription" : "CP OD DB SG",
-			"VpcId" : { "Ref" : "VPCID" },
-			"SecurityGroupIngress" : [ 
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "3389",
-				"ToPort" : "3389",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "3181",
-				"ToPort" : "3181",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "1433",
-				"ToPort" : "1433",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "1501",
-				"ToPort" : "1512",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "80",
-				"ToPort" : "80",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "tcp",
-				"FromPort" : "8080",
-				"ToPort" : "8080",
-				"CidrIp" : "10.0.0.0/8"
-			},
-			{
-				"IpProtocol" : "icmp",
-				"FromPort" : "-1",
-				"ToPort" : "-1",
-				"CidrIp" : "10.0.0.0/8"
+	"Resources": {
+		"CPDBClusterDEV" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPDB_Common01d",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" }
 			}
-			],
-			"Tags" : [
-				{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/cpdbod_dev_app" },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-			]
-		}
-	},
+		},
+		"DBCommonPrimary" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPDBMasterDEV",
+				"AllowMajorVersionUpgrade" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPDBClusterDEV" },
+				"DBInstanceClass" : "db.r3.large",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
+		"sgDB" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Cloud Pricing DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3306",
+					"ToPort" : "3306",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/swmsmobile_dev_db" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
+		"snDB" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+				"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
+		"MS238CPBTSQL08d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref": "ODAMI" },
+				"InstanceType": "m3.large",
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [
+					{ "Ref": "DevDBSG" },
+					{ "Ref": "NATaccessSG" },
+					{ "Ref": "CheckMKSG" }
+				],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"Tags": [
+					{ "Key" : "Name", "Value" : "ms238cpbtsql08d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpbtsql08d -Restart\n",
+						"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL01d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL01d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"Rename-Computer -NewName MS238CPODSQL01d -Restart\n",
+						"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL02d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL02d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"Rename-Computer -NewName MS238CPODSQL02d -Restart\n",
+						"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL08d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref": "ODAMI" },
+				"InstanceType": "m3.large",
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [
+					{ "Ref": "DevDBSG" },
+					{ "Ref": "NATaccessSG" },
+					{ "Ref": "CheckMKSG" }
+				],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"Tags": [
+					{ "Key" : "Name", "Value" : "ms238cpodsql08d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql08d -Restart\n",
+						"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL09d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": { "Ref": "ODAMI" },
+				"InstanceType": "m3.large",
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [
+					{ "Ref": "DevDBSG" },
+					{ "Ref": "NATaccessSG" },
+					{ "Ref": "CheckMKSG" }
+				],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"Tags": [
+					{ "Key" : "Name", "Value" : "ms238cpodsql09d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Rename-Computer -NewName ms238cpodsql09d -Restart\n",
+						"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL11d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a9acd0bf",
+				"InstanceType": "m3.large",
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [
+					{ "Ref": "sgDBOD" },
+					{ "Ref": "NATaccessSG" },
+					{ "Ref": "CheckMKSG" }
+				],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"Tags": [
+					{ "Key" : "Name", "Value" : "ms238cpodsql11d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"<powershell>\n",
+					"Rename-Computer -NewName ms238cpodsql11d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL00d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-1a54450c",
+				"InstanceType": "t2.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [
+				  { "Ref": "sgDBOD" },
+				  { "Ref": "NATaccessSG" },
+				  { "Ref": "CheckMKSG" }
+				],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL00d" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"<powershell>\n",
+					"Rename-Computer -NewName MS238CPODSQL00d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL00f": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-1a54450c",
+				"InstanceType": "t2.large",
+				"KeyName": { "Ref": "PemKey2" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL00f" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"<powershell>\n",
+					"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 2 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 3 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 4 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 5 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"sgDBOD" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP OD DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [ 
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3181",
+					"ToPort" : "3181",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1433",
+					"ToPort" : "1433",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "1501",
+					"ToPort" : "1512",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8080",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/cpdbod_dev_app" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+				]
+			}
+		},
 	"MS238CPUPSQL01d": {
 		"Type": "AWS::EC2::Instance",
 		"Metadata" : {
