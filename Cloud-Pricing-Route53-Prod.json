@@ -1,0 +1,96 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-Route53-Prod.json resides in SVN Sysco source control",
+        "Parameters" : {
+		"DNSZone1" : {
+			"Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
+			"Type" : "String",
+			"Default" : "cloud.sysco.com",
+			"AllowedValues" : [
+				"vpc.na.sysco.net",
+				"aws.na.sysco.net",
+				"cloud.sysco.com"
+			],
+			"ConstraintDescription" : "Must be a valid DNS Record in Route53."
+		},
+		"DNSZone2" : {
+			"Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
+			"Type" : "String",
+			"Default" : "aws.na.sysco.net",
+			"AllowedValues" : [
+				"vpc.na.sysco.net",
+				"aws.na.sysco.net",
+				"cloud.sysco.com"
+			],
+			"ConstraintDescription" : "Must be a valid DNS Record in Route53."
+		}
+    },
+	"Resources" : {
+		"InternalDNSRegionRecordDEV" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricing-dev", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-webservice2-DEV-1002059450.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordQA" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricing-qa", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-webservice2-QA-822583051.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordSTG" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricing-stg", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-webservice2-STG-387627045.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordConsoleDEV" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricingconsole-dev", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-console2-DEV-208291302.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordConsoleQA" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricingconsole-qa", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-console2-QA-1192431345.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordConsoleSTG" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricingconsole-stg", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-console2-STG-1352587604.us-east-1.elb.amazonaws.com" ]
+			}
+		}
+	}
+}
