@@ -162,6 +162,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -216,11 +221,13 @@
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
 			}
 		},
@@ -238,11 +245,13 @@
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Replica01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
 			}
 		},
@@ -262,11 +271,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_stg_01/swmsmobile_stg_db" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -279,90 +289,13 @@
 					{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
-			}
-		},
-		"ms238cpodsql01s": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"ImageId": "ami-4129033a",
-				"InstanceType": "r4.xlarge",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-				],
-				"Tags": [
-					{ "Key" : "Name", "Value" : "ms238cpodsql01s" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-						"<powershell>\n",
-						"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
-						"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
-						"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
-						"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
-						"Rename-Computer -NewName ms238cpodsql01s -Restart\n",
-						"</powershell>"
-				]]}}
-			}
-		},
-		"ms238cpodsql02s": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1d",
-				"DisableApiTermination": "false",
-				"ImageId": "ami-4129033a",
-				"InstanceType": "r4.xlarge",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-				"SubnetId": { "Ref": "PvtSNd" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
-					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-				],
-				"Tags": [
-					{ "Key" : "Name", "Value" : "ms238cpodsql02s" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-						"<powershell>\n",
-						"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
-						"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
-						"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
-						"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
-						"Rename-Computer -NewName ms238cpodsql02s -Restart\n",
-						"</powershell>"
-				]]}}
 			}
 		},
 		"ms238cpodsql08s": {
@@ -381,13 +314,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpodsql08s" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<powershell>\n",
@@ -412,161 +347,19 @@
 				"SubnetId": { "Ref": "PvtSNd" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpodsql09s" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<powershell>\n",
 					"Rename-Computer -NewName ms238cpodsql09s -Restart\n",
-					"</powershell>"
-				]]}}
-			}
-		},
-		"MS238CPODSQL11S": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"ImageId": "ami-22ceb134",
-				"InstanceType": "r3.xlarge",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [
-					{ "Ref": "sgDBOD" },
-					{ "Ref": "NATaccessSG" },
-					{ "Ref": "CheckMKSG" }
-				],
-				"SubnetId": { "Ref": "PvtSNc" },
-				"Tags": [
-					{ "Key" : "Name", "Value" : "MS238CPODSQL11S" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPODSQL11S -Restart\n",
-					"</powershell>"
-				]]}}
-			}
-		},
-		"MS238CPODSQL12S": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1d",
-				"DisableApiTermination": "false",
-				"ImageId": "ami-22ceb134",
-				"InstanceType": "r3.xlarge",
-				"KeyName": { "Ref": "PemKey" },
-				"SecurityGroupIds": [
-				  { "Ref": "sgDBOD" },
-				  { "Ref": "NATaccessSG" },
-				  { "Ref": "CheckMKSG" }
-				],
-				"SubnetId": { "Ref": "PvtSNd" },
-				"Tags": [
-					{ "Key" : "Name", "Value" : "MS238CPODSQL12S" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPODSQL12S -Restart\n",
-					"</powershell>"
-				]]}}
-			}
-		},
-		"MS238CPODSQL13S": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"EbsOptimized" : "true",
-				"ImageId": "ami-2f2e0839",
-				"InstanceType": "r4.xlarge",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [
-					{ "Ref": "sgDBOD" },
-					{ "Ref": "NATaccessSG" },
-					{ "Ref": "CheckMKSG" }
-				],
-				"SubnetId": { "Ref": "PvtSNc" },
-					"BlockDeviceMappings" : [ 
-					{
-							"DeviceName" : "/dev/sda1",
-							"Ebs" : {
-							"VolumeSize" : "300",
-							"VolumeType" : "gp2"
-							}
-						}
-						],
-				"Tags": [
-					{ "Key" : "Name", "Value" : "MS238CPODSQL13S" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPODSQL13S -Restart\n",
-					"</powershell>"
-				]]}}
-			}
-		},
-		"MS238CPODSQL14S": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"EbsOptimized" : "true",
-				"ImageId": "ami-2f2e0839",
-				"InstanceType": "r4.xlarge",
-				"KeyName": { "Ref": "PemKey2" },
-				"SecurityGroupIds": [
-					{ "Ref": "sgDBOD" },
-					{ "Ref": "NATaccessSG" },
-					{ "Ref": "CheckMKSG" }
-				],
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [ 
-					{
-							"DeviceName" : "/dev/sda1",
-							"Ebs" : {
-							"VolumeSize" : "300",
-							"VolumeType" : "gp2"
-							}
-						}			
-						],
-				"Tags": [
-					{ "Key" : "Name", "Value" : "MS238CPODSQL14S" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
-					"<powershell>\n",
-					"Rename-Computer -NewName MS238CPODSQL14S -Restart\n",
 					"</powershell>"
 				]]}}
 			}
@@ -624,12 +417,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_stg_01/cpdbod_stg_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -700,13 +493,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL01s" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -782,13 +577,15 @@
 				"SubnetId": { "Ref": "PvtSNe" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL02s" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -864,13 +661,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key": "Name", "Value": "ms238cpupsql03s" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -949,13 +748,15 @@
 				"SubnetId": { "Ref": "PvtSNd" },
 				"Tags": [
 					{ "Key": "Name", "Value": "ms238cpupsql04s" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -978,31 +779,25 @@
 				"SubnetId": "subnet-b91a1291",
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPBRFS01s" },
-					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "File Share" }
 				],
-				"UserData": {
-					"Fn::Base64": {
-					"Fn::Join": [
-						"",
-						[
-							"<powershell>\n",
-							"Read-S3Object -BucketName sysco-nonprod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
-							"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
-							"</powershell>"
-
-						]
-					]
-					}
-				}
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<powershell>\n",
+					"Read-S3Object -BucketName sysco-nonprod-codedeploy-us-east-1/DirectoryServices -Key SyscoDSautojoin.ps1 -File \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+					"& \"C:\\Program Files\\Amazon\\Ec2ConfigService\\SyscoDSautojoin.ps1\"\n",
+					"</powershell>"
+				]]}}
 			}
 		}
-	}
+	},
 	"Outputs" : {
 			"dbUrl" : {
 			"Description" : "Endpoint for Common DB",
