@@ -151,6 +151,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -200,13 +205,15 @@
 			],
 			"Tags": [
 				{ "Key" : "Name", "Value" : "MS238CPODSQL01q" },
-				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 			],
 			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 					"<powershell>\n",
@@ -235,13 +242,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "MS238CPODSQL03q" },
-					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -317,13 +326,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL01q" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -403,67 +414,21 @@
 				"PrivateIpAddress" : "10.168.138.41",
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL03q" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL03q --region ", { "Ref" : "AWS::Region" }, "\n",
 					"</script>"
 				]]}}
-			}
-		},
-		"publicELBsg": {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties": {
-				"GroupDescription": "Cloud Pricing QA Public ELB SG",
-				"VpcId": { "Ref": "VPCID" },
-				"SecurityGroupIngress": [
-				{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "198.101.135.151/32"
-				},
-				{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "52.3.78.140/32"
-				},
-				{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "52.7.23.106/32"
-				},
-				{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "66.60.245.48/32"
-				},
-				{
-					"IpProtocol": "tcp",
-					"FromPort": "443",
-					"ToPort": "443",
-					"CidrIp": "96.228.152.146/32"
-				}],
-				"Tags": [
-					{ "Key" : "Name", "Value": "sg/vpc_sysco_nonprod_02/cloudpricing_qa_public_elb" },
-					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value":  { "Ref": "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
-					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
-				]
 			}
 		},
 		"sgMCP" : {
@@ -500,12 +465,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_qa_01/cpmcp_qa_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -562,12 +527,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/cpdbod_dev_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		}
