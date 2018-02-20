@@ -131,6 +131,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -186,11 +191,13 @@
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
 			}
 		},
@@ -210,11 +217,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/swmsmobile_dev_db" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -227,11 +235,12 @@
 					{ "Key" : "Name", "Value" : "Cloud Pricing DB Subnet group" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -251,13 +260,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpbtsql08d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "DB Batch Server" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -286,13 +297,15 @@
 				],
 				"Tags": [
 					{ "Key" : "Name", "Value" : "MS238CPODSQL01d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -325,13 +338,15 @@
 				],
 				"Tags": [
 					{ "Key" : "Name", "Value" : "MS238CPODSQL02d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -360,13 +375,15 @@
 				"SubnetId": { "Ref": "PvtSNc" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpodsql08d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -391,13 +408,15 @@
 				"SubnetId": { "Ref": "PvtSNd" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpodsql09d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
@@ -422,13 +441,15 @@
 				"SubnetId": { "Ref": "PvtSNd" },
 				"Tags": [
 					{ "Key" : "Name", "Value" : "ms238cpodsql11d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"<powershell>\n",
@@ -461,13 +482,15 @@
 				],
 				"Tags": [
 					{ "Key" : "Name", "Value" : "MS238CPODSQL00d" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"<powershell>\n",
@@ -496,13 +519,15 @@
 				],
 				"Tags": [
 					{ "Key" : "Name", "Value" : "MS238CPODSQL00f" },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"<powershell>\n",
@@ -568,12 +593,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_dev_01/cpdbod_dev_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -644,13 +669,15 @@
 			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL01d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -726,13 +753,15 @@
 			"SubnetId": { "Ref": "PvtSNe" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL02d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -808,13 +837,15 @@
 			"SubnetId": { "Ref": "PvtSNe" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL04d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -890,13 +921,15 @@
 			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL05d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -975,13 +1008,15 @@
 			"SubnetId": { "Ref": "PvtSNe" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL06d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -1068,13 +1103,15 @@
 			],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL10d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -1171,13 +1208,15 @@
 			],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPUPSQL11d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "Update Processor" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -1210,14 +1249,16 @@
 			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
 			"SubnetId": { "Ref": "PvtSNd" },
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE01d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key": "Name", "Value": "MS238CPIDE01d MCR Old" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1240,13 +1281,15 @@
 			"SubnetId": { "Ref": "PvtSNd" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE02d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"<powershell>\n",
@@ -1271,13 +1314,15 @@
 			}],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE02d James" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"<powershell>\n",
@@ -1302,13 +1347,15 @@
 			}],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE03d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"<powershell>\n",
@@ -1333,13 +1380,15 @@
 			}],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE04d Sagar" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"<powershell>\n",
@@ -1372,14 +1421,16 @@
 				}
 			} ],
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE05d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key": "Name", "Value": "MS238CPIDE05d Mike" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1410,13 +1461,15 @@
 			} ],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE06d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1443,13 +1496,15 @@
 			}],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE07d Sagar" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"<powershell>\n",
@@ -1525,13 +1580,15 @@
 			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE11d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -1607,13 +1664,15 @@
 			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE12d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
@@ -1689,19 +1748,60 @@
 			"SubnetId": { "Ref": "PvtSNc" },
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE13d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 				"<script>\n",
 				"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPIDE13d --region ", { "Ref" : "AWS::Region" }, "\n",
 				"</script>"
 			]]}}
+		}
+	},
+	"MS238CPIDE14d": {
+		"Type": "AWS::EC2::Instance",
+		"Properties": {
+			"AvailabilityZone": "us-east-1d",
+			"DisableApiTermination": "false",
+			"ImageId": "ami-a9053dd3",
+			"InstanceType": "t2.xlarge",
+			"KeyName": { "Ref": "PemKey2" },
+			"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+			"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+			"SubnetId": { "Ref": "PvtSNd" },
+			"BlockDeviceMappings": [
+				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "300", "VolumeType": "gp2" }},
+				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }}
+			],
+			"Tags": [
+				{ "Key": "Name", "Value": "MS238CPIDE14d BT Studio" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "AMI Description", "Value" : "CISGoldWIN2K12-01292018" },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
+			],
+			"UserData": {
+				"Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 1 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 1 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPIDE14d -Restart\n",
+					"</powershell>"
+				]]}
+			}
 		}
 	},
 	"MS238CPIDE21d": {
@@ -1724,14 +1824,16 @@
 				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 			],
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE21d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key": "Name", "Value": "MS238CPIDE21d Chuck" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1766,14 +1868,16 @@
 				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 			],
 			"Tags": [
-				{ "Key": "Name", "Value": "MS238CPIDE22d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key": "Name", "Value": "MS238CPIDE22d Danny" },
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1809,13 +1913,15 @@
 			],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE23d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData": {
 				"Fn::Base64": { "Fn::Join": [ "", [
@@ -1849,13 +1955,15 @@
 			} ],
 			"Tags": [
 				{ "Key": "Name", "Value": "lx238cpide04d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "IDE" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
@@ -1980,13 +2088,15 @@
 			} ],
 			"Tags": [
 				{ "Key": "Name", "Value": "lx238cpodsql01d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "On Demand" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
@@ -2079,13 +2189,15 @@
 			} ],
 			"Tags": [
 				{ "Key": "Name", "Value": "lx238cpodsql02d" },
-				{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-				{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-				{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-				{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-				{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-				{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-				{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+				{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+				{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+				{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+				{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+				{ "Key" : "Component", "Value": "On Demand" }
 			],
 			"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 				"#!/bin/bash -v\n",
