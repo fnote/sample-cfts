@@ -12,19 +12,19 @@
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
 		"PvtSNc": {
-			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
 			"Type": "String",
-			"Default": "subnet-b61cbb9d"
+			"Default": "subnet-3c80ce13"
 		},
 		"PvtSNd": {
-			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
 			"Type": "String",
-			"Default": "subnet-ea138a9d"
+			"Default": "subnet-d93e2892"
 		},
 		"PvtSNe": {
-			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
 			"Type": "String",
-			"Default": "subnet-2512501f"
+			"Default": "subnet-97bdf9ad"
 		},
 		"VPCID": {
 			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
@@ -44,9 +44,9 @@
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
 		"CommonAMI": {
-			"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
+			"Description" : "CISGoldAWSL-02022018 - ami-6690911c",
 			"Type": "String",
-			"Default" : "ami-b5a79ea3",
+			"Default" : "ami-6690911c",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -101,6 +101,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -120,6 +125,7 @@
 			"Type": "String",
 			"Default": "QA",
 			"AllowedValues": [
+				"SBX",
 				"DEV",
 				"QA",
 				"STG",
@@ -132,14 +138,14 @@
 		"PriceWebServiceGroup" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
-				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
+				"AvailabilityZones" : [ "us-east-1c", "us-east-1e" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceWebServiceLaunchConfig" },
 				"MinSize" : "1",
 				"DesiredCapacity" : "1",
 				"MaxSize" : "2",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
+				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNe" } ],
 				"LoadBalancerNames" : [{ "Ref" : "PriceWebServiceELB" }],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
@@ -149,7 +155,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Web Service", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -159,7 +167,7 @@
 				"AutoScalingRollingUpdate" : {
 					"MinInstancesInService" : "1",
 					"MaxBatchSize" : "1",
-					"PauseTime" : "PT5M",
+					"PauseTime" : "PT1M",
 					"WaitOnResourceSignals" : "false"
 				}
 			}
@@ -168,17 +176,13 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "r4.large",
+				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"BlockDeviceMappings" : [ {
-					"DeviceName" : "/dev/sda1",
-					"Ebs" : {
-						"VolumeSize" : "60",
-						"VolumeType" : "gp2"
-					}
-				} ],
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
 					"# Set Timezone\n",
@@ -190,22 +194,31 @@
 					"yum update -y curl\n",
 
 					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate samba-client\n",
+					"yum install -y sysstat lsof mlocate\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"# hostname lx238cpwebsvc01q.na.sysco.net\n",
-					"# echo lx238cpwebsvc01q.na.sysco.net > /etc/hostname","\n",
-					"sh -c \"hostname  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
-					"sh -c \"echo  cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
+					"sh -c \"hostname cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
+					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   10240\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   20240\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Download and Install java\n",
@@ -215,10 +228,12 @@
 					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   10240\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   20240\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -230,42 +245,84 @@
 					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
 					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
 
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"#-----------------------------------\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpwebservice.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/cpwebservice.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
 					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
+					"# Setting for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh;\n%s 12 * * * root /sbin/reboot;\n' $((${RANDOM}%60)) > /etc/cron.d/tomcat\n",
-
-					"# Set Tomcat Environment Variable & JVM Heap\n",
-					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
+					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
+					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
+					
+					"##############################################\n",
+					"# Setting Tomcat to start on boot                     \n",
+					"# http://www.raibledesigns.com/tomcat/boot-howto.html \n",
+					"# https://www.mulesoft.com/tcat/tomcat-start          \n",
+					"# https://gist.github.com/chetan/7946650              \n",
+					"# https://gist.github.com/miglen/5590986              \n",
+					"##############################################\n",
+					"tee /etc/init.d/tomcat <<-EOF\n",
+					"#!/bin/bash\n",
+					"#\n",
+					"# tomcat\n",
+					"#\n",
+					"# chkconfig: 2345 95 05\n",
+					"# description:     Start up the Tomcat servlet engine.\n",
+					"\n",
+					"# Source function library.\n",
+					". /etc/init.d/functions\n",
+					"\n",
+					"\n",
+					"RETVAL=dollar?\n",
+					"# CATALINA_HOME=\"/usr/apps/apache/tomcat/jakarta-tomcat-4.0.4\"\n",
+					"CATALINA_HOME=\"/usr/local/tomcat8\"\n",
+					"\n",
+					"case \"dollar1\" in\n",
+					" start)\n",
+					"        if [ -f dollarCATALINA_HOME/bin/startup.sh ];\n",
+					"          then\n",
+					"        echo dollar\"Starting Tomcat\"\n",
+					"            dollarCATALINA_HOME/bin/startup.sh\n",
+					"        fi\n",
+					"    ;;\n",
+					" stop)\n",
+					"        if [ -f dollarCATALINA_HOME/bin/shutdown.sh ];\n",
+					"          then\n",
+					"        echo dollar\"Stopping Tomcat\"\n",
+					"            dollarCATALINA_HOME/bin/shutdown.sh\n",
+					"        fi\n",
+					"    ;;\n",
+					" *)\n",
+					"     echo dollar\"Usage: dollar0 {start|stop}\"\n",
+					"    exit 1\n",
+					"    ;;\n",
+					"esac\n",
+					"\n",
+					"exit dollarRETVAL\n",
+					"EOF\n",
+					"cd /etc/rc3.d\n",
+					"### Replace Dollar Sign ###\n",
+					"sed -i 's/dollar/$/g' ../init.d/tomcat\n",
+					"chmod -c 755 /etc/init.d/tomcat\n",
+					"ln -s ../init.d/tomcat S71tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
 
-					"##############################################\n",
+					"####################################\n",
 					"# Create settings folder\n",
-					"##############################################\n",
+					"####################################\n",
 					"mkdir /settings\n",
 					"mkdir /settings/properties\n",
 					"mkdir /settings/logs\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
+					"chown tomcat -R /settings\n",
+					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
 
 					"##############################################\n",
 					"# Install Splunk Universal Forwarder\n",
 					"##############################################\n",
 					"cd /tmp\n",
-					"wget -O splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
 					"cd /opt/splunkforwarder\n",
 					"./bin/splunk start --accept-license\n",
 					"./bin/splunk enable boot-start\n",
@@ -277,24 +334,23 @@
 					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
 					"./bin/splunk restart\n",
 
-					"##############################################\n",
+					"####################################\n",
 					"# Install CodeDeploy\n",
-					"##############################################\n",
+					"####################################\n",
 					"yum install ruby -y\n",
 					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
-					
+
 					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
-					]]}
-				}
+					"# reboot\n"
+				]]}}
 			}
 		},
 		"PriceWebServiceELB": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
-				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNe" }],
 				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice2-", { "Ref" : "EnvironmentShort" }]]},
 				"Scheme": "internal",
 				"CrossZone": "true",
@@ -326,21 +382,23 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Web Service" }
 				]
 			}
 		},
 		"PriceConsoleGroup" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
-				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
+				"AvailabilityZones" : [ "us-east-1c", "us-east-1e" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceConsoleLaunchConfig" },
 				"MinSize" : "1",
 				"DesiredCapacity" : "1",
 				"MaxSize" : "2",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
+				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNe" } ],
 				"LoadBalancerNames" : [{ "Ref" : "PriceConsoleELB" }],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Console AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
@@ -350,7 +408,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Console", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -360,7 +420,7 @@
 				"AutoScalingRollingUpdate" : {
 					"MinInstancesInService" : "1",
 					"MaxBatchSize" : "1",
-					"PauseTime" : "PT5M",
+					"PauseTime" : "PT1M",
 					"WaitOnResourceSignals" : "false"
 				}
 			}
@@ -373,17 +433,13 @@
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"BlockDeviceMappings" : [ {
-					"DeviceName" : "/dev/sda1",
-					"Ebs" : {
-						"VolumeSize" : "60",
-						"VolumeType" : "gp2"
-					}
-				} ],
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
 					"# Set Timezone\n",
-					"timedatectl set-timezone UTC\n",
+					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
 
 					"yum update -y aws-cfn-bootstrap\n",
@@ -391,22 +447,25 @@
 					"yum update -y curl\n",
 
 					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate samba-client\n",
+					"yum install -y sysstat lsof mlocate\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"# hostname lx238cpconsole01q.na.sysco.net\n",
-					"# echo lx238cpconsole01q.na.sysco.net > /etc/hostname","\n",
-					"sh -c \"hostname  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
-					"sh -c \"echo  cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\" > /etc/hostname\n",
+					"sh -c \"hostname cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=cpconsole-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, Cloud Enablement Team\" jowe6212\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
+					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
+					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
 
 					"##############################################\n",
 					"# Download and Install java\n",
@@ -414,6 +473,14 @@
 					"cd /tmp\n",
 					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
 					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -426,6 +493,67 @@
 					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
 
 					"##############################################\n",
+					"# Setting for Tomcat\n",
+					"##############################################\n",
+					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
+					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
+					
+					"##############################################\n",
+					"# Setting Tomcat to start on boot                     \n",
+					"# http://www.raibledesigns.com/tomcat/boot-howto.html \n",
+					"# https://www.mulesoft.com/tcat/tomcat-start          \n",
+					"# https://gist.github.com/chetan/7946650              \n",
+					"# https://gist.github.com/miglen/5590986              \n",
+					"##############################################\n",
+					"tee /etc/init.d/tomcat <<-EOF\n",
+					"#!/bin/bash\n",
+					"#\n",
+					"# tomcat\n",
+					"#\n",
+					"# chkconfig: 2345 95 05\n",
+					"# description:     Start up the Tomcat servlet engine.\n",
+					"\n",
+					"# Source function library.\n",
+					". /etc/init.d/functions\n",
+					"\n",
+					"\n",
+					"RETVAL=dollar?\n",
+					"# CATALINA_HOME=\"/usr/apps/apache/tomcat/jakarta-tomcat-4.0.4\"\n",
+					"CATALINA_HOME=\"/usr/local/tomcat8\"\n",
+					"\n",
+					"case \"dollar1\" in\n",
+					" start)\n",
+					"        if [ -f dollarCATALINA_HOME/bin/startup.sh ];\n",
+					"          then\n",
+					"        echo dollar\"Starting Tomcat\"\n",
+					"            dollarCATALINA_HOME/bin/startup.sh\n",
+					"        fi\n",
+					"    ;;\n",
+					" stop)\n",
+					"        if [ -f dollarCATALINA_HOME/bin/shutdown.sh ];\n",
+					"          then\n",
+					"        echo dollar\"Stopping Tomcat\"\n",
+					"            dollarCATALINA_HOME/bin/shutdown.sh\n",
+					"        fi\n",
+					"    ;;\n",
+					" *)\n",
+					"     echo dollar\"Usage: dollar0 {start|stop}\"\n",
+					"    exit 1\n",
+					"    ;;\n",
+					"esac\n",
+					"\n",
+					"exit dollarRETVAL\n",
+					"EOF\n",
+					"cd /etc/rc3.d\n",
+					"### Replace Dollar Sign ###\n",
+					"sed -i 's/dollar/$/g' ../init.d/tomcat\n",
+					"chmod -c 755 /etc/init.d/tomcat\n",
+					"ln -s ../init.d/tomcat S71tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+					
+					"##############################################\n",
 					"# Add CORS\n",
 					"##############################################\n",
 					"oldpattern=\"</web-app>\"\n",
@@ -433,25 +561,6 @@
 					"filename=\"/usr/local/tomcat8/conf/web.xml\"\n",
 					"sed -i \"s@$oldpattern@$newpattern@g\" $filename\n",
 
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"#-----------------------------------\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpconsole.sh\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/profile.d/cpconsole.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx1024M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh;\n%s 12 * * * root /sbin/reboot;\n' $((${RANDOM}%60)) > /etc/cron.d/tomcat\n",
-
-					"# Set Tomcat Environment Variable & JVM Heap\n",
-					"# sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=\"", { "Ref" : "EnvironmentShort" }, "\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-					"# sh -c \"echo 'JAVA_OPTS=\"-Xms1g -Xmx1g -XX:MaxPermSize=256m\"'\" >> /usr/local/tomcat8/conf/tomcat.conf\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-					
 					"##############################################\n",
 					"# Create settings folder\n",
 					"##############################################\n",
@@ -466,9 +575,9 @@
 					"# Install Splunk Universal Forwarder\n",
 					"##############################################\n",
 					"cd /tmp\n",
-					"wget -O splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.6.2&product=universalforwarder&filename=splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-6.6.2-4b804538c686-linux-2.6-x86_64.rpm\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
 					"cd /opt/splunkforwarder\n",
 					"./bin/splunk start --accept-license\n",
 					"./bin/splunk enable boot-start\n",
@@ -489,15 +598,14 @@
 					"./install auto\n",
 
 					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
-					]]}
-				}
+					"# reboot\n"
+				]]}}
 			}
 		},
 		"PriceConsoleELB": {
 			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
 			"Properties": {
-			"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNe" }],
 				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-console2-", { "Ref" : "EnvironmentShort" }]]},
 				"Scheme": "internal",
 				"CrossZone": "true",
@@ -531,7 +639,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Console" }
 				]
 			}
 		},
@@ -564,9 +674,10 @@
 					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
 					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -609,7 +720,8 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		}

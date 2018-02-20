@@ -1778,7 +1778,7 @@
 			"SubnetId": { "Ref": "PvtSNd" },
 			"BlockDeviceMappings": [
 				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "300", "VolumeType": "gp2" }},
-				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }}
+				{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 			],
 			"Tags": [
 				{ "Key": "Name", "Value": "MS238CPIDE14d BT Studio" },

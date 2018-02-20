@@ -98,6 +98,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -193,13 +198,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL01" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -278,13 +286,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL02" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -363,13 +374,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL03" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -448,13 +462,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL04" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -533,13 +550,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL05" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -618,13 +638,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL06" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -703,13 +726,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL07" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -788,13 +814,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL08" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -873,13 +902,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL09" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -958,13 +990,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL10" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1043,13 +1078,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL11" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1128,13 +1166,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL12" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1213,13 +1254,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL13" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1298,13 +1342,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL14" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1383,13 +1430,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL15" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1468,13 +1518,16 @@
 				"SubnetId": { "Ref": "Conf1e" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL16" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1553,13 +1606,16 @@
 				"SubnetId": { "Ref": "Conf1c" },
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL17" },
-					{ "Key": "Application_Name", "Value": { "Ref": "ApplicationName" } },
-					{ "Key": "Application_Id", "Value": { "Ref": "ApplicationId" } },
-					{ "Key": "Environment", "Value": { "Ref": "Environment" } },
-					{ "Key": "PO_Number", "Value": { "Ref": "PONumber" } },
-					{ "Key": "Project_ID", "Value": { "Ref": "ProjectId" } },
-					{ "Key": "Owner", "Value": { "Ref": "Owner" } },
-					{ "Key": "Approver", "Value": { "Ref": "Approver" } }
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
@@ -1624,12 +1680,12 @@
 					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/cpdbod_prod_app" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Cost_Center", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		}

@@ -2,29 +2,35 @@
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "Deployed via Cloud-Pricing-AuroraDB-Prod-01.js",
 	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-1ec25b69"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-db7bc582"
+		},
+		"PvtSNe": {
+			"Description": "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-a421629e"
+		},
 		"VPCID": {
 			"Description": "Name of and existing VPC",
 			"Type": "String",
 			"Default": "vpc-99e855fc"
 		},
-    "PvtSNc": {
-      "Description": "Private subnet for confidential apps in us-east-1c",
-      "Type": "String",
-      "Default": "subnet-1ec25b69"
-    },
-    "PvtSNd": {
-      "Description": "Private subnet for confidential apps in us-east-1d",
-      "Type": "String",
-      "Default": "subnet-db7bc582"
-    },
-    "PvtSNe": {
-      "Description": "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
-      "Type": "String",
-      "Default": "subnet-a421629e",
-      "MinLength": "1",
-      "MaxLength": "255",
-      "ConstraintDescription": "Must be a valid Private Subnet."
-    },
 		"ApplicationName": {
 			"Description": "Name of application",
 			"Type": "String",
@@ -43,26 +49,17 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
-		"PONumber": {
-			"Description": "PO Number for billing",
-			"Type": "String",
-			"Default": "7000002358",
-			"MinLength": "1",
-			"MaxLength": "255",
-			"AllowedPattern": "[\\x20-\\x7E]*",
-			"ConstraintDescription": "Must contain only ASCII characters."
-		},
 		"Approver": {
 			"Description": "Name of application approver",
 			"Type": "String",
-			"Default": "Karen Williams",
+			"Default": "Owen.James@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Name of application owner",
 			"Type": "String",
-			"Default": "James Owen Mike Rowland",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -74,6 +71,11 @@
 			"MaxLength": "255",
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
 		},
 		"Environment": {
 			"Description": "Environment for application",
@@ -124,7 +126,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
 			}
 		},
@@ -149,7 +153,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
 			}
 		},
@@ -173,7 +179,8 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -190,7 +197,8 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		}

@@ -12,19 +12,19 @@
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
 		"PvtSNc": {
-			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
 			"Type": "String",
-			"Default": "subnet-b61cbb9d"
+			"Default": "subnet-3c80ce13"
 		},
 		"PvtSNd": {
-			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
 			"Type": "String",
-			"Default": "subnet-ea138a9d"
+			"Default": "subnet-d93e2892"
 		},
 		"PvtSNe": {
-			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
 			"Type": "String",
-			"Default": "subnet-2512501f"
+			"Default": "subnet-97bdf9ad"
 		},
 		"VPCID": {
 			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
@@ -101,6 +101,11 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -150,7 +155,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Web Service", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -375,7 +382,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Web Service" }
 				]
 			}
 		},
@@ -399,7 +408,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Console", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -628,7 +639,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Console" }
 				]
 			}
 		},
@@ -661,9 +674,10 @@
 					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
 					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref": "ProjectId" } },
 					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } }
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		},
@@ -706,7 +720,8 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
 		}
