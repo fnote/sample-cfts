@@ -141,69 +141,40 @@
 		"MS238CPODSQL01q": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
-			"AvailabilityZone": "us-east-1c",
-			"DisableApiTermination": "false",
-			"ImageId": "ami-4129033a",
-			"InstanceType": "t2.large",
-			"KeyName": { "Ref": "PemKey" },
-			"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
-			"SubnetId": { "Ref": "PvtSNc" },
-			"BlockDeviceMappings": [
-				{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
-				{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-				{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-				{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
-				{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
-				{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-			],
-			"Tags": [
-				{ "Key" : "Name", "Value" : "MS238CPODSQL01q" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "On Demand" }
-			],
-			"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
-					"<powershell>\n",
-					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
-					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
-					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
-					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
-					"Rename-Computer -NewName MS238CPODSQL01q -Restart\n",
-					"</powershell>"
-			]]}}
-		}
-		},
-		"MS238CPODSQL03q": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref": "ODAMI" },
-				"InstanceType": "m3.large",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
 				"KeyName": { "Ref": "PemKey" },
-				"SecurityGroupIds": [ { "Ref": "QualityDBSG" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref": "NATaccessSG" }, { "Ref": "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "50", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
 				"Tags": [
-					{ "Key" : "Name", "Value" : "MS238CPODSQL03q" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "On Demand" }
+					{ "Key" : "Name", "Value" : "MS238CPODSQL01q" },
+						{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+						{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+						{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+						{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+						{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+						{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+						{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+						{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+						{ "Key" : "Component", "Value": "On Demand" }
 				],
 				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
 						"<powershell>\n",
-						"Rename-Computer -NewName ms238cpodsql03q -Restart\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+						"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+						"Rename-Computer -NewName MS238CPODSQL01q -Restart\n",
 						"</powershell>"
 				]]}}
 			}
