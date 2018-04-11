@@ -44,9 +44,9 @@
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
 		"CommonAMI": {
-			"Description" : "CP-BaseMSDN2K17-001 - ami-a51becd8",
+			"Description" : "CP-BaseMSDN2K17-002 - ami-bb23ddc6",
 			"Type": "String",
-			"Default" : "ami-a51becd8",
+			"Default" : "ami-bb23ddc6",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -54,11 +54,6 @@
 			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
-		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
-			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
 		},
 		"InstanceProfileUpdateServer": {
 			"Description" : "Instance Profile Name for Update Server",
@@ -114,12 +109,13 @@
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "Staging",
+			"Default": "Tuning",
 			"AllowedValues": [
 				"Sandbox",
 				"Development",
 				"Quality",
 				"Staging",
+				"Tuning",
 				"Training",
 				"Production"
 			],
@@ -140,6 +136,630 @@
 		}
 	},
 	"Resources": {
+		"MS238CPUPSQL01s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL01s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL01s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL01s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL01s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL02s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL02s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL02s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL02s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL02s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL03s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL03s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL03s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL03s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL03s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL03s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL04s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL04s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL04s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL04s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL04s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL04s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL05s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL05s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL05s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL05s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL05s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL05s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL06s": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL06s.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL06s --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"C:\\temp\\splunkforwarder02.msi" :
+							{ "source" : "https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $HOSTNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-a906d3d4",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL06s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL06s --region ", { "Ref" : "AWS::Region" }, "\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPUPSQL06s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
 		"MS238CPUPSQL21s": {
 			"Type": "AWS::EC2::Instance",
 			"Metadata" : {
@@ -338,6 +958,2121 @@
 
 					"timeout 60\n",
 					"Rename-Computer -NewName MS238CPUPSQL22s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL31d": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL31d.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL31d --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $COMPUTERNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-e3bdbc99",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL31d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL31d --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+					"sleep 60\n",
+
+					"Rename-Computer -NewName MS238CPUPSQL31d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL32d": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL32d.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL32d --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $COMPUTERNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-e3bdbc99",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL32d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL32d --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+					"sleep 60\n",
+
+					"Rename-Computer -NewName MS238CPUPSQL32d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL33d": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL33d.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL33d --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $COMPUTERNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-e3bdbc99",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL33d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL33d --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+					"sleep 60\n",
+
+					"Rename-Computer -NewName MS238CPUPSQL33d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL34d": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL34d.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL34d --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $COMPUTERNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-e3bdbc99",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL34d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL34d --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+					"sleep 60\n",
+
+					"Rename-Computer -NewName MS238CPUPSQL34d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPUPSQL35d": {
+			"Type": "AWS::EC2::Instance",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : { "config" : {
+					"files" : {
+						"c:\\cfn\\cfn-hup.conf" : { "content" : { "Fn::Join" : ["", [
+							"[main]\n",
+							"stack=", { "Ref" : "AWS::StackId" }, "\n",
+							"region=", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"c:\\cfn\\hooks.d\\cfn-auto-reloader.conf" : { "content": { "Fn::Join" : ["", [
+							"[cfn-auto-reloader-hook]\n",
+							"triggers=post.update\n",
+							"path=Resources.MS238CPUPSQL35d.Metadata.AWS::CloudFormation::Init\n",
+							"action=cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL35d --region ", { "Ref" : "AWS::Region" }, "\n"
+						]]}},
+						"C:\\temp\\apache-tomcat-8.0.33-windows-x64.zip" :
+							{ "source" : "http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.33/bin/apache-tomcat-8.0.33-windows-x64.zip" },
+						"c:\\temp\\StartupTask.bat" : { "content": { "Fn::Join" : ["", [
+							"cd \\temp\n",
+							"ECHO [default] > \"C:\\temp\\inputs.conf\"\n",
+							"ECHO host = $decideOnStartup >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO [script://$SPLUNK_HOME\\bin\\scripts\\splunk-wmi.path] >> \"C:\\temp\\inputs.conf\"\n",
+							"ECHO disabled = 0 >> \"C:\\temp\\inputs.conf\"\n",
+							
+							"ECHO [tcpout] > \"C:\\temp\\outputs.conf\"\n",
+							"ECHO defaultGroup = default-autolb-group >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout:default-autolb-group] >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO server = splunkindex.na.sysco.net:9997 >> \"C:\\temp\\outputs.conf\"\n",
+							"ECHO [tcpout-server://splunkindex.na.sysco.net:9997] >> \"C:\\temp\\outputs.conf\"\n",
+
+							"ECHO [target-broker:deploymentServer] > \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO targetUri = splunkdeploy.na.sysco.net:8089 >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO [deployment-client] >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+							"ECHO clientName = cpup $COMPUTERNAME >> \"C:\\Program Files\\SplunkUniversalForwarder\\etc\\system\\local\\deploymentclient.conf\"\n",
+
+							"powershell.exe -nologo -noprofile -command \"& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('apache-tomcat-8.0.33-windows-x64.zip', 'C:\\Program Files\\Tomcat\\'); }\"\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/UpdateCP.cmd C:\\temp\\UpdateCP.cmd\n",
+							"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing_UpdateService/", { "Ref" : "EnvironmentShort" }, "/properties/CreateTask.xml C:\\temp\\CreateTask.xml\n",
+							"%windir%/System32/schtasks /Create /F /tn \"Cloud Pricing - Startup Task\" /xml C:\\temp\\CreateTask.xml\n",
+
+							"set CATALINA_HOME=C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\n",
+							"\"C:\\Program Files\\Tomcat\\apache-tomcat-8.0.33\\bin\\service.bat\" install\n",
+							"C:\\temp\\UpdateCP.cmd\n"
+						]]}}
+					},
+					"commands" : {
+						"1-StartupTask" : { "command" : "C:\\temp\\StartupTask.bat" }
+					},
+					"services" : { "windows" : { "cfn-hup" : {
+						"enabled" : "true",
+						"ensureRunning" : "true",
+						"files" : ["c:\\cfn\\cfn-hup.conf", "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"]
+					}}}
+				}}
+			},
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-e3bdbc99",
+				"InstanceType": "r4.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": "1", "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPUPSQL35d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Update Processor" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
+					"<script>\n",
+					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL35d --region ", { "Ref" : "AWS::Region" }, "\n",
+					"</script>",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+					"sleep 60\n",
+
+					"Rename-Computer -NewName MS238CPUPSQL35d -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL01s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL01s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL01s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL02s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL02s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL02s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL03s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL03s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL03s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL04s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL04s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL04s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL05s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL05s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL05s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL06s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL06s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL06s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL07s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL07s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL07s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL08s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL08s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL08s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL09s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL09s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL09s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL10s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL10s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL10s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL21s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL21s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL21s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL22s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL22s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL22s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL23s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL23s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL23s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL24s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL24s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL24s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL25s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL25s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL25s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL26s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL26s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL26s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL27s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL27s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL27s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL28s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL28s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL28s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL29s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL29s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL29s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL30s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-f4fe0f89",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL30s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"mkdir \\temp\n",
+					"cd /temp\n",
+					"Invoke-WebRequest -Uri \"https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true\" -OutFile \"C:/temp/splunkforwarder.msi\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkForwarder\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" AGREETOLICENSE=Yes /passive\n",
+
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+
+					"timeout 60\n",
+					"Rename-Computer -NewName MS238CPODSQL30s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL41s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL41s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL41s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL42s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL42s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL42s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL43s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL43s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL43s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL44s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL44s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL44s -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL45s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL45s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL45s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL46s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL46s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL46s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL47s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL47s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL47s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL48s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL48s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL48s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL49s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL49s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL49s -Restart\n",
+					"</powershell>"
+				]]}}
+			}
+		},
+		"MS238CPODSQL50s": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-4129033a",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL50s" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL50s -Restart\n",
 					"</powershell>"
 				]]}}
 			}

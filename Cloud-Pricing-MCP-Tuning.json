@@ -109,12 +109,13 @@
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "Staging",
+			"Default": "Tuning",
 			"AllowedValues": [
 				"Sandbox",
 				"Development",
 				"Quality",
 				"Staging",
+				"Tuning",
 				"Training",
 				"Production"
 			],
