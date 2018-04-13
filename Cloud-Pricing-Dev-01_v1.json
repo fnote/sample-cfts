@@ -196,6 +196,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
@@ -267,6 +268,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "DB Batch Server" }
 				],
@@ -300,6 +302,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
@@ -368,6 +371,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
@@ -391,6 +395,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -422,6 +427,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -455,6 +461,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -488,6 +495,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -521,6 +529,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -563,6 +572,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -602,6 +612,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -637,6 +648,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -721,6 +733,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -805,6 +818,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -889,6 +903,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -923,6 +938,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "AMI Description", "Value" : "CISGoldWIN2K12-01292018" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
@@ -966,6 +982,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -1010,6 +1027,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -1054,6 +1072,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -1096,6 +1115,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "IDE" }
 			],
@@ -1229,6 +1249,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "On Demand" }
 			],
@@ -1330,6 +1351,7 @@
 				{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 				{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 				{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+				{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 				{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 				{ "Key" : "Component", "Value": "On Demand" }
 			],

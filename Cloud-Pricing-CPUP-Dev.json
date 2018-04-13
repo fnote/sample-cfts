@@ -475,6 +475,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
@@ -530,6 +531,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
@@ -553,6 +555,62 @@
 					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
 					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
 					"Rename-Computer -NewName MS238CPODSQL02d -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"MS238CPODSQL99d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-8a5580f7",
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
+				"SubnetId": { "Ref": "PvtSNd" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdc", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdd", "Ebs": { "VolumeSize": 1, "VolumeType": "gp2" }},
+					{"DeviceName": "xvde", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdf", "Ebs": { "VolumeSize": 150, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "MS238CPODSQL99d Sagar" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "On Demand" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 4 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 4 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"$size = (Get-PartitionSupportedSize -DiskNumber 5 -PartitionNumber 2)\n",
+					"Resize-Partition -DiskNumber 5 -PartitionNumber 2 -Size $size.SizeMax\n",
+					"Rename-Computer -NewName MS238CPODSQL99d -Restart\n",
 					"</powershell>\n"
 				]]}}
 			}
