@@ -114,7 +114,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.4xlarge",
+				"DBInstanceClass" : "db.r4.4xlarge",
 				"Engine" : "aurora",
 				"MonitoringInterval" : 30,
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
@@ -127,6 +127,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
@@ -141,7 +142,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPDBClusterPROD" },
-				"DBInstanceClass" : "db.r3.4xlarge",
+				"DBInstanceClass" : "db.r4.4xlarge",
 				"Engine" : "aurora",
 				"MonitoringInterval" : 30,
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
@@ -154,6 +155,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Aurora DB" }
 				]
@@ -207,6 +209,10 @@
 		"dbUrl" : {
 			"Description" : "Endpoint for Common DB",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPDBClusterPROD", "Endpoint.Address" ]}]] }
+		},
+		"dbUrlReadOnly" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPDBClusterPROD", "ReadEndpoint.Address" ]}]] }
 		}
 	}
 }
