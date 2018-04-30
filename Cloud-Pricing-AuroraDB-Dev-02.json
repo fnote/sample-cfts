@@ -1,0 +1,240 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-AuroraDB-Dev-02.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
+			"Type": "String",
+			"Default": "subnet-3c80ce13"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
+			"Type": "String",
+			"Default": "subnet-d93e2892"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
+			"Type": "String",
+			"Default": "subnet-97bdf9ad"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Development",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Tuning",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "DEV",
+			"AllowedValues": [
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"CPEDBClusterDEV" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01d",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" }
+			}
+		},
+		"DBPrimary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPEDev01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterDEV" },
+				"DBInstanceClass" : "db.r4.large",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DBPrimary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DBPrimary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPEDev02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterDEV" },
+				"DBInstanceClass" : "db.r4.large",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"sgDB" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Cloud Pricing Engine DB SG DEV",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3306",
+					"ToPort" : "3306",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["SG-CPE-Database-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"snDB" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+				"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["SN-CPE-Database-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		}
+	},
+	"Outputs" : {
+		"dbUrl" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterDEV", "Endpoint.Address" ]}]] }
+		},
+		"dbUrlReadOnly" : {
+			"Description" : "Endpoint for Common DB Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterDEV", "ReadEndpoint.Address" ]}]] }
+		}
+	}
+}
