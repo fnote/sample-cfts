@@ -91,6 +91,28 @@
 				"TTL" : "300",
 				"ResourceRecords" : [ "internal-elb-cp-console2-STG-1352587604.us-east-1.elb.amazonaws.com" ]
 			}
+		},
+		"InternalDNSRegionRecordSplunkIndex" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["splunkindex", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-SyscoSplunkIndxProdELB-prod-124146806.us-east-1.elb.amazonaws.com" ]
+			}
+		},
+		"InternalDNSRegionRecordSplunkIndexSBX" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["splunkindex-sbx", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-splunk-SBX-1272455960.us-east-1.elb.amazonaws.com" ]
+			}
 		}
 	}
 }
