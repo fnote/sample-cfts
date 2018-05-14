@@ -43,10 +43,10 @@
 			"Default": "sg-42dc8b26",
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
-		"CPUP008AMI": {
-			"Description": "CP-Win2016SQL2017-008 - ami-132ef26c",
+		"CPUP011AMI": {
+			"Description": "CP-Win2016SQL2017-011 - ami-887beff7",
 			"Type": "String",
-			"Default": "ami-132ef26c"
+			"Default": "ami-887beff7"
 		},
 		"PemKey": {
 			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
@@ -191,7 +191,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -279,7 +279,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -367,7 +367,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -455,7 +455,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -543,7 +543,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -631,7 +631,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -719,7 +719,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -807,7 +807,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -895,7 +895,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -983,7 +983,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1071,7 +1071,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1159,7 +1159,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1247,7 +1247,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1335,7 +1335,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1423,7 +1423,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1511,7 +1511,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1e",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
@@ -1599,7 +1599,7 @@
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
 				"DisableApiTermination": "false",
-				"ImageId": { "Ref" : "CPUP008AMI" },
+				"ImageId": { "Ref" : "CPUP011AMI" },
 				"InstanceType": "r4.xlarge",
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileUpdateServer" },
 				"KeyName": { "Ref": "PemKey" },
