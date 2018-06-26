@@ -1,0 +1,185 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Cloud Pricing Batch Lambda Functions - Cloud-Pricing-Lambda01-Dev.json",
+	"Parameters": {
+		"LambdaHandler": {
+			"Description": "Lambda Function Handler",
+			"Type": "String",
+			"Default": "index.lambda_handler"
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-b61cbb9d"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-ea138a9d"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-2512501f"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"DefaultSG": {
+			"Description": "Default Security Group",
+			"Type": "String",
+			"Default": "sg-5c80cb39"
+		},
+		"Region": {
+			"Description": "AWS Region",
+			"Type": "String",
+			"Default": "us-east-1"
+		},
+		"ASB04": {
+			"Description": "Assembler04 Instance ID",
+			"Type": "String",
+			"Default": "i-06610365999a35e9a"
+		}
+	},
+	"Resources": {
+		"CPCloudWatchPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPCloudWatch01",
+						"Effect": "Allow",
+						"Action": [
+							"cloudwatch:*",
+							"logs:*",
+							"events:*"
+						],
+						"Resource": "*"
+					}]
+				}
+			}
+		},
+		"CPLambdaPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPLambda01",
+						"Effect": "Allow",
+						"Action": [
+							"lambda:CreateFunction",
+							"lambda:UpdateEventSourceMapping",
+							"lambda:ListFunctions",
+							"lambda:ListVersionsByFunction",
+							"lambda:GetEventSourceMapping",
+							"lambda:GetFunction",
+							"lambda:ListAliases",
+							"lambda:UpdateFunctionConfiguration",
+							"lambda:GetAccountSettings",
+							"lambda:GetFunctionConfiguration",
+							"lambda:CreateEventSourceMapping",
+							"lambda:ListTags",
+							"lambda:ListEventSourceMappings",
+							"lambda:DeleteEventSourceMapping",
+							"lambda:GetAlias",
+							"lambda:GetPolicy"
+						],
+						"Resource": "*",
+						"Sid": "CPLambda02",
+						"Effect": "Allow",
+						"Action": [
+							"lambda:TagResource",
+							"lambda:InvokeFunction",
+							"lambda:InvokeAsync",
+							"lambda:UntagResource",
+							"lambda:EnableReplication",
+							"lambda:PutFunctionConcurrency",
+							"lambda:UpdateAlias",
+							"lambda:UpdateFunctionCode",
+							"lambda:AddPermission",
+							"lambda:DeleteAlias",
+							"lambda:DeleteFunction",
+							"lambda:PublishVersion",
+							"lambda:DeleteFunctionConcurrency",
+							"lambda:RemovePermission",
+							"lambda:CreateAlias"
+						],
+						"Resource": [
+							"arn:aws:lambda:::function:Sysco-CP-*"
+						]
+					}]
+				}
+			}
+		},
+		"CPS3Policy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPS300",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Describe*",
+							"s3:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPS301",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*"
+						],
+						"Resource": [
+							"arn:aws:s3:::sysco-prod-infrastructure-*",
+							"arn:aws:s3:::sysco-prod-cloud-operations-*",
+							"arn:aws:s3:::sysco-prod-security-*"
+						]
+					},{
+						"Sid": "CPS302",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*",
+							"s3:Put*",
+							"s3:Delete*"
+						],
+						"Resource": [
+							"arn:aws:s3:::sysco-prod-codedeploy-*",
+							"arn:aws:s3:::sysco-prod-cloudpricing-*"
+						]
+					}]
+				}
+			}
+		},
+		"IAMRoleCP01": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["lambda.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					"arn:aws:iam::885523507357:policy/Sysco-S3ReadCodeDeploy",
+					"arn:aws:iam::885523507357:policy/Sysco-CP-S3Actions",
+					"arn:aws:iam::885523507357:policy/Sysco-CP-S3UdpateService",
+					"arn:aws:iam::885523507357:policy/Sysco-CP-EC2Actions",
+					"arn:aws:iam::885523507357:policy/Sysco-EC2NoRsrcPerm_All",
+					{ "Ref": "CPCloudWatchPolicy" },
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "CPLambdaPolicy" }
+				]
+			},
+			"DependsOn": ["CPCloudWatchPolicy", "CPLambdaPolicy", "CPS3Policy"]
+		}
+	}
+}

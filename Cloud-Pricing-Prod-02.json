@@ -181,7 +181,7 @@
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "CP Management" }
+					{ "Key" : "Component", "Value": "CP Management Jenkins" }
 				],
 				"UserData" : {
 					"Fn::Base64" : {
@@ -196,6 +196,61 @@
 						]
 					}
 				}
+			}
+		},
+		"ms238mgmttst02": {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : "ami-afe035d2",
+				"InstanceType" : "m5.xlarge",
+				"KeyName" : {"Ref" : "PemKey"},
+				"SecurityGroupIds": [{ "Ref": "CPCICDSG" }, { "Ref": "CISG" }, { "Ref": "NATaccessSGMGTSG" } ],
+				"SubnetId": { "Ref": "CD1c" },
+				"IamInstanceProfile" : "Sysco-DevOpsInstanceProfile-PPXXSBIRK3JN",
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdg", "Ebs": { "VolumeSize": 50, "VolumeType": "gp2" }},
+					{"DeviceName": "xvdh", "Ebs": { "VolumeSize": 250, "VolumeType": "gp2" }}
+				],
+				"Tags" : [ 
+					{ "Key" : "Name", "Value": "ms238mgmttst02" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "CP Management Test Server" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<powershell>\n",
+					"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 2 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Rename-Computer -NewName ms238mgmttst02 -Restart\n",
+					"</powershell>"
+				]]}}
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"net start SplunkForwarder\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Initialize-Disk -Number 2 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+					"Rename-Computer -NewName ms238mgmttst02 -Restart\n",
+					"</powershell>"
+				]]}}
 			}
 		},
 		"MS238CPBRFS01": {

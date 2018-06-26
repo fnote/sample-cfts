@@ -1,0 +1,504 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-WebService04-EXE.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
+			"Type": "String",
+			"Default": "subnet-3c80ce13"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
+			"Type": "String",
+			"Default": "subnet-d93e2892"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
+			"Type": "String",
+			"Default": "subnet-97bdf9ad"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CommonAMI": {
+			"Description" : "CISGoldAWSL-02022018 - ami-6690911c",
+			"Type": "String",
+			"Default" : "ami-6690911c",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"InstanceProfileMCP": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-CP-MCPServerRole"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Execution",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "EXE",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"SBX",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"WebServiceGroup" : {
+			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+			"Properties" : {
+				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
+				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
+				"MinSize" : "2",
+				"DesiredCapacity" : "2",
+				"MaxSize" : "50",
+				"HealthCheckType": "ELB",
+				"HealthCheckGracePeriod": "300",
+				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
+				"LoadBalancerNames" : [{ "Ref" : "WebServiceELB" }],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Data Web Service 04 AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
+				]
+			},
+			"UpdatePolicy" : {
+				"AutoScalingScheduledAction" : {
+					"IgnoreUnmodifiedGroupSizeProperties" : "true"
+				},
+				"AutoScalingRollingUpdate" : {
+					"MinInstancesInService" : "1",
+					"MaxBatchSize" : "1",
+					"PauseTime" : "PT1M",
+					"WaitOnResourceSignals" : "false"
+				}
+			}
+		},
+		"WebServiceLaunchConfig" : {
+			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+			"Properties" : {
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t2.large",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"# Install lsof locate and smbclient\n",
+					"yum install -y sysstat lsof mlocate\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"sh -c \"hostname cpwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=cpwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
+					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
+					"useradd -m -g aix -c \"Lohitha Chiranjeewa, BT Studio\" lchi0638\n",
+					"useradd -m -g aix -c \"Krishan Senevirathne, BT Studio\" ksen0887\n",
+					"useradd -m -g aix -c \"Roshan Alwis, BT Studio\" ralw0871\n",
+					"useradd -m -g aix -c \"Asanka Indunil, BT Studio\" iasa0862\n",
+					"useradd -m -g aix -c \"Chamin Wickramarathna, BT Studio\" cwic0864\n",
+					"useradd -m -g aix -c \"Amoda Dissanayake, BT Studio\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake, BT Studio\" ngun0234\n",
+					"useradd -m -g aix -c \"Gayan Herath, BT Studio\" gher1098\n",
+
+					"##############################################\n",
+					"# Download and Install java\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install tomcat\n",
+					"##############################################\n",
+					"groupadd tomcat\n",
+					"useradd tomcat -b /app -g tomcat -e \"\"\n",
+					"cd /tmp\n",
+					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
+					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
+					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
+
+					"##############################################\n",
+					"# Setting for Tomcat\n",
+					"##############################################\n",
+					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
+					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
+					
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"chown tomcat -R /settings\n",
+					"chgrp -R -c ec2-user /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"##############################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"# ./install auto\n",
+
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
+				]]}}
+			}
+		},
+		"CPUAlarmHigh" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AlarmName" : "CPWebService04-CPU-ScaleUp",
+				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
+				"AlarmDescription" : "Scale-up if Avg CPU > 40% for 3 minutes or 3-1 minute periods",
+				"Namespace" : "AWS/EC2",
+				"MetricName" : "CPUUtilization",
+				"Statistic" : "Average",
+				"ComparisonOperator" : "GreaterThanThreshold",
+				"Threshold" : "40",
+				"Period" : "60",
+				"EvaluationPeriods" : "3",
+				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
+			}
+		},
+		"CPUAlarmLow" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AlarmName" : "CPWebService04-CPU-ScaleDown",
+				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
+				"AlarmDescription" : "Scale-down if Avg CPU < 25% for 3 minutes or 3-1 minute periods",
+				"Namespace" : "AWS/EC2",
+				"MetricName" : "CPUUtilization",
+				"Statistic" : "Average",
+				"ComparisonOperator" : "LessThanThreshold",
+				"Threshold" : "25",
+				"Period" : "60",
+				"EvaluationPeriods" : "3",
+				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
+			}
+		},
+		"ScaleUpPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
+				"PolicyType" : "SimpleScaling",
+				"Cooldown" : "60",
+				"ScalingAdjustment" : "2"
+			}
+		},
+		"ScaleDownPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
+				"PolicyType" : "SimpleScaling",
+				"Cooldown" : "60",
+				"ScalingAdjustment" : "-2"
+			}
+		},
+		"WebServiceELB": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-cp-webservice04-", { "Ref" : "EnvironmentShort" }]]},
+				"Scheme": "internal",
+				"CrossZone": "true",
+				"SecurityGroups": [ { "Ref": "sgELB" } ],
+				"Listeners": [
+					{
+						"LoadBalancerPort": "80",
+						"InstancePort": "8080",
+						"Protocol": "HTTP"
+					},
+					{
+						"LoadBalancerPort": "443",
+						"InstancePort": "8080",
+						"Protocol": "TCP"
+					}
+				],
+				"HealthCheck": {
+					"Target" : "HTTP:8080/",
+					"HealthyThreshold": "3",
+					"UnhealthyThreshold": "7",
+					"Interval": "120",
+					"Timeout": "15"
+				},
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP-WebService-04-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Web 04 Service" }
+				]
+			}
+		},
+		"sgELB": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription" : { "Fn::Join" : ["", ["Web Services 04 ", { "Ref" : "EnvironmentShort" }]]},
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "10.0.0.0/8"
+				} , {
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/cp_elb_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"sgWebService" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CP Web Service 04 SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8080",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/cpwebsvc04_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"CPWebSvcCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CP_WebService04" }
+		},
+		"CPWebSvcCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : { "Ref" : "CPWebSvcCodeDeployApp" },
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP_WebService04_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
+			}
+		}
+	}
+}

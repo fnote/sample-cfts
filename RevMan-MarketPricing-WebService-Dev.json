@@ -1,0 +1,478 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via RevMan-MarketPricing-WebService-Dev.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
+			"Type": "String",
+			"Default": "subnet-3c80ce13"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
+			"Type": "String",
+			"Default": "subnet-d93e2892"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
+			"Type": "String",
+			"Default": "subnet-97bdf9ad"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CommonAMI": {
+			"Description" : "CISGoldAWSL-02022018 - ami-6690911c",
+			"Type": "String",
+			"Default" : "ami-6690911c",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"CommonAMI2": {
+			"Description" : "Amazon Linux 2 LTS Candidate 2 AMI HVM - ami-f973ab84",
+			"Type": "String",
+			"Default" : "ami-f973ab84",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"InstanceProfileMCP": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-CP-MCPServerRole"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "RevMan MarketPricing V1"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Development",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "DEV",
+			"AllowedValues": [
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"WebServiceGroup" : {
+			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+			"Properties" : {
+				"AvailabilityZones" : [ "us-east-1c", "us-east-1d" ],
+				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
+				"MinSize" : "1",
+				"DesiredCapacity" : "1",
+				"MaxSize" : "4",
+				"HealthCheckType": "ELB",
+				"HealthCheckGracePeriod": "300",
+				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
+				"LoadBalancerNames" : [{ "Ref" : "WebServiceELB" }],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["RevMan MarketPricing Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
+				]
+			},
+			"UpdatePolicy" : {
+				"AutoScalingScheduledAction" : {
+					"IgnoreUnmodifiedGroupSizeProperties" : "true"
+				},
+				"AutoScalingRollingUpdate" : {
+					"MinInstancesInService" : "1",
+					"MaxBatchSize" : "1",
+					"PauseTime" : "PT1M",
+					"WaitOnResourceSignals" : "false"
+				}
+			}
+		},
+		"WebServiceLaunchConfig" : {
+			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+			"Properties" : {
+				"ImageId" : {"Ref" : "CommonAMI2"},
+				"InstanceType" : "t2.large",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# OS Version cat /etc/os-release\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"sudo yum update -y\n",
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"# Install lsof locate and smbclient\n",
+					"yum install -y sysstat lsof mlocate\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname \n",
+					"#  Amazon Linux 2\n",
+					"#  https://aws.amazon.com/premiumsupport/knowledge-center/linux-static-hostname-rhel7-centos7/ \n",
+					"##############################################\n",
+					"sh -c \"hostnamectl set-hostname --static rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+					"sh -c \"echo 'preserve_hostname: true'\" >> /etc/cloud/cloud.cfg\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
+
+					"##############################################\n",
+					"# Install 2.0\n",
+					"##############################################\n",
+					"yum install -y libunwind libicu\n",
+					"yum install scl-utils\n",
+					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/1/B/4/1B4DE605-8378-47A5-B01B-2C79D6C55519/dotnet-sdk-2.0.0-linux-x64.tar.gz\n",
+					"# curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/A/9/F/A9F8872C-48B2-41DB-8AAD-D5908D988592/aspnetcore-store-2.0.7-linux-x64.tar.gz\n",
+					"mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet\n",
+					"ln -s /opt/dotnet/dotnet /usr/local/bin\n",
+					
+					"##############################################\n",
+					"# Set System Environment\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for CodeDeploy Install\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
+
+					"####################################\n",
+					"# Create user, group and app folder\n",
+					"####################################\n",
+					"mkdir /var/aspnetcore\n",
+					"mkdir /var/aspnetcore/apps\n",
+					"chown udotnet -R /var/aspnetcore\n",
+					"chgrp -R -c udotnet /var/aspnetcore\n",
+					"chmod -R -c 777 /var/aspnetcore\n",
+					"dotnet --version\n",
+					"groupadd udotnet\n",
+					"useradd udotnet -g udotnet -e \"\"\n",
+
+					"##############################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"# ./install auto\n",
+
+					"yum --security update --assumeyes\n",
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
+				]]}}
+			}
+		},
+		"CPUAlarmHigh" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AlarmName" : { "Fn::Join" : ["", ["RevMan-eComm-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
+				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
+				"Namespace" : "AWS/EC2",
+				"MetricName" : "CPUUtilization",
+				"Statistic" : "Average",
+				"ComparisonOperator" : "GreaterThanThreshold",
+				"Threshold" : "50",
+				"Period" : "60",
+				"EvaluationPeriods" : "3",
+				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
+			}
+		},
+		"CPUAlarmLow" : {
+			"Type" : "AWS::CloudWatch::Alarm",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AlarmName" : { "Fn::Join" : ["", ["RevMan-eComm-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
+				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
+				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 3 minutes or 3-1 minute periods",
+				"Namespace" : "AWS/EC2",
+				"MetricName" : "CPUUtilization",
+				"Statistic" : "Average",
+				"ComparisonOperator" : "LessThanThreshold",
+				"Threshold" : "60",
+				"Period" : "60",
+				"EvaluationPeriods" : "3",
+				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
+			}
+		},
+		"ScaleUpPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
+				"PolicyType" : "SimpleScaling",
+				"Cooldown" : "60",
+				"ScalingAdjustment" : "2"
+			}
+		},
+		"ScaleDownPolicy" : {
+			"Type" : "AWS::AutoScaling::ScalingPolicy",
+			"DependsOn": "WebServiceGroup",
+			"Properties" : {
+				"AdjustmentType" : "ChangeInCapacity",
+				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
+				"PolicyType" : "SimpleScaling",
+				"Cooldown" : "60",
+				"ScalingAdjustment" : "-2"
+			}
+		},
+		"WebServiceELB": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"Subnets" : [{ "Ref" : "PvtSNc" },{ "Ref" : "PvtSNd" }],
+				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-rm-webservice-", { "Ref" : "EnvironmentShort" }]]},
+				"Scheme": "internal",
+				"CrossZone": "true",
+				"SecurityGroups": [ { "Ref": "sgELB" } ],
+				"Listeners": [
+					{
+						"LoadBalancerPort": "80",
+						"InstancePort": "5000",
+						"Protocol": "HTTP"
+					},
+					{
+						"LoadBalancerPort": "443",
+						"InstancePort": "5000",
+						"Protocol": "TCP"
+					}
+				],
+				"HealthCheck": {
+					"Target" : "TCP:5000",
+					"HealthyThreshold": "3",
+					"UnhealthyThreshold": "7",
+					"Interval": "120",
+					"Timeout": "15"
+				},
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["RM-WebService-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Price Web 04 Service" }
+				]
+			}
+		},
+		"sgELB": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription" : { "Fn::Join" : ["", ["RevMan Web Services ELB ", { "Ref" : "EnvironmentShort" }]]},
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "10.0.0.0/8"
+				} , {
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/rm_elb_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"sgWebService" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : { "Fn::Join" : ["", ["RevMan Web Service SG ", { "Ref" : "EnvironmentShort" }]]},
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "5000",
+					"ToPort" : "5000",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/rmwebsvc_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"CPCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "RevMan_Market",
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["RevMan_Market_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
+			}
+		}
+	}
+}
