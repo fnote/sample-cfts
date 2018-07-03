@@ -180,7 +180,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.large",
+				"InstanceType" : "t2.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -313,12 +313,12 @@
 			"Properties" : {
 				"AlarmName" : "CPWebService04-CPU-ScaleUp",
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 40% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 30% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "40",
+				"Threshold" : "30",
 				"Period" : "60",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -384,7 +384,7 @@
 					}
 				],
 				"HealthCheck": {
-					"Target" : "HTTP:8080/",
+					"Target" : "HTTP:8080/cpwssm04/support/healthcheck",
 					"HealthyThreshold": "3",
 					"UnhealthyThreshold": "7",
 					"Interval": "120",

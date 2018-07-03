@@ -1429,6 +1429,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL35" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
