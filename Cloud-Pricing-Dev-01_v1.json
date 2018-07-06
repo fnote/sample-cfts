@@ -1060,6 +1060,44 @@
 				}
 			}
 		},
+		"MS238CPIDE25d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1d",
+				"DisableApiTermination": "false",
+				"ImageId": "ami-afe035d2",
+				"InstanceType": "t2.xlarge",
+				"KeyName": { "Ref": "PemKey2" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"SecurityGroupIds": [ { "Ref": "DevDBSG" },{ "Ref" : "NATaccessSG" },{ "Ref" : "CheckMKSG" } ],
+				"SubnetId": "subnet-d93e2892",
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": "200", "VolumeType": "gp2" }},
+					{"DeviceName": "xvdb", "Ebs": { "VolumeSize": "200", "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key": "Name", "Value": "MS238CPIDE25d Mike" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "IDE" }
+				],
+				"UserData": {
+					"Fn::Base64": { "Fn::Join": [ "", [
+						"<powershell>\n",
+						"Initialize-Disk -Number 1 -PartitionStyle GPT -PassThru | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -AllocationUnitSize 65536\n",
+						"Rename-Computer -NewName MS238CPIDE25d -Restart\n",
+						"</powershell>"
+					]]}
+				}
+			}
+		},
 		"lx238cpide04d": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
