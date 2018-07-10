@@ -62,6 +62,11 @@
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "arn:aws:iam::467936237394:role/CloudPricing-IAM-Managed-Policies-IAMRoleCP02-1KAOWNMD2PFP1"
+		},
 		"InstanceProfileMCP": {
 			"Description" : "Instance Profile Name for MCP",
 			"Type" : "String",
@@ -188,7 +193,7 @@
 				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
 				],
@@ -443,6 +448,12 @@
 					"IpProtocol" : "tcp",
 					"FromPort" : "22",
 					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
 					"CidrIp" : "10.0.0.0/8"
 				},
 				{

@@ -198,7 +198,6 @@
 					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
 
-					"sudo yum update -y\n",
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
@@ -220,14 +219,16 @@
 					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
 
 					"##############################################\n",
-					"# Install 2.0\n",
+					"# Install dotnet core 2.1.103\n",
 					"##############################################\n",
 					"yum install -y libunwind libicu\n",
 					"yum install scl-utils\n",
-					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/1/B/4/1B4DE605-8378-47A5-B01B-2C79D6C55519/dotnet-sdk-2.0.0-linux-x64.tar.gz\n",
-					"# curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/A/9/F/A9F8872C-48B2-41DB-8AAD-D5908D988592/aspnetcore-store-2.0.7-linux-x64.tar.gz\n",
+					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/E/2/6/E266C257-F7AF-4E79-8EA2-DF26031C84E2/dotnet-sdk-2.1.103-linux-x64.tar.gz\n",
+					"# rm -f /usr/local/bin/dotnet\n",
+					"# rm -f /opt/dotnet\n",
 					"mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet\n",
 					"ln -s /opt/dotnet/dotnet /usr/local/bin\n",
+					"dotnet --version\n",
 					
 					"##############################################\n",
 					"# Set System Environment\n",
@@ -238,7 +239,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for CodeDeploy Install\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
 
 					"####################################\n",
 					"# Create user, group and app folder\n",
@@ -362,10 +363,10 @@
 					}
 				],
 				"HealthCheck": {
-					"Target" : "TCP:5000",
+					"Target" : "HTTP:5000/api/Values",
 					"HealthyThreshold": "3",
 					"UnhealthyThreshold": "7",
-					"Interval": "120",
+					"Interval": "30",
 					"Timeout": "15"
 				},
 				"Tags": [
@@ -442,6 +443,12 @@
 					"IpProtocol" : "tcp",
 					"FromPort" : "22",
 					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
 					"CidrIp" : "10.0.0.0/8"
 				},
 				{
