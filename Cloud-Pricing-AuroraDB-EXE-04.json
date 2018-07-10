@@ -188,6 +188,73 @@
 				]
 			}
 		},
+		"CPE2DBClusterEXE" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01e",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" }
+			}
+		},
+		"DB2Primary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CP2EXE01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterEXE" },
+				"DBInstanceClass" : "db.r4.4xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP04-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB2Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB2Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CP2EXE02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterEXE" },
+				"DBInstanceClass" : "db.r4.4xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP04-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
 		"sgDB" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
@@ -235,9 +302,17 @@
 			"Description" : "Endpoint for Common DB",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterEXE", "Endpoint.Address" ]}]] }
 		},
+		"dbUrl2" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE2DBClusterEXE", "Endpoint.Address" ]}]] }
+		},
 		"dbUrlReadOnly" : {
 			"Description" : "Endpoint for Common DB Read-Only",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterEXE", "ReadEndpoint.Address" ]}]] }
+		},
+		"dbUrlReadOnly" : {
+			"Description" : "Endpoint for Common DB Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE2DBClusterEXE", "ReadEndpoint.Address" ]}]] }
 		}
 	}
 }
