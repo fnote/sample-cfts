@@ -104,7 +104,7 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V1"
+			"Default": "Cloud Pricing V4"
 		},
 		"Environment": {
 			"Description": "Environment for application",
@@ -258,7 +258,6 @@
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
 					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
-					"# printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n%s %s * * * root /sbin/reboot;\n' $((${RANDOM}%60)) $((${RANDOM}%3+5)) > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -426,6 +425,16 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
+			}
+		},
+		"CPWebSvcCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "CP_WebService04",
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP_WebService04_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
 			}
 		}
 	}
