@@ -1,0 +1,405 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via CloudPricing-IAM-Managed-Policies.json",
+	"Parameters": {
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Thibodeaux.Paula@corp.sysco.com>",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		}
+	},
+	"Resources": {
+		"CPEC2Policy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-EC2-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPEC200",
+						"Effect": "Allow",
+						"Action": [
+							"ec2:Describe*",
+							"ec2:Get*",
+							"ec2:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPEC201",
+						"Effect": "Allow",
+						"Action": [
+							"ec2:CreateTags",
+							"ec2:DeleteTags",
+							"ec2:RunInstances",
+							"ec2:RequestSpot*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPEC202",
+						"Effect": "Allow",
+						"Action": [
+							"ec2:*"
+						],
+						"Condition": { "StringLike": {"ec2:ResourceTag/Application_Id": "*001151"} },
+						"Resource": [
+							"arn:aws:ec2:*:*:*"
+						]
+					},{
+						"Sid": "CPEC203",
+						"Effect": "Allow",
+						"Action": [
+							"iam:PassRole"
+						],
+						"Resource": [
+							"arn:aws:iam::*:role/Application-*",
+							"arn:aws:iam::*:role/Sysco-*",
+							"arn:aws:iam::*:role/*CloudPricing*",
+							"arn:aws:iam::*:role/*Cloud-Pricing*"
+						]
+					}]
+				}
+			}
+		},
+		"CPLambdaPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-Lambda-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPLambda00",
+						"Effect": "Allow",
+						"Action": [
+							"lambda:Get*",
+							"lambda:Describe*",
+							"lambda:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPLambda01",
+						"Effect": "Allow",
+						"Action": [
+							"iam:PassRole",
+							"lambda:Add*",
+							"lambda:Update*",
+							"lambda:Delete*",
+							"lambda:Enable*",
+							"lambda:Publish*",
+							"lambda:Remove*",
+							"lambda:Invoke*",
+							"lambda:Put*",
+							"lambda:Create*",
+							"lambda:TagResource",
+							"lambda:UntagResource"
+						],
+						"Resource": [
+							"arn:aws:iam::*:role/Application-CP-*",
+							"arn:aws:iam::*:role/Sysco-CP-*",
+							"arn:aws:iam::*:role/*CloudPricing*",
+							"arn:aws:iam::*:role/*Cloud-Pricing*",
+							"arn:aws:lambda:*:*:*CP-*",
+							"arn:aws:lambda:*:*:*cp-*",
+							"arn:aws:lambda:*:*:*CloudPricing*",
+							"arn:aws:lambda:*:*:*Cloud-Pricing*"
+						]
+					}]
+				}
+			}
+		},
+		"CPS3Policy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-S3-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPS300",
+						"Effect": "Allow",
+						"Action": [
+							"s3:*"
+						],
+						"Resource": [
+							"arn:aws:s3::*:sysco-*prod-codedeploy-*",
+							"arn:aws:s3::*:sysco-*prod-cloudpricing-*",
+							"arn:aws:s3::*:sysco-*prod-batchv2-*",
+							"arn:aws:s3::*:sysco-*prod-b2b-catalog-*"
+						]
+					},{
+						"Sid": "CPS301",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*",
+							"s3:List*"
+						],
+						"Resource": [
+							"arn:aws:s3::*:sysco-*prod-infrastructure-*",
+							"arn:aws:s3::*:sysco-*prod-cloud-operations-*",
+							"arn:aws:s3::*:sysco-*prod-security-*",
+							"arn:aws:s3::*:aws-codedeploy-*"
+						]
+					},{
+						"Sid": "CPS302",
+						"Effect": "Allow",
+						"Action": [
+							"s3:GetBucketLocation",
+							"s3:List*"
+						],
+						"Resource": "*"
+					}]
+				}
+			}
+		},
+		"CPKinesisPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-Kinesis-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPKinesis00",
+						"Effect": "Allow",
+						"Action": [
+							"kinesis:Describe*",
+							"kinesis:Get*",
+							"kinesis:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPKinesis01",
+						"Effect": "Allow",
+						"Action": [
+							"kinesis:Add*",
+							"kinesis:Create*",
+							"kinesis:Delete*",
+							"kinesis:Disable*",
+							"kinesis:Decrease*",
+							"kinesis:Enable*",
+							"kinesis:Increase*",
+							"kinesis:Merge*",
+							"kinesis:Split*",
+							"kinesis:Put*",
+							"kinesis:Remove*",
+							"kinesis:Update*"
+						],
+						"Resource": [
+							"arn:aws:kinesis:*:*:*CP_*",
+							"arn:aws:kinesis:*:*:*cp_*",
+							"arn:aws:kinesis:*:*:*CP-*",
+							"arn:aws:kinesis:*:*:*cp-*",
+							"arn:aws:kinesis:*:*:*CloudPricing*",
+							"arn:aws:kinesis:*:*:*Cloud-Pricing*"
+						]
+					}]
+				}
+			}
+		},
+		"CPDynamoDBPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-DynamoDB-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPDynamoDB00",
+						"Effect": "Allow",
+						"Action": [
+							"s3:*",
+							"dynamodb:Describe*",
+							"dynamodb:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPDynamoDB01",
+						"Effect": "Allow",
+						"Action": [
+							"dynamodb:*",
+							"dynamodb:TagResource",
+							"dynamodb:UntagResource"
+						],
+						"Resource": [
+							"arn:aws:dynamodb:*:*:table/CP_*",
+							"arn:aws:dynamodb:*:*:table/cp_*",
+							"arn:aws:dynamodb:*:*:table/CP-*",
+							"arn:aws:dynamodb:*:*:table/cp-*",
+							"arn:aws:dynamodb:*:*:table/*CloudPricing*",
+							"arn:aws:dynamodb:*:*:table/*Cloud-Pricing*"
+						]
+					}]
+				}
+			}
+		},
+		"CPCloudWatchPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-CloudWatch-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPCloudWatch00",
+						"Effect": "Allow",
+						"Action": [
+							"cloudwatch:Describe*",
+							"cloudwatch:Get*",
+							"cloudwatch:List*",
+							"logs:Describe*",
+							"logs:Get*",
+							"logs:List*",
+							"events:Describe*",
+							"events:Get*",
+							"events:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPCloudWatch01",
+						"Effect": "Allow",
+						"Action": [
+							"cloudwatch:*",
+							"events:*",
+							"logs:*"
+						],
+						"Resource": [
+							"arn:aws:cloudwatch:*:*:*CP-*",
+							"arn:aws:cloudwatch:*:*:*cp-*",
+							"arn:aws:cloudwatch:*:*:*CloudPricing*",
+							"arn:aws:cloudwatch:*:*:*Cloud-Pricing*",
+							"arn:aws:events:*:*:*CP-*",
+							"arn:aws:events:*:*:*cp-*",
+							"arn:aws:events:*:*:*CloudPricing*",
+							"arn:aws:events:*:*:*Cloud-Pricing*",
+							"arn:aws:logs:*:*:log-group:pmt:*",
+							"arn:aws:logs:*:*:log-group:*CP-*",
+							"arn:aws:logs:*:*:log-group:*cp-*",
+							"arn:aws:logs:*:*:log-group:*CloudPricing*",
+							"arn:aws:logs:*:*:log-group:*Cloud-Pricing*",
+							"arn:aws:logs:*:*:log-group:*Sysco-CP-*"
+						]
+					}]
+				}
+			}
+		},
+		"IAMRoleLambda": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "CloudPricing-IAM-Lambda-Role",
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["lambda.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					{ "Ref": "CPEC2Policy" },
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "CPLambdaPolicy" },
+					{ "Ref": "CPCloudWatchPolicy" },
+					{ "Ref": "CPKinesisPolicy" },
+					{ "Ref": "CPDynamoDBPolicy" }
+				]
+			},
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+		},
+		"IAMRoleEC2": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "CloudPricing-IAM-EC2-Role",
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["ec2.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					"arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+					{ "Ref": "CPEC2Policy" },
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "CPLambdaPolicy" },
+					{ "Ref": "CPCloudWatchPolicy" },
+					{ "Ref": "CPKinesisPolicy" },
+					{ "Ref": "CPDynamoDBPolicy" }
+				]
+			},
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+		},
+		"IAMRoleFirehose": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "CloudPricing-IAM-Firehose-Role",
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["firehose.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					"arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+					{ "Ref": "CPEC2Policy" },
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "CPLambdaPolicy" },
+					{ "Ref": "CPCloudWatchPolicy" },
+					{ "Ref": "CPKinesisPolicy" },
+					{ "Ref": "CPDynamoDBPolicy" }
+				]
+			},
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+		},
+		"IAMInstanceProfile01": {
+			"Type": "AWS::IAM::InstanceProfile",
+			 "Properties": {
+				"InstanceProfileName": "CloudPricing-IAM-InstanceProfile",
+				"Path": "/",
+				"Roles": [ {
+				   "Ref": "IAMRoleEC2"
+				} ]
+			 },
+			"DependsOn": ["IAMRoleEC2"]
+		}
+	}
+}
