@@ -63,14 +63,14 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"InstanceProfile": {
-			"Description" : "Instance Profile ARN",
+			"Description" : "Instance Profile Name for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "arn:aws:iam::885523507357:role/CloudPricing-IAM-Managed-Policies-nonp-IAMRoleCP02-15LY2LTNKOH16"
+			"Default" : "CloudPricing-IAM-InstanceProfile"
 		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
+		"InstanceProfileARN": {
+			"Description" : "Instance Profile ARN for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
+			"Default" : "arn:aws:iam::885523507357:instance-profile/CloudPricing-IAM-InstanceProfile"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -192,7 +192,7 @@
 				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
 				],
