@@ -306,6 +306,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
 				]
@@ -394,9 +395,19 @@
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
-					"# Setting cronjobs for CodeDeploy Install\n",
+					"# Install tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"cd /tmp\n",
+					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
+					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
+					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
+					"groupadd tomcat\n",
+					"useradd tomcat -b /usr/local/tomcat8 -g tomcat -e \"\"\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
