@@ -55,10 +55,10 @@
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
+			"Default" : "CloudPricing-IAM-InstanceProfile"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -183,7 +183,7 @@
 				"InstanceType" : "t2.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
 				],
