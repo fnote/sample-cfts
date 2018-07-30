@@ -229,6 +229,55 @@
 				}
 			}
 		},
+		"CPRDSPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "CloudPricing-IAM-RDS-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CPRDS00",
+						"Effect": "Allow",
+						"Action": [
+							"rds:Describe*",
+							"rds:Download*",
+							"rds:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "CPRDS01",
+						"Effect": "Allow",
+						"Action": [
+							"rds:*",
+							"rds:Add*",
+							"rds:Create*",
+							"rds:Delete*",
+							"rds:Describe*",
+							"rds:Download*",
+							"rds:FailoverDBCluster",
+							"rds:List*",
+							"rds:Modify*",
+							"rds:Promote*",
+							"rds:RebootDBInstance",
+							"rds:Remove*",
+							"rds:Reset*",
+							"rds:Restore*",
+							"rds:RevokeDBSecurityGroupIngress",
+							"rds:StartDBInstance",
+							"rds:StopDBInstance"
+						],
+						"Resource": [
+							"arn:aws:rds:*:*:*:cp*",
+							"arn:aws:rds:*:*:*:CP*",
+							"arn:aws:rds:*:*:*:*CloudPricing*",
+							"arn:aws:rds:*:*:*:*Cloud-Pricing*",
+							"arn:aws:rds:*:*:*:*cloudpricing*",
+							"arn:aws:rds:*:*:*:*cloud-pricing*"
+						]
+					}]
+				}
+			}
+		},
 		"CPDynamoDBPolicy": {
 			"Type": "AWS::IAM::ManagedPolicy",
 			"Properties": {
@@ -333,10 +382,11 @@
 					{ "Ref": "CPLambdaPolicy" },
 					{ "Ref": "CPCloudWatchPolicy" },
 					{ "Ref": "CPKinesisPolicy" },
-					{ "Ref": "CPDynamoDBPolicy" }
+					{ "Ref": "CPDynamoDBPolicy" },
+					{ "Ref": "CPRDSPolicy" }
 				]
 			},
-			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy", "CPRDSPolicy"]
 		},
 		"IAMRoleEC2": {
 			"Type": "AWS::IAM::Role",
@@ -359,10 +409,11 @@
 					{ "Ref": "CPLambdaPolicy" },
 					{ "Ref": "CPCloudWatchPolicy" },
 					{ "Ref": "CPKinesisPolicy" },
-					{ "Ref": "CPDynamoDBPolicy" }
+					{ "Ref": "CPDynamoDBPolicy" },
+					{ "Ref": "CPRDSPolicy" }
 				]
 			},
-			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy", "CPRDSPolicy"]
 		},
 		"IAMRoleFirehose": {
 			"Type": "AWS::IAM::Role",
@@ -385,10 +436,11 @@
 					{ "Ref": "CPLambdaPolicy" },
 					{ "Ref": "CPCloudWatchPolicy" },
 					{ "Ref": "CPKinesisPolicy" },
-					{ "Ref": "CPDynamoDBPolicy" }
+					{ "Ref": "CPDynamoDBPolicy" },
+					{ "Ref": "CPRDSPolicy" }
 				]
 			},
-			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy"]
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy", "CPRDSPolicy"]
 		},
 		"IAMInstanceProfile01": {
 			"Type": "AWS::IAM::InstanceProfile",
