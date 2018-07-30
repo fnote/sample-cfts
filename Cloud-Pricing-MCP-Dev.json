@@ -1213,6 +1213,20 @@
 				]]}}
 			}
 		},
+		"CPItmInvSyncCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CPSync-ItmInv" }
+		},
+		"CPAGMTSyncCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "CPSync-ItmInv",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncitminv*d" }],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-ItmInv_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
+			}
+		},
 		"sgMCP" : {
 			"Type" : "AWS::EC2::SecurityGroup",
 			"Properties" : {
