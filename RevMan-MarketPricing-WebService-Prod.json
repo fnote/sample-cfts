@@ -63,14 +63,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"InstanceProfile": {
-			"Description" : "Instance Profile Name for MCP",
+			"Description" : "Instance Profile Name for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "arn:aws:iam::467936237394:role/CloudPricing-IAM-Managed-Policies-IAMRoleCP02-1KAOWNMD2PFP1"
-		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
-			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
+			"Default" : "CloudPricing-IAM-InstanceProfile"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -204,7 +199,6 @@
 					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
 
-					"sudo yum update -y\n",
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
@@ -226,14 +220,16 @@
 					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
 
 					"##############################################\n",
-					"# Install 2.0\n",
+					"# Install dotnet core 2.1.103\n",
 					"##############################################\n",
 					"yum install -y libunwind libicu\n",
 					"yum install scl-utils\n",
-					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/1/B/4/1B4DE605-8378-47A5-B01B-2C79D6C55519/dotnet-sdk-2.0.0-linux-x64.tar.gz\n",
-					"# curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/A/9/F/A9F8872C-48B2-41DB-8AAD-D5908D988592/aspnetcore-store-2.0.7-linux-x64.tar.gz\n",
+					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/E/2/6/E266C257-F7AF-4E79-8EA2-DF26031C84E2/dotnet-sdk-2.1.103-linux-x64.tar.gz\n",
+					"# rm -f /usr/local/bin/dotnet\n",
+					"# rm -f /opt/dotnet\n",
 					"mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet\n",
 					"ln -s /opt/dotnet/dotnet /usr/local/bin\n",
+					"dotnet --version\n",
 					
 					"##############################################\n",
 					"# Set System Environment\n",
@@ -244,7 +240,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for CodeDeploy Install\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
 
 					"####################################\n",
 					"# Create user, group and app folder\n",
@@ -479,6 +475,16 @@
 		"CPWebCodeDeployApp": {
 			"Type" : "AWS::CodeDeploy::Application",
 			"Properties" : { "ApplicationName" : "RevMan_Market" }
+		},
+		"CPCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "RevMan_Market",
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["RevMan_Market_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::467936237394:role/Sysco-CodeDeployServiceRole-1MOY3WIEO7Z5D"
+			}
 		}
 	}
 }
