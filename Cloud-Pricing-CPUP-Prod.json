@@ -197,6 +197,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL21" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -213,10 +216,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL21 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL21 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -285,6 +298,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL22" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -301,10 +317,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL22 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL22 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -373,6 +399,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL23" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -389,10 +418,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL23 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL23 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -461,6 +500,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL24" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -477,10 +519,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL24 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL24 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -549,6 +601,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL25" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -565,10 +620,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL25 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL25 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -637,6 +702,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL26" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -653,10 +721,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL26 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL26 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -725,6 +803,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL27" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -741,10 +822,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL27 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL27 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -813,6 +904,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL28" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -829,10 +923,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL28 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL28 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -901,6 +1005,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL29" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -917,10 +1024,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL29 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL29 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -989,6 +1106,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL30" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1005,10 +1125,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL30 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL30 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1077,6 +1207,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL31" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1093,10 +1226,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL31 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL31 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1165,6 +1308,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL32" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1181,10 +1327,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL32 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL32 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1253,6 +1409,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL33" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1269,10 +1428,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL33 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL33 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1341,6 +1510,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL34" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1357,10 +1529,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL34 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL34 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1430,7 +1612,7 @@
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 65, "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
 				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL35" },
@@ -1448,10 +1630,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL35 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL35 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1520,6 +1712,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL36" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1536,10 +1731,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL36 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL36 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1608,6 +1813,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL37" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1624,10 +1832,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL37 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL37 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1696,6 +1914,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL38" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1712,10 +1933,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL38 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL38 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1784,6 +2015,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL39" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1800,10 +2034,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL39 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL39 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1872,6 +2116,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL40" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1888,10 +2135,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL40 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL40 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -1960,6 +2217,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL41" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -1976,10 +2236,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL41 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL41 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
@@ -2048,6 +2318,9 @@
 				"KeyName": { "Ref": "PemKey" },
 				"SecurityGroupIds": [ { "Ref": "sgDBOD" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" } ],
 				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 100, "VolumeType": "gp2" }}
+				],
 				"Tags": [
 					{ "Key": "Name", "Value": "MS238CPUPSQL42" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
@@ -2064,10 +2337,20 @@
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : [ "", [
 					"<script>\n",
 					"cfn-init.exe -v -s ", { "Ref" : "AWS::StackId" }, " -r MS238CPUPSQL42 --region ", { "Ref" : "AWS::Region" }, "\n",
-					"</script>",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
 					"<powershell>\n",
 					"Rename-Computer -NewName MS238CPUPSQL42 -Restart\n",
-					"</powershell>"
+					"</powershell>\n"
 				]]}}
 			}
 		},
