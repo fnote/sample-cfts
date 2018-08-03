@@ -313,12 +313,12 @@
 			"Properties" : {
 				"AlarmName" : "CPWebService04-CPU-ScaleUp",
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 30% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "30",
+				"Threshold" : "50",
 				"Period" : "60",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
