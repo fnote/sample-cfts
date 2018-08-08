@@ -260,7 +260,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -302,6 +302,7 @@
 					"chmod +x ./install\n",
 					"# ./install auto\n",
 
+					"yum --security update --assumeyes\n",
 					"date > /home/ec2-user/stoptime\n",
 					"reboot\n"
 				]]}}

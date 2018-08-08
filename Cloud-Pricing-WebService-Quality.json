@@ -193,6 +193,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -263,7 +264,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n%s %s * * * root /sbin/reboot;\n' $((${RANDOM}%60)) $((${RANDOM}%3+5)) > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n%s %s * * * root /sbin/reboot;\n' $((${RANDOM}%60)) $((${RANDOM}%3+5)) > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -410,6 +411,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -474,7 +476,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n%s %s * * * root /sbin/reboot;\n' $((${RANDOM}%60)) $((${RANDOM}%3+5)) > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n%s %s * * * root /sbin/reboot;\n' $((${RANDOM}%60)) $((${RANDOM}%3+5)) > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -605,6 +607,7 @@
 					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
