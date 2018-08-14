@@ -5,12 +5,16 @@ $thisComputer = $env:COMPUTERNAME
 $smtpServer = "intrelay.sysco.com"
 $smtpFrom = "Owen.James@corp.sysco.com"
 $smtpTo = "Owen.James@corp.sysco.com";
-$messageSubject = "TESTING.... " + $thisComputer + " - Update/Reboot Report"
+$messageSubject = "Windows Patching - " + $thisComputer + " - Update/Reboot Report"
 $Message = New-Object System.Net.Mail.mailmessage $smtpFrom, $smtpTo
 $Message.Subject = $messageSubject
 
 #Define update criteria.
 $Criteria = "IsInstalled=0 and Type='Software'"
+
+#Stop MS SQL Server and setup Startup Type to Manual
+Get-Service | Where {$_.Name –eq 'MSSQLSERVER'} | Set-Service -StartupType Manual
+Get-Service | Where {$_.Name –eq 'MSSQLSERVER'} | Stop-Service –Force
 
 #Search for relevant updates.
 $Searcher = New-Object -ComObject Microsoft.Update.Searcher
@@ -34,7 +38,7 @@ If ($Result.rebootRequired)
 {
 	$timeStamp = get-date -Format hh:mm
 	$todaysDate = get-date -format D
-	$RebootResult = "The server: " + $thisComputer + " has installed its updates and requires a reboot. 
+	$RebootResult = "The server: " + $thisComputer + " has installed its updates and REQUIRES a reboot. 
 	It began rebooting at:" + $timeStamp + " on " + $todaysDate + "
 
 	Updates  
@@ -47,9 +51,11 @@ If ($Result.rebootRequired)
 }
 If (!$Result.rebootRequired)
 {
+	#Start MS SQL Server
+	Get-Service | Where {$_.Name –eq 'MSSQLSERVER'} | Start-Service
 	$timeStamp = get-date -Format hh:mm
 	$todaysDate = get-date -format D
-	$RebootResult = "The server: " + $thisComputer + " has installed its updates and did not require a reboot.
+	$RebootResult = "The server: " + $thisComputer + " has installed its updates and did NOT require a reboot.
 	It finished installing its updates at:" + $timeStamp + " on " + $todaysDate + "
 
 	Updates  
