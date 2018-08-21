@@ -134,12 +134,12 @@
 		}
 	},
 	"Resources": {
-		"lx238cpmcp05" : {
+		"lx238cpmcp01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.xlarge",
+				"InstanceType" : "m4.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -148,7 +148,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpmcp05" },
+					{ "Key" : "Name", "Value" : "lx238cpmcp01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -169,6 +169,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -176,10 +177,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpmcp05.na.sysco.net\n",
+					"hostname lx238cpmcp01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpmcp05.na.sysco.net\n",
+					"HOSTNAME=lx238cpmcp01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -239,7 +240,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -343,6 +344,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -453,7 +455,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncbase05" : {
+		"lx238cpsyncbase01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -467,7 +469,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncbase05" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncbase01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -488,6 +490,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -495,10 +498,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncbase05.na.sysco.net\n",
+					"hostname lx238cpsyncbase01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncbase05.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncbase01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -558,7 +561,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -606,7 +609,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncbase06" : {
+		"lx238cpsyncbase02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
@@ -620,7 +623,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncbase06" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncbase02" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -641,6 +644,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -648,10 +652,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncbase06.na.sysco.net\n",
+					"hostname lx238cpsyncbase02.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncbase06.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncbase02.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -711,7 +715,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -759,7 +763,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpmt05" : {
+		"lx238cpsyncpmt01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -773,7 +777,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpmt05" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpmt01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -794,6 +798,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -801,10 +806,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpmt05.na.sysco.net\n",
+					"hostname lx238cpsyncpmt01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpmt05.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpmt01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -864,7 +869,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -912,7 +917,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpmt06" : {
+		"lx238cpsyncpmt02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
@@ -926,7 +931,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpmt06" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpmt02" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -947,6 +952,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -954,10 +960,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpmt06.na.sysco.net\n",
+					"hostname lx238cpsyncpmt02.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpmt06.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpmt02.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1017,7 +1023,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -1065,7 +1071,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncagm05" : {
+		"lx238cpsyncagm01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1079,7 +1085,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncagm05" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncagm01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1100,6 +1106,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -1107,10 +1114,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncagm05.na.sysco.net\n",
+					"hostname lx238cpsyncagm01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncagm05.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncagm01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1170,7 +1177,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -1218,7 +1225,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncagm06" : {
+		"lx238cpsyncagm02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
@@ -1232,7 +1239,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncagm06" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncagm02" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1253,6 +1260,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -1260,10 +1268,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncagm06.na.sysco.net\n",
+					"hostname lx238cpsyncagm02.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncagm06.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncagm02.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1323,7 +1331,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -1371,7 +1379,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsynccost05" : {
+		"lx238cpsynccost01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1385,7 +1393,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsynccost05" },
+					{ "Key" : "Name", "Value" : "lx238cpsynccost01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1406,6 +1414,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -1413,10 +1422,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsynccost05.na.sysco.net\n",
+					"hostname lx238cpsynccost01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsynccost05.na.sysco.net\n",
+					"HOSTNAME=lx238cpsynccost01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1476,7 +1485,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -1524,7 +1533,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsynccost06" : {
+		"lx238cpsynccost02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
@@ -1538,7 +1547,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsynccost06" },
+					{ "Key" : "Name", "Value" : "lx238cpsynccost02" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1559,6 +1568,7 @@
 					"yum update -y aws-cfn-bootstrap\n",
 					"yum update -y wget\n",
 					"yum update -y curl\n",
+					"yum --security update --assumeyes\n",
 
 					"# Install lsof locate and smbclient\n",
 					"yum install -y sysstat lsof mlocate\n",
@@ -1566,10 +1576,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsynccost06.na.sysco.net\n",
+					"hostname lx238cpsynccost02.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsynccost06.na.sysco.net\n",
+					"HOSTNAME=lx238cpsynccost02.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1629,7 +1639,7 @@
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
@@ -1677,7 +1687,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncitminv05" : {
+		"lx238cpsyncitminv01" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1691,7 +1701,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncitminv05" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncitminv01" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1720,10 +1730,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncitminv05.na.sysco.net\n",
+					"hostname lx238cpsyncitminv01.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncitminv05.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncitminv01.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1831,7 +1841,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncitminv06" : {
+		"lx238cpsyncitminv02" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1e",
@@ -1845,7 +1855,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncitminv06" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncitminv02" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1874,10 +1884,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncitminv06.na.sysco.net\n",
+					"hostname lx238cpsyncitminv02.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncitminv06.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncitminv02.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
