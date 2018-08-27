@@ -450,159 +450,7 @@
 				]]}}
 			}
 		},
-		"lx238cp04syncbase04d" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.large",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cp04syncbase04d" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Sync Base Values" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-
-					"yum update -y aws-cfn-bootstrap\n",
-					"yum update -y wget\n",
-					"yum update -y curl\n",
-
-					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cp04syncbase04d.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cp04syncbase04d.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
-					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa, BT Studio\" lchi0638\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne, BT Studio\" ksen0887\n",
-					"useradd -m -g aix -c \"Roshan Alwis, BT Studio\" ralw0871\n",
-					"useradd -m -g aix -c \"Asanka Indunil, BT Studio\" iasa0862\n",
-					"useradd -m -g aix -c \"Chamin Wickramarathna, BT Studio\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake, BT Studio\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake, BT Studio\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath, BT Studio\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Download and Install java\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Install tomcat\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
-					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
-					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
-					"groupadd tomcat\n",
-					"useradd tomcat -b /usr/local/tomcat8 -g tomcat -e \"\"\n",
-
-					"##############################################\n",
-					"# Setting for Tomcat\n",
-					"##############################################\n",
-					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
-					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
-					
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-					
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"##############################################\n",
-					"# Install Splunk Universal Forwarder\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"cd /opt/splunkforwarder\n",
-					"./bin/splunk start --accept-license\n",
-					"./bin/splunk enable boot-start\n",
-
-					"# Configure to run as a deployment client\n",
-					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
-
-					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
-					"./bin/splunk restart\n",
-
-					"####################################\n",
-					"# Install CodeDeploy\n",
-					"####################################\n",
-					"cd /tmp\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"# ./install auto\n",
-					
-					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
-				]]}}
-			}
-		},
-		"lx238cp04syncpmt04d" : {
+		"lx238cpsyncplm01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -616,311 +464,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cp04syncpmt04d" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Sync PMT" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-
-					"yum update -y aws-cfn-bootstrap\n",
-					"yum update -y wget\n",
-					"yum update -y curl\n",
-
-					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cp04syncpmt04d.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cp04syncpmt04d.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
-					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa, BT Studio\" lchi0638\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne, BT Studio\" ksen0887\n",
-					"useradd -m -g aix -c \"Roshan Alwis, BT Studio\" ralw0871\n",
-					"useradd -m -g aix -c \"Asanka Indunil, BT Studio\" iasa0862\n",
-					"useradd -m -g aix -c \"Chamin Wickramarathna, BT Studio\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake, BT Studio\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake, BT Studio\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath, BT Studio\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-					
-					"##############################################\n",
-					"# Download and Install java\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Install tomcat\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
-					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
-					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
-					"groupadd tomcat\n",
-					"useradd tomcat -b /usr/local/tomcat8 -g tomcat -e \"\"\n",
-
-					"##############################################\n",
-					"# Setting for Tomcat\n",
-					"##############################################\n",
-					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
-					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
-					
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-					
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"##############################################\n",
-					"# Install Splunk Universal Forwarder\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"cd /opt/splunkforwarder\n",
-					"./bin/splunk start --accept-license\n",
-					"./bin/splunk enable boot-start\n",
-
-					"# Configure to run as a deployment client\n",
-					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
-
-					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
-					"./bin/splunk restart\n",
-
-					"####################################\n",
-					"# Install CodeDeploy\n",
-					"####################################\n",
-					"cd /tmp\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"# ./install auto\n",
-					
-					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
-				]]}}
-			}
-		},
-		"lx238cp04syncagm04d" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cp04syncagm04d" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Sync Agreements" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-
-					"yum update -y aws-cfn-bootstrap\n",
-					"yum update -y wget\n",
-					"yum update -y curl\n",
-
-					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cp04syncagm04d.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cp04syncagm04d.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
-					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
-					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa, BT Studio\" lchi0638\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne, BT Studio\" ksen0887\n",
-					"useradd -m -g aix -c \"Roshan Alwis, BT Studio\" ralw0871\n",
-					"useradd -m -g aix -c \"Asanka Indunil, BT Studio\" iasa0862\n",
-					"useradd -m -g aix -c \"Chamin Wickramarathna, BT Studio\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake, BT Studio\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake, BT Studio\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath, BT Studio\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Download and Install java\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
-					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Install tomcat\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
-					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
-					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
-					"groupadd tomcat\n",
-					"useradd tomcat -b /usr/local/tomcat8 -g tomcat -e \"\"\n",
-
-					"##############################################\n",
-					"# Setting for Tomcat\n",
-					"##############################################\n",
-					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
-					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
-					
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"##############################################\n",
-					"# Install Splunk Universal Forwarder\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"cd /opt/splunkforwarder\n",
-					"./bin/splunk start --accept-license\n",
-					"./bin/splunk enable boot-start\n",
-
-					"# Configure to run as a deployment client\n",
-					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
-
-					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
-					"./bin/splunk restart\n",
-
-					"####################################\n",
-					"# Install CodeDeploy\n",
-					"####################################\n",
-					"cd /tmp\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"# ./install auto\n",
-					
-					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
-				]]}}
-			}
-		},
-		"lx238cp04synccost04d" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cp04synccost04d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplm01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -947,10 +491,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cp04synccost04d.na.sysco.net\n",
+					"hostname lx238cpsyncplm01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cp04synccost04d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplm01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -990,6 +534,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1058,7 +606,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp1Ad" : {
+		"lx238cpsyncpla01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1072,7 +620,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp1Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpla01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1099,10 +647,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp1Ad.na.sysco.net\n",
+					"hostname lx238cpsyncpla01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp1Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpla01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1142,6 +690,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1210,7 +762,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp2Ad" : {
+		"lx238cpsyncplr01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1224,7 +776,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp2Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplr01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1251,10 +803,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp2Ad.na.sysco.net\n",
+					"hostname lx238cpsyncplr01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp2Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplr01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1294,6 +846,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1362,7 +918,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp3Ad" : {
+		"lx238cpsyncplc01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1376,7 +932,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp3Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplc01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1403,10 +959,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp3Ad.na.sysco.net\n",
+					"hostname lx238cpsyncplc01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp3Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplc01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1446,6 +1002,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1514,7 +1074,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp11Ad" : {
+		"lx238cpsyncprm01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1528,7 +1088,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp11Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprm01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1555,10 +1115,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp11Ad.na.sysco.net\n",
+					"hostname lx238cpsyncprm01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp11Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprm01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1598,6 +1158,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1666,7 +1230,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp12Ad" : {
+		"lx238cpsyncpra01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1680,7 +1244,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp12Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpra01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1707,10 +1271,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp12Ad.na.sysco.net\n",
+					"hostname lx238cpsyncpra01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp12Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpra01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1750,6 +1314,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -1818,7 +1386,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncgrp13Ad" : {
+		"lx238cpsyncprr01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1832,7 +1400,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncgrp13Ad" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprr01d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1859,10 +1427,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncgrp13Ad.na.sysco.net\n",
+					"hostname lx238cpsyncprr01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncgrp13Ad.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprr01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1902,6 +1470,166 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install tomcat\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O apache-tomcat-8.5.15.tar.gz http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.15/bin/apache-tomcat-8.5.15.tar.gz\n",
+					"tar xzf apache-tomcat-8.5.15.tar.gz\n",
+					"mv apache-tomcat-8.5.15 /usr/local/tomcat8\n",
+					"groupadd tomcat\n",
+					"useradd tomcat -b /usr/local/tomcat8 -g tomcat -e \"\"\n",
+
+					"##############################################\n",
+					"# Setting for Tomcat\n",
+					"##############################################\n",
+					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
+					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
+					
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10; /tmp/install auto;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"##############################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"# ./install auto\n",
+					
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncprc01d" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t2.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncprc01d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Sync Cost History" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"# Install lsof locate and smbclient\n",
+					"yum install -y sysstat lsof mlocate\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncprc01d.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncprc01d.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
+					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
+					"useradd -m -g aix -c \"Loi Villanueva, App Dev\" lvil8747\n",
+					"useradd -m -g aix -c \"Sagar Shetty, App Dev\" sshe7956\n",
+					"useradd -m -g aix -c \"Lohitha Chiranjeewa, BT Studio\" lchi0638\n",
+					"useradd -m -g aix -c \"Krishan Senevirathne, BT Studio\" ksen0887\n",
+					"useradd -m -g aix -c \"Roshan Alwis, BT Studio\" ralw0871\n",
+					"useradd -m -g aix -c \"Asanka Indunil, BT Studio\" iasa0862\n",
+					"useradd -m -g aix -c \"Chamin Wickramarathna, BT Studio\" cwic0864\n",
+					"useradd -m -g aix -c \"Amoda Dissanayake, BT Studio\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake, BT Studio\" ngun0234\n",
+					"useradd -m -g aix -c \"Gayan Herath, BT Studio\" gher1098\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Download and Install java\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget --no-cookies --no-check-certificate --header \"Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie\" \"http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm\"\n",
+					"rpm -ivh jdk-8u131-linux-x64.rpm\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
@@ -2284,96 +2012,6 @@
 				]]}}
 			}
 		},
-		"CPSyncGroup01CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group01" }
-		},
-		"CPSyncGroup01CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group01",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp01*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group01_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup01CodeDeployApp"]
-		},
-		"CPSyncGroup02CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group02" }
-		},
-		"CPSyncGroup02CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group02",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp02*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group02_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup02CodeDeployApp"]
-		},
-		"CPSyncGroup03CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group03" }
-		},
-		"CPSyncGroup03CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group03",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp03*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group03_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup03CodeDeployApp"]
-		},
-		"CPSyncGroup11CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group11" }
-		},
-		"CPSyncGroup11CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group11",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp11*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group11_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup11CodeDeployApp"]
-		},
-		"CPSyncGroup12CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group12" }
-		},
-		"CPSyncGroup12CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group12",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp12*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group12_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup12CodeDeployApp"]
-		},
-		"CPSyncGroup13CodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CPSync_Group13" }
-		},
-		"CPSyncGroup13CodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Group13",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncgrp13*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Group13_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			},
-			"DependsOn": ["CPSyncGroup13CodeDeployApp"]
-		},
 		"CPMCPCodeDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
@@ -2394,45 +2032,35 @@
 				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
 			}
 		},
-		"CPBVSyncCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_BV04",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cp04syncbase*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_BV04_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			}
+		"CPSyncPlatformCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CPSync_Platform" }
 		},
-		"CPPMTSyncCodeDeployGroup": {
+		"CPSyncPlatformDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : "CPSync_PMT04",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cp04syncpmt*d" }],
+				"ApplicationName" : "CPSync_Platform",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*d" }],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_PMT04_", { "Ref" : "EnvironmentShort" }]]},
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Platform_", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			}
+			},
+			"DependsOn": ["CPSyncPlatformCodeDeployApp"]
 		},
-		"CPAGMTSyncCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CPSync_Agmt04",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cp04syncagm*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Agmt04_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			}
+		"CPSyncPricingCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CPSync_Pricing" }
 		},
-		"CPCostSyncCodeDeployGroup": {
+		"CPSyncPricingDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : "CPSync_Cost04",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cp04synccost*d" }],
+				"ApplicationName" : "CPSync_Pricing",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*d" }],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Cost04_", { "Ref" : "EnvironmentShort" }]]},
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync_Platform_", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::885523507357:role/Sysco-CodeDeployServiceRole-11X7G6ZPKLK9Z"
-			}
+			},
+			"DependsOn": ["CPSyncPricingCodeDeployApp"]
 		},
 		"sgMCP" : {
 			"Type" : "AWS::EC2::SecurityGroup",
