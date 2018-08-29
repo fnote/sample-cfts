@@ -415,6 +415,33 @@
 			},
 			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy", "CPRDSPolicy"]
 		},
+		"IAMRoleSpotFleet": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "CloudPricing-IAM-SpotFleet-Role",
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["spotfleet.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					"arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM",
+					{ "Ref": "CPEC2Policy" },
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "CPLambdaPolicy" },
+					{ "Ref": "CPCloudWatchPolicy" },
+					{ "Ref": "CPKinesisPolicy" },
+					{ "Ref": "CPDynamoDBPolicy" },
+					{ "Ref": "CPRDSPolicy" }
+				]
+			},
+			"DependsOn": ["CPEC2Policy", "CPLambdaPolicy", "CPS3Policy", "CPCloudWatchPolicy", "CPKinesisPolicy", "CPDynamoDBPolicy", "CPRDSPolicy"]
+		},
 		"IAMRoleFirehose": {
 			"Type": "AWS::IAM::Role",
 			"Properties": {

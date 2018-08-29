@@ -165,7 +165,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Master Control Program" }
 				],
@@ -315,7 +315,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage", "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
 				]
@@ -484,6 +484,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -640,6 +641,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -796,6 +798,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -952,6 +955,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -1108,6 +1112,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -1264,6 +1269,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -1420,6 +1426,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -1576,6 +1583,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Sync Cost History" }
 				],
@@ -1786,7 +1794,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],
@@ -1890,7 +1898,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],
@@ -1996,7 +2004,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],

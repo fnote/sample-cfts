@@ -211,7 +211,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],
@@ -315,7 +315,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],
@@ -419,7 +419,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Update Processor" }
 				],
@@ -475,7 +475,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
@@ -531,7 +531,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
@@ -587,7 +587,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "On Demand" }
 				],
