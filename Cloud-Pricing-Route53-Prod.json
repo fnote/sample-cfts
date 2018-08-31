@@ -92,6 +92,17 @@
 				"ResourceRecords" : [ "internal-elb-cp-console2-STG-1352587604.us-east-1.elb.amazonaws.com" ]
 			}
 		},
+		"InternalDNSRegionRecordWebProxyDEV" : {
+			"Type" : "AWS::Route53::RecordSet",
+			"Properties" : {
+				"HostedZoneName" : { "Fn::Join" : [ "", [{"Ref" : "DNSZone2"}, "." ]]},
+				"Comment" : "DNS name for my instance.",
+				"Name" : { "Fn::Join" : [ "", ["cloudpricing-perf", ".", {"Ref" : "DNSZone2"} ,"."]]},
+				"Type" : "CNAME",
+				"TTL" : "300",
+				"ResourceRecords" : [ "internal-elb-cp-webproxy-DEV-798163846.us-east-1.elb.amazonaws.com" ]
+			}
+		},
 		"InternalDNSRegionRecordPriceSimulationDEV" : {
 			"Type" : "AWS::Route53::RecordSet",
 			"Properties" : {
