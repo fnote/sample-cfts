@@ -44,10 +44,10 @@
 			"ConstraintDescription": "Must be a valid NAT Security Group."
 		},
 		"CommonAMI": {
-			"Description" : "CISGoldAWSL-02022018 - ami-6690911c",
+			"Description" : "SYSCOGOLD-AWSL 08-31-2018 -> CP Linux Build (Sysco Base AMI) - ami-047be38970ab0fd99",
 			"Type": "String",
-			"Default" : "ami-6690911c",
-			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"Default" : "ami-047be38970ab0fd99",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
 		"CommonAMI2": {
@@ -62,10 +62,15 @@
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
+			"Default" : "CloudPricing-IAM-InstanceProfile"
+		},
+		"InstanceProfileARN": {
+			"Description" : "Instance Profile ARN for Cloud Pricing",
+			"Type" : "String",
+			"Default" : "arn:aws:iam::885523507357:instance-profile/CloudPricing-IAM-InstanceProfile"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -183,53 +188,55 @@
 		"WebServiceLaunchConfig" : {
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
-				"ImageId" : {"Ref" : "CommonAMI2"},
+				"ImageId" : {"Ref" : "CommonAMI"},
 				"InstanceType" : "t2.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
 					"# Set Timezone\n",
-					"# OS Version cat /etc/os-release\n",
 					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
 
-					"yum update -y aws-cfn-bootstrap\n",
-					"yum update -y wget\n",
-					"yum update -y curl\n",
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"sh -c \"hostname cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
 
-					"# Install lsof locate and smbclient\n",
-					"yum install -y sysstat lsof mlocate\n",
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname \n",
 					"#  Amazon Linux 2\n",
 					"#  https://aws.amazon.com/premiumsupport/knowledge-center/linux-static-hostname-rhel7-centos7/ \n",
 					"##############################################\n",
-					"sh -c \"hostnamectl set-hostname --static rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
+					"sh -c \"hostnamectl set-hostname --static rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"sh -c \"echo 'preserve_hostname: true'\" >> /etc/cloud/cloud.cfg\n",
 
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
-
-					"##############################################\n",
-					"# Install dotnet core 2.1.103\n",
-					"##############################################\n",
-					"yum install -y libunwind libicu\n",
-					"yum install scl-utils\n",
-					"curl -sSL -o dotnet.tar.gz https://download.microsoft.com/download/E/2/6/E266C257-F7AF-4E79-8EA2-DF26031C84E2/dotnet-sdk-2.1.103-linux-x64.tar.gz\n",
-					"# rm -f /usr/local/bin/dotnet\n",
-					"# rm -f /opt/dotnet\n",
-					"mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet\n",
-					"ln -s /opt/dotnet/dotnet /usr/local/bin\n",
-					"dotnet --version\n",
-					
 					"##############################################\n",
 					"# Set System Environment\n",
 					"##############################################\n",
@@ -239,48 +246,8 @@
 					"##############################################\n",
 					"# Setting cronjobs for CodeDeploy Install\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /tmp/install auto;\n' > /etc/cron.d/dotnet\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes;\n' > /etc/cron.d/dotnet\n",
 
-					"####################################\n",
-					"# Create user, group and app folder\n",
-					"####################################\n",
-					"mkdir /var/aspnetcore\n",
-					"mkdir /var/aspnetcore/apps\n",
-					"chown udotnet -R /var/aspnetcore\n",
-					"chgrp -R -c udotnet /var/aspnetcore\n",
-					"chmod -R -c 777 /var/aspnetcore\n",
-					"dotnet --version\n",
-					"groupadd udotnet\n",
-					"useradd udotnet -g udotnet -e \"\"\n",
-
-					"##############################################\n",
-					"# Install Splunk Universal Forwarder\n",
-					"##############################################\n",
-					"cd /tmp\n",
-					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
-					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
-					"cd /opt/splunkforwarder\n",
-					"./bin/splunk start --accept-license\n",
-					"./bin/splunk enable boot-start\n",
-
-					"# Configure to run as a deployment client\n",
-					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
-
-					"# Configure forwarder to send logs to Splunk Indexer\n",
-					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
-					"./bin/splunk restart\n",
-
-					"####################################\n",
-					"# Install CodeDeploy\n",
-					"####################################\n",
-					"cd /tmp\n",
-					"yum install ruby -y\n",
-					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"# ./install auto\n",
-
-					"yum --security update --assumeyes\n",
 					"date > /home/ec2-user/stoptime\n",
 					"reboot\n"
 				]]}}
