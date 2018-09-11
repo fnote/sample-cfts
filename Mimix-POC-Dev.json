@@ -1,0 +1,338 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Mimix-POC-Dev.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c CIDR: 10.168.136.0/23",
+			"Type": "String",
+			"Default": "subnet-3c80ce13"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d CIDR: 10.168.134.0/23",
+			"Type": "String",
+			"Default": "subnet-d93e2892"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.132.0/23",
+			"Type": "String",
+			"Default": "subnet-97bdf9ad"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"NATaccessSG": {
+			"Description": "vpc-sysco-nonprod-02-NatAccess-T1IHRRI726WJ",
+			"Type": "String",
+			"Default": "sg-e151a186",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CheckMKSG": {
+			"Description": "CheckMK Security Group",
+			"Type": "String",
+			"Default": "sg-0f7fc468",
+			"ConstraintDescription": "Must be a valid NAT Security Group."
+		},
+		"CommonAMI": {
+			"Description" : "SYSCOGOLD-AWSL 08-31-2018 -> CP Linux Build (Sysco Base AMI) - ami-047be38970ab0fd99",
+			"Type": "String",
+			"Default" : "ami-047be38970ab0fd99",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for Cloud Pricing",
+			"Type" : "String",
+			"Default" : "CloudPricing-IAM-InstanceProfile"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V1"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Development",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "DEV",
+			"AllowedValues": [
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"lx238cdcpoc01d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgWebService" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "lx238cdcpoc01d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_manage" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cdcpoc01d.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cdcpoc01d.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix bvar0048\n",
+					"usermod -a -G aix kmcm0238\n",
+					"usermod -a -G aix vkum1134\n",
+					"usermod -a -G aix klow3697\n",
+					"usermod -a -G aix ssil0263\n",
+
+					"##############################################\n",
+					"# Install AWS Kinesis Agent\n",
+					"# https://docs.aws.amazon.com/streams/latest/dev/writing-with-agents.html \n",
+					"##############################################\n",
+					"yum install -y aws-kinesis-agent\n",
+					"mkdir /usr/MIMIXShare54\n",
+					"mkdir /usr/MIMIXShare54/kernel\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPBMUPF\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPNBBPF\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPSYPTF\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPVNHPF\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPZQXPF\n",
+					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPZQYPF\n",
+
+					"##############################################\n",
+					"# Splunk - Log Monitoring \n",
+					"# http://splunk.na.sysco.net/en-US/app/cloud_pricing/search \n",
+					"# Search: index=cp_metrics_nonprod sourcetype=cdc_kinesis \n",
+					"##############################################\n",
+					"mkdir /opt/splunkforwarder/etc/apps/kinesis_agent\n",
+					"mkdir /opt/splunkforwarder/etc/apps/kinesis_agent/local\n",
+					"chmod -c -R 777 kinesis_agent/\n",
+					"chown -R splunk kinesis_agent\n",
+					"tee /opt/splunkforwarder/etc/apps/kinesis_agent/local/inputs.conf <<-EOF\n",
+					"[monitor:///var/log/aws-kinesis-agent/aws-kinesis-agent.log]\n",
+					"disabled = false\n",
+					"followTail = true\n",
+					"index = cp_metrics_nonprod\n",
+					"sourcetype = cdc_kinesis\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Splunk - Clear Settings\n",
+					"##############################################\n",
+					"/opt/splunkforwarder/bin/splunk stop\n",
+					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+					"/opt/splunkforwarder/bin/splunk start\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"sgWebService" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "CDC Web Service SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "51701",
+					"ToPort" : "51701",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "449",
+					"ToPort" : "449",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8470",
+					"ToPort" : "8479",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/cdc_kinesis_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"KinesisStream" : {
+			"Type" : "AWS::Kinesis::Stream",
+			"Properties" : {
+				"Name" : "cp_CDC_KinesisStream_POC",
+				"RetentionPeriodHours" : 24,
+				"ShardCount" : 1,
+				"Tags" : [
+					{ "Key" : "Name", "Value": "CDC POC Kinesis Stearm" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"KinesisFirehose" : {
+			"Type" : "AWS::KinesisFirehose::DeliveryStream",
+			"Properties" : {
+				"DeliveryStreamName" : "cp_CDC_FireHose",
+				"DeliveryStreamType" : "KinesisStreamAsSource",
+				"S3DestinationConfiguration" : {
+					"BucketARN" : "arn:aws:s3:::sysco-nonprod-cloudpricing-cdc-kinesis-us-east-1",
+					"BufferingHints" :  {
+						"IntervalInSeconds": "60",
+						"SizeInMBs": "50"
+					},
+					"CompressionFormat" : "UNCOMPRESSED",
+					"Prefix": "firehose/",
+					"RoleARN": "arn:aws:iam::885523507357:role/CloudPricing-IAM-Firehose-Role"
+				},
+				"KinesisStreamSourceConfiguration" : {
+					"KinesisStreamARN" : {"Fn::GetAtt" : ["KinesisStream", "Arn"] },
+					"RoleARN" : "arn:aws:iam::885523507357:role/CloudPricing-IAM-Firehose-Role"
+				}
+			}
+		}
+	}
+}
