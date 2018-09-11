@@ -206,10 +206,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
+					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\n",
+					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -230,14 +230,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Change Name of server to match new hostname \n",
-					"#  Amazon Linux 2\n",
-					"#  https://aws.amazon.com/premiumsupport/knowledge-center/linux-static-hostname-rhel7-centos7/ \n",
-					"##############################################\n",
-					"sh -c \"hostnamectl set-hostname --static rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
-					"sh -c \"echo 'preserve_hostname: true'\" >> /etc/cloud/cloud.cfg\n",
-
-					"##############################################\n",
 					"# Set System Environment\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
@@ -248,8 +240,14 @@
 					"##############################################\n",
 					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes;\n' > /etc/cron.d/dotnet\n",
 
-					"date > /home/ec2-user/stoptime\n",
-					"reboot\n"
+					"##############################################\n",
+					"# Splunk - Clear Settings\n",
+					"##############################################\n",
+					"/opt/splunkforwarder/bin/splunk stop\n",
+					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+					"/opt/splunkforwarder/bin/splunk start\n",
+
+					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
 		},
