@@ -61,6 +61,6 @@ If (!$Result.rebootRequired)
 	Updates  
 	{0}" -f $SearchResultString
 	$Message.Body = $RebootResult
-	$smtp = new-Object Net.Mail.SmtpClient($smtpServer)
-	$smtp.Send($message)
+	# $smtp = new-Object Net.Mail.SmtpClient($smtpServer)
+	# $smtp.Send($message)
 }
