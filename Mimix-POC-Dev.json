@@ -192,6 +192,75 @@
 					"# https://docs.aws.amazon.com/streams/latest/dev/writing-with-agents.html \n",
 					"##############################################\n",
 					"yum install -y aws-kinesis-agent\n",
+
+					"##############################################\n",
+					"# Splunk - Clear Settings\n",
+					"##############################################\n",
+					"/opt/splunkforwarder/bin/splunk stop\n",
+					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+					"/opt/splunkforwarder/bin/splunk start\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cdcpoc02d": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1c",
+				"DisableApiTermination": "false",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgWebService" } ],
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "lx238cdcpoc02d" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_manage" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cdcpoc02d.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cdcpoc02d.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix bvar0048\n",
+					"usermod -a -G aix kmcm0238\n",
+					"usermod -a -G aix vkum1134\n",
+					"usermod -a -G aix klow3697\n",
+					"usermod -a -G aix ssil0263\n",
+
+					"##############################################\n",
+					"# Install AWS Kinesis Agent\n",
+					"# https://docs.aws.amazon.com/streams/latest/dev/writing-with-agents.html \n",
+					"##############################################\n",
+					"yum install -y aws-kinesis-agent\n",
 					"mkdir /usr/MIMIXShare54\n",
 					"mkdir /usr/MIMIXShare54/kernel\n",
 					"mkdir /usr/MIMIXShare54/kernel/targetfiles\n",
@@ -211,8 +280,8 @@
 					"##############################################\n",
 					"mkdir /opt/splunkforwarder/etc/apps/kinesis_agent\n",
 					"mkdir /opt/splunkforwarder/etc/apps/kinesis_agent/local\n",
-					"chmod -c -R 777 kinesis_agent/\n",
-					"chown -R splunk kinesis_agent\n",
+					"chmod -c -R 777 /opt/splunkforwarder/etc/apps/kinesis_agent\n",
+					"chown -R splunk /opt/splunkforwarder/etc/apps/kinesis_agent\n",
 					"tee /opt/splunkforwarder/etc/apps/kinesis_agent/local/inputs.conf <<-EOF\n",
 					"[monitor:///var/log/aws-kinesis-agent/aws-kinesis-agent.log]\n",
 					"disabled = false\n",
@@ -227,6 +296,13 @@
 					"/opt/splunkforwarder/bin/splunk stop\n",
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
 					"/opt/splunkforwarder/bin/splunk start\n",
+
+					"##############################################\n",
+					"# Start AWS Kinesis Agent \n",
+					"##############################################\n",
+					"# TODO Copy config file #\n",
+					"# chkconfig aws-kinesis-agent on\n",
+					"# service aws-kinesis-agent start\n",
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
