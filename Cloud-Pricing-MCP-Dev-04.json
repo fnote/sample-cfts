@@ -55,6 +55,11 @@
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for Cloud Pricing",
+			"Type" : "String",
+			"Default" : "CloudPricing-IAM-InstanceProfile"
+		},
 		"InstanceProfileMCP": {
 			"Description" : "Instance Profile Name for MCP",
 			"Type" : "String",
@@ -339,7 +344,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
@@ -462,7 +467,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplm01d" : {
+		"lx238cpsyncplm02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -476,7 +481,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplm01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplm02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -504,10 +509,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplm01d.na.sysco.net\n",
+					"hostname lx238cpsyncplm02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplm01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplm02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -545,8 +550,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -619,7 +624,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpla01d" : {
+		"lx238cpsyncpla02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -633,7 +638,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpla01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpla02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -661,10 +666,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpla01d.na.sysco.net\n",
+					"hostname lx238cpsyncpla02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpla01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpla02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -702,8 +707,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -776,7 +781,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplr01d" : {
+		"lx238cpsyncplr02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -790,7 +795,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplr01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplr02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -818,10 +823,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplr01d.na.sysco.net\n",
+					"hostname lx238cpsyncplr02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplr01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplr02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -859,8 +864,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -933,7 +938,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplc01d" : {
+		"lx238cpsyncplc02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -947,7 +952,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplc01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplc02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -975,10 +980,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplc01d.na.sysco.net\n",
+					"hostname lx238cpsyncplc02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplc01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplc02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1016,8 +1021,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -1090,7 +1095,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprm01d" : {
+		"lx238cpsyncprm02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1104,7 +1109,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprm01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprm02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1132,10 +1137,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprm01d.na.sysco.net\n",
+					"hostname lx238cpsyncprm02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprm01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprm02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1173,8 +1178,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -1247,7 +1252,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpra01d" : {
+		"lx238cpsyncpra02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1261,7 +1266,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpra01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpra02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1289,10 +1294,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpra01d.na.sysco.net\n",
+					"hostname lx238cpsyncpra02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpra01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpra02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1330,8 +1335,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -1404,7 +1409,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprr01d" : {
+		"lx238cpsyncprr02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1418,7 +1423,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprr01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprr02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1446,10 +1451,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprr01d.na.sysco.net\n",
+					"hostname lx238cpsyncprr02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprr01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprr02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1487,8 +1492,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
@@ -1561,7 +1566,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprc01d" : {
+		"lx238cpsyncprc02d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1575,7 +1580,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprc01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprc02d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -1603,10 +1608,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprc01d.na.sysco.net\n",
+					"hostname lx238cpsyncprc02d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprc01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprc02d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1644,8 +1649,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
 					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
