@@ -135,7 +135,7 @@
 		}
 	},
 	"Resources": {
-		"lx238cdcpoc01d": {
+		"lx238cdcpoc03d": {
 			"Type": "AWS::EC2::Instance",
 			"Properties": {
 				"AvailabilityZone": "us-east-1c",
@@ -150,7 +150,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
 				],
 				"Tags": [
-					{ "Key" : "Name", "Value" : "lx238cdcpoc01d" },
+					{ "Key" : "Name", "Value" : "lx238cdcpoc03d" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
@@ -170,10 +170,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cdcpoc01d.na.sysco.net\n",
+					"hostname lx238cdcpoc03d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cdcpoc01d.na.sysco.net\n",
+					"HOSTNAME=lx238cdcpoc03d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -186,75 +186,7 @@
 					"usermod -a -G aix vkum1134\n",
 					"usermod -a -G aix klow3697\n",
 					"usermod -a -G aix ssil0263\n",
-
-					"##############################################\n",
-					"# Install AWS Kinesis Agent\n",
-					"# https://docs.aws.amazon.com/streams/latest/dev/writing-with-agents.html \n",
-					"##############################################\n",
-					"yum install -y aws-kinesis-agent\n",
-
-					"##############################################\n",
-					"# Splunk - Clear Settings\n",
-					"##############################################\n",
-					"/opt/splunkforwarder/bin/splunk stop\n",
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk start\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cdcpoc02d": {
-			"Type": "AWS::EC2::Instance",
-			"Properties": {
-				"AvailabilityZone": "us-east-1c",
-				"DisableApiTermination": "false",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType": "t2.large",
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"KeyName": { "Ref": "PemKey" },
-				"SecurityGroupIds": [ { "Ref": "sgWebService" } ],
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings": [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
-				],
-				"Tags": [
-					{ "Key" : "Name", "Value" : "lx238cdcpoc02d" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "team_manage" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cdcpoc02d.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cdcpoc02d.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"usermod -a -G aix jowe6212\n",
-					"usermod -a -G aix bvar0048\n",
-					"usermod -a -G aix kmcm0238\n",
-					"usermod -a -G aix vkum1134\n",
-					"usermod -a -G aix klow3697\n",
-					"usermod -a -G aix ssil0263\n",
+					"usermod -a -G aix agup1214\n",
 
 					"##############################################\n",
 					"# Install AWS Kinesis Agent\n",
@@ -272,6 +204,8 @@
 					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPVNHPF\n",
 					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPZQXPF\n",
 					"mkdir /usr/MIMIXShare54/kernel/targetfiles/EDMM1/AWSFiles/C003QNRD.PMPZQYPF\n",
+					"mkdir /usr/MIMIXShare54\n",
+					"chmod -cR 755 /usr/MIMIXShare54\n",
 
 					"##############################################\n",
 					"# Splunk - Log Monitoring \n",
@@ -298,11 +232,15 @@
 					"/opt/splunkforwarder/bin/splunk start\n",
 
 					"##############################################\n",
-					"# Start AWS Kinesis Agent \n",
+					"# Start AWS Kinesis Agent                     \n",
+					"# TODO                                        \n",
+					"# Kinesis Configuration: /etc/aws-kinesis/agent.json \n",
+					"# Kinesis Log file: /var/log/aws-kinesis-agent/aws-kinesis-agent.log \n",
+					"# tail -f -n 100                              \n",
 					"##############################################\n",
-					"# TODO Copy config file #\n",
-					"# chkconfig aws-kinesis-agent on\n",
-					"# service aws-kinesis-agent start\n",
+					"aws s3 cp s3://sysco-nonprod-codedeploy-us-east-1/CloudPricing/CDC/agent.json /etc/aws-kinesis/agent.json\n",
+					"chkconfig aws-kinesis-agent on\n",
+					"service aws-kinesis-agent start\n",
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
@@ -385,7 +323,26 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" }
+				]
+			}
+		},
+		"KinesisStream2" : {
+			"Type" : "AWS::Kinesis::Stream",
+			"Properties" : {
+				"Name" : "CDC_KinesisStream_POC",
+				"RetentionPeriodHours" : 24,
+				"ShardCount" : 1,
+				"Tags" : [
+					{ "Key" : "Name", "Value": "CDC POC Kinesis Stearm 2" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" }
 				]
 			}
 		},
