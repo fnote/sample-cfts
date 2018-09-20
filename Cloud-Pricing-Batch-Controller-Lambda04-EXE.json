@@ -1,0 +1,265 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-Batch-Controller-Lambda04-EXE.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-b61cbb9d"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-ea138a9d"
+		},
+		"PvtSNe": {
+			"Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-2512501f"
+		},
+		"VPCID": {
+			"Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+			"Type": "String",
+			"Default": "vpc-ff88269a"
+		},
+		"DefaultSG": {
+			"Description": "Default Security Group",
+			"Type": "String",
+			"Default": "sg-2bb86a50"
+		},
+		"S3BucketIn" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Input",
+			"Default": "sysco-nonprod-cloudpricing-v4-batch-input-us-east-1"
+		},
+		"S3BucketOut" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Output",
+			"Default": "sysco-nonprod-cloudpricing-v4-batch-output-us-east-1"
+		},
+		"S3CodeBucket" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for the Lambda Code",
+			"Default": "sysco-nonprod-codedeploy-us-east-1"
+		},
+		"S3CodeKey" : {
+			"Type" : "String",
+			"Description" : "S3 bucket key for the Lambda Code",
+			"Default": "CloudPricing_v04/Batch/cp-batch-controller-1.0.0.zip"
+		},
+		"FunctionName" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "sysco-nonprod-cloudpricing-v4-batch-controller"
+		},
+		"IAMRole" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "arn:aws:iam::885523507357:role/CloudPricing-IAM-Lambda-Role"
+		},
+		"CommonDBName" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "CPPDB_Common01e"
+		},
+		"CommonDBURL" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "cloud-pricing-auroradb-exe-04-cpedbclusterexe-1wi01rtvrq3qb.cluster-ro-crkqmj3qk07x.us-east-1.rds.amazonaws.com"
+		},
+		"SplunkHECToken" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "Splunk FC4A9D4D-026C-4E01-853E-83B9BA430CF0"
+		},
+		"SplunkIndex" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "cp_metrics_nonprod"
+		},
+		"SplunkSourceType" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "cp_batch_controller04"
+		},
+		"SplunkSource" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "cp_np_HEC"
+		},
+		"SplunkHECURL" : {
+			"Type" : "String",
+			"Description" : "*** TBD ****",
+			"Default": "http://internal-elb-splunkservice-dev-1567888010.us-east-1.elb.amazonaws.com/api/SplunkHEC"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com Krishan.Senevirathne@sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Execution",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "EXE",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"SBX",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources" : {
+		"LFunctionCP01": {
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+				"Code": {
+					"S3Bucket": { "Ref": "S3CodeBucket" },
+					"S3Key": { "Ref": "S3CodeKey" }
+				},
+				"FunctionName": { "Ref": "FunctionName" },
+				"Handler": "com.sysco.cpbatch.handler.BatchController::handleS3Event",
+				"Runtime": "java8",
+				"Description": "Controller function for Cloud Pricing Batch process",
+				"MemorySize": 512,
+				"Timeout": 300,
+				"Role": { "Ref": "IAMRole" },
+				"VpcConfig": {
+					"SecurityGroupIds": [{ "Ref": "DefaultSG" }],
+					"SubnetIds": [
+						{ "Ref": "PvtSNc" },
+						{ "Ref": "PvtSNd" },
+						{ "Ref": "PvtSNe"}
+					]
+				},
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "cp-lambda-batch-controller" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Lambda Batch Controller" }
+				],
+				"Environment": {
+					"Variables": {
+						"COMMONDB_NAME": { "Ref" : "CommonDBName" },
+						"COMMONDB_USERNAME": "svccp000",
+						"COMMONDB_PASSWORD": "Cpaws000",
+						"ENVIRONMENT": { "Ref" : "Environment" },
+						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
+						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
+						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
+						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
+						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
+						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
+					}
+				}
+			}
+		},
+		"BucketIn" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketIn" },
+				"NotificationConfiguration": {
+					"LambdaConfigurations": [
+					{
+						"Event" : "s3:ObjectCreated:*",
+						"Function" : { "Fn::GetAtt" : [ "LFunctionCP01", "Arn" ] }
+					}]
+				}
+			},
+			"DependsOn": ["LFunctionCP01"]
+		},
+		"BucketPerm": {
+			"Type": "AWS::Lambda::Permission",
+			"Properties" : {
+				"Action": "lambda:InvokeFunction",
+				"FunctionName": {"Ref": "LFunctionCP01"},
+				"Principal": "s3.amazonaws.com",
+				"SourceAccount": {"Ref": "AWS::AccountId"},
+				"SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "BucketIn"}]]}
+			},
+			"DependsOn": ["LFunctionCP01", "BucketIn"]
+		},
+		"BucketOut" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketOut" }
+			}
+		}
+	}
+}
