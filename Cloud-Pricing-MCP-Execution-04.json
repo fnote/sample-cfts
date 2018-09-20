@@ -1,4 +1,4 @@
-	{
+{
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "Deployed via Cloud-Pricing-MCP-Execution-04.json",
 	"Parameters": {
@@ -55,10 +55,10 @@
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
-		"InstanceProfileMCP": {
-			"Description" : "Instance Profile Name for MCP",
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for Cloud Pricing",
 			"Type" : "String",
-			"Default" : "Application-CP-MCPServerRole"
+			"Default" : "CloudPricing-IAM-InstanceProfile"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -146,7 +146,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNd" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -284,7 +284,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
@@ -374,7 +374,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -481,7 +481,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -588,7 +588,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -695,7 +695,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -802,7 +802,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -909,7 +909,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -1016,7 +1016,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
@@ -1123,7 +1123,7 @@
 				"InstanceType" : "t2.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "sgMCP" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
