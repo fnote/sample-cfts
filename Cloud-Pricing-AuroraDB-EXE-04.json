@@ -155,7 +155,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterEXE" },
-				"DBInstanceClass" : "db.r4.4xlarge",
+				"DBInstanceClass" : "db.r4.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -183,7 +183,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterEXE" },
-				"DBInstanceClass" : "db.r4.4xlarge",
+				"DBInstanceClass" : "db.r4.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -235,7 +235,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterEXE" },
-				"DBInstanceClass" : "db.r4.4xlarge",
+				"DBInstanceClass" : "db.r4.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -263,7 +263,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterEXE" },
-				"DBInstanceClass" : "db.r4.4xlarge",
+				"DBInstanceClass" : "db.r4.2xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -319,6 +319,16 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		},
+		"SNSTopic01" : {
+			"Type" : "AWS::SNS::Topic",
+			"Properties" : {
+				"TopicName" : "CPEDBClusterEXE",
+				"DisplayName" : { "Fn::Join" : ["", ["CPE 01 DB Cluster AutoScale ", { "Ref" : "EnvironmentShort" }]]},
+				"Subscription" : [
+					{ "Endpoint" : "arn:aws:lambda:us-east-1:885523507357:function:SNSTest01", "Protocol" : "lambda" }
 				]
 			}
 		}

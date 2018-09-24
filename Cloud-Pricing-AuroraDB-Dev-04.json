@@ -155,7 +155,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterDEV" },
-				"DBInstanceClass" : "db.r4.large",
+				"DBInstanceClass" : "db.r4.xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
@@ -183,7 +183,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterDEV" },
-				"DBInstanceClass" : "db.r4.large",
+				"DBInstanceClass" : "db.r4.xlarge",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
