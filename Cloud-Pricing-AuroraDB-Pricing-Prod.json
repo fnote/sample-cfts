@@ -1,0 +1,331 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Cloud-Pricing-AuroraDB-Pricing-Prod.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNc": {
+			"Description": "Private subnet for confidential apps in us-east-1c",
+			"Type": "String",
+			"Default": "subnet-1ec25b69"
+		},
+		"PvtSNd": {
+			"Description": "Private subnet for confidential apps in us-east-1d",
+			"Type": "String",
+			"Default": "subnet-db7bc582"
+		},
+		"PvtSNe": {
+			"Description": "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
+			"Type": "String",
+			"Default": "subnet-a421629e"
+		},
+		"VPCID": {
+			"Description": "Name of and existing VPC",
+			"Type": "String",
+			"Default": "vpc-99e855fc"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Production",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "PROD",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"SBX",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"CPEDBClusterPROD" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DBPrimary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPEPROD01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterPROD" },
+				"DBInstanceClass" : "db.r4.2xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-PlatformDatabase-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DBPrimary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DBPrimary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPEPROD02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPEDBClusterPROD" },
+				"DBInstanceClass" : "db.r4.2xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-PlatformDatabase-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"CPE2DBClusterPROD" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01",
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE2-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB2Primary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE2PROD01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterPROD" },
+				"DBInstanceClass" : "db.r4.2xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE-PlatformDatabase-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB2Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB2Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE2PROD02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE2DBClusterPROD" },
+				"DBInstanceClass" : "db.r4.2xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP04-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"sgDB" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Cloud Pricing Engine DB SG PROD",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3306",
+					"ToPort" : "3306",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["SG-CPE-Database-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				]
+			}
+		},
+		"snDB" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
+				"SubnetIds" : [ {"Ref" : "PvtSNc"},{"Ref" : "PvtSNd"} ],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["SN-CPE-Database-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } }
+				]
+			}
+		}
+	},
+	"Outputs" : {
+		"dbUrl" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterPROD", "Endpoint.Address" ]}]] }
+		},
+		"dbUrl2" : {
+			"Description" : "Endpoint for Common DB",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE2DBClusterPROD", "Endpoint.Address" ]}]] }
+		},
+		"dbUrlReadOnly" : {
+			"Description" : "Endpoint for Common DB Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPEDBClusterPROD", "ReadEndpoint.Address" ]}]] }
+		},
+		"dbUrlReadOnly" : {
+			"Description" : "Endpoint for Common DB Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE2DBClusterPROD", "ReadEndpoint.Address" ]}]] }
+		}
+	}
+}
