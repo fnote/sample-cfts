@@ -140,9 +140,9 @@
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1e", "us-east-1d" ],
 				"LaunchConfigurationName" : { "Ref" : "PriceWebServiceLaunchConfig" },
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "2",
+				"MinSize" : "4",
+				"DesiredCapacity" : "4",
+				"MaxSize" : "10",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNe" }, { "Ref" : "PvtSNd" } ],
@@ -177,7 +177,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.medium",
+				"InstanceType" : "r4.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfileMCP" },
@@ -242,8 +242,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms1024M -Xmx8196M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install tomcat\n",
