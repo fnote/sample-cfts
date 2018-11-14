@@ -318,9 +318,10 @@
 						"Protocol": "HTTP"
 					},
 					{
+						"Protocol": "HTTPS",
 						"LoadBalancerPort": "443",
 						"InstancePort": "5000",
-						"Protocol": "TCP"
+						"SSLCertificateId": "arn:aws:acm:us-east-1:467936237394:certificate/538a1395-cf32-42d4-9345-bfa5d6c93d20"
 					}
 				],
 				"HealthCheck": {
