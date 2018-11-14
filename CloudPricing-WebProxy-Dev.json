@@ -154,7 +154,7 @@
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
 				"MinSize" : "2",
 				"DesiredCapacity" : "2",
-				"MaxSize" : "4",
+				"MaxSize" : "10",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" }, { "Ref" : "PvtSNd" } ],
@@ -168,7 +168,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "2WTAGGER", "Value" : "team_managed", "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "team-managed", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
 				]
@@ -189,7 +189,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t2.large",
+				"InstanceType" : "c5.large",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "sgWebService" }, { "Ref" : "NATaccessSG" }, { "Ref" : "CheckMKSG" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
@@ -343,7 +343,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "2WTAGGER", "Value" : "team-managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Price Web 04 Service" }
 				]
@@ -381,7 +381,7 @@
 					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
-					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "2WTAGGER", "Value" : "team-managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			}
