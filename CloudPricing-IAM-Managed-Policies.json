@@ -292,6 +292,7 @@
 						"Sid": "CPRDS00",
 						"Effect": "Allow",
 						"Action": [
+							"rds:AddTagsToResource",
 							"rds:Describe*",
 							"rds:Download*",
 							"rds:List*"
