@@ -531,6 +531,86 @@
 				}
 			}
 		},
+		"SplunkAWSPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "Splunk-AWS-Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "SplunkAWS00",
+						"Effect": "Allow",
+						"Action": [
+							"ec2:Describe*",
+							"autoscaling:Describe*",
+							"application-autoscaling:Describe*",
+							"elasticloadbalancing:Describe*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "SplunkAWS01",
+						"Effect": "Allow",
+						"Action": [
+							"cloudwatch:Describe*",
+							"cloudwatch:List*",
+							"cloudwatch:Get*",
+							"cloudtrail:Describe*",
+							"cloudtrail:List*",
+							"cloudtrail:Get*",
+							"inspector:Describe*",
+							"inspector:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "SplunkAWS02",
+						"Effect": "Allow",
+						"Action": [
+							"iam:List*",
+							"iam:Get*",
+							"acm:Describe*",
+							"acm:List*",
+							"config:Describe*",
+							"config:Get*",
+							"config:List*",
+							"kms:Describe*",
+							"kms:Get*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "SplunkAWS03",
+						"Effect": "Allow",
+						"Action": [
+							"cloudfront:Get*",
+							"cloudfront:List*",
+							"rds:Describe*",
+							"rds:List*",
+							"s3:Get*",
+							"s3:List*",
+							"redshift:Describe*",
+							"redshift:List*",
+							"dynamodb:Describe*",
+							"dynamodb:List*",
+							"lambda:Describe*",
+							"lambda:List*",
+							"guardduty:Describe*",
+							"guardduty:Get*",
+							"kinesis:Describe*",
+							"kinesis:Get*",
+							"kinesis:List*",
+							"sqs:Get*",
+							"sqs:List*",
+							"sqs:ReceiveMessage",
+							"sqs:SendMessage",
+							"sqs:DeleteMessage",
+							"sns:Get*",
+							"sns:List*",
+							"sns:Publish"
+						],
+						"Resource": "*"
+					}]
+				}
+			}
+		},
 		"IAMRoleLambda": {
 			"Type": "AWS::IAM::Role",
 			"Properties": {
@@ -669,6 +749,22 @@
 				]
 			},
 			"DependsOn": ["CPCodeDeployPolicy"]
+		},
+		"IAMRoleSplunkAWS": {
+			"Type": "AWS::IAM::Role",
+			"Properties": {
+				"RoleName": "Splunk-AWS-Role",
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": "vpc-flow-logs.amazonaws.com" }
+					}]
+				},
+				"ManagedPolicyArns": [ { "Ref": "SplunkAWSPolicy" } ]
+			},
+			"DependsOn": ["SplunkAWSPolicy"]
 		}
 	}
 }
