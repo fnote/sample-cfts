@@ -145,6 +145,19 @@
 							"batch:Terminate*"
 						],
 						"Resource": "*"
+					},{
+						"Sid": "CPEC206",
+						"Effect": "Allow",
+						"Action": [
+							"cloudformation:*",
+							"iam:PassRole",
+							"kms:Describe*",
+							"kms:Generate*",
+							"kms:Decrypt",
+							"kms:Encrypt",
+							"kms:ReEncrypt*"
+						],
+						"Resource": "*"
 					}]
 				}
 			}
