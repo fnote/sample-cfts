@@ -158,6 +158,16 @@
 							"kms:ReEncrypt*"
 						],
 						"Resource": "*"
+					},{
+						"Sid": "CPEC207",
+						"Effect": "Allow",
+						"Action": [
+							"config:Describe*",
+							"config:Get*",
+							"config:List*",
+							"config:Put*"
+						],
+						"Resource": "*"
 					}]
 				}
 			}
@@ -337,6 +347,7 @@
 							"kinesis:Update*"
 						],
 						"Resource": [
+							"arn:aws:kinesis:*:*:*",
 							"arn:aws:kinesis:*:*:*CP_*",
 							"arn:aws:kinesis:*:*:*cp_*",
 							"arn:aws:kinesis:*:*:*CP-*",
@@ -585,6 +596,7 @@
 							"config:Describe*",
 							"config:Get*",
 							"config:List*",
+							"config:Put*",
 							"kms:Describe*",
 							"kms:Get*"
 						],
@@ -775,9 +787,13 @@
 						"Principal": { "Service": "vpc-flow-logs.amazonaws.com" }
 					}]
 				},
-				"ManagedPolicyArns": [ { "Ref": "SplunkAWSPolicy" } ]
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/service-role/AWSConfigRole",
+					{ "Ref": "CPS3Policy" },
+					{ "Ref": "SplunkAWSPolicy" }
+				]
 			},
-			"DependsOn": ["SplunkAWSPolicy"]
+			"DependsOn": ["SplunkAWSPolicy", "CPS3Policy"]
 		}
 	}
 }
