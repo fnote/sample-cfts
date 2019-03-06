@@ -182,7 +182,8 @@
                         ]
                     ]
                 },
-                "Tags": [{
+                "Tags": [
+                    {
                         "Key": "Name",
                         "Value": {
                             "Fn::Join": [
@@ -272,39 +273,44 @@
             "Properties": {
                 "PolicyDocument": {
                     "Id": "QueuePolicy",
-                    "Statement": [{
-                        "Sid": "Allow-SendMessage-To-Queue-From-SNS-Topic",
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": "*"
-                        },
-                        "Action": [
-                            "sqs:SendMessage"
-                        ],
-                        "Resource": {
-                            "Fn::GetAtt": [
-                                "CpNotificationServiceBackupQueue",
-                                "Arn"
-                            ]
-                        },
-                        "Condition": {
-                            "ArnEquals": {
-                                "aws:SourceArn": {
-                                    "Ref": "CpNotificationServiceTopic"
+                    "Statement": [
+                        {
+                            "Sid": "Allow-SendMessage-To-Queue-From-SNS-Topic",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "*"
+                            },
+                            "Action": [
+                                "sqs:SendMessage"
+                            ],
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "CpNotificationServiceBackupQueue",
+                                    "Arn"
+                                ]
+                            },
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": {
+                                        "Ref": "CpNotificationServiceTopic"
+                                    }
                                 }
                             }
                         }
-                    }]
+                    ]
                 },
-                "Queues": [{
-                    "Ref": "CpNotificationServiceBackupQueue"
-                }]
+                "Queues": [
+                    {
+                        "Ref": "CpNotificationServiceBackupQueue"
+                    }
+                ]
             }
         },
         "CpNotificationServiceDynamoDBTable": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
-                "AttributeDefinitions": [{
+                "AttributeDefinitions": [
+                    {
                         "AttributeName": {
                             "Ref": "HashKeyElementName"
                         },
@@ -321,7 +327,8 @@
                         }
                     }
                 ],
-                "KeySchema": [{
+                "KeySchema": [
+                    {
                         "AttributeName": {
                             "Ref": "HashKeyElementName"
                         },
@@ -353,7 +360,8 @@
                         ]
                     ]
                 },
-                "Tags": [{
+                "Tags": [
+                    {
                         "Key": "Name",
                         "Value": {
                             "Fn::Join": [
