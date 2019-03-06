@@ -32,14 +32,14 @@
         "Approver": {
             "Description": "Person approving instance funding.  This should be Email address formatted",
             "Type": "String",
-            "Default": "Thibodeaux.Paula@corp.sysco.com",
+            "Default": "villanueva.loi@corp.sysco.com",
             "MinLength": "1",
             "MaxLength": "255"
         },
         "Owner": {
             "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
             "Type": "String",
-            "Default": "Owen.James@corp.sysco.com",
+            "Default": "villanueva.loi@corp.sysco.com",
             "MinLength": "1",
             "MaxLength": "255"
         },
@@ -62,13 +62,13 @@
         "2WTAGGER": {
             "Description": "Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported",
             "Type": "String",
-            "Default": "team-managed",
+            "Default": "team_managed",
             "MinLength": "1",
             "MaxLength": "255",
             "AllowedValues": [
-                "team-managed",
-                "adlm-managed",
-                "2w-managed"
+                "team_managed",
+                "adlm_managed",
+                "2w_managed"
             ],
             "ConstraintDescription": "Must contain only ASCII characters."
         },
@@ -240,7 +240,9 @@
                     },
                     {
                         "Key": "2WTAGGER",
-                        "Value": "team_managed"
+                        "Value": {
+                            "Ref": "2WTAGGER"
+                        }
                     },
                     {
                         "Key": "Component",
@@ -409,7 +411,9 @@
                     },
                     {
                         "Key": "2WTAGGER",
-                        "Value": "team_managed"
+                        "Value": {
+                            "Ref": "2WTAGGER"
+                        }
                     },
                     {
                         "Key": "Component",
