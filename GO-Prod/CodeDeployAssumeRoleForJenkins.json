@@ -1,0 +1,55 @@
+{
+   "AWSTemplateFormatVersion": "2010-09-09",
+   "Description": "Deployed via CodeDeployAssumeRoleForJenkins.json",
+   "Resources": {
+      "PRCPCodeDeployAssumeRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+             "RoleName": "PRCP-Jenkins-CodeDeploy-Role",
+            "AssumeRolePolicyDocument": {
+               "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": "arn:aws:iam::037295147636:root",
+			    "AWS": "arn:aws:iam::037295147636:role/SVC-JNK-PRCP-NONPROD"	
+                        },
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            },
+            "Path": "/",
+            "ManagedPolicyArns": ["arn:aws:iam::aws:policy/AWSCodeDeployDeployerAccess"],
+            "Policies": [ 
+		            { 
+                        "PolicyName": "CloudPricing-CodeDeploy-S3-Policy",
+              		    "PolicyDocument": {
+                  	        "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Resource": [
+                                        "arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy/*"
+                                    ],
+                                    "Action": [
+                                        "s3:*"
+                                    ],
+                                    "Effect": "Allow"
+                                },
+                                {
+                                    "Resource": [
+                                        "arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy"
+                                    ],
+                                    "Action": [
+                                        "s3:ListBucket*"
+                                    ],
+                                    "Effect": "Allow"
+                                }
+                            ]
+                        }
+                    } 
+                ]
+            }
+        }
+    }
+}
