@@ -188,11 +188,11 @@
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
-				"MinSize" : "2",
-				"DesiredCapacity" : "2",
+				"MinSize" : "10",
+				"DesiredCapacity" : "14",
 				"MaxSize" : "50",
 				"HealthCheckType": "ELB",
-				"HealthCheckGracePeriod": "300",
+				"HealthCheckGracePeriod": "420",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNa" }, { "Ref" : "PvtSNb" }, { "Ref" : "PvtSNc" } ],
 				"LoadBalancerNames" : [{ "Ref" : "WebServiceELB" }],
 				"Tags" : [
@@ -265,6 +265,9 @@
 					"usermod -a -G aix adis0892\n",
 					"usermod -a -G aix ngun0234\n",
 					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix sthe3935\n",
+					"usermod -a -G aix gkar5861\n",
+					"usermod -a -G aix mwan5534\n",
 
 					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
@@ -306,6 +309,27 @@
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
 					"/opt/splunkforwarder/bin/splunk start\n",
 
+					"##############################################\n",
+					"# CloudWatch Installaion\n",
+					"##############################################\n",
+					"yum update -y\n",
+					"yum install -y awslogs\n",
+
+					"tee /etc/awslogs/awslogs.conf <<-EOF\n",
+					"[general]\n",
+					"state_file = /var/lib/awslogs/agent-state\n\n",
+					"[/usr/local/tomcat8/catalina]\n",
+					"datetime_format = %b %d %H:%M:%S\n",
+					"file = /usr/local/tomcat8/logs/catalina.out\n",
+					"buffer_duration = 5000\n",
+					"log_stream_name = {instance_id}\n",
+					"initial_position = start_of_file\n",
+					"log_group_name = /web-service/catalina\n",
+					"EOF\n\n",
+
+					"service awslogs start\n",
+					"chkconfig awslogs on\n",
+
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
@@ -316,12 +340,12 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CPWebService-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 45% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "50",
+				"Threshold" : "45",
 				"Period" : "60",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -333,14 +357,14 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CPWebService-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-down if Avg CPU < 50% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 3 minutes or 5-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
-				"Threshold" : "50",
+				"Threshold" : "30",
 				"Period" : "60",
-				"EvaluationPeriods" : "3",
+				"EvaluationPeriods" : "5",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
 			}
 		},
@@ -362,8 +386,8 @@
 				"AdjustmentType" : "ChangeInCapacity",
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
-				"Cooldown" : "60",
-				"ScalingAdjustment" : "-2"
+				"Cooldown" : "300",
+				"ScalingAdjustment" : "-1"
 			}
 		},
 		"WebServiceELB": {
