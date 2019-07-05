@@ -52,9 +52,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190226 -> ami-0453bfb30187ddee8",
+			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-0453bfb30187ddee8",
+			"Default" : "ami-0321a6ac5fe506c98",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -299,28 +299,17 @@
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
 					"/opt/splunkforwarder/bin/splunk start\n",
 
-					"##############################################\n",
-					"# CloudWatch Installaion\n",
-					"##############################################\n",
-					"yum update -y\n",
-					"yum install -y awslogs\n",
-
-					"tee /etc/awslogs/awslogs.conf <<-EOF\n",
-					"[general]\n",
-					"state_file = /var/lib/awslogs/agent-state\n\n",
-					"[/usr/local/tomcat8/catalina]\n",
-					"datetime_format = %b %d %H:%M:%S\n",
-					"file = /usr/local/tomcat8/logs/catalina.out\n",
-					"buffer_duration = 5000\n",
-					"log_stream_name = {instance_id}\n",
-					"initial_position = start_of_file\n",
-					"log_group_name = /web-service/catalina\n",
-					"EOF\n\n",
-
 					"service awslogs start\n",
 					"chkconfig awslogs on\n",
 
-					"date > /home/ec2-user/stoptime\n"
+					"date > /home/ec2-user/stoptime\n",
+
+					"##############################################\n",
+					"# CloudWatch Installaion\n",
+					"##############################################\n",
+
+					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux -s\n"
 
 				]]}}
 			}
