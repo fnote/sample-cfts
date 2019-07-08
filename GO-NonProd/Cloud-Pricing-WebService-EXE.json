@@ -151,6 +151,7 @@
 				"DEV",
 				"QA",
 				"STG",
+				"EXE",
 				"TST",
 				"Production",
 				"Non-Production"
@@ -170,6 +171,11 @@
 				"PROD"
 			],
 			"ConstraintDescription": "Must be a valid environment."
+		},
+		"DynatraceApplicationName": {
+			"Description": "Dynatrace Application Name",
+			"Type": "String",
+			"Default": "cpws-ng-"
 		}
 	},
 	"Resources": {
@@ -249,7 +255,6 @@
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
@@ -309,8 +314,14 @@
 					"##############################################\n",
 
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux -s\n"
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-linux -s\n",
 
+					"####################################\n",
+					"# Install Dynatrace Agent\n",
+					"####################################\n",
+					"wget  -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://mgd88950.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=Iwpn-rg2TCGZkrJ7bMFEX&amp;arch=x86&amp;flavor=default\"\n",
+					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-perf-", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n"
 				]]}}
 			}
 		},
