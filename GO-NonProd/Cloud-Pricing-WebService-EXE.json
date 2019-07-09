@@ -84,14 +84,14 @@
 		"Approver": {
 			"Description": "Person approving instance funding.  This should be Email address formatted",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "Owen.James@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
