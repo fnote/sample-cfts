@@ -471,12 +471,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -495,6 +489,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -578,12 +577,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -602,6 +595,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -685,12 +683,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -709,6 +701,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -792,12 +789,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -816,6 +807,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -899,12 +895,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -923,6 +913,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1006,12 +1001,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -1030,6 +1019,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1113,12 +1107,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -1137,6 +1125,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1220,12 +1213,6 @@
 					"usermod -a -G aix gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -1244,6 +1231,11 @@
 
 					"# Start Tomcat\n",
 					"/usr/local/tomcat8/bin/startup.sh\n",
+					
+					"##############################################\n",
+					"# Setting a cronjob for restart the instance daily\n",
+					"##############################################\n",
+					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
