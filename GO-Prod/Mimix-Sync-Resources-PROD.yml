@@ -4,12 +4,12 @@ Parameters:
     VPCID:
         Description: Name of the VPC for CP-NP
         Type: 'AWS::EC2::VPC::Id'
-        Default: vpc-091c7e3e5578d7a4f
+        Default: vpc-0f55b12524f7459f9
         ConstraintDescription: Must be a valid VPC.
     PemKey:
         Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
         Type: 'AWS::EC2::KeyPair::KeyName'
-        Default: KeyPair-Sysco-CloudPricing-NonProd
+        Default: KeyPair-Sysco-CloudPricing-Prod
         MinLength: '1'
         MaxLength: '255'
         AllowedPattern: '[\x20-\x7E]*'
@@ -17,7 +17,7 @@ Parameters:
     ImageId:
         Description: Amazon AMI
         Type: 'AWS::EC2::Image::Id'
-        Default: 'ami-0c2b68244113d8b62'
+        Default: 'TBD'
     ApplicationName:
         Description: Name of application
         Type: String
@@ -57,7 +57,7 @@ Parameters:
     Environment:
         Description: Environment for application
         Type: String
-        Default: EXE
+        Default: PROD
         AllowedValues:
           - DEV
           - EXE
@@ -77,28 +77,28 @@ Parameters:
     CPConfidentialSubnetA:
         Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
         Type: 'AWS::EC2::Subnet::Id'
-        Default: subnet-0186b43162a344d9a
+        Default: subnet-03f5516cc0d29f5ad
         MinLength: '1'
         MaxLength: '255'
         ConstraintDescription: Must be a valid Private Subnet.
     CPConfidentialSubnetB:
         Description: 'Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
         Type: 'AWS::EC2::Subnet::Id'
-        Default: subnet-0ad1216eb31e15186
+        Default: subnet-094d9ade488a4f20b
         MinLength: '1'
         MaxLength: '255'
         ConstraintDescription: Must be a valid Private Subnet.
     CPConfidentialSubnetC:
         Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
         Type: 'AWS::EC2::Subnet::Id'
-        Default: subnet-0a5d9eea71b9c97c6
+        Default: subnet-0f279e0609eb542b2
         MinLength: '1'
         MaxLength: '255'
         ConstraintDescription: Must be a valid Private Subnet.
     SGWebServices: 
         Description: Security group for webServices
         Type: String
-        Default: sg-0a56447308e39b902
+        Default: sg-0abcdcef90427fcd7
     InstanceProfile:
         Description: Instance Profile Name
         Type: String
@@ -128,15 +128,15 @@ Parameters:
     ExecutionRole:
         Description: ARN of execution role attached to ECS task.
         Type: String
-        Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+        Default: TBD
     TaskRole:
         Description: ARN of task role attached to ECS task.
         Type: String
-        Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+        Default: TBD
     DockerImageArn:
         Description: Docker image of mimix sync processor
         Type: String
-        Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
+        Default: TBD
     CPUReserved:
         Description: The number of cpu units reserved for the container.
         Type: Number
@@ -518,26 +518,26 @@ Resources:
         AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
 
     AWSServiceRoleForECSServiceAutoScaling:
-    	Type: AWS::IAM::Role
-    	Properties:
-	    AssumeRolePolicyDocument:
+      Type: AWS::IAM::Role
+      Properties:
+	AssumeRolePolicyDocument:
 		Version: '2012-10-17'
 		Statement:
 		- Effect: Allow
-	  	Principal:
-	    	    Service:
-	    	    - ecs.application-autoscaling.amazonaws.com
-	  	Action:
-	  	    - sts:AssumeRole
-      	    ManagedPolicyArns:
-	    - arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingECSServicePolicy
+		Principal:
+		    Service:
+		    - ecs.application-autoscaling.amazonaws.com
+		Action:
+		    - sts:AssumeRole
+	ManagedPolicyArns:
+	- arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingECSServicePolicy
         
 Outputs:
   CustomerPricingTaskDefinition:
     Description: The Cp MimixSync CustomerPricing task definition ARN
     Value: !Ref CpMimixSyncCustomerPricingTaskDefinition
   FulfillmentTaskDefinition:
-    Description: The Cp MimixSync CustomerPricing task definition ARN
+    Description: The Cp MimixSync Fulfillment task definition ARN
     Value: !Ref CpMimixSyncFulfillmentTaskDefinition
   ProductInfoTaskDefinition:
     Description: The Cp MimixSync ProductInfo task definition ARN
