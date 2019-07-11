@@ -197,7 +197,7 @@
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNa" }, { "Ref" : "PvtSNb" }, { "Ref" : "PvtSNc" } ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP BatchService AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP BatchPricing-WebService AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
