@@ -17,7 +17,7 @@ Parameters:
     ImageId:
         Description: Amazon AMI
         Type: 'AWS::EC2::Image::Id'
-        Default: 'ami-0c2b68244113d8b62'
+        Default: 'ami-029b4991ba32498b2'
     ApplicationName:
         Description: Name of application
         Type: String
