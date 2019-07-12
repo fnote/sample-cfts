@@ -17,7 +17,7 @@ Parameters:
     ImageId:
         Description: Amazon AMI
         Type: 'AWS::EC2::Image::Id'
-        Default: 'TBD'
+        Default: 'ami-029b4991ba32498b2'
     ApplicationName:
         Description: Name of application
         Type: String
@@ -128,15 +128,15 @@ Parameters:
     ExecutionRole:
         Description: ARN of execution role attached to ECS task.
         Type: String
-        Default: TBD
+        Default: CloudPricing-ECS-TaskExecution-Role
     TaskRole:
         Description: ARN of task role attached to ECS task.
         Type: String
-        Default: TBD
+        Default: CloudPricing-ECS-Task-Role
     DockerImageArn:
         Description: Docker image of mimix sync processor
         Type: String
-        Default: TBD
+        Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
     CPUReserved:
         Description: The number of cpu units reserved for the container.
         Type: Number
