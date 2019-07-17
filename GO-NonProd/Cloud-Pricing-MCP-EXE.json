@@ -233,12 +233,6 @@
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -355,12 +349,6 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
@@ -885,12 +873,6 @@
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -990,12 +972,6 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
@@ -1099,12 +1075,6 @@
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 
 					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
@@ -1204,12 +1174,6 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment and Tomcat JVM Heap size\n",
