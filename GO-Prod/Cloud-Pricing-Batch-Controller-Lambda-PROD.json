@@ -12,24 +12,24 @@
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
 		"PvtSNa": {
-			"Description": "Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24",
+			"Description": "Private PRCP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24",
 			"Type": "String",
-			"Default": "subnet-0186b43162a344d9a"
+			"Default": "subnet-03f5516cc0d29f5ad"
 		},
 		"PvtSNb": {
-			"Description": "Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24",
+			"Description": "Private PRCP Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24",
 			"Type": "String",
-			"Default": "subnet-0ad1216eb31e15186"
+			"Default": "subnet-094d9ade488a4f20b"
 		},
 		"PvtSNc": {
-			"Description": "Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24",
+			"Description": "Private PRCP Confidential Subnet 3 in us-east-1c CIDR: 10.132.90.0/24",
 			"Type": "String",
-			"Default": "subnet-0a5d9eea71b9c97c6"
+			"Default": "subnet-0f279e0609eb542b2"
 		},
 		"VPCID": {
 			"Description": "Name of and existing VPC",
 			"Type": "String",
-			"Default": "vpc-091c7e3e5578d7a4f"
+			"Default": "vpc-0f55b12524f7459f9"
 		},
 		"SGDNS": {
 			"Description": "PRCP-DNS-DNSSG-1LVAMR19KIKFS",
@@ -49,22 +49,22 @@
 		"S3BucketIn" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for Batch Pricing Input",
-			"Default": "sysco-us-east-1-prcp-exe-batch-input"
+			"Default": "sysco-us-east-1-prcp-prod-batch-input"
 		},
 		"S3BucketOut" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for Batch Pricing Output",
-			"Default": "sysco-us-east-1-prcp-exe-batch-output"
+			"Default": "sysco-us-east-1-prcp-prod-batch-output"
 		},
 		"S3CodeBucket" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for the Lambda Code",
-			"Default": "sysco-us-east-1-prcp-nonprod-codedeploy"
+			"Default": "sysco-us-east-1-prcp-prod-codedeploy"
 		},
 		"S3CodeKey" : {
 			"Type" : "String",
 			"Description" : "S3 bucket key for the Lambda Code",
-			"Default": "BatchPricing/BatchController/EXE/cp-batch-controller-1.0.0.zip"
+			"Default": "BatchPricing/BatchController/cp-batch-controller-1.0.0.zip"
 		},
 		"FunctionName" : {
 			"Type" : "String",
@@ -74,12 +74,12 @@
 		"IAMRole" : {
 			"Type" : "String",
 			"Description" : "IAM role attached to the Lambda funvtion",
-			"Default": "arn:aws:iam::037295147636:role/CloudPricing-IAM-Lambda-Role"
+			"Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-Lambda-Role"
 		},
 		"CommonDBName" : {
 			"Type" : "String",
 			"Description" : "Name of the Common DB",
-			"Default": "CPPDB_Common01e"
+			"Default": "CPPDB_Common01"
 		},
 		"CommonDBUserName" : {
 			"Type" : "String",
@@ -104,12 +104,12 @@
 		"SplunkIndex" : {
 			"Type" : "String",
 			"Description" : "Splunk index used to publish Splunk logs",
-			"Default": "cp_metrics_nonprod"
+			"Default": "cp_metrics"
 		},
 		"SplunkSourceType" : {
 			"Type" : "String",
 			"Description" : "Source type of the Splunk Logs",
-			"Default": "cp_batch_controller_exe"
+			"Default": "cp_batch_controller"
 		},
 		"SplunkSource" : {
 			"Type" : "String",
@@ -183,7 +183,7 @@
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "Execution",
+			"Default": "Production",
 			"AllowedValues": [
 				"Sandbox",
 				"Development",
@@ -199,7 +199,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "PROD",
 			"AllowedValues": [
 				"DEV",
 				"QA",
