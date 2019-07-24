@@ -31,18 +31,18 @@
 			"Type": "String",
 			"Default": "vpc-091c7e3e5578d7a4f"
 		},
-		"DefaultSG1": {
-			"Description": "Default Security Group",
+		"SGDNS": {
+			"Description": "PRCP-NP-DNS-DNSSG-3J5600OVNNBR",
 			"Type": "String",
 			"Default": "sg-078061ddab53c5c41"
 		},
-		"DefaultSG2": {
-			"Description": "Default Security Group",
+		"SGRDSMySQL": {
+			"Description": "SG-RDSMySQL",
 			"Type": "String",
 			"Default": "sg-039f822d40c446322"
 		},
-		"DefaultSG3": {
-			"Description": "Default Security Group",
+		"SGWebServices": {
+			"Description": "SG-WebServices",
 			"Type": "String",
 			"Default": "sg-0a56447308e39b902"
 		},
@@ -227,7 +227,7 @@
 				"Timeout": 300,
 				"Role": { "Ref": "IAMRole" },
 				"VpcConfig": {
-					"SecurityGroupIds": [{ "Ref" : "DefaultSG1" }, { "Ref" : "DefaultSG2" }, { "Ref" : "DefaultSG3" }],
+					"SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
 					"SubnetIds": [
 						{ "Ref": "PvtSNa" },
 						{ "Ref": "PvtSNb" },
