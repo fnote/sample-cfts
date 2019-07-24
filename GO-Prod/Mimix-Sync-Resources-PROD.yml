@@ -17,7 +17,7 @@ Parameters:
     ImageId:
         Description: Amazon AMI
         Type: 'AWS::EC2::Image::Id'
-        Default: 'TBD'
+        Default: 'ami-029b4991ba32498b2'
     ApplicationName:
         Description: Name of application
         Type: String
@@ -106,7 +106,7 @@ Parameters:
     InstanceType:
         Description: Application EC2 instance type
         Type: String
-        Default: c5.xlarge
+        Default: c5.2xlarge
     RootVolumeSize:
         Description: Size (GB) of root EBS volume for application instance
         Type: Number
@@ -118,7 +118,7 @@ Parameters:
         Description: The desired capacity for the Workload nodes Auto Scaling group
         Type: String
     WorkloadNodesMaxSize:
-        Default: '4'
+        Default: '3'
         Description: The maximum size of the Auto Scaling group
         Type: String
     WorkloadNodesMinSize:
@@ -128,25 +128,29 @@ Parameters:
     ExecutionRole:
         Description: ARN of execution role attached to ECS task.
         Type: String
-        Default: TBD
+        Default: CloudPricing-ECS-TaskExecution-Role
     TaskRole:
         Description: ARN of task role attached to ECS task.
         Type: String
-        Default: TBD
+        Default: CloudPricing-ECS-Task-Role
+    ECSServiceAutoScalingRole:
+      Description: The name or full Amazon Resource Name (ARN) of the IAM role that allows Amazon ECS to make calls to your load balancer.
+      Type: String
+      Default: 'arn:aws:iam::037295147636:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
     DockerImageArn:
         Description: Docker image of mimix sync processor
         Type: String
-        Default: TBD
+        Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
     CPUReserved:
         Description: The number of cpu units reserved for the container.
         Type: Number
-        Default: '1024'
+        Default: '2048'
         MinValue: '256'
         MaxValue: '4096'
     MemoryReserved:
         Description: The soft limit (in MiB) of memory to reserve for the container.
         Type: Number
-        Default: '2048'
+        Default: '4096'
         MinValue: '256'
         MaxValue: '8192'
     RetentionTime:
@@ -517,21 +521,6 @@ Resources:
         ScalingAdjustment: -1
         AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
 
-    AWSServiceRoleForECSServiceAutoScaling:
-      Type: AWS::IAM::Role
-      Properties:
-	AssumeRolePolicyDocument:
-		Version: '2012-10-17'
-		Statement:
-		- Effect: Allow
-		Principal:
-		    Service:
-		    - ecs.application-autoscaling.amazonaws.com
-		Action:
-		    - sts:AssumeRole
-	ManagedPolicyArns:
-	- arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingECSServicePolicy
-        
 Outputs:
   CustomerPricingTaskDefinition:
     Description: The Cp MimixSync CustomerPricing task definition ARN
@@ -546,4 +535,5 @@ Outputs:
     Description: The ECS Cluster ARN
     Value: !GetAtt ECSCluster.Arn
 
-#role, scale policy mapping, prod version
+  #role, scale policy mapping, prod version
+
