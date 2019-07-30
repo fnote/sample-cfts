@@ -298,6 +298,13 @@
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
 					"/opt/splunkforwarder/bin/splunk start\n",
 
+					"##############################################\n",
+					"# CloudWatch Installaion\n",
+					"##############################################\n",
+
+					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:BatchWebServiceCloudWatch -s\n",
+
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
