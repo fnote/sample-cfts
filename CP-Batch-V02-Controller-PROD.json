@@ -1,0 +1,48 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template to create CP-Batch02-Controller Lambda",
+  "Resources": {
+    "cpbatch02controller": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "sysco-prod-codedeploy-us-east-1",
+          "S3Key": "CloudPricing_Batch02/cp-batch-v02-controller-1.1.0.zip"
+        },
+        "FunctionName": "cp-batch02-controller",
+        "Handler": "com.sysco.cpbatch.handler.BatchProcessControllerHandler::handleS3Event",
+        "Runtime": "java8",
+        "Description": "Controller function for Cloud Pricing Batch 0.2 process",
+        "MemorySize": 512,
+        "Timeout": 300,
+        "Role": "arn:aws:iam::885523507357:role/Cloud-Pricing-Lambda01-Dev-IAMRoleCP01-1QLPQZK3TUTY0",
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            "sg-c2fa23b9"
+          ],
+          "SubnetIds": [
+            "subnet-1ec25b69",
+            "subnet-db7bc582"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "COMMONDB_NAME": "CPDB_Common01",
+            "COMMONDB_USERNAME": "svccp000",
+            "COMMONDB_PASSWORD": "<encrypted password>",
+            "ENVIRONMENT": "PROD",
+            "BATCH02_WAR_FILE": "cp-batch-0.2.war",
+            "CONFIGURATION_BUCKET_NAME": "sysco-prod-codedeploy-us-east-1",
+            "BATCH02_FOLDER_NAME": "CloudPricing_Batch02",
+            "COMMONDB_URL": "cloud-pricing-auroradb-prod-01-cpdbclusterprod-1v1hqt4g1f8eg.cluster-cssuntoy2gcy.us-east-1.rds.amazonaws.com",
+            "SPLUNK_HEC_URL": "http://internal-elb-splunkservice-dev-1567888010.us-east-1.elb.amazonaws.com/api/SplunkHEC",
+            "SPLUNK_HEC_TOKEN": "Splunk <token>",
+            "SPLUNK_INDEX": "cp_metrics",
+            "SPLUNK_SOURCE_TYPE": "cp_batch_v02_controller",
+            "SPLUNK_SOURCE": "cp_HEC"
+          }
+        }
+      }
+    }
+  }
+}
