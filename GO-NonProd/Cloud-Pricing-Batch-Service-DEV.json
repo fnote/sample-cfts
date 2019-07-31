@@ -89,9 +89,10 @@
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "DEV",
             "AllowedValues": [
                 "DEV",
+                "EXE",
                 "QA",
                 "STG",
                 "Production",
@@ -102,7 +103,7 @@
         "EnvironmentShort": {
             "Description": "Environment for application",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "DEV",
             "AllowedValues": [
                 "DEV",
                 "QA",
