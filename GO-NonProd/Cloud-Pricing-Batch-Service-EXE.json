@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for DEV environmnet",
+    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environmnet",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -89,7 +89,7 @@
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
             "Type": "String",
-            "Default": "DEV",
+            "Default": "EXE",
             "AllowedValues": [
                 "DEV",
                 "EXE",
@@ -103,9 +103,9 @@
         "EnvironmentShort": {
             "Description": "Environment for application",
             "Type": "String",
-            "Default": "DEV",
+            "Default": "EXE",
             "AllowedValues": [
-                "DEV",
+                "EXE",
                 "QA",
                 "STG",
                 "EXE",
