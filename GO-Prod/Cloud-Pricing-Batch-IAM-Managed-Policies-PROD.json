@@ -1,0 +1,104 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environmnet",
+    "Resources": {
+        "BatchServiceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "Cloud-Pricing-IAM-Batch-Service-Role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "batch.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
+                ]
+            }
+        },
+        "IamInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "InstanceProfileName": "Cloud-Pricing-IAM-ECS-Instance-Profile",
+                "Roles": [
+                    {
+                        "Ref": "EcsInstanceRole"
+                    }
+                ]
+            }
+        },
+        "EcsInstanceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "Cloud-Pricing-IAM-ECS-Instance-Role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ec2.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
+                ]
+            }
+        },
+        "AmazonEC2SpotFleetRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "spotfleet.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
+                ]
+            }
+        },
+        "AWSBatchJobRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "CloudPricing-IAM-ECS-Task-Role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2008-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
+                ]
+            }
+        }
+    }
+}
