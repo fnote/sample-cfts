@@ -423,7 +423,7 @@
 		"TargetGroup": {
 			"Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
 			"Properties": {
-				"Name": { "Fn::Join" : ["", ["target-group-batchpricing-ws", { "Ref" : "EnvironmentShort" }]]},
+				"Name": { "Fn::Join" : ["", ["target-group-batchpricing-ws-", { "Ref" : "EnvironmentShort" }]]},
 				"VpcId": { "Ref" : "VPCID" },
 				"Port": "8080",
 				"Protocol": "HTTP",
