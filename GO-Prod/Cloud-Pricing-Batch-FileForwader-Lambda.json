@@ -11,99 +11,85 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
+    "PvtSNa": {
+      "Description": "Private PRCP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24",
+      "Type": "String",
+      "Default": "subnet-03f5516cc0d29f5ad"
+    },
+    "PvtSNb": {
+      "Description": "Private PRCP Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24",
+      "Type": "String",
+      "Default": "subnet-094d9ade488a4f20b"
+    },
     "PvtSNc": {
-      "Description": "Private subnet for confidential apps in us-east-1c",
+      "Description": "Private PRCP Confidential Subnet 3 in us-east-1c CIDR: 10.132.90.0/24",
       "Type": "String",
-      "Default": "subnet-0186b43162a344d9a"
+      "Default": "subnet-0f279e0609eb542b2"
     },
-
-    "PvtSNd": {
-      "Description": "Private subnet for confidential apps in us-east-1d",
-      "Type": "String",
-      "Default": "subnet-0ad1216eb31e15186"
-    },
-    "PvtSNe": {
-      "Description" : "Private subnet for confidential apps in us-east-1e CIDR: 10.168.142.0/23",
-      "Type": "String",
-      "Default": "subnet-0a5d9eea71b9c97c6"
-    },
-
     "VPCID": {
-      "Description": "VPC - vpc_sysco_nonprod_02 CIDR: 10.168.128.0/20",
+      "Description": "Name of and existing VPC",
       "Type": "String",
-      "Default": "vpc-ff88269a"
+      "Default": "vpc-0f55b12524f7459f9"
     },
-    "DefaultSG": {
-      "Description": "Default Security Group",
+    "SGDNS": {
+      "Description": "PRCP-DNS-DNSSG-1LVAMR19KIKFS",
       "Type": "String",
-      "Default": "sg-039f822d40c446322"
+      "Default": "sg-086420a2869e44e81"
     },
-
-    "SG2": {
-      "Description": "Default Security Group",
+    "SGRDSMySQL": {
+      "Description": "SG-RDSMySQL",
       "Type": "String",
-      "Default": "sg-0a56447308e39b902"
+      "Default": "sg-0914feb8b95bd48c7"
     },
-
-    "SG3": {
-      "Description": "Default Security Group",
+    "SGWebServices": {
+      "Description": "SG-WebServices",
       "Type": "String",
-      "Default": "sg-078061ddab53c5c41"
+      "Default": "sg-0abcdcef90427fcd7"
     },
-
-    "S3BucketIn" : {
-      "Type" : "String",
-      "Description" : "S3 bucket for Batch Pricing Input",
-      "Default": "sysco-us-east-1-prcp-nonprod-batch-output"
-    },
-
     "S3BucketOut" : {
       "Type" : "String",
       "Description" : "S3 bucket for Batch Pricing Output",
-      "Default": "sysco-nonprod-cloudpricing-batch-output-us-east-1"
+      "Default": "sysco-us-east-1-prcp-prod-batch-output"
     },
-
-    "S3BucketOut2" : {
-      "Type" : "String",
-      "Description" : "S3 bucket for Batch Pricing Output 2",
-      "Default": "sysco-nonprod-batchv2-output-us-east-1"
-    },
-
     "S3CodeBucket" : {
       "Type" : "String",
       "Description" : "S3 bucket for the Lambda Code",
-      "Default": "sysco-us-east-1-prcp-nonprod-codedeploy"
+      "Default": "sysco-us-east-1-prcp-prod-codedeploy"
     },
-
-
     "S3CodeKey" : {
       "Type" : "String",
       "Description" : "S3 bucket key for the Lambda Code",
-      "Default": "CloudPricing_Batch02/cp-s3-file-forwarder-1.0.0.zip"
+      "Default": "BatchPricing/BatchForwarder/cp-s3-file-forwarder-1.0.0.zip"
     },
-
     "FunctionName" : {
       "Type" : "String",
-      "Description" : "*** TBD ****",
+      "Description" : "Name of the Lambda function for Batch forwarder",
       "Default": "CP-BatchService-S3-file-forwarder"
     },
-
     "IAMRole" : {
       "Type" : "String",
-      "Description" : "*** TBD ****",
-      "Default": "arn:aws:iam::037295147636:role/CloudPricing-IAM-Lambda-Role"
+      "Description" : "IAM role attached to the Lambda funvtion",
+      "Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-Lambda-Role"
     },
-
     "CommonDBName" : {
       "Type" : "String",
-      "Description" : "*** TBD ****",
-      "Default": "CPDB_Common01q"
+      "Description" : "Name of the Common DB",
+      "Default": "CPPDB_Common01"
     },
-
+    "CommonDBUserName" : {
+      "Type" : "String",
+      "Description" : "User name of the Common DB",
+      "Default": "svccp000"
+    },
+    "CommonDBPassword" : {
+      "Type" : "String",
+      "Description" : "User password of the Common DB",
+      "Default": "TBD"
+    },
     "CommonDBURL" : {
       "Type" : "String",
-      "Description" : "*** TBD ****",
-      "Default": "cloud-pricing-non-prod-01-cpdbclusterdev-1o60gz0gqw6fx.cluster-crkqmj3qk07x.us-east-1.rds.amazonaws.com"
+      "Description" : "URL for Common DB",
+      "Default": "cloud-pricing-auroradb-prod-01-cpdbclusterprod-1v1hqt4g1f8eg.cluster-cssuntoy2gcy.us-east-1.rds.amazonaws.com"
     },
 
 
@@ -209,15 +195,11 @@
         "Timeout": 300,
         "Role": { "Ref": "IAMRole" },
         "VpcConfig": {
-          "SecurityGroupIds": [
-            { "Ref": "DefaultSG" },
-            { "Ref": "SG2" },
-            { "Ref": "SG3" }
-          ],
+          "SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
           "SubnetIds": [
-            { "Ref": "PvtSNc" },
-            { "Ref": "PvtSNd" },
-            { "Ref": "PvtSNe"}
+            { "Ref": "PvtSNa" },
+            { "Ref": "PvtSNb" },
+            { "Ref": "PvtSNc"}
           ]
         },
         "Tags" : [
@@ -236,8 +218,8 @@
         "Environment": {
           "Variables": {
             "COMMONDB_NAME": { "Ref" : "CommonDBName" },
-            "COMMONDB_USERNAME": "svccp000",
-            "COMMONDB_PASSWORD": "V7N5Ryf5siAz5SXlPHHp7MnTL2bJRpSMU/6PffF7Fvw=",
+            "COMMONDB_USERNAME": { "Ref" : "CommonDBUserName" },
+            "COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
             "ENVIRONMENT": { "Ref" : "Environment" },
             "COMMONDB_URL": { "Ref" : "CommonDBURL" }
 
@@ -245,43 +227,16 @@
         }
       }
     },
-    "BucketIn" : {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-        "BucketName" : { "Ref" : "S3BucketIn" },
-        "NotificationConfiguration": {
-          "LambdaConfigurations": [
-            {
-              "Event" : "s3:ObjectCreated:*",
-              "Function" : { "Fn::GetAtt" : [ "LFunctionCP01", "Arn" ] }
-            }]
-        }
-      },
-      "DependsOn": ["LFunctionCP01"]
-    },
-    "BucketPerm": {
+    "BucketPermission": {
       "Type": "AWS::Lambda::Permission",
       "Properties" : {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {"Ref": "LFunctionCP01"},
         "Principal": "s3.amazonaws.com",
         "SourceAccount": {"Ref": "AWS::AccountId"},
-        "SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "BucketIn"}]]}
+        "SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "S3BucketOut"}]]}
       },
-      "DependsOn": ["LFunctionCP01", "BucketIn"]
-    },
-    "BucketOut" : {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-        "BucketName" : { "Ref" : "S3BucketOut" }
-      }
-    },
-
-    "BucketOut2" : {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-        "BucketName" : { "Ref" : "S3BucketOut2" }
-      }
-    },
+      "DependsOn": ["LFunctionCP01"]
+    }
   }
 }
