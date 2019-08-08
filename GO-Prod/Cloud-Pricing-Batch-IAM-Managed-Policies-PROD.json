@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environmnet",
+    "Description": "AWS CloudFormation Template to create Batch related managed IAM policies in prod environment",
     "Resources": {
         "BatchServiceRole": {
             "Type": "AWS::IAM::Role",
@@ -52,8 +52,7 @@
                 },
                 "ManagedPolicyArns": [
                     "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-ECR-Policy"
                 ]
             }
         },
@@ -96,7 +95,8 @@
                 },
                 "ManagedPolicyArns": [
                     "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-CloudWatch-Policy"
                 ]
             }
         }

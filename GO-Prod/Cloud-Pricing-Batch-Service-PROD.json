@@ -89,12 +89,13 @@
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "Production",
             "AllowedValues": [
                 "DEV",
-                "EXE",
                 "QA",
                 "STG",
+                "TST",
+                "EXE",
                 "Production",
                 "Non-Production"
             ],
@@ -103,55 +104,71 @@
         "EnvironmentShort": {
             "Description": "Environment for application",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "PROD",
             "AllowedValues": [
-                "EXE",
+                "DEV",
                 "QA",
                 "STG",
                 "EXE",
+                "TST",
                 "PROD"
             ],
             "ConstraintDescription": "Must be a valid environment."
         },
         "PvtSNa": {
-            "Description": "Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24",
+            "Description": "Private PRCP-Prod Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24",
             "Type": "String",
-            "Default": "subnet-0186b43162a344d9a"
+            "Default": "subnet-03f5516cc0d29f5ad"
         },
         "PvtSNb": {
-            "Description": "Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24",
+            "Description": "Private PRCP-Prod Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24",
             "Type": "String",
-            "Default": "subnet-0ad1216eb31e15186"
+            "Default": "subnet-094d9ade488a4f20b"
         },
         "PvtSNc": {
-            "Description": "Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24",
+            "Description": "Private PRCP-Prod Confidential Subnet 3 in us-east-1c CIDR: 10.132.89.0/24",
             "Type": "String",
-            "Default": "subnet-0a5d9eea71b9c97c6"
+            "Default": "subnet-0f279e0609eb542b2"
+        },
+        "PubSNa": {
+            "Description": "Public PRCP-Prod Subnet 1 in us-east-1a CIDR: 10.132.91.0/25",
+            "Type": "String",
+            "Default": "subnet-061215b5e4c9c00f5"
+        },
+        "PubSNb": {
+            "Description": "Public PRCP-Prod Subnet 2 in us-east-1b CIDR: 10.132.91.128/25",
+            "Type": "String",
+            "Default": "subnet-0a931836475739532"
         },
         "VPCID": {
             "Description": "Name of and existing VPC",
             "Type": "String",
-            "Default": "vpc-091c7e3e5578d7a4f"
+            "Default": "vpc-0f55b12524f7459f9"
         },
         "SGDNS": {
-            "Description": "PRCP-NP-DNS-DNSSG-3J5600OVNNBR",
+            "Description": "PRCP-DNS-DNSSG-1LVAMR19KIKFS",
             "Type": "String",
-            "Default": "sg-078061ddab53c5c41"
+            "Default": "sg-086420a2869e44e81"
         },
         "SGRDSMySQL": {
             "Description": "SG-RDSMySQL",
             "Type": "String",
-            "Default": "sg-039f822d40c446322"
+            "Default": "sg-0914feb8b95bd48c7"
         },
         "SGWebServices": {
             "Description": "SG-WebServices",
             "Type": "String",
-            "Default": "sg-0a56447308e39b902"
+            "Default": "sg-0abcdcef90427fcd7"
+        },
+        "SGELBs": {
+            "Description": "SG-ELBs",
+            "Type": "String",
+            "Default": "sg-01b6a8878e22de7a0"
         },
         "PemKey": {
             "Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
             "Type": "String",
-            "Default": "KeyPair-Sysco-CloudPricing-NonProd"
+            "Default": "KeyPair-Sysco-CloudPricing-Prod"
         },
         "CommonAMI": {
             "Description": "CP-Linux-Base-20181112 -> ami-029b4991ba32498b2",
@@ -159,6 +176,31 @@
             "Default": "ami-029b4991ba32498b2",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
+        },
+        "BatchServiceRole" : {
+            "Type" : "String",
+            "Description" : "Cloud-Pricing-Batch-Service-Role",
+            "Default": "arn:aws:iam::130227353653:role/Cloud-Pricing-IAM-Batch-Service-Role"
+        },
+        "AWSBatchJobRole" : {
+            "Type" :"String",
+            "Description" : "IAM role for batch jobs",
+            "Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-ECS-Task-Role"
+        },
+        "IamInstanceProfile" : {
+            "Type" :"String",
+            "Description" : "Instance profile foe CP batch pricing",
+            "Default": "Cloud-Pricing-IAM-ECS-Instance-Profile"
+        },
+        "EcsInstanceRole" : {
+            "Type" :"String",
+            "Description" : "ECS instance role for CP batch pricing",
+            "Default": "arn:aws:iam::130227353653:role/Cloud-Pricing-IAM-ECS-Instance-Role"
+        },
+        "AmazonEC2SpotFleetRole" : {
+            "Type" :"String",
+            "Description" : "EC2 spot fleet tagging role for CP  batch pricing",
+            "Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role"
         }
     },
     "Resources": {
@@ -172,7 +214,7 @@
                         [
                             "CP-Batch-Job-Definition-",
                             {
-                              "Ref": "EnvironmentShort"
+                                "Ref": "EnvironmentShort"
                             }
                         ]
                     ]
@@ -186,14 +228,10 @@
                     "Memory": 1000,
                     "Privileged": true,
                     "JobRoleArn": {
-                        "Fn::GetAtt": [
-                            "AWSBatchJobRole",
-                            "Arn"
-                        ]
+                        "Ref": "AWSBatchJobRole"
                     }
                 }
-            },
-            "DependsOn": "AWSBatchJobRole"
+            }
         },
         "JobQueue": {
             "Type": "AWS::Batch::JobQueue",
@@ -205,10 +243,10 @@
                         [
                             "CP-Batch-High-Priority-Queue-",
                             {
-                              "Ref": "EnvironmentShort"
+                                "Ref": "EnvironmentShort"
                             }
                         ]
-                      ]
+                    ]
                 },
                 "Priority": 50,
                 "ComputeEnvironmentOrder": [
@@ -273,74 +311,62 @@
                             "Ref": "SGWebServices"
                         }
                     ],
-                    "Tags": [
-                        {
-                            "Key": "Application_Name",
-                            "Value": {
-                                "Ref": "ApplicationName"
-                            }
-                        },
-                        {
-                            "Key": "Application_ID",
-                            "Value": {
-                                "Ref": "ApplicationID"
-                            }
-                        },
-                        {
-                            "Key": "Owner",
-                            "Value": {
-                                "Ref": "Owner"
-                            }
-                        },
-                        {
-                            "Key": "Approver",
-                            "Value": {
-                                "Ref": "Approver"
-                            }
-                        },
-                        {
-                            "Key": "PO_Number",
-                            "Value": {
-                                "Ref": "PONumber"
-                            }
-                        },
-                        {
-                            "Key": "Environment",
-                            "Value": {
-                                "Ref": "Environment"
-                            }
-                        },
-                        {
-                            "Key": "Project_ID",
-                            "Value": {
-                                "Ref": "ProjectID"
-                            }
-                        },
-                        {
-                            "Key": "Support_Email",
-                            "Value": {
-                                "Ref": "SupportEmail"
-                            }
-                        },
-                        {
-                            "Key": "2WTAGGER",
-                            "Value": {
-                                "Ref": "2WTAGGER"
-                            }
-                        },
-                        {
-                            "Key": "Platform",
-                            "Value": {
-                                "Ref": "Platform"
-                            }
-                        },
-                        {
-                            "Key": "Component",
-                            "Value": {
-                                "Ref": "Component"
-                            }
+                    "Tags":
+                    {
+                        "Application_Name": {
+                            "Ref": "ApplicationName"
                         }
-                    ]
+                    ,
+
+                        "Application_ID": {
+                            "Ref": "ApplicationID"
+                        }
+                    ,
+
+                        "Owner": {
+                            "Ref": "Owner"
+                        }
+                    ,
+
+                        "Approver": {
+                            "Ref": "Approver"
+                        }
+                    ,
+
+                        "PO_Number": {
+                            "Ref": "PONumber"
+                        }
+                    ,
+
+                        "Environment": {
+                            "Ref": "Environment"
+                        }
+                    ,
+
+                        "Project_ID": {
+                            "Ref": "ProjectID"
+                        }
+                    ,
+
+                        "Support_Email": {
+                            "Ref": "SupportEmail"
+                        }
+                    ,
+
+                        "2WTAGGER": {
+                            "Ref": "2WTAGGER"
+                        }
+                    ,
+
+                        "Platform": {
+                            "Ref": "Platform"
+                        }
+                    ,
+
+                        "Component": {
+                            "Ref": "Component"
+                        }
+                    }
                 },
                 "State": "ENABLED"
             }
