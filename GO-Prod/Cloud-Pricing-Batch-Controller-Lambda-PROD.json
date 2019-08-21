@@ -56,6 +56,11 @@
 			"Description" : "S3 bucket for Batch Pricing Output",
 			"Default": "sysco-us-east-1-prcp-prod-batch-output"
 		},
+		"S3BucketBackup" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Files Archiving",
+			"Default": "sysco-us-east-1-prcp-prod-batch-backup"
+		},
 		"S3CodeBucket" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for the Lambda Code",
@@ -284,6 +289,12 @@
 			"Type" : "AWS::S3::Bucket",
 			"Properties" : {
 				"BucketName" : { "Ref" : "S3BucketOut" }
+			}
+		},
+		"BucketBackup" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketBackup" }
 			}
 		}
 	}
