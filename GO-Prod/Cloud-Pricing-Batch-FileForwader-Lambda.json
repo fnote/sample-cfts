@@ -91,8 +91,6 @@
       "Description" : "URL for Common DB",
       "Default": "cloud-pricing-auroradb-prod-01-cpdbclusterprod-1v1hqt4g1f8eg.cluster-cssuntoy2gcy.us-east-1.rds.amazonaws.com"
     },
-
-
     "ApplicationName": {
       "Description": "File forwarder",
       "Type": "String",
@@ -102,7 +100,6 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
-
     "ApplicationId": {
       "Description": "Application ID",
       "Type": "String",
@@ -112,7 +109,6 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
-
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
@@ -120,7 +116,6 @@
       "MinLength": "1",
       "MaxLength": "255"
     },
-
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
@@ -128,7 +123,6 @@
       "MinLength": "1",
       "MaxLength": "255"
     },
-
     "ProjectId": {
       "Description": "Project ID",
       "Type": "String",
@@ -138,17 +132,15 @@
       "AllowedPattern": "[\\x20-\\x7E]*",
       "ConstraintDescription": "Must contain only ASCII characters."
     },
-
     "Platform": {
       "Description": "Platform",
       "Type": "String",
       "Default": "Cloud Pricing V4"
     },
-
     "Environment": {
       "Description": "Environment for application",
       "Type": "String",
-      "Default": "Execution",
+      "Default": "Production",
       "AllowedValues": [
         "Sandbox",
         "Development",
@@ -160,25 +152,8 @@
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
-    },
-
-    "EnvironmentShort": {
-      "Description": "Environment for application",
-      "Type": "String",
-      "Default": "EXE",
-      "AllowedValues": [
-        "DEV",
-        "QA",
-        "STG",
-        "SBX",
-        "EXE",
-        "PROD"
-      ],
-      "ConstraintDescription": "Must be a valid environment."
     }
   },
-
-
   "Resources" : {
     "LFunctionCP01": {
       "Type": "AWS::Lambda::Function",
