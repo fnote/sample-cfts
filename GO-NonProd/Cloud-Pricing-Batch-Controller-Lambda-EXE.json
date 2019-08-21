@@ -220,7 +220,7 @@
 					"S3Key": { "Ref": "S3CodeKey" }
 				},
 				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
-				"Handler": "com.sysco.cpbatch.handler.BatchController::handleS3Event",
+				"Handler": "com.sysco.cpbatch.handler.BatchControllerHandler::handleS3Event",
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,

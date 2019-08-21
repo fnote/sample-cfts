@@ -89,12 +89,12 @@
 		"CommonDBPassword" : {
 			"Type" : "String",
 			"Description" : "User password of the Common DB",
-			"Default": "TBD"
+			"Default": "Cpaws000"
 		},
 		"CommonDBURL" : {
 			"Type" : "String",
 			"Description" : "URL for Common DB",
-			"Default": "cpp01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
+			"Default": "cpp01dbcluster-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
 		},
 		"SplunkHECToken" : {
 			"Type" : "String",
@@ -220,7 +220,7 @@
 					"S3Key": { "Ref": "S3CodeKey" }
 				},
 				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
-				"Handler": "com.sysco.cpbatch.handler.BatchController::handleS3Event",
+				"Handler": "com.sysco.cpbatch.handler.BatchControllerHandler::handleS3Event",
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,
