@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion" : "2010-09-09",
-	"Description": "Cloud formation template for Cloud Pricing Batch Controller Lambda for QA environment",
+	"Description": "Cloud formation template for Cloud Pricing Batch Controller Lambda for DEV environment",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -49,12 +49,12 @@
 		"S3BucketIn" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for Batch Pricing Input",
-			"Default": "sysco-us-east-1-prcp-nonprod-batch-input"
+			"Default": "sysco-us-east-1-prcp-dev-batch-input"
 		},
 		"S3BucketOut" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for Batch Pricing Output",
-			"Default": "sysco-us-east-1-prcp-nonprod-batch-output"
+			"Default": "sysco-us-east-1-prcp-dev-batch-output"
 		},
 		"S3CodeBucket" : {
 			"Type" : "String",
@@ -64,7 +64,7 @@
 		"S3CodeKey" : {
 			"Type" : "String",
 			"Description" : "S3 bucket key for the Lambda Code",
-			"Default": "BatchPricing/BatchController/QA/cp-batch-controller-1.0.0.zip"
+			"Default": "BatchPricing/BatchController/DEV/cp-batch-controller-1.0.0.zip"
 		},
 		"FunctionName" : {
 			"Type" : "String",
@@ -79,7 +79,7 @@
 		"CommonDBName" : {
 			"Type" : "String",
 			"Description" : "Name of the Common DB",
-			"Default": "CPPDB_Common01e"
+			"Default": "CPPDB_Common01d"
 		},
 		"CommonDBUserName" : {
 			"Type" : "String",
@@ -89,12 +89,12 @@
 		"CommonDBPassword" : {
 			"Type" : "String",
 			"Description" : "User password of the Common DB",
-			"Default": "TBD"
+			"Default": "Cpaws000"
 		},
 		"CommonDBURL" : {
 			"Type" : "String",
 			"Description" : "URL for Common DB",
-			"Default": "cpp01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
+			"Default": "cpp01dbcluster-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
 		},
 		"SplunkHECToken" : {
 			"Type" : "String",
@@ -109,7 +109,7 @@
 		"SplunkSourceType" : {
 			"Type" : "String",
 			"Description" : "Source type of the Splunk Logs",
-			"Default": "cp_batch_controller_qa"
+			"Default": "cp_batch_controller_dev"
 		},
 		"SplunkSource" : {
 			"Type" : "String",
@@ -183,7 +183,7 @@
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "Execution",
+			"Default": "Development",
 			"AllowedValues": [
 				"Sandbox",
 				"Development",
@@ -199,7 +199,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "QA",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -220,7 +220,7 @@
 					"S3Key": { "Ref": "S3CodeKey" }
 				},
 				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
-				"Handler": "com.sysco.cpbatch.handler.BatchController::handleS3Event",
+				"Handler": "com.sysco.cpbatch.handler.BatchControllerHandler::handleS3Event",
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,

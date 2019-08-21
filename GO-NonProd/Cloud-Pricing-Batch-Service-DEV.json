@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environmnet",
+    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for DEV environmnet",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -89,7 +89,7 @@
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "DEV",
             "AllowedValues": [
                 "DEV",
                 "EXE",
@@ -103,9 +103,9 @@
         "EnvironmentShort": {
             "Description": "Environment for application",
             "Type": "String",
-            "Default": "EXE",
+            "Default": "DEV",
             "AllowedValues": [
-                "EXE",
+                "DEV",
                 "QA",
                 "STG",
                 "EXE",
@@ -159,107 +159,35 @@
             "Default": "ami-029b4991ba32498b2",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
+        },
+        "BatchServiceRole" : {
+            "Type" : "String",
+            "Description" : "Cloud-Pricing-Batch-Service-Role",
+            "Default": "arn:aws:iam::037295147636:role/Cloud-Pricing-Batch-Service-Role"
+        },
+        "AWSBatchJobRole" : {
+            "Type" :"String",
+            "Description" : "IAM role for batch job",
+            "Default": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role"
+        },
+        "IamInstanceProfile" : {
+            "Type" :"String",
+            "Description" : "Cloud-Pricing-Batch-IAM-Instance-Profile",
+            "Default": "Cloud-Pricing-Batch-IAM-Instance-Profile"
+        },
+        "EcsInstanceRole" : {
+            "Type" :"String",
+            "Description" : "CloudPricing-Batch-IAM-ECS-Instance-Role",
+            "Default": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Ecs-Instance-Role"
+        },
+        "AmazonEC2SpotFleetRole" : {
+            "Type" :"String",
+            "Description" : "CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role",
+            "Default": "arn:aws:iam::037295147636:role/CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role"
         }
     },
     "Resources": {
-        "BatchServiceRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "Cloud-Pricing-Batch-Service-Role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "batch.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole"
-                ]
-            }
-        },
-        "IamInstanceProfile": {
-            "Type": "AWS::IAM::InstanceProfile",
-            "Properties": {
-                "InstanceProfileName": "Cloud-Pricing-Batch-IAM-Instance-Profile",
-                "Roles": [
-                    {
-                        "Ref": "EcsInstanceRole"
-                    }
-                ]
-            }
-        },
-        "EcsInstanceRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "CloudPricing-Batch-IAM-ECS-Instance-Role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2008-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "ec2.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
-                ]
-            }
-        },
-        "AmazonEC2SpotFleetRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2008-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "spotfleet.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole"
-                ]
-            }
-        },
-        "AWSBatchJobRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": "CloudPricing-Batch-IAM-Job-Role",
-                "AssumeRolePolicyDocument": {
-                    "Version": "2008-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "ecs-tasks.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
-                ]
-            }
-        },
+
         "JobDefinition": {
             "Type": "AWS::Batch::JobDefinition",
             "Properties": {
@@ -283,15 +211,9 @@
                     "Vcpus": 1,
                     "Memory": 1000,
                     "Privileged": true,
-                    "JobRoleArn": {
-                        "Fn::GetAtt": [
-                            "AWSBatchJobRole",
-                            "Arn"
-                        ]
-                    }
+                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role"
                 }
-            },
-            "DependsOn": "AWSBatchJobRole"
+            }
         },
         "JobQueue": {
             "Type": "AWS::Batch::JobQueue",
@@ -371,74 +293,62 @@
                             "Ref": "SGWebServices"
                         }
                     ],
-                    "Tags": [
-                        {
-                            "Key": "Application_Name",
-                            "Value": {
-                                "Ref": "ApplicationName"
-                            }
-                        },
-                        {
-                            "Key": "Application_ID",
-                            "Value": {
-                                "Ref": "ApplicationID"
-                            }
-                        },
-                        {
-                            "Key": "Owner",
-                            "Value": {
-                                "Ref": "Owner"
-                            }
-                        },
-                        {
-                            "Key": "Approver",
-                            "Value": {
-                                "Ref": "Approver"
-                            }
-                        },
-                        {
-                            "Key": "PO_Number",
-                            "Value": {
-                                "Ref": "PONumber"
-                            }
-                        },
-                        {
-                            "Key": "Environment",
-                            "Value": {
-                                "Ref": "Environment"
-                            }
-                        },
-                        {
-                            "Key": "Project_ID",
-                            "Value": {
-                                "Ref": "ProjectID"
-                            }
-                        },
-                        {
-                            "Key": "Support_Email",
-                            "Value": {
-                                "Ref": "SupportEmail"
-                            }
-                        },
-                        {
-                            "Key": "2WTAGGER",
-                            "Value": {
-                                "Ref": "2WTAGGER"
-                            }
-                        },
-                        {
-                            "Key": "Platform",
-                            "Value": {
-                                "Ref": "Platform"
-                            }
-                        },
-                        {
-                            "Key": "Component",
-                            "Value": {
-                                "Ref": "Component"
-                            }
+                    "Tags":
+                    {
+                        "Application_Name": {
+                            "Ref": "ApplicationName"
                         }
-                    ]
+                    ,
+
+                        "Application_ID": {
+                            "Ref": "ApplicationID"
+                        }
+                    ,
+
+                        "Owner": {
+                            "Ref": "Owner"
+                        }
+                    ,
+
+                        "Approver": {
+                            "Ref": "Approver"
+                        }
+                    ,
+
+                        "PO_Number": {
+                            "Ref": "PONumber"
+                        }
+                    ,
+
+                        "Environment": {
+                            "Ref": "Environment"
+                        }
+                    ,
+
+                        "Project_ID": {
+                            "Ref": "ProjectID"
+                        }
+                    ,
+
+                        "Support_Email": {
+                            "Ref": "SupportEmail"
+                        }
+                    ,
+
+                        "2WTAGGER": {
+                            "Ref": "2WTAGGER"
+                        }
+                    ,
+
+                        "Platform": {
+                            "Ref": "Platform"
+                        }
+                    ,
+
+                        "Component": {
+                            "Ref": "Component"
+                        }
+                    }
                 },
                 "State": "ENABLED"
             }
