@@ -154,7 +154,7 @@
             "Default": "KeyPair-Sysco-CloudPricing-NonProd"
         },
         "CommonAMI": {
-            "Description": "CP-Linux-Base-20181112 -> ami-029b4991ba32498b2",
+            "Description": "CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2",
             "Type": "String",
             "Default": "ami-029b4991ba32498b2",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
