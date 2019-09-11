@@ -56,6 +56,11 @@
 			"Description" : "S3 bucket for Batch Pricing Output",
 			"Default": "sysco-us-east-1-prcp-prod-batch-output"
 		},
+		"S3BucketBackup" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Files Archiving",
+			"Default": "sysco-us-east-1-prcp-prod-batch-backup"
+		},
 		"S3CodeBucket" : {
 			"Type" : "String",
 			"Description" : "S3 bucket for the Lambda Code",
@@ -94,7 +99,7 @@
 		"CommonDBURL" : {
 			"Type" : "String",
 			"Description" : "URL for Common DB",
-			"Default": "cpp01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
+			"Default": "cpp01dbcluster.cluster-cvxmi1m5icyf.us-east-1.rds.amazonaws.com"
 		},
 		"SplunkHECToken" : {
 			"Type" : "String",
@@ -220,7 +225,7 @@
 					"S3Key": { "Ref": "S3CodeKey" }
 				},
 				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
-				"Handler": "com.sysco.cpbatch.handler.BatchController::handleS3Event",
+				"Handler": "com.sysco.cpbatch.handler.BatchControllerHandler::handleS3Event",
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,
@@ -258,7 +263,8 @@
 						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
 						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
 						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
-						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
+						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" },
+						"EnvironmentShort" : {"Ref" : "EnvironmentShort" }
 					}
 				}
 			}
@@ -284,6 +290,12 @@
 			"Type" : "AWS::S3::Bucket",
 			"Properties" : {
 				"BucketName" : { "Ref" : "S3BucketOut" }
+			}
+		},
+		"BucketBackup" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketBackup" }
 			}
 		}
 	}

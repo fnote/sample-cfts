@@ -277,8 +277,8 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M -XX:+UseG1GC\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M -XX:+UseG1GC\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Setting for Tomcat\n",
