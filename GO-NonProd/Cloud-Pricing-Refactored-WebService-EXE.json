@@ -274,26 +274,15 @@
 					"useradd -m -g aix -c \"Malshan Wanigasekara\" mwan5534\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Set System Environment \n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms4096M -Xmx7168M\\\"'\" >> /etc/environment\n",
 
 					"##############################################\n",
-					"# Setting for Tomcat\n",
+					"# Setting cronjobs and Security Updates\n",
 					"##############################################\n",
-					"sh -c \"echo 'export JAVA_HOME=\"/usr\"'\" > /etc/profile.d/tomcat.sh\n",
-					"sh -c \"echo 'export CATALINA_HOME=\"/usr/local/tomcat8\"'\" >> /etc/profile.d/tomcat.sh\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat and Security Updates\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes;\n' > /etc/cron.d/dotnet\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
