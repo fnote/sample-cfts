@@ -249,10 +249,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\n",
+					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 

@@ -249,10 +249,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
+					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\n",
+					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -317,7 +317,7 @@
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
 					"####################################\n",
-					"wget  -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://mgd88950.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=Iwpn-rg2TCGZkrJ7bMFEX&amp;arch=x86&amp;flavor=default\"\n",
+					"wget -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
 					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
 					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-perf-", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n"
 				]]}}
@@ -461,16 +461,6 @@
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS Target" }
 				]
-			}
-		},
-		"CPRefacWebSvcCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP_Refactored_WebService",
-				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP_Refactored_WebService", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}
