@@ -185,7 +185,7 @@
 		"DynatraceApplicationName": {
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
-			"Default": "cpws-ng-"
+			"Default": "cpws-ng"
 		}
 	},
 	"Resources": {
