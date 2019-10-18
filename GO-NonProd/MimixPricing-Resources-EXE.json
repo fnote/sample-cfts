@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS CloudFormation Template to create codeploy resources in PROD environmnet",
+	"Description": "AWS CloudFormation Template to create codeploy resources in EXE environment",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
