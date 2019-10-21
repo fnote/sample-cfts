@@ -54,7 +54,7 @@
     "S3CodeKey" : {
       "Type" : "String",
       "Description" : "S3 bucket key for the Lambda Code",
-      "Default": "BatchPricing/BatchMonitor/EXE/batch-service-monitor-1.0.0.zip"
+      "Default": "BatchPricing/BatchMonitor/DEV/batch-service-monitor-1.0.0.zip"
     },
     "FunctionName" : {
       "Type" : "String",
@@ -69,7 +69,7 @@
     "CommonDBName" : {
       "Type" : "String",
       "Description" : "Name of the Common DB",
-      "Default": "CPPDB_Common01e"
+      "Default": "CPPDB_Common01d"
     },
     "CommonDBUserName" : {
       "Type" : "String",
@@ -84,7 +84,7 @@
     "CommonDBURL" : {
       "Type" : "String",
       "Description" : "URL for Common DB",
-      "Default": "cpp01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
+      "Default": "cpp01dbcluster-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
     },
     "ApplicationName": {
       "Description": "Name of application",
@@ -148,7 +148,7 @@
     "Environment": {
       "Description": "Environment for application",
       "Type": "String",
-      "Default": "Execution",
+      "Default": "Development",
       "AllowedValues": [
         "Sandbox",
         "Development",
@@ -164,7 +164,7 @@
     "EnvironmentShort": {
       "Description": "Environment for application",
       "Type": "String",
-      "Default": "EXE",
+      "Default": "DEV",
       "AllowedValues": [
         "DEV",
         "QA",
