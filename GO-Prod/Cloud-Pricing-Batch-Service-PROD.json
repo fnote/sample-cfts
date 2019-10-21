@@ -222,6 +222,9 @@
                 "RetryStrategy": {
                     "Attempts": 2
                 },
+                "Timeout": {
+                    "AttemptDurationSeconds" : 21600
+                },
                 "ContainerProperties": {
                     "Image": "sysco/cp-batch",
                     "Vcpus": 1,
