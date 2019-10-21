@@ -148,7 +148,7 @@
     "Environment": {
       "Description": "Environment for application",
       "Type": "String",
-      "Default": "Execution",
+      "Default": "Production",
       "AllowedValues": [
         "Sandbox",
         "Development",
