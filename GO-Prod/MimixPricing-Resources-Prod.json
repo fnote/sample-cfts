@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS CloudFormation Template to create mimix pricing resources in PROD environmnet",
+	"Description": "AWS CloudFormation Template to create mimix pricing resources in PROD environment",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -46,6 +46,11 @@
 			"Type": "String",
 			"Default": "sg-086420a2869e44e81"
 		},
+		"SGRDSMySQL": {
+			"Description": "SG-RDSMySQL",
+			"Type": "String",
+			"Default": "sg-0914feb8b95bd48c7"
+		},
 		"SGWebServices": {
 			"Description": "SG-WebServices",
 			"Type": "String",
@@ -60,6 +65,25 @@
 			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
+		},
+		"DBUser": {
+			"Description": "The database admin account username",
+			"Type": "String",
+			"MinLength": "1",
+			"MaxLength": "16",
+			"AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+			"ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
+			"Default": "svccp000"
+		},
+		"DBPassword": {
+			"NoEcho": "true",
+			"Description": "The database admin account password",
+			"Type": "String",
+			"MinLength": "1",
+			"MaxLength": "41",
+			"AllowedPattern": "[a-zA-Z0-9]+",
+			"ConstraintDescription": "must contain only alphanumeric characters.",
+			"Default": "Cpaws000"
 		},
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
@@ -1037,6 +1061,86 @@
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
+			}
+		},
+		"MIMIXDBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "MIMIXDB_Common01",
+				"DBClusterIdentifier" : "cpp01mimixdbcluster",
+				"Engine" : "aurora",
+				"MasterUsername" : { "Ref" : "DBUser"},
+				"MasterUserPassword" : { "Ref" : "DBPassword"},
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"DBSubnetGroupName" : "rds-subnet-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP02-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"MIMIXDBInstance01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "cpp01mimix" , { "Ref" : "EnvironmentShort" }, "01" ]]},
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "MIMIXDBCluster" },
+				"DBInstanceClass" : "db.r5.xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["MIMIX01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"MIMIXDBInstance02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "MIMIXDBInstance01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "cpp01mimix" , { "Ref" : "EnvironmentShort" }, "02" ]]},
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "MIMIXDBCluster" },
+				"DBInstanceClass" : "db.r5.xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["MIMIX01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
 			}
 		},
 		"CPWebCodeDeployApp": {
