@@ -834,7 +834,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
+				"InstanceType" : "t3.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
@@ -941,7 +941,7 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
+				"InstanceType" : "t3.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
