@@ -194,7 +194,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpmcp01" },
@@ -326,7 +326,7 @@
 				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
@@ -412,7 +412,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplm01" },
@@ -519,7 +519,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplm02" },
@@ -626,7 +626,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncpla01" },
@@ -733,7 +733,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncpla02" },
@@ -834,13 +834,13 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
+				"InstanceType" : "t3.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplr01" },
@@ -941,13 +941,13 @@
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
+				"InstanceType" : "t3.xlarge",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplr02" },
@@ -1054,7 +1054,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplc01" },
@@ -1161,7 +1161,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncplc02" },
@@ -1268,7 +1268,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprm01" },
@@ -1370,7 +1370,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprm02" },
@@ -1472,7 +1472,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncpra01" },
@@ -1574,7 +1574,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncpra02" },
@@ -1676,7 +1676,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprr01" },
@@ -1778,7 +1778,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprr02" },
@@ -1880,7 +1880,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprc01" },
@@ -1982,7 +1982,7 @@
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
 				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "150", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpsyncprc02" },
