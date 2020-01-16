@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environmnet",
+    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for EXE environment",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -296,7 +296,7 @@
             },
             "DependsOn": "AWSBatchJobRole"
         },
-        "JobQueue": {
+        "JobQueueHigh": {
             "Type": "AWS::Batch::JobQueue",
             "Properties": {
                 "State": "ENABLED",
@@ -304,14 +304,66 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-High-Priority-Queue-",
+                            "CP-Batch-P75-Priority-Queue-",
                             {
                               "Ref": "EnvironmentShort"
                             }
                         ]
                       ]
                 },
+                "Priority": 75,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueueMedium": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P50-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
                 "Priority": 50,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueueLow": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P25-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 25,
                 "ComputeEnvironmentOrder": [
                     {
                         "Order": 1,
@@ -376,19 +428,19 @@
                     ],
                     "Tags": [
                         {
-                            "Key": "Application_Name",
+                            "Key": "Technical:ApplicationName",
                             "Value": {
                                 "Ref": "ApplicationName"
                             }
                         },
                         {
-                            "Key": "Application_ID",
+                            "Key": "Technical:ApplicationID",
                             "Value": {
                                 "Ref": "ApplicationID"
                             }
                         },
                         {
-                            "Key": "Owner",
+                            "Key": "Technical:PlatformOwner",
                             "Value": {
                                 "Ref": "Owner"
                             }
@@ -406,10 +458,20 @@
                             }
                         },
                         {
-                            "Key": "Environment",
+                            "Key": "Technical:Environment",
                             "Value": {
                                 "Ref": "Environment"
                             }
+                        },
+                        {
+                            "Key": "Technical:ApplicationSubName",
+                            "Value": {
+                                "Ref": "Component"
+                            }
+                        },
+                        {
+                            "Key": "Technical:ApplicationRole",
+                            "Value": "Batch Compute Environment"
                         },
                         {
                             "Key": "Project_ID",
@@ -433,12 +495,6 @@
                             "Key": "Platform",
                             "Value": {
                                 "Ref": "Platform"
-                            }
-                        },
-                        {
-                            "Key": "Component",
-                            "Value": {
-                                "Ref": "Component"
                             }
                         }
                     ]
