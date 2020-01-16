@@ -256,7 +256,10 @@
                 },
                 "ManagedPolicyArns": [
                     "arn:aws:iam::037295147636:policy/CloudPricing-IAM-RDS-Policy",
-                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy"
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-S3-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-EC2-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-CloudWatch-Policy",
+                    "arn:aws:iam::037295147636:policy/CloudPricing-IAM-ECR-Policy"
                 ]
             }
         },
