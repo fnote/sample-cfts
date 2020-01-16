@@ -41,11 +41,11 @@ Parameters:
     Description: Email distribution list for technical product/platform team contact
     Type: String
     Default: 000-BT-PricingPlatform@Corp.sysco.com
-  ProjectID: 
+  ProjectID:
     Description: Project_ID - BT Project ID for this workload
     Type: String
     Default: BT.001176
-  2WTAGGER: 
+  2WTAGGER:
     Description: Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported
     Type: String
     Default: team_managed
@@ -53,7 +53,7 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
-  EnvironmentShort: 
+  EnvironmentShort:
     Description: Environment for application
     Type: String
     Default: STG
@@ -1477,11 +1477,11 @@ Resources:
             Ref: !Ref Component
         - Key: Technical:Environment
           Value:
-            Ref: !Ref Environment        
-	- Key: Technical:ApplicationRole
+            Ref: !Ref Environment
+	    - Key: Technical:ApplicationRole
           Value:
             Ref: !Ref ApplicationRole
-	- Key: Name
+	    - Key: Name
           Value:
             Ref: !Ref Component
         - Key: Approver
@@ -1503,4 +1503,52 @@ Resources:
           Value:
             Ref: !Ref Platform
       State: ENABLED
+
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      JobDefinitionName:
+        Fn::Join:
+          - ''
+          - - CP-Mimix-Purge-Job-Definition-
+            - Ref: EnvironmentShort
+      RetryStrategy:
+        Attempts: 1
+      Timeout:
+        AttemptDurationSeconds: 10800
+      ContainerProperties:
+        image: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest
+        Vcpus: 4
+        Memory: 6144
+        command:
+          - java
+          - "-Xmx6144M"
+          - "-jar"
+          - mimix-query-syncing-processor.jar
+          - Ref::business_unit
+        JobRoleArn: !Ref TaskRole
+        volumes: []
+        environment:
+          - name: SERVER_ENVIRONMENT_VARIABLE
+            value: STG
+        mountPoints: []
+        ulimits: []
+        resourceRequirements: []
+    DependsOn: !Ref TaskRole
+
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      State: ENABLED
+      JobQueueName:
+        Fn::Join:
+          - ''
+          - - CP-Mimix-Purge-Job-Queue-
+            - Ref: EnvironmentShort
+      Priority: 50
+      ComputeEnvironmentOrder:
+        - Order: 1
+          ComputeEnvironment:
+            Ref: MimixPurgeEC2ComputeEnvironment
 
