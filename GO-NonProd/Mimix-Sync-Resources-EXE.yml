@@ -475,7 +475,7 @@ Resources:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: !Ref 'DesiredCount'
-      TaskDefinition: !Ref 'CpMimixSyncCustomerPricingTaskDefinition'
+      TaskDefinition: !Ref 'CpMimixSyncFulfillmentTaskDefinition'
       Tags:
         - Key: Name
           Value: !Join
