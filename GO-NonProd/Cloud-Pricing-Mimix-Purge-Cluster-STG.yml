@@ -76,7 +76,7 @@ Parameters:
   PurgeInstanceRole:
     Description: ARN of role attached to Mimix Purge Sync Servers.
     Type: String
-    Default: arn:aws:iam::037295147636:role/Cloud-Pricing-Mimix-Purge-Instance-Profile
+    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Purge-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
