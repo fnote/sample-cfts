@@ -24,7 +24,7 @@ Parameters:
   ApplicationName:
     Description: Application_Name - Common, user-friendly name
     Type: String
-    Default": Cloud Pricing
+    Default: Cloud Pricing
   Component:
     Description: Component name
     Type: String
@@ -32,7 +32,7 @@ Parameters:
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
-    Default: villanueva.loi@corp.sysco.com
+    Default: krishan.senevirathne@corp.sysco.com
   Approver:
     Description: Person approving instance funding.  This should be Email address formatted
     Type: String
@@ -148,15 +148,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-001-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "001"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '001-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "001"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '001-Purge-Sync-Job'
 
   MimixDailyPurgeSync002:
     Type: AWS::Events::Rule
@@ -165,15 +165,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-002-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "002"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '002-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "002"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '002-Purge-Sync-Job'
 
   MimixDailyPurgeSync003:
     Type: AWS::Events::Rule
@@ -182,15 +182,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-003-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "003"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '003-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "003"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '003-Purge-Sync-Job'
 
   MimixDailyPurgeSync004:
     Type: AWS::Events::Rule
@@ -199,15 +199,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-004-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "004"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '004-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "004"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '004-Purge-Sync-Job'
 
   MimixDailyPurgeSync005:
     Type: AWS::Events::Rule
@@ -216,15 +216,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-005-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "005"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '005-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "005"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '005-Purge-Sync-Job'
 
   MimixDailyPurgeSync006:
     Type: AWS::Events::Rule
@@ -233,15 +233,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-006-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "006"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '006-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "006"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '006-Purge-Sync-Job'
 
   MimixDailyPurgeSync007:
     Type: AWS::Events::Rule
@@ -250,15 +250,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-007-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "007"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '007-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "007"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '007-Purge-Sync-Job'
 
   MimixDailyPurgeSync008:
     Type: AWS::Events::Rule
@@ -267,15 +267,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-008-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "008"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '008-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "008"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '008-Purge-Sync-Job'
 
   MimixDailyPurgeSync009:
     Type: AWS::Events::Rule
@@ -284,15 +284,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-009-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "009"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '009-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "009"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '009-Purge-Sync-Job'
 
   MimixDailyPurgeSync010:
     Type: AWS::Events::Rule
@@ -301,15 +301,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-010-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "010"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '010-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "010"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '010-Purge-Sync-Job'
 
   MimixDailyPurgeSync011:
     Type: AWS::Events::Rule
@@ -318,15 +318,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-011-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 02 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "011"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '011-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "011"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '011-Purge-Sync-Job'
 
   MimixDailyPurgeSync012:
     Type: AWS::Events::Rule
@@ -335,15 +335,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-012-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "012"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '012-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "012"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '012-Purge-Sync-Job'
 
   MimixDailyPurgeSync013:
     Type: AWS::Events::Rule
@@ -352,15 +352,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-013-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "013"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '013-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "013"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '013-Purge-Sync-Job'
 
   MimixDailyPurgeSync014:
     Type: AWS::Events::Rule
@@ -369,15 +369,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-014-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "014"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '014-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "014"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '014-Purge-Sync-Job'
 
   MimixDailyPurgeSync015:
     Type: AWS::Events::Rule
@@ -386,15 +386,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-015-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "015"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '015-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "015"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '015-Purge-Sync-Job'
 
   MimixDailyPurgeSync016:
     Type: AWS::Events::Rule
@@ -403,15 +403,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-016-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "016"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '016-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "016"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '016-Purge-Sync-Job'
 
   MimixDailyPurgeSync017:
     Type: AWS::Events::Rule
@@ -420,15 +420,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-017-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "017"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '017-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "017"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '017-Purge-Sync-Job'
 
   MimixDailyPurgeSync018:
     Type: AWS::Events::Rule
@@ -437,15 +437,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-018-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "018"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '018-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "018"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '018-Purge-Sync-Job'
 
   MimixDailyPurgeSync019:
     Type: AWS::Events::Rule
@@ -454,15 +454,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-019-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "019"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '019-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "019"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '019-Purge-Sync-Job'
 
   MimixDailyPurgeSync022:
     Type: AWS::Events::Rule
@@ -471,15 +471,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-022-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "022"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '022-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "022"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '022-Purge-Sync-Job'
 
   MimixDailyPurgeSync023:
     Type: AWS::Events::Rule
@@ -488,15 +488,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-023-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "023"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '023-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "023"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '023-Purge-Sync-Job'
 
   MimixDailyPurgeSync024:
     Type: AWS::Events::Rule
@@ -505,15 +505,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-024-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "024"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '024-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "024"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '024-Purge-Sync-Job'
 
   MimixDailyPurgeSync025:
     Type: AWS::Events::Rule
@@ -522,15 +522,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-025-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "025"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '025-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "025"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '025-Purge-Sync-Job'
 
   MimixDailyPurgeSync026:
     Type: AWS::Events::Rule
@@ -539,15 +539,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-026-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "026"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '026-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "026"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '026-Purge-Sync-Job'
 
   MimixDailyPurgeSync027:
     Type: AWS::Events::Rule
@@ -556,15 +556,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-027-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "027"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '027-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "027"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '027-Purge-Sync-Job'
 
   MimixDailyPurgeSync031:
     Type: AWS::Events::Rule
@@ -573,15 +573,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-031-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "031"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '031-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "031"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '031-Purge-Sync-Job'
 
   MimixDailyPurgeSync029:
     Type: AWS::Events::Rule
@@ -590,15 +590,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-029-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "029"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '029-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "029"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '029-Purge-Sync-Job'
 
   MimixDailyPurgeSync032:
     Type: AWS::Events::Rule
@@ -607,15 +607,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-032-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "032"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '032-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "032"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '032-Purge-Sync-Job'
 
   MimixDailyPurgeSync035:
     Type: AWS::Events::Rule
@@ -624,15 +624,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-035-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "035"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '035-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "035"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '035-Purge-Sync-Job'
 
   MimixDailyPurgeSync036:
     Type: AWS::Events::Rule
@@ -641,15 +641,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-036-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "036"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '036-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "036"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '036-Purge-Sync-Job'
 
   MimixDailyPurgeSync037:
     Type: AWS::Events::Rule
@@ -658,15 +658,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-037-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "037"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '037-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "037"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '037-Purge-Sync-Job'
 
   MimixDailyPurgeSync038:
     Type: AWS::Events::Rule
@@ -675,15 +675,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-038-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "038"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '038-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "038"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '038-Purge-Sync-Job'
 
   MimixDailyPurgeSync039:
     Type: AWS::Events::Rule
@@ -692,15 +692,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-039-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "039"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '039-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "039"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '039-Purge-Sync-Job'
 
   MimixDailyPurgeSync040:
     Type: AWS::Events::Rule
@@ -709,15 +709,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-040-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "040"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '040-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "040"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '040-Purge-Sync-Job'
 
   MimixDailyPurgeSync043:
     Type: AWS::Events::Rule
@@ -726,15 +726,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-043-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "043"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '043-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "043"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '043-Purge-Sync-Job'
 
   MimixDailyPurgeSync045:
     Type: AWS::Events::Rule
@@ -743,15 +743,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-045-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "045"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '045-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "045"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '045-Purge-Sync-Job'
 
   MimixDailyPurgeSync046:
     Type: AWS::Events::Rule
@@ -760,15 +760,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-046-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "046"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '046-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "046"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '046-Purge-Sync-Job'
 
   MimixDailyPurgeSync047:
     Type: AWS::Events::Rule
@@ -777,15 +777,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-047-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "047"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '047-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "047"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '047-Purge-Sync-Job'
 
   MimixDailyPurgeSync048:
     Type: AWS::Events::Rule
@@ -794,15 +794,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-048-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "048"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '048-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "048"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '048-Purge-Sync-Job'
 
   MimixDailyPurgeSync049:
     Type: AWS::Events::Rule
@@ -811,15 +811,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-049-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "049"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '049-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "049"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '049-Purge-Sync-Job'
 
   MimixDailyPurgeSync050:
     Type: AWS::Events::Rule
@@ -828,15 +828,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-050-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "050"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '050-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "050"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '050-Purge-Sync-Job'
 
   MimixDailyPurgeSync051:
     Type: AWS::Events::Rule
@@ -845,15 +845,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-051-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "051"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '051-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "051"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '051-Purge-Sync-Job'
 
   MimixDailyPurgeSync052:
     Type: AWS::Events::Rule
@@ -862,15 +862,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-052-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "052"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '052-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "052"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '052-Purge-Sync-Job'
 
   MimixDailyPurgeSync054:
     Type: AWS::Events::Rule
@@ -879,15 +879,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-054-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "054"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '054-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "054"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '054-Purge-Sync-Job'
 
   MimixDailyPurgeSync056:
     Type: AWS::Events::Rule
@@ -896,15 +896,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-056-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "056"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '056-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "056"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '056-Purge-Sync-Job'
 
   MimixDailyPurgeSync055:
     Type: AWS::Events::Rule
@@ -913,15 +913,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-055-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "055"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '055-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "055"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '055-Purge-Sync-Job'
 
   MimixDailyPurgeSync057:
     Type: AWS::Events::Rule
@@ -930,15 +930,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-057-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "057"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '057-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "057"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '057-Purge-Sync-Job'
 
   MimixDailyPurgeSync058:
     Type: AWS::Events::Rule
@@ -947,15 +947,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-058-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "058"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '058-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "058"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '058-Purge-Sync-Job'
 
   MimixDailyPurgeSync059:
     Type: AWS::Events::Rule
@@ -964,15 +964,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-059-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "059"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '059-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "059"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '059-Purge-Sync-Job'
 
   MimixDailyPurgeSync060:
     Type: AWS::Events::Rule
@@ -981,15 +981,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-060-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(00 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "060"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '060-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "060"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '060-Purge-Sync-Job'
 
   MimixDailyPurgeSync061:
     Type: AWS::Events::Rule
@@ -998,15 +998,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-061-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "061"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '061-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "061"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '061-Purge-Sync-Job'
 
   MimixDailyPurgeSync064:
     Type: AWS::Events::Rule
@@ -1015,15 +1015,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-064-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "064"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '064-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "064"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '064-Purge-Sync-Job'
 
   MimixDailyPurgeSync066:
     Type: AWS::Events::Rule
@@ -1032,15 +1032,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-066-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "066"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '066-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "066"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '066-Purge-Sync-Job'
 
   MimixDailyPurgeSync067:
     Type: AWS::Events::Rule
@@ -1049,15 +1049,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-067-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(10 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "067"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '067-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "067"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '067-Purge-Sync-Job'
 
   MimixDailyPurgeSync068:
     Type: AWS::Events::Rule
@@ -1066,15 +1066,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-068-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(20 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "068"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '068-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "068"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '068-Purge-Sync-Job'
 
   MimixDailyPurgeSync073:
     Type: AWS::Events::Rule
@@ -1083,15 +1083,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-073-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "073"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '073-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "073"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '073-Purge-Sync-Job'
 
   MimixDailyPurgeSync075:
     Type: AWS::Events::Rule
@@ -1100,15 +1100,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-075-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "075"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '075-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "075"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '075-Purge-Sync-Job'
 
   MimixDailyPurgeSync076:
     Type: AWS::Events::Rule
@@ -1117,15 +1117,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-076-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "076"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '076-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "076"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '076-Purge-Sync-Job'
 
   MimixDailyPurgeSync078:
     Type: AWS::Events::Rule
@@ -1134,15 +1134,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-078-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "078"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '078-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "078"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '078-Purge-Sync-Job'
 
   MimixDailyPurgeSync101:
     Type: AWS::Events::Rule
@@ -1151,15 +1151,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-101-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "101"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '101-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "101"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '101-Purge-Sync-Job'
 
   MimixDailyPurgeSync102:
     Type: AWS::Events::Rule
@@ -1168,15 +1168,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-102-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(40 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "102"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '102-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "102"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '102-Purge-Sync-Job'
 
   MimixDailyPurgeSync134:
     Type: AWS::Events::Rule
@@ -1185,15 +1185,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-134-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "134"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '134-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "134"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '134-Purge-Sync-Job'
 
   MimixDailyPurgeSync137:
     Type: AWS::Events::Rule
@@ -1202,15 +1202,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-137-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "137"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '137-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "137"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '137-Purge-Sync-Job'
 
   MimixDailyPurgeSync163:
     Type: AWS::Events::Rule
@@ -1219,15 +1219,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-163-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(25 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "163"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '163-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "163"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '163-Purge-Sync-Job'
 
   MimixDailyPurgeSync164:
     Type: AWS::Events::Rule
@@ -1236,15 +1236,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-164-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(50 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "164"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '164-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "164"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '164-Purge-Sync-Job'
 
   MimixDailyPurgeSync194:
     Type: AWS::Events::Rule
@@ -1253,15 +1253,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-194-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 05 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "194"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '194-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "194"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '194-Purge-Sync-Job'
 
   MimixDailyPurgeSync195:
     Type: AWS::Events::Rule
@@ -1270,15 +1270,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-195-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "195"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '195-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "195"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '195-Purge-Sync-Job'
 
   MimixDailyPurgeSync288:
     Type: AWS::Events::Rule
@@ -1287,15 +1287,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-288-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "288"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '288-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "288"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '288-Purge-Sync-Job'
 
   MimixDailyPurgeSync293:
     Type: AWS::Events::Rule
@@ -1304,15 +1304,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-293-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(15 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "293"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '293-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "293"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '293-Purge-Sync-Job'
 
   MimixDailyPurgeSync306:
     Type: AWS::Events::Rule
@@ -1321,15 +1321,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-306-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "306"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '306-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "306"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '306-Purge-Sync-Job'
 
   MimixDailyPurgeSync320:
     Type: AWS::Events::Rule
@@ -1338,15 +1338,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-320-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "320"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '320-Purge-Sync-Job'
+        - Arn: !Ref JobQueue
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "320"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref JobDefinition
+            JobName: '320-Purge-Sync-Job'
 
   MimixDailyPurgeSync332:
     Type: AWS::Events::Rule
@@ -1355,15 +1355,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-332-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 07 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "332"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '332-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "332"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '332-Purge-Sync-Job'
 
   MimixDailyPurgeSync335:
     Type: AWS::Events::Rule
@@ -1372,15 +1372,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-335-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(45 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "335"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '335-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "335"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '335-Purge-Sync-Job'
 
   MimixDailyPurgeSync344:
     Type: AWS::Events::Rule
@@ -1389,15 +1389,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-344-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(05 04 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "344"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '344-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "344"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '344-Purge-Sync-Job'
 
   MimixDailyPurgeSync429:
     Type: AWS::Events::Rule
@@ -1406,15 +1406,15 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-429-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(55 06 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "429"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '429-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "429"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '429-Purge-Sync-Job'
 
   MimixDailyPurgeSync450:
     Type: AWS::Events::Rule
@@ -1423,85 +1423,72 @@ Resources:
       Name: "Mimix-Daily-Purge-Sync-STG-450-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(35 08 * * ? *)'
-      RoleArn: !Ref TriggeringRole
+      RoleArn: !Ref 'TriggeringRole'
       Targets:
-       - Arn: 'arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Priority-Queue'
-         Id: EC2
-         Input: '{"Parameters": {"business_unit": "450"}}'
-         RoleArn: !Ref TriggeringRole
-         BatchParameters:
-          JobDefinition: 'arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition:19'
-          JobName: '450-Purge-Sync-Job'
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "450"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinition'
+            JobName: '450-Purge-Sync-Job'
 
   MimixPurgeEC2ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
       ServiceRole:
-        Ref: !Ref MimixPurgeServiceRole
+        Ref: 'MimixPurgeServiceRole'
       ComputeEnvironmentName:
         Fn::Join:
         - ''
-        - - CP-Mimix-Purge-Compute-Environment-
-          - Ref: EnvironmentShort
+        - - CP-Mimix-Purge-Sync-Compute-Environment-
+          - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
-        SecurityGroupIds:CommonAMI
-	  - !Ref SGDNS
-	  - !Ref SGWebServices
-	  - !Ref SGRDSMySQL
+        SecurityGroupIds:
+        - !Ref 'SGDNS'
+        - !Ref 'SGWebServices'
+        - !Ref 'SGRDSMySQL'
         Type: EC2
         Subnets:
-  	  - !Ref PvtSNa
-	  - !Ref PvtSNb
-	  - !Ref PvtSNc
+        - !Ref 'PvtSNa'
+        - !Ref 'PvtSNb'
+        - !Ref 'PvtSNc'
         MinvCpus: 0
-        ImageId: !Ref CommonAMI
-        InstanceRole: !Ref PurgeInstanceRole
+        ImageId: !Ref 'CommonAMI'
+        InstanceRole: !Ref 'PurgeInstanceRole'
         InstanceTypes:
-	  - optimal
-        Ec2KeyPair: !Ref PemKey
+        - optimal
+        Ec2KeyPair: !Ref 'PemKey'
         DesiredvCpus: 0
         Tags:
-        - Key: Technical:ApplicationName
-          Value:
-            Ref: !Ref ApplicationName
-        - Key: Technical:ApplicationID
-          Value:
-            Ref: !Ref ApplicationID
-        - Key: Technical:PlatformOwner
-          Value:
-            Ref: !Ref Owner
-        - Key: Technical:ApplicationSubName
-          Value:
-            Ref: !Ref Component
-        - Key: Technical:Environment
-          Value:
-            Ref: !Ref Environment
-	    - Key: Technical:ApplicationRole
-          Value:
-            Ref: !Ref ApplicationRole
-	    - Key: Name
-          Value:
-            Ref: !Ref Component
-        - Key: Approver
-          Value:
-            Ref: !Ref Approver
-        - Key: PO_Number
-          Value:
-            Ref: !Ref PONumber
-        - Key: Project_ID
-          Value:
-            Ref: !Ref ProjectID
-        - Key: Support_Email
-          Value:
-            Ref: !Ref SupportEmail
-        - Key: 2WTAGGER
-          Value:
-            Ref: !Ref 2WTAGGER
-        - Key: Platform
-          Value:
-            Ref: !Ref Platform
+            Technical:ApplicationName:
+              Ref: 'ApplicationName'
+            Technical:ApplicationID:
+              Ref: 'ApplicationID'
+            Technical:PlatformOwner:
+              Ref: 'Owner'
+            Technical:Environment:
+              Ref: 'Environment'
+            Technical:ApplicationSubName:
+              Ref: 'Component'
+            Technical:ApplicationRole:
+              Ref: 'ApplicationRole'
+            Approver:
+              Ref: 'Approver'
+            PO_Number:
+              Ref: 'PONumber'
+            Project_ID:
+              Ref: 'ProjectID'
+            Support_Email:
+              Ref: 'SupportEmail'
+            2WTAGGER:
+              Ref: '2WTAGGER'
+            Platform:
+              Ref: 'Platform'
+            Name:
+              Ref: 'Component'
       State: ENABLED
 
   JobDefinition:
@@ -1512,30 +1499,25 @@ Resources:
         Fn::Join:
           - ''
           - - CP-Mimix-Purge-Job-Definition-
-            - Ref: EnvironmentShort
+            - Ref: 'EnvironmentShort'
       RetryStrategy:
         Attempts: 1
       Timeout:
         AttemptDurationSeconds: 10800
       ContainerProperties:
-        image: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest
+        Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest'
         Vcpus: 4
         Memory: 6144
-        command:
+        Command:
           - java
           - "-Xmx6144M"
           - "-jar"
           - mimix-query-syncing-processor.jar
           - Ref::business_unit
-        JobRoleArn: !Ref TaskRole
-        volumes: []
-        environment:
-          - name: SERVER_ENVIRONMENT_VARIABLE
-            value: STG
-        mountPoints: []
-        ulimits: []
-        resourceRequirements: []
-    DependsOn: !Ref TaskRole
+        JobRoleArn: !Ref 'TaskRole'
+        Environment:
+          - Name: 'SERVER_ENVIRONMENT_VARIABLE'
+            Value: 'STG'
 
   JobQueue:
     Type: AWS::Batch::JobQueue
@@ -1545,10 +1527,10 @@ Resources:
         Fn::Join:
           - ''
           - - CP-Mimix-Purge-Job-Queue-
-            - Ref: EnvironmentShort
+            - Ref: 'EnvironmentShort'
       Priority: 50
       ComputeEnvironmentOrder:
         - Order: 1
           ComputeEnvironment:
-            Ref: MimixPurgeEC2ComputeEnvironment
+            Ref: 'MimixPurgeEC2ComputeEnvironment'
 
