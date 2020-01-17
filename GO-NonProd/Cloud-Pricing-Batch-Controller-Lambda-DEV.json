@@ -164,7 +164,14 @@
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "villanueva.loi@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"SupportEmail": {
+			"Description": "Email distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "000-BT-PricingPlatform@Corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -255,6 +262,7 @@
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Lambda Batch Controller" },
 					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },

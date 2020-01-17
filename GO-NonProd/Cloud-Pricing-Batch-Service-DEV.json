@@ -48,7 +48,7 @@
         "Owner": {
             "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
             "Type": "String",
-            "Default": "villanueva.loi@corp.sysco.com",
+            "Default": "krishan.senevirathne@sysco.com",
             "MinLength": "1",
             "MaxLength": "255"
         },
@@ -85,6 +85,11 @@
             "Description": "Platform",
             "Type": "String",
             "Default": "Cloud Pricing V4"
+        },
+        "ApplicationRole": {
+            "Description": "The type of application stack",
+            "Type": "String",
+            "Default": "Batch Compute Environment"
         },
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
@@ -241,7 +246,7 @@
                     "BidPercentage": 100,
                     "MinvCpus": 0,
                     "DesiredvCpus": 4,
-                    "MaxvCpus": 64,
+                    "MaxvCpus": 200,
                     "InstanceTypes": [
                         "optimal"
                     ],
@@ -296,9 +301,12 @@
                             "Ref": "Component"
                         }
                     ,
-
                         "Technical:ApplicationRole": {
-                            "Value": "Batch Compute Environment"
+                            "Ref": "ApplicationRole"
+                        }
+                    ,
+                        "Name": {
+                            "Ref": "Component"
                         }
                     ,
                         "Approver": {
