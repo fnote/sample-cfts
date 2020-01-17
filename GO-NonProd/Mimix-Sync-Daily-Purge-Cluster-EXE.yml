@@ -1,0 +1,1436 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is the stack for CP Mimix Daily Purge ECS cluster
+Parameters:
+  Environment:
+    Description: Environment for application
+    Type: String
+    Default: EXE
+    AllowedValues:
+      - DEV
+      - EXE
+      - QA
+      - STG
+      - PROD
+      - NONPROD
+    ConstraintDescription: Must be a valid environment.
+  ExecutionRole:
+    Description: ARN of execution role attached to ECS task.
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+  TaskRole:
+    Description: ARN of task role attached to ECS task.
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+  RoleArn:
+    Description: ARN of task role attached to cloud watch Events.
+    Type: String
+    Default: arn:aws:iam::037295147636:role/Princing-Web-Service-Role
+  DockerImageArn:
+    Description: Docker image of mimix sync processor
+    Type: String
+    Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync
+  CPUReserved:
+    Description: The number of cpu units reserved for the container.
+    Type: Number
+    Default: '1024'
+    MinValue: '256'
+    MaxValue: '4096'
+  MemoryReserved:
+    Description: The soft limit (in MiB) of memory to reserve for the container.
+    Type: Number
+    Default: '2048'
+    MinValue: '256'
+    MaxValue: '8192'
+  RetentionTime:
+    Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
+    Type: Number
+    Default: '30'
+    MinValue: '1'
+    MaxValue: '3653'
+
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Daily-Purge-Cluster-'
+          - !Ref 'Environment'
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join
+        - ''
+        - - '/aws/ecs/CP-Mimix-Sync-Daily-Purge'
+          - !Ref 'Environment'
+      RetentionInDays: !Ref RetentionTime
+
+  MimixDailyPurgeSync001:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 001"
+      Name: "Mimix-Daily-Purge-Sync-001"
+      ScheduleExpression: 'cron(25 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "001"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync002:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 002"
+      Name: "Mimix-Daily-Purge-Sync-002"
+      ScheduleExpression: 'cron(10 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "002"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync003:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 003"
+      Name: "Mimix-Daily-Purge-Sync-003"
+      ScheduleExpression: 'cron(10 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "003"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync004:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 004"
+      Name: "Mimix-Daily-Purge-Sync-004"
+      ScheduleExpression: 'cron(25 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "004"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync005:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 005"
+      Name: "Mimix-Daily-Purge-Sync-005"
+      ScheduleExpression: 'cron(10 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "005"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync006:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 006"
+      Name: "Mimix-Daily-Purge-Sync-006"
+      ScheduleExpression: 'cron(10 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "006"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync007:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 007"
+      Name: "Mimix-Daily-Purge-Sync-007"
+      ScheduleExpression: 'cron(55 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "007"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync008:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 008"
+      Name: "Mimix-Daily-Purge-Sync-008"
+      ScheduleExpression: 'cron(25 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "008"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync009:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 009"
+      Name: "Mimix-Daily-Purge-Sync-009"
+      ScheduleExpression: 'cron(10 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "009"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync010:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 010"
+      Name: "Mimix-Daily-Purge-Sync-010"
+      ScheduleExpression: 'cron(25 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "010"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync011:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 011"
+      Name: "Mimix-Daily-Purge-Sync-011"
+      ScheduleExpression: 'cron(10 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "011"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync012:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 012"
+      Name: "Mimix-Daily-Purge-Sync-012"
+      ScheduleExpression: 'cron(40 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "012"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync013:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 013"
+      Name: "Mimix-Daily-Purge-Sync-013"
+      ScheduleExpression: 'cron(25 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "013"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync014:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 014"
+      Name: "Mimix-Daily-Purge-Sync-014"
+      ScheduleExpression: 'cron(40 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "014"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync015:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 015"
+      Name: "Mimix-Daily-Purge-Sync-015"
+      ScheduleExpression: 'cron(25 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "015"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync016:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 016"
+      Name: "Mimix-Daily-Purge-Sync-016"
+      ScheduleExpression: 'cron(40 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "016"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync017:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 017"
+      Name: "Mimix-Daily-Purge-Sync-017"
+      ScheduleExpression: 'cron(55 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "017"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync018:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 018"
+      Name: "Mimix-Daily-Purge-Sync-018"
+      ScheduleExpression: 'cron(40 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "018"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync019:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 019"
+      Name: "Mimix-Daily-Purge-Sync-019"
+      ScheduleExpression: 'cron(40 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "019"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync022:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 022"
+      Name: "Mimix-Daily-Purge-Sync-022"
+      ScheduleExpression: 'cron(55 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "022"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync023:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 023"
+      Name: "Mimix-Daily-Purge-Sync-023"
+      ScheduleExpression: 'cron(25 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "023"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync024:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 024"
+      Name: "Mimix-Daily-Purge-Sync-024"
+      ScheduleExpression: 'cron(55 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "024"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync025:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 025"
+      Name: "Mimix-Daily-Purge-Sync-025"
+      ScheduleExpression: 'cron(55 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "025"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync026:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 026"
+      Name: "Mimix-Daily-Purge-Sync-026"
+      ScheduleExpression: 'cron(55 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "026"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync027:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 027"
+      Name: "Mimix-Daily-Purge-Sync-027"
+      ScheduleExpression: 'cron(55 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "027"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync029:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 029"
+      Name: "Mimix-Daily-Purge-Sync-029"
+      ScheduleExpression: 'cron(10 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "029"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync031:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 031"
+      Name: "Mimix-Daily-Purge-Sync-031"
+      ScheduleExpression: 'cron(40 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "031"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync032:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 032"
+      Name: "Mimix-Daily-Purge-Sync-032"
+      ScheduleExpression: 'cron(10 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "032"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync035:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 035"
+      Name: "Mimix-Daily-Purge-Sync-035"
+      ScheduleExpression: 'cron(10 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "035"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync036:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 036"
+      Name: "Mimix-Daily-Purge-Sync-036"
+      ScheduleExpression: 'cron(55 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "036"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync037:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 037"
+      Name: "Mimix-Daily-Purge-Sync-037"
+      ScheduleExpression: 'cron(25 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "037"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync038:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 038"
+      Name: "Mimix-Daily-Purge-Sync-038"
+      ScheduleExpression: 'cron(25 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "038"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync039:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 039"
+      Name: "Mimix-Daily-Purge-Sync-039"
+      ScheduleExpression: 'cron(40 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "039"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync040:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 040"
+      Name: "Mimix-Daily-Purge-Sync-040"
+      ScheduleExpression: 'cron(10 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "040"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync043:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 043"
+      Name: "Mimix-Daily-Purge-Sync-043"
+      ScheduleExpression: 'cron(25 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "043"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync045:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 045"
+      Name: "Mimix-Daily-Purge-Sync-045"
+      ScheduleExpression: 'cron(10 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "045"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync046:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 046"
+      Name: "Mimix-Daily-Purge-Sync-046"
+      ScheduleExpression: 'cron(25 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "046"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync047:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 047"
+      Name: "Mimix-Daily-Purge-Sync-047"
+      ScheduleExpression: 'cron(55 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "047"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync0048:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 048"
+      Name: "Mimix-Daily-Purge-Sync-048"
+      ScheduleExpression: 'cron(10 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "048"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync049:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 049"
+      Name: "Mimix-Daily-Purge-Sync-049"
+      ScheduleExpression: 'cron(10 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "049"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync050:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 050"
+      Name: "Mimix-Daily-Purge-Sync-050"
+      ScheduleExpression: 'cron(25 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "050"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync051:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 051"
+      Name: "Mimix-Daily-Purge-Sync-051"
+      ScheduleExpression: 'cron(40 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "051"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync052:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 052"
+      Name: "Mimix-Daily-Purge-Sync-052"
+      ScheduleExpression: 'cron(40 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "052"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync054:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 054"
+      Name: "Mimix-Daily-Purge-Sync-054"
+      ScheduleExpression: 'cron(55 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "054"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync055:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 055"
+      Name: "Mimix-Daily-Purge-Sync-055"
+      ScheduleExpression: 'cron(10 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "055"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync056:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 056"
+      Name: "Mimix-Daily-Purge-Sync-056"
+      ScheduleExpression: 'cron(10 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "056"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync057:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 057"
+      Name: "Mimix-Daily-Purge-Sync-057"
+      ScheduleExpression: 'cron(40 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "057"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync058:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 058"
+      Name: "Mimix-Daily-Purge-Sync-058"
+      ScheduleExpression: 'cron(10 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "058"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync059:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 059"
+      Name: "Mimix-Daily-Purge-Sync-059"
+      ScheduleExpression: 'cron(25 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "059"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync060:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 060"
+      Name: "Mimix-Daily-Purge-Sync-060"
+      ScheduleExpression: 'cron(55 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "060"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync061:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 061"
+      Name: "Mimix-Daily-Purge-Sync-061"
+      ScheduleExpression: 'cron(40 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "061"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync064:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 064"
+      Name: "Mimix-Daily-Purge-Sync-064"
+      ScheduleExpression: 'cron(10 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "064"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync066:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 066"
+      Name: "Mimix-Daily-Purge-Sync-066"
+      ScheduleExpression: 'cron(40 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "066"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync067:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 067"
+      Name: "Mimix-Daily-Purge-Sync-067"
+      ScheduleExpression: 'cron(40 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "067"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync068:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 068"
+      Name: "Mimix-Daily-Purge-Sync-068"
+      ScheduleExpression: 'cron(25 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "068"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync073:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 073"
+      Name: "Mimix-Daily-Purge-Sync-073"
+      ScheduleExpression: 'cron(25 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "073"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync075:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 075"
+      Name: "Mimix-Daily-Purge-Sync-075"
+      ScheduleExpression: 'cron(25 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "075"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync078:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 078"
+      Name: "Mimix-Daily-Purge-Sync-078"
+      ScheduleExpression: 'cron(10 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "078"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync101:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 101"
+      Name: "Mimix-Daily-Purge-Sync-101"
+      ScheduleExpression: 'cron(25 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "101"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync102:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 102"
+      Name: "Mimix-Daily-Purge-Sync-102"
+      ScheduleExpression: 'cron(55 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "102"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync0134:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 134"
+      Name: "Mimix-Daily-Purge-Sync-134"
+      ScheduleExpression: 'cron(40 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "134"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync137:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 137"
+      Name: "Mimix-Daily-Purge-Sync-137"
+      ScheduleExpression: 'cron(55 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "137"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync163:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 163"
+      Name: "Mimix-Daily-Purge-Sync-163"
+      ScheduleExpression: 'cron(10 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "163"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync164:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 164"
+      Name: "Mimix-Daily-Purge-Sync-164"
+      ScheduleExpression: 'cron(25 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "164"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync194:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 194"
+      Name: "Mimix-Daily-Purge-Sync-194"
+      ScheduleExpression: 'cron(25 02 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "194"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync195:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 195"
+      Name: "Mimix-Daily-Purge-Sync-195"
+      ScheduleExpression: 'cron(55 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "195"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync288:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 288"
+      Name: "Mimix-Daily-Purge-Sync-288"
+      ScheduleExpression: 'cron(55 00 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "288"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync293:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 293"
+      Name: "Mimix-Daily-Purge-Sync-293"
+      ScheduleExpression: 'cron(40 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "293"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync306:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 306"
+      Name: "Mimix-Daily-Purge-Sync-306"
+      ScheduleExpression: 'cron(40 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "306"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync320:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 320"
+      Name: "Mimix-Daily-Purge-Sync-320"
+      ScheduleExpression: 'cron(40 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "320"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync332:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 332"
+      Name: "Mimix-Daily-Purge-Sync-332"
+      ScheduleExpression: 'cron(55 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "332"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync344:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 344"
+      Name: "Mimix-Daily-Purge-Sync-344"
+      ScheduleExpression: 'cron(10 01 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "344"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync429:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 429"
+      Name: "Mimix-Daily-Purge-Sync-429"
+      ScheduleExpression: 'cron(25 03 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "429"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+  MimixDailyPurgeSync450:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 450"
+      Name: "Mimix-Daily-Purge-Sync-450"
+      ScheduleExpression: 'cron(40 04 * * ? *)'
+      RoleArn: !Ref RoleArn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: EC2
+          RoleArn: !Ref RoleArn
+          Input: '{ "containerOverrides": [{"name": "cp-mimix-daily-purge-sync", "environment": [{"name": "BUSINESS_UNIT","value": "450"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'CPMimixSyncDailyPurgeTaskDefinition'
+            LaunchType: EC2
+
+
+  CPMimixSyncDailyPurgeTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Daily-Purge-Task-Definition-'
+          - !Ref 'Environment'
+      ExecutionRoleArn: !Ref ExecutionRole
+      TaskRoleArn: !Ref TaskRole
+      ContainerDefinitions:
+        - Name: cp-mimix-daily-purge-sync
+          Essential: 'true'
+          Image: !Ref DockerImageArn
+          Cpu: !Ref CPUReserved
+          MemoryReservation: !Ref MemoryReserved
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/PURGESYNC
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref Environment
+Outputs:
+  SyncDailyPurgeTaskDefinition:
+    Description: The Cp MimixSync purge sync task definition ARN
+    Value: !Ref CPMimixSyncDailyPurgeTaskDefinition
+  MimixDailyPurgeSync001:
+    Description: The Cp MimixSync purge schedule event definition ARN
+    Value: !Ref CPMimixSyncDailyPurgeTaskDefinition
+  ClusterARN:
+    Description: The ECS Cluster ARN
+    Value: !GetAtt ECSCluster.Arn

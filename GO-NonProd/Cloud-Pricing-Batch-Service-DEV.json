@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for DEV environmnet",
+    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for DEV environment",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -218,32 +218,6 @@
                 }
             }
         },
-        "JobQueue": {
-            "Type": "AWS::Batch::JobQueue",
-            "Properties": {
-                "State": "ENABLED",
-                "JobQueueName": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "CP-Batch-High-Priority-Queue-",
-                            {
-                              "Ref": "EnvironmentShort"
-                            }
-                        ]
-                      ]
-                },
-                "Priority": 50,
-                "ComputeEnvironmentOrder": [
-                    {
-                        "Order": 1,
-                        "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
-                        }
-                    }
-                ]
-            }
-        },
         "CPBatchSpotOptimalComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
@@ -298,21 +272,35 @@
                     ],
                     "Tags":
                     {
-                        "Application_Name": {
+                        "Technical:ApplicationName": {
                             "Ref": "ApplicationName"
                         }
                     ,
 
-                        "Application_ID": {
+                        "Technical:ApplicationID": {
                             "Ref": "ApplicationID"
                         }
                     ,
 
-                        "Owner": {
+                        "Technical:PlatformOwner": {
                             "Ref": "Owner"
                         }
                     ,
 
+                        "Technical:Environment": {
+                            "Ref": "Environment"
+                        }
+                    ,
+
+                        "Technical:ApplicationSubName": {
+                            "Ref": "Component"
+                        }
+                    ,
+
+                        "Technical:ApplicationRole": {
+                            "Value": "Batch Compute Environment"
+                        }
+                    ,
                         "Approver": {
                             "Ref": "Approver"
                         }
@@ -320,11 +308,6 @@
 
                         "PO_Number": {
                             "Ref": "PONumber"
-                        }
-                    ,
-
-                        "Environment": {
-                            "Ref": "Environment"
                         }
                     ,
 
@@ -346,14 +329,90 @@
                         "Platform": {
                             "Ref": "Platform"
                         }
-                    ,
-
-                        "Component": {
-                            "Ref": "Component"
-                        }
                     }
                 },
                 "State": "ENABLED"
+            }
+        },
+        "JobQueueHigh": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties":
+            {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P75-Priority-Queue-",
+                            {
+                              "Ref": "EnvironmentShort"
+                            }
+                        ]
+                      ]
+                },
+                "Priority": 75,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+
+        },
+        "JobQueueMedium": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties":
+            {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P50-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 50,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueueLow": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P25-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 25,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
             }
         }
     }
