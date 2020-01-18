@@ -119,10 +119,6 @@ Parameters:
     Description: SG-RDSMySQL
     Type: String
     Default: sg-039f822d40c446322
-  InstanceProfile:
-    Description: Instance Profile Name
-    Type: String
-    Default: CloudPricing-IAM-InstanceProfile
   InstanceType:
     Description: Application EC2 instance type
     Type: String
@@ -270,7 +266,7 @@ Resources:
         - !Ref 'SGWebServices'
         - !Ref 'SGRDSMySQL'
         - !Ref 'SGDNS'
-      IamInstanceProfile: !Ref 'InstanceProfile'
+      IamInstanceProfile: !Ref 'MimixInstanceRole'
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
