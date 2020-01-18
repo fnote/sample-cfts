@@ -1447,7 +1447,7 @@ Resources:
               VolumeSize: !Ref 'RootVolumeSize'
               VolumeType: gp2
         TagSpecifications:
-          - ResourceType: String
+          - ResourceType: volume
             Tags:
             - Key: Technical:ApplicationName
               Value: !Ref 'ApplicationName'
