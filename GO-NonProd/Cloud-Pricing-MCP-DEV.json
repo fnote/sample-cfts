@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-MCP-EXE.json",
+	"Description": "Deployed via Cloud-Pricing-MCP-DEV.json",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -164,7 +164,7 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -178,7 +178,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -190,7 +190,7 @@
 		}
 	},
 	"Resources": {
-		"lx238cpmcp01e" : {
+		"lx238cpmcp01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -204,7 +204,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpmcp01e" },
+					{ "Key" : "Name", "Value" : "lx238cpmcp01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -229,10 +229,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpmcp01e.na.sysco.net\n",
+					"hostname lx238cpmcp01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpmcp01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpmcp01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -285,6 +285,13 @@
 					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
 
+					"##############################################\n",
+					"# Splunk - Clear Settings\n",
+					"##############################################\n",
+					"/opt/splunkforwarder/bin/splunk stop\n",
+					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+					"/opt/splunkforwarder/bin/splunk start\n",
+
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
@@ -301,7 +308,7 @@
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" } ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpjp01e", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : "lx238cpjp01d", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true"  },
@@ -350,10 +357,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpjp01e.na.sysco.net\n",
+					"hostname lx238cpjp01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpjp01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpjp01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -412,7 +419,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplm01e" : {
+		"lx238cpsyncplm01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -426,7 +433,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplm01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplm01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -451,10 +458,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplm01e.na.sysco.net\n",
+					"hostname lx238cpsyncplm01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplm01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplm01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -521,7 +528,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpla01e" : {
+		"lx238cpsyncpla01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -535,7 +542,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpla01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpla01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -560,10 +567,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpla01e.na.sysco.net\n",
+					"hostname lx238cpsyncpla01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpla01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpla01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -630,7 +637,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplr01e" : {
+		"lx238cpsyncplr01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -644,7 +651,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplr01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplr01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -669,10 +676,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplr01e.na.sysco.net\n",
+					"hostname lx238cpsyncplr01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplr01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplr01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -739,7 +746,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplc01e" : {
+		"lx238cpsyncplc01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -753,7 +760,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplc01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplc01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -778,10 +785,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplc01e.na.sysco.net\n",
+					"hostname lx238cpsyncplc01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplc01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplc01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -848,7 +855,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprm01e" : {
+		"lx238cpsyncprm01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -862,7 +869,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprm01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprm01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -887,10 +894,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprm01e.na.sysco.net\n",
+					"hostname lx238cpsyncprm01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprm01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprm01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -952,7 +959,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpra01e" : {
+		"lx238cpsyncpra01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -966,7 +973,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpra01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpra01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -991,10 +998,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpra01e.na.sysco.net\n",
+					"hostname lx238cpsyncpra01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpra01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpra01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1056,7 +1063,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprr01e" : {
+		"lx238cpsyncprr01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1070,7 +1077,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprr01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprr01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -1095,10 +1102,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprr01e.na.sysco.net\n",
+					"hostname lx238cpsyncprr01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprr01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprr01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1160,7 +1167,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprc01e" : {
+		"lx238cpsyncprc01d" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1174,7 +1181,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprc01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprc01d" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -1199,10 +1206,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprc01e.na.sysco.net\n",
+					"hostname lx238cpsyncprc01d.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprc01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprc01d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -1264,27 +1271,11 @@
 				]]}}
 			}
 		},
-		"CPMCPCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-MCP" }
-		},
-		"CPJobProcessorCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Job-Processor" }
-		},
-		"CPPlatformSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Platform-Sync" }
-		},
-		"CPPricingSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Pricing-Sync" }
-		},
 		"CPMCPCodeDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : {"Ref":"CPMCPCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*e" }],
+				"ApplicationName" : "CP-MCP",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*d" }],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
 				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
@@ -1293,7 +1284,7 @@
 		"CPJPCodeDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : {"Ref":"CPJobProcessorCodeDeployApp"},
+				"ApplicationName" : "CP-Job-Processor",
 				"AutoScalingGroups" : [ { "Ref" : "JobProcessorGroup" } ],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
 				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
@@ -1303,8 +1294,8 @@
 		"CPSyncPlatformDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPlatformSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*e" }],
+				"ApplicationName" : "CP-Platform-Sync",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*d" }],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
 				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
@@ -1313,8 +1304,8 @@
 		"CPSyncPricingDeployGroup": {
 			"Type" : "AWS::CodeDeploy::DeploymentGroup",
 			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPricingSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*e" }],
+				"ApplicationName" : "CP-Pricing-Sync",
+				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*d" }],
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
 				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
