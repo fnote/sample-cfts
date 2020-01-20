@@ -76,7 +76,7 @@ Parameters:
   PurgeInstanceRole:
     Description: ARN of role attached to Mimix Purge Sync Servers.
     Type: String
-    Default: arn:aws:iam::037295147636:role/Cloud-Pricing-Mimix-Purge-Instance-Profile
+    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Purge-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
@@ -109,6 +109,10 @@ Parameters:
     Description: SG-WebServices
     Type: String
     Default: sg-0a56447308e39b902
+  RootVolumeSize:
+    Description: Root Volume Size
+    Type: String
+    Default: 150
   PemKey:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: String
@@ -1433,6 +1437,50 @@ Resources:
             JobDefinition: !Ref 'JobDefinition'
             JobName: '450-Purge-Sync-Job'
 
+  LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateData:
+        BlockDeviceMappings:
+          - DeviceName: /dev/xvda
+            Ebs:
+              VolumeSize: !Ref 'RootVolumeSize'
+              VolumeType: gp2
+        TagSpecifications:
+          - ResourceType: volume
+            Tags:
+            - Key: Technical:ApplicationName
+              Value: !Ref 'ApplicationName'
+            - Key: Technical:ApplicationID
+              Value: !Ref 'ApplicationID'
+            - Key: Technical:PlatformOwner
+              Value: !Ref 'Owner'
+            - Key: Technical:Environment
+              Value: !Ref 'Environment'
+            - Key: Technical:ApplicationSubName
+              Value: !Ref 'Component'
+            - Key: Technical:ApplicationRole
+              Value: !Ref 'ApplicationRole'
+            - Key: Approver
+              Value: !Ref 'Approver'
+            - Key: PO_Number
+              Value: !Ref 'PONumber'
+            - Key: Project_ID
+              Value: !Ref 'ProjectID'
+            - Key: Support_Email
+              Value: !Ref 'SupportEmail'
+            - Key: 2WTAGGER
+              Value: !Ref '2WTAGGER'
+            - Key: Platform
+              Value: !Ref 'Platform'
+            - Key: Name
+              Value: !Ref 'Component'
+      LaunchTemplateName:
+        Fn::Join:
+          - ''
+          - - CP-Mimix-Purge-Sync-Launch-Template-
+            - Ref: 'EnvironmentShort'
+
   MimixPurgeEC2ComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
@@ -1462,6 +1510,9 @@ Resources:
         - optimal
         Ec2KeyPair: !Ref 'PemKey'
         DesiredvCpus: 0
+        LaunchTemplate:
+          LaunchTemplateId: !Ref 'LaunchTemplate'
+          Version: $Default
         Tags:
             Technical:ApplicationName:
               Ref: 'ApplicationName'

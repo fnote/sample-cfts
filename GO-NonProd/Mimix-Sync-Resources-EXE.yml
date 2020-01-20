@@ -48,16 +48,28 @@ Parameters:
     Default: villanueva.loi@corp.sysco.com
     MinLength: '1'
     MaxLength: '255'
+  Component:
+    Description: Component name
+    Type: String
+    Default: CP-Mimix-Sync
+  SupportEmail:
+    Description: Email distribution list for technical product/platform team contact
+    Type: String
+    Default: 000-BT-PricingPlatform@Corp.sysco.com
+  2WTAGGER:
+    Description: Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported
+    Type: String
+    Default: team_managed
   Owner:
     Description: Name of application owner
     Type: String
-    Default: villanueva.loi@corp.sysco.com
+    Default: krishan.senevirathne@corp.sysco.com
     MinLength: '1'
     MaxLength: '255'
   Environment:
     Description: Environment for application
     Type: String
-    Default: EXE
+    Default: STG
     AllowedValues:
       - DEV
       - EXE
@@ -99,40 +111,52 @@ Parameters:
     Description: Security group for webServices
     Type: String
     Default: sg-0a56447308e39b902
-  InstanceProfile:
-    Description: Instance Profile Name
+  SGDNS:
+    Description: PRCP-NP-DNS-DNSSG-3J5600OVNNBR
     Type: String
-    Default: CloudPricing-IAM-InstanceProfile
+    Default: sg-078061ddab53c5c41
+  SGRDSMySQL:
+    Description: SG-RDSMySQL
+    Type: String
+    Default: sg-039f822d40c446322
   InstanceType:
     Description: Application EC2 instance type
     Type: String
-    Default: c5.xlarge
+    Default: c5.9xlarge
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
-    Default: '40'
+    Default: '100'
     MinValue: '10'
     MaxValue: '1024'
+  ApplicationRole:
+    Description: Application Role Tag
+    Type: String
+    Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '1'
+    Default: '3'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '4'
+    Default: '3'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '1'
+    Default: '3'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+    Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Task-Role
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role
+    Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Task-Role
+  MimixInstanceRole:
+    Description: ARN of role attached to Mimix Purge Sync Servers.
+    Type: String
+    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
@@ -140,13 +164,13 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
-    Default: '1024'
+    Default: '4096'
     MinValue: '256'
     MaxValue: '4096'
   MemoryReserved:
     Description: The soft limit (in MiB) of memory to reserve for the container.
     Type: Number
-    Default: '2048'
+    Default: '7168'
     MinValue: '256'
     MaxValue: '8192'
   RetentionTime:
@@ -156,7 +180,7 @@ Parameters:
     MinValue: '1'
     MaxValue: '3653'
   DesiredCount:
-    Default: '1'
+    Default: '0'
     Description: The minimum size of the Auto Scaling group
     Type: String
 
@@ -180,7 +204,7 @@ Resources:
     Properties:
       AutoScalingGroupName: !Join
         - ''
-        - - 'cp-mimix-sync-auto-scaling-group-'
+        - - 'CP-Mimix-Sync-Auto-Scaling-Group-'
           - !Ref 'Environment'
       AvailabilityZones:
         - us-east-1a
@@ -199,26 +223,32 @@ Resources:
         - Key: Name
           Value: !Join
             - ''
-            - - 'cp-mimix-sync-auto-scaling-group-'
+            - - 'CP-Mimix-Sync-Auto-Scaling-Server-'
               - !Ref 'Environment'
           PropagateAtLaunch: 'true'
-        - Key: Application_Name
+        - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
           PropagateAtLaunch: 'true'
-        - Key: Application_Id
+        - Key: Technical:ApplicationID
           Value: !Ref 'ApplicationId'
           PropagateAtLaunch: 'true'
-        - Key: Owner
+        - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
+          PropagateAtLaunch: 'true'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+          PropagateAtLaunch: 'true'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+          PropagateAtLaunch: 'true'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
           PropagateAtLaunch: 'true'
         - Key: Approver
           Value: !Ref 'Approver'
           PropagateAtLaunch: 'true'
         - Key: PO_Number
           Value: !Ref 'PONumber'
-          PropagateAtLaunch: 'true'
-        - Key: Environment
-          Value: !Ref 'Environment'
           PropagateAtLaunch: 'true'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
@@ -234,7 +264,9 @@ Resources:
       KeyName: !Ref 'PemKey'
       SecurityGroups:
         - !Ref 'SGWebServices'
-      IamInstanceProfile: !Ref 'InstanceProfile'
+        - !Ref 'SGRDSMySQL'
+        - !Ref 'SGDNS'
+      IamInstanceProfile: !Ref 'MimixInstanceRole'
       BlockDeviceMappings:
         - DeviceName: /dev/xvda
           Ebs:
@@ -257,23 +289,23 @@ Resources:
         - ''
         - - '/aws/ecs/CP-Mimix-Sync-Task'
           - !Ref 'Environment'
-      RetentionInDays: !Ref RetentionTime
+      RetentionInDays: !Ref 'RetentionTime'
 
   CpMimixSyncCustomerPricingTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
       Family: !Join
         - ''
-        - - 'CP-MimixSync-Customer-Pricing-Task-Definition-'
+        - - 'CP-Mimix-Sync-Customer-Pricing-Task-Definition-'
           - !Ref 'Environment'
-      ExecutionRoleArn: !Ref ExecutionRole
-      TaskRoleArn: !Ref TaskRole
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-mimix-sync-customer-pricing-container
           Essential: 'true'
-          Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -283,70 +315,76 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref Environment
+              Value: !Ref 'Environment'
             - Name: SYNC_TYPE
               Value: CUSTOMER_PRICING
+            - Name: APPLICATION_MODE
+              Value: MIMIX_NORMAL_MODE
 
   CpMimixSyncFulfillmentTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
       Family: !Join
         - ''
-        - - 'CP-MimixSync-Fulfillment-Task-Definition-'
+        - - 'CP-Mimix-Sync-Fulfillment-Task-Definition-'
           - !Ref 'Environment'
-      ExecutionRoleArn: !Ref ExecutionRole
-      TaskRoleArn: !Ref TaskRole
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-mimix-sync-fulfillment-container
           Essential: 'true'
-          Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref LogGroup
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/FULFILLMENT
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref Environment
+              Value: !Ref 'Environment'
             - Name: SYNC_TYPE
               Value: FULFILLMENT
+            - Name: APPLICATION_MODE
+              Value: MIMIX_NORMAL_MODE
 
   CpMimixSyncProductInfoTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
       Family: !Join
         - ''
-        - - 'CP-MimixSync-ProductInfo-Task-Definition-'
+        - - 'CP-Mimix-Sync-ProductInfo-Task-Definition-'
           - !Ref 'Environment'
-      ExecutionRoleArn: !Ref ExecutionRole
-      TaskRoleArn: !Ref TaskRole
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-mimix-sync-product-info-container
           Essential: 'true'
-          Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
-              awslogs-group: !Ref LogGroup
+              awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/PRODUCT_INFO
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref Environment
+              Value: !Ref 'Environment'
             - Name: SYNC_TYPE
               Value: PRODUCT_INFO
+            - Name: APPLICATION_MODE
+              Value: MIMIX_NORMAL_MODE
 
   ProductInfoService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-MimixSync-ProductInfo-Ecs-Service'
+      ServiceName: 'CP-Mimix-Sync-ProductInfo-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
@@ -360,25 +398,33 @@ Resources:
             - ''
             - - 'cp-mimix-sync-product-info-ecs-service-'
               - !Ref 'Environment'
-        - Key: Application_Name
+        - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
-        - Key: Application_Id
+        - Key: Technical:ApplicationID
           Value: !Ref 'ApplicationId'
-        - Key: Owner
+        - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
           Value: !Ref 'PONumber'
-        - Key: Environment
-          Value: !Ref 'Environment'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
   CustomerPricingService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-MimixSync-CustomerPricing-Ecs-Service'
+      ServiceName: 'CP-Mimix-Sync-CustomerPricing-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
@@ -392,145 +438,278 @@ Resources:
             - ''
             - - 'cp-mimix-sync-customer-pricing-ecs-service-'
               - !Ref 'Environment'
-        - Key: Application_Name
+        - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
-        - Key: Application_Id
+        - Key: Technical:ApplicationID
           Value: !Ref 'ApplicationId'
-        - Key: Owner
+        - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
           Value: !Ref 'PONumber'
-        - Key: Environment
-          Value: !Ref 'Environment'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
   FulfillmentService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-MimixSync-Fulfillment-Ecs-Service'
+      ServiceName: 'CP-Mimix-Sync-Fulfillment-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: !Ref 'DesiredCount'
-      TaskDefinition: !Ref 'CpMimixSyncCustomerPricingTaskDefinition'
+      TaskDefinition: !Ref 'CpMimixSyncFulfillmentTaskDefinition'
       Tags:
         - Key: Name
           Value: !Join
             - ''
             - - 'cp-mimix-sync-fulfillment-ecs-service-'
               - !Ref 'Environment'
-        - Key: Application_Name
+        - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
-        - Key: Application_Id
+        - Key: Technical:ApplicationID
           Value: !Ref 'ApplicationId'
-        - Key: Owner
+        - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
           Value: !Ref 'PONumber'
-        - Key: Environment
-          Value: !Ref 'Environment'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
-  ECSServiceScaleDownAlarm:
-    Type: "AWS::CloudWatch::Alarm"
+  CpMimixSyncCrashHandlingCustomerPricingTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
     Properties:
-      ActionsEnabled: true
-      ComparisonOperator: LessThanOrEqualToThreshold
-      EvaluationPeriods: 1
-      MetricName: CPUUtilization
-      Namespace: "AWS/ECS"
-      Period: 300
-      Statistic: Average
-      Threshold: "40.0"
-      Unit: Percent
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Crash-Handling-Customer-Pricing-Task-Definition-'
+          - !Ref 'Environment'
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
+      ContainerDefinitions:
+        - Name: cp-mimix-sync-crash-handling-customer-pricing-container
+          Essential: 'true'
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/CRASH_HANDLING_CUSTOMER_PRICING
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref 'Environment'
+            - Name: SYNC_TYPE
+              Value: CUSTOMER_PRICING
+            - Name: APPLICATION_MODE
+              Value: CRASH_HANDLING_MODE
 
-  ECSServiceScaleUpAlarm:
-    Type: "AWS::CloudWatch::Alarm"
+  CpMimixSyncCrashHandlingFulfillmentTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
     Properties:
-      ActionsEnabled: true
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      EvaluationPeriods: 1
-      MetricName: CPUUtilization
-      Namespace: "AWS/ECS"
-      Period: 300
-      Statistic: Average
-      Threshold: "60.0"
-      Unit: Percent
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Crash-Handling-Fulfillment-Task-Definition-'
+          - !Ref 'Environment'
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
+      ContainerDefinitions:
+        - Name: cp-mimix-sync-crash-handling-fulfillment-container
+          Essential: 'true'
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/CRASH_HANDLING_FULFILLMENT
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref 'Environment'
+            - Name: SYNC_TYPE
+              Value: FULFILLMENT
+            - Name: APPLICATION_MODE
+              Value: CRASH_HANDLING_MODE
 
-  ECSClusterScaleUpAlarm:
-    Type: AWS::CloudWatch::Alarm
+  CpMimixSyncCrashHandlingProductInfoTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
     Properties:
-      ActionsEnabled: 'true'
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      EvaluationPeriods: '1'
-      MetricName: MemoryReservation
-      Namespace: AWS/ECS
-      Period: '300'
-      Statistic: Average
-      Threshold: '70.0'
-      AlarmActions:
-        - !Ref 'ECSClusterScaleUpPolicy'
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref 'ECSCluster'
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Crash-Handling-ProductInfo-Task-Definition-'
+          - !Ref 'Environment'
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
+      ContainerDefinitions:
+        - Name: cp-mimix-sync-crash-handling-product-info-container
+          Essential: 'true'
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/CRASH_HANDLING_PRODUCT_INFO
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref 'Environment'
+            - Name: SYNC_TYPE
+              Value: PRODUCT_INFO
+            - Name: APPLICATION_MODE
+              Value: CRASH_HANDLING_MODE
 
-  ECSClusterScaleDownAlarm:
-    Type: AWS::CloudWatch::Alarm
+  CrashHandlingProductInfoService:
+    Type: AWS::ECS::Service
     Properties:
-      ActionsEnabled: 'true'
-      ComparisonOperator: LessThanOrEqualToThreshold
-      EvaluationPeriods: '1'
-      MetricName: MemoryReservation
-      Namespace: AWS/ECS
-      Period: '300'
-      Statistic: Average
-      Threshold: '50.0'
-      AlarmActions:
-        - !Ref 'ECSClusterScaleDownPolicy'
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref 'ECSCluster'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-ProductInfo-Ecs-Service'
+      Cluster: !Ref 'ECSCluster'
+      LaunchType: EC2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'CpMimixSyncCrashHandlingProductInfoTaskDefinition'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - 'cp-mimix-sync-crash-handling-product-info-ecs-service-'
+              - !Ref 'Environment'
+        - Key: Technical:ApplicationName
+          Value: !Ref 'ApplicationName'
+        - Key: Technical:ApplicationID
+          Value: !Ref 'ApplicationId'
+        - Key: Technical:PlatformOwner
+          Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
+        - Key: Approver
+          Value: !Ref 'Approver'
+        - Key: PO_Number
+          Value: !Ref 'PONumber'
+        - Key: Project_ID
+          Value: !Ref 'ProjectId'
 
-  ECSClusterScaleUpPolicy:
-    Type: AWS::AutoScaling::ScalingPolicy
+  CrashHandlingCustomerPricingService:
+    Type: AWS::ECS::Service
     Properties:
-      AdjustmentType: ChangeInCapacity
-      Cooldown: '60'
-      PolicyType: SimpleScaling
-      ScalingAdjustment: 1
-      AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-CustomerPricing-Ecs-Service'
+      Cluster: !Ref 'ECSCluster'
+      LaunchType: EC2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'CpMimixSyncCrashHandlingCustomerPricingTaskDefinition'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - 'cp-mimix-sync-crash-handling-customer-pricing-ecs-service-'
+              - !Ref 'Environment'
+        - Key: Technical:ApplicationName
+          Value: !Ref 'ApplicationName'
+        - Key: Technical:ApplicationID
+          Value: !Ref 'ApplicationId'
+        - Key: Technical:PlatformOwner
+          Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
+        - Key: Approver
+          Value: !Ref 'Approver'
+        - Key: PO_Number
+          Value: !Ref 'PONumber'
+        - Key: Project_ID
+          Value: !Ref 'ProjectId'
 
-  ECSClusterScaleDownPolicy:
-    Type: AWS::AutoScaling::ScalingPolicy
+  CrashHandlingFulfillmentService:
+    Type: AWS::ECS::Service
     Properties:
-      AdjustmentType: ChangeInCapacity
-      Cooldown: '60'
-      PolicyType: SimpleScaling
-      ScalingAdjustment: -1
-      AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
-
-  AWSServiceRoleForECSServiceAutoScaling:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ecs.application-autoscaling.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/aws-service-role/AWSApplicationAutoscalingECSServicePolicy
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-Fulfillment-Ecs-Service'
+      Cluster: !Ref 'ECSCluster'
+      LaunchType: EC2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'CpMimixSyncCrashHandlingFulfillmentTaskDefinition'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - 'cp-mimix-sync-crash-handling-fulfillment-ecs-service-'
+              - !Ref 'Environment'
+        - Key: Technical:ApplicationName
+          Value: !Ref 'ApplicationName'
+        - Key: Technical:ApplicationID
+          Value: !Ref 'ApplicationId'
+        - Key: Technical:PlatformOwner
+          Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'Component'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
+        - Key: Approver
+          Value: !Ref 'Approver'
+        - Key: PO_Number
+          Value: !Ref 'PONumber'
+        - Key: Project_ID
+          Value: !Ref 'ProjectId'
 
 Outputs:
   CustomerPricingTaskDefinition:
