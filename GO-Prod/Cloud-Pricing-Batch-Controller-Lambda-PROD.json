@@ -94,12 +94,29 @@
 		"CommonDBPassword" : {
 			"Type" : "String",
 			"Description" : "User password of the Common DB",
-			"Default": "TBD"
+			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="
 		},
 		"CommonDBURL" : {
 			"Type" : "String",
 			"Description" : "URL for Common DB",
 			"Default": "cpp01dbcluster.cluster-cvxmi1m5icyf.us-east-1.rds.amazonaws.com"
+		},
+		"AwsRegionIdentifier" : {
+			"Type" : "String",
+			"Description" : "Name of AWS Region",
+			"Default": "us-east-1"
+		},
+		"SnsTopicArn" : {
+			"Type" : "String",
+			"Description" : "SNS Topic ARN",
+			"Default": "arn:aws:sns:us-east-1:037295147636:CP-Notification-Service-Topic-PROD"
+		},
+		"SupportEmail": {
+			"Description": "Email distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "000-BT-PricingPlatform@Corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
 		},
 		"SplunkHECToken" : {
 			"Type" : "String",
@@ -154,7 +171,7 @@
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "villanueva.loi@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -190,13 +207,11 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"Sandbox",
 				"Development",
 				"Quality",
 				"Staging",
 				"Tuning",
 				"Execution",
-				"Training",
 				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
@@ -209,7 +224,6 @@
 				"DEV",
 				"QA",
 				"STG",
-				"SBX",
 				"EXE",
 				"PROD"
 			],
@@ -229,7 +243,7 @@
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,
-				"Timeout": 300,
+				"Timeout": 900,
 				"Role": { "Ref": "IAMRole" },
 				"VpcConfig": {
 					"SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
@@ -240,31 +254,37 @@
 					]
 				},
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["cp-lambda-batch-controller-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Lambda Batch Controller" }
+					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationSubName", "Value":{ "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } }
 				],
 				"Environment": {
 					"Variables": {
+						"AWS_REGION_IDENTIFIER": { "Ref" : "AwsRegionIdentifier" },
 						"COMMONDB_NAME": { "Ref" : "CommonDBName" },
 						"COMMONDB_USERNAME": { "Ref" : "CommonDBUserName" },
 						"COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
 						"ENVIRONMENT": { "Ref" : "Environment" },
+						"EnvironmentShort" : {"Ref" : "EnvironmentShort" },
 						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
+						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
+						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
 						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
 						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
 						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
 						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
-						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" },
-						"EnvironmentShort" : {"Ref" : "EnvironmentShort" }
+						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
 					}
 				}
 			}

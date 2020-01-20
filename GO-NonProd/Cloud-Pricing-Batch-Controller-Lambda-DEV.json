@@ -101,11 +101,6 @@
 			"Description" : "URL for Common DB",
 			"Default": "cpp01dbcluster-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
 		},
-		"OutputBucket" : {
-			"Type" : "String",
-			"Description" : "Name of S3 output bucket",
-			"Default": "sysco-us-east-1-prcp-nonprod-batch-output"
-		},
 		"SnsTopicArn" : {
 			"Type" : "String",
 			"Description" : "SNS Topic ARN",
@@ -254,14 +249,15 @@
 					]
 				},
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["cp-lambda-batch-controller-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Lambda Batch Controller" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
 					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
@@ -277,7 +273,7 @@
 						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
 						"ENVIRONMENT": { "Ref" : "Environment" },
 						"EnvironmentShort": { "Ref" : "EnvironmentShort" },
-						"OUTPUT_BUCKET": { "Ref" : "OutputBucket" },
+						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
 						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
 						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
 						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
@@ -304,12 +300,6 @@
 				"SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "BucketIn"}]]}
 			},
 			"DependsOn": ["LFunctionCP01", "BucketIn"]
-		},
-		"BucketOut" : {
-			"Type" : "AWS::S3::Bucket",
-			"Properties" : {
-				"BucketName" : { "Ref" : "S3BucketOut" }
-			}
 		}
 	}
 }

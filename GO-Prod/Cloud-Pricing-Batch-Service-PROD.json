@@ -29,6 +29,11 @@
             "AllowedPattern": "[\\x20-\\x7E]*",
             "ConstraintDescription": "Must contain only ASCII characters."
         },
+        "ApplicationRole": {
+            "Default": "Batch Compute Environment",
+            "Description": "The type of application stack",
+            "Type": "String"
+        },
         "Component": {
             "Description": "Component name",
             "Type": "String",
@@ -48,7 +53,7 @@
         "Owner": {
             "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
             "Type": "String",
-            "Default": "villanueva.loi@corp.sysco.com",
+            "Default": "krishan.senevirathne@sysco.com",
             "MinLength": "1",
             "MaxLength": "255"
         },
@@ -230,13 +235,11 @@
                     "Vcpus": 1,
                     "Memory": 1000,
                     "Privileged": true,
-                    "JobRoleArn": {
-                        "Ref": "AWSBatchJobRole"
-                    }
+                    "JobRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-IAM-ECS-Task-Role"
                 }
             }
         },
-        "JobQueue": {
+        "JobQueueLow": {
             "Type": "AWS::Batch::JobQueue",
             "Properties": {
                 "State": "ENABLED",
@@ -244,7 +247,33 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-High-Priority-Queue-",
+                            "CP-Batch-P25-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 25,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueueMedium": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P50-Priority-Queue-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -252,6 +281,32 @@
                     ]
                 },
                 "Priority": 50,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueueHigh": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-P75-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 75,
                 "ComputeEnvironmentOrder": [
                     {
                         "Order": 1,
@@ -281,11 +336,11 @@
                     ]
                 },
                 "ComputeResources": {
-                    "Type": "SPOT",
+                    "Type": "EC2",
                     "BidPercentage": 100,
                     "MinvCpus": 0,
                     "DesiredvCpus": 4,
-                    "MaxvCpus": 64,
+                    "MaxvCpus": 200,
                     "InstanceTypes": [
                         "optimal"
                     ],
@@ -316,21 +371,31 @@
                     ],
                     "Tags":
                     {
-                        "Application_Name": {
+                        "Technical:ApplicationName": {
                             "Ref": "ApplicationName"
                         }
                     ,
 
-                        "Application_ID": {
+                        "Technical:ApplicationID": {
                             "Ref": "ApplicationID"
                         }
                     ,
-
-                        "Owner": {
+                        "Technical:ApplicationRole": {
+                            "Ref": "ApplicationRole"
+                        }
+                    ,
+                        "Technical:ApplicationSubName": {
+                            "Ref": "Component"
+                        }
+                    ,
+                        "Technical:PlatformOwner": {
                             "Ref": "Owner"
                         }
                     ,
-
+                        "Name": {
+                            "Ref": "Component"
+                        }
+                    ,
                         "Approver": {
                             "Ref": "Approver"
                         }
@@ -341,7 +406,7 @@
                         }
                     ,
 
-                        "Environment": {
+                        "Technical:Environment": {
                             "Ref": "Environment"
                         }
                     ,
