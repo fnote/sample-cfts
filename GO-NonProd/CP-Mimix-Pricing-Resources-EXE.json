@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-MCP-EXE.json",
+	"Description": "AWS CloudFormation Template to create codeploy resources in EXE environment",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -46,10 +46,25 @@
 			"Type": "String",
 			"Default": "sg-014f39d2fd8370bf6"
 		},
+		"SGRDSMySQL": {
+			"Description": "SG-RDSMySQL",
+			"Type": "String",
+			"Default": "sg-039f822d40c446322"
+		},
 		"PemKey": {
 			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
 			"Type": "String",
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
+		},
+		"ClusterParameterGroup": {
+			"Description": "RDS Cluster Parameter Group",
+			"Type": "String",
+			"Default": "cp-poc-cluster"
+		},
+		"InstanceParameterGroup": {
+			"Description": "RDS Instance Parameter Group",
+			"Type": "String",
+			"Default": "cp-poc-rdsinstance-pg"
 		},
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
@@ -81,6 +96,24 @@
 			"AllowedPattern": "[\\x20-\\x7E]*",
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
+		"Component": {
+			"Description": "Component name",
+			"Type": "String",
+			"Default": "CP Mimix Sync",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationRole": {
+			"Description": "Application Role",
+			"Type": "String",
+			"Default": "Application Server",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
 		"Approver": {
 			"Description": "Person approving instance funding.  This should be Email address formatted",
 			"Type": "String",
@@ -106,24 +139,6 @@
 			"Description": "Project_ID - BT Project ID for this workload",
 			"Type": "String",
 			"Default": "BT.001176",
-			"MinLength": "1",
-			"MaxLength": "255",
-			"AllowedPattern": "[\\x20-\\x7E]*",
-			"ConstraintDescription": "Must contain only ASCII characters."
-		},
-		"Component": {
-			"Description": "Component name",
-			"Type": "String",
-			"Default": "CP Pricing Sync",
-			"MinLength": "1",
-			"MaxLength": "255",
-			"AllowedPattern": "[\\x20-\\x7E]*",
-			"ConstraintDescription": "Must contain only ASCII characters."
-		},
-		"ApplicationRole": {
-			"Description": "Application Role",
-			"Type": "String",
-			"Default": "Application Server",
 			"MinLength": "1",
 			"MaxLength": "255",
 			"AllowedPattern": "[\\x20-\\x7E]*",
@@ -168,8 +183,9 @@
 			"AllowedValues": [
 				"DEV",
 				"QA",
-				"STG",
 				"EXE",
+				"STG",
+				"TST",
 				"Production",
 				"Non-Production"
 			],
@@ -184,13 +200,14 @@
 				"QA",
 				"STG",
 				"EXE",
+				"TST",
 				"PROD"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		}
 	},
 	"Resources": {
-		"lx238cpmcp01e" : {
+		"lx238cpsyncmpra01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -204,7 +221,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpmcp01e" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncmpra01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -215,9 +232,9 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing Agreements Data" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Master Control Program" }
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
@@ -229,29 +246,29 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpmcp01e.na.sysco.net\n",
+					"hostname lx238cpsyncmpra01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpmcp01e.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncmpra01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -266,6 +283,10 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
@@ -281,152 +302,817 @@
 					"mkdir /settings\n",
 					"mkdir /settings/properties\n",
 					"mkdir /settings/logs\n",
-					"chown tomcat -R /settings\n",
-					"chgrp -R -c ec2-user /settings\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
 					"chmod -R -c 777 /settings\n",
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
 		},
-		"JobProcessorGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"lx238cpsyncmprc01e" : {
+			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c"],
-				"LaunchConfigurationName" : { "Ref" : "JobProcessorLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" } ],
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpjp01e", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
+					{ "Key" : "Name", "Value" : "lx238cpsyncmprc01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing Costs Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmprc01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmprc01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncmprm01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmprm01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing MasterData Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmprm01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmprm01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncmprr01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmprr01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing Rules Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmprr01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmprr01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"CPMimixPricingCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CP-Mimix-Pricing-Sync" }
+		},
+		"CPMimixPricingCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName": {"Ref":"CPMimixPricingCodeDeployApp"},
+				"Ec2TagFilters" : [ { "Key": "Name","Value":"lx238cpsyncmpr*e", "Type": "KEY_AND_VALUE"}],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Mimix-Pricing-Sync-", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+			}
+		},
+		"lx238cpsyncmpla01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmpla01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Platform Agreements Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmpla01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmpla01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncmplc01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmplc01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing Costs Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmplc01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmplc01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncmplm01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmplm01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing MasterData Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmplm01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmplm01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"lx238cpsyncmplr01e" : {
+			"Type" : "AWS::EC2::Instance",
+			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpsyncmplr01e" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Sync Pricing Rules Data" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+					"yum --security update --assumeyes\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"hostname lx238cpsyncmplr01e.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238cpsyncmplr01e.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"usermod -a -G aix jowe6212\n",
+					"usermod -a -G aix mrow7849\n",
+					"usermod -a -G aix lvil8747\n",
+					"usermod -a -G aix sshe7956\n",
+					"usermod -a -G aix lchi0638\n",
+					"usermod -a -G aix ksen0887\n",
+					"usermod -a -G aix ralw0871\n",
+					"usermod -a -G aix iasa0862\n",
+					"usermod -a -G aix cwic0864\n",
+					"usermod -a -G aix adis0892\n",
+					"usermod -a -G aix ngun0234\n",
+					"usermod -a -G aix gher1098\n",
+					"usermod -a -G aix gkar5861\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=MIMIX_PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Setting cronjobs for Tomcat\n",
+					"##############################################\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+
+					"# Start Tomcat\n",
+					"/usr/local/tomcat8/bin/startup.sh\n",
+
+					"####################################\n",
+					"# Create settings folder\n",
+					"####################################\n",
+					"mkdir /settings\n",
+					"mkdir /settings/properties\n",
+					"mkdir /settings/logs\n",
+					"mkdir /settings/output\n",
+					"chown svccp000 -R /settings\n",
+					"chgrp -R -c cloudpricing /settings\n",
+					"chmod -R -c 777 /settings\n",
+
+					"date > /home/ec2-user/stoptime\n"
+				]]}}
+			}
+		},
+		"CPMimixPlatformCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "CP-Mimix-Platform-Sync" }
+		},
+		"CPMimixPlatformCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName": {"Ref":"CPMimixPlatformCodeDeployApp"},
+				"Ec2TagFilters" : [ { "Key": "Name","Value":"lx238cpsyncmpl*e", "Type": "KEY_AND_VALUE"}],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Mimix-Platform-Sync-", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+			}
+		},
+		"CPP01MimixDBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPPDB_Common01e",
+				"DBClusterIdentifier" : "cpp01mimixdbcluster",
+				"DBClusterParameterGroupName" : { "Ref" : "ClusterParameterGroup" },
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"DBSubnetGroupName" : "rds-subnet-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01MimixCluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Aurora Database" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": "Database Server" }
 				]
-			},
-			"UpdatePolicy" : {
-				"AutoScalingScheduledAction" : {
-					"IgnoreUnmodifiedGroupSizeProperties" : "true"
-				},
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT1M",
-					"WaitOnResourceSignals" : "false"
-				}
 			}
 		},
-		"JobProcessorLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpjp01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpjp01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /opt/cloudpricing\n",
-					"chown svccp000 -R /settings\n",
-					"chown svccp000 -R /opt/cloudpricing\n",
-					"chmod -R -c 777 /settings\n",
-					"chmod -R -c 777 /opt/cloudpricing\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cpsyncplm01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
-				],
+		"DB1Primary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "cpp01mimixexe01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPP01MimixDBCluster" },
+				"DBParameterGroupName" : { "Ref" : "InstanceParameterGroup" },
+				"CACertificateIdentifier": "rds-ca-2019",
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplm01e" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01MimixDatabase01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -437,105 +1123,28 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Aurora Database" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Platform Master Data" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncplm01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplm01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
-					"# Setting a cronjob for restart the instance daily\n",
-					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
+					{ "Key" : "Technical:ApplicationRole", "Value": "Database Server" }
+				]
 			}
 		},
-		"lx238cpsyncpla01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
+		"DB1Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB1Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "cpp01mimixexe02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPP01MimixDBCluster" },
+				"DBParameterGroupName" : { "Ref" : "InstanceParameterGroup" },
+				"CACertificateIdentifier": "rds-ca-2019",
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpla01e" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01MimixDatabase02-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -546,105 +1155,27 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Aurora Database" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Platform Agreements" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncpla01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpla01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
-					"# Setting a cronjob for restart the instance daily\n",
-					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
+					{ "Key" : "Technical:ApplicationRole", "Value": "Database Server" }
+				]
 			}
 		},
-		"lx238cpsyncplr01e" : {
-			"Type" : "AWS::EC2::Instance",
+		"CPE01MimixDBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
 			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
+				"DatabaseName" : "CPPDB_Common01e",
+				"DBClusterIdentifier" : "cpe01mimixdbcluster",
+				"DBClusterParameterGroupName" : { "Ref" : "ClusterParameterGroup" },
+				"Engine" : "aurora",
+				"MasterUsername" : "svccp000",
+				"MasterUserPassword" : "Cpaws000",
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplr01e" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01MimixCluster-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -655,105 +1186,27 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Aurora Database" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Platform Rules" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncplr01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplr01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
-					"# Setting a cronjob for restart the instance daily\n",
-					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
+					{ "Key" : "Technical:ApplicationRole", "Value": "Database Server" }
+				]
 			}
 		},
-		"lx238cpsyncplc01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
+		"DBPPrimary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "cpe01mimixexe01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE01MimixDBCluster" },
+				"DBParameterGroupName" : { "Ref" : "InstanceParameterGroup" },
+				"CACertificateIdentifier": "rds-ca-2019",
+				"DBInstanceClass" : "db.r4.2xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplc01e" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01MimixDatabase01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -764,560 +1217,10 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Component", "Value": "Aurora Database" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Platform Costs" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncplc01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplc01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
-					"# Setting a cronjob for restart the instance daily\n",
-					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cpsyncprm01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprm01e" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Pricing Master Data" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncprm01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprm01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cpsyncpra01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpra01e" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Pricing Agreements" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncpra01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpra01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cpsyncprr01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprr01e" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Pricing Rules" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncprr01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprr01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"lx238cpsyncprc01e" : {
-			"Type" : "AWS::EC2::Instance",
-			"Properties" : {
-				"AvailabilityZone" : "us-east-1c",
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"SubnetId": { "Ref": "PvtSNc" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprc01e" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
-					{ "Key" : "Component", "Value": "Sync Pricing Costs" }
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
-
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname lx238cpsyncprc01e.na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprc01e.na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
-
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"mkdir /settings/output\n",
-					"chown svccp000 -R /settings\n",
-					"chgrp -R -c cloudpricing /settings\n",
-					"chmod -R -c 777 /settings\n",
-
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
-			}
-		},
-		"CPMCPCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-MCP" }
-		},
-		"CPJobProcessorCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Job-Processor" }
-		},
-		"CPPlatformSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Platform-Sync" }
-		},
-		"CPPricingSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Pricing-Sync" }
-		},
-		"CPMCPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPMCPCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPJPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPJobProcessorCodeDeployApp"},
-				"AutoScalingGroups" : [ { "Ref" : "JobProcessorGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPlatformDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPlatformSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPricingDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPricingSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+					{ "Key" : "Technical:ApplicationRole", "Value": "Database Server" }
+				]
 			}
 		}
 	}

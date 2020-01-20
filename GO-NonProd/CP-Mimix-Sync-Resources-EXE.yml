@@ -63,7 +63,7 @@ Parameters:
   Owner:
     Description: Name of application owner
     Type: String
-    Default: krishan.senevirathne@corp.sysco.com
+    Default: krishan.senevirathne@sysco.com
     MinLength: '1'
     MaxLength: '255'
   Environment:
