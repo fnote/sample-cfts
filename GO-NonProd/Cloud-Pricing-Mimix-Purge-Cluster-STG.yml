@@ -32,7 +32,7 @@ Parameters:
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
-    Default: krishan.senevirathne@corp.sysco.com
+    Default: krishan.senevirathne@sysco.com
   Approver:
     Description: Person approving instance funding.  This should be Email address formatted
     Type: String
