@@ -122,7 +122,7 @@ Parameters:
   InstanceType:
     Description: Application EC2 instance type
     Type: String
-    Default: c5.9xlarge
+    Default: c5.4xlarge
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
@@ -164,13 +164,13 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
-    Default: '4096'
+    Default: '2048'
     MinValue: '256'
     MaxValue: '4096'
   MemoryReserved:
     Description: The soft limit (in MiB) of memory to reserve for the container.
     Type: Number
-    Default: '7168'
+    Default: '3500'
     MinValue: '256'
     MaxValue: '8192'
   RetentionTime:
