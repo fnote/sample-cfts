@@ -392,6 +392,12 @@
                             "Ref": "Owner"
                         }
                     ,
+
+                        "Technical:Environment": {
+                            "Ref": "Environment"
+                        }
+                    ,
+
                         "Name": {
                             "Ref": "Component"
                         }
@@ -403,11 +409,6 @@
 
                         "PO_Number": {
                             "Ref": "PONumber"
-                        }
-                    ,
-
-                        "Technical:Environment": {
-                            "Ref": "Environment"
                         }
                     ,
 

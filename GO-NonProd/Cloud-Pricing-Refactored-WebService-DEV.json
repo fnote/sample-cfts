@@ -206,15 +206,15 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationRole", "Value": "Auto Scaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value": "Auto Scaling Group", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Component", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" }
 				]
 			},
@@ -393,15 +393,15 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
+					{ "Key" : "Technical:ApplicationSubName ", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Elastic Load Balancer" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Technical:ApplicationSubName ", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS ALB" }
 				]
 			}
@@ -458,15 +458,15 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Target Group" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS Target" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS Target" },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS Target" }
 				]
 			}

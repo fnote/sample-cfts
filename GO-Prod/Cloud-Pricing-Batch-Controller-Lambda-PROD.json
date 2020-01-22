@@ -258,16 +258,16 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value":{ "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationSubName", "Value":{ "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } }
+					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}}
 				],
 				"Environment": {
 					"Variables": {
