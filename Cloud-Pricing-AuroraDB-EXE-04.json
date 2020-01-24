@@ -64,14 +64,14 @@
 		"Approver": {
 			"Description": "Name of application approver",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Name of application owner",
 			"Type": "String",
-			"Default": "Owen.James@corp.sysco.com Rowland.Mike@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},

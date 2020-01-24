@@ -169,13 +169,12 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"TST",
-				"EXE",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},

@@ -157,13 +157,11 @@
       "Type": "String",
       "Default": "Production",
       "AllowedValues": [
-        "Sandbox",
         "Development",
         "Quality",
         "Staging",
         "Tuning",
         "Execution",
-        "Training",
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
