@@ -260,8 +260,8 @@
 					"##############################################\n",
 					"# Set System Environment\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=EXE'\" > /etc/profile.d/cpsettings.sh\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=EXE'\" > /etc/environment\n",
 
 					"##############################################\n",
 					"# Setting cronjobs for CodeDeploy Install\n",
