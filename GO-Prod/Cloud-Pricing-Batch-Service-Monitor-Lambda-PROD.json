@@ -114,7 +114,7 @@
     "Owner": {
       "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
       "Type": "String",
-      "Default": "villanueva.loi@corp.sysco.com",
+      "Default": "krishan.senevirathne@sysco.com",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -144,6 +144,13 @@
       "Description": "Platform",
       "Type": "String",
       "Default": "Cloud Pricing V4"
+    },
+    "SupportEmail": {
+      "Description": "Email distribution list for technical product/platform team contact",
+      "Type": "String",
+      "Default": "000-BT-PricingPlatform@Corp.sysco.com",
+      "MinLength": "1",
+      "MaxLength": "255"
     },
     "Environment": {
       "Description": "Environment for application",
@@ -205,12 +212,15 @@
         },
         "Tags" : [
           { "Key" : "Name", "Value" : { "Fn::Join" : ["", ["cp-batch-service-monitor-", { "Ref" : "EnvironmentShort" }]]}},
-          { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-          { "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+          { "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+          { "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+          { "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+          { "Key" : "Technical:ApplicationSubName", "Value": "Lambda Batch Service Monitor" },
+          { "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
+          { "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
           { "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
           { "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-          { "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
           { "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
           { "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
           { "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
