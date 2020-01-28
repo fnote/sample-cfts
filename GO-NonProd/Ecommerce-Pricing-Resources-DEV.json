@@ -176,7 +176,7 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "Execution",
+			"Default": "Development",
 			"AllowedValues": [
 				"Development",
 				"Quality",
@@ -190,7 +190,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -201,6 +201,7 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		}
+
 	},
 	"Resources": {
 		"WebServiceGroup" : {
@@ -222,8 +223,8 @@
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
@@ -265,10 +266,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
+					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
+					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)d.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -469,7 +470,7 @@
 		"S3BucketeComm": {
 			"Type": "AWS::S3::Bucket",
 			"Properties": {
-				"BucketName": "sysco-us-east-1-prcp-nonprod-ecomm-pricing",
+				"BucketName": "sysco-us-east-1-prcp-dev-ecomm-pricing",
 				"LifecycleConfiguration": {
 					"Rules": [{
 						"Id" : "Retention365Days",
@@ -505,95 +506,6 @@
 				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
 				"DeploymentGroupName" : { "Fn::Join" : ["", ["Ecomm_Service_", { "Ref" : "EnvironmentShort" }]]},
 				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"ECOMMDBCluster" : {
-			"Type" : "AWS::RDS::DBCluster",
-			"DeletionPolicy" : "Snapshot",
-			"Properties" : {
-				"DatabaseName" : "ECOMMDB_Common01",
-				"DBClusterIdentifier" : "ecomm01dbcluster",
-				"Engine" : "aurora",
-				"MasterUsername" : { "Ref" : "DBUser"},
-				"MasterUserPassword" : { "Ref" : "DBPassword"},
-				"Port" : "3306",
-				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMMDB-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
-			}
-		},
-		"DB0Primary01" : {
-			"Type" : "AWS::RDS::DBInstance",
-			"Properties" :  {
-				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "01" ]]},
-				"AllowMajorVersionUpgrade" : "true",
-				"AutoMinorVersionUpgrade" : "true",
-				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
-				"Engine" : "aurora",
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
-			}
-		},
-		"DB0Primary02" : {
-			"Type" : "AWS::RDS::DBInstance",
-			"DependsOn": "DB0Primary01",
-			"Properties" :  {
-				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "02" ]]},
-				"AllowMajorVersionUpgrade" : "true",
-				"AutoMinorVersionUpgrade" : "true",
-				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
-				"Engine" : "aurora",
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
 			}
 		}
 	}
