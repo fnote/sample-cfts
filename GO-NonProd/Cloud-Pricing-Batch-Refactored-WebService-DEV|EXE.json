@@ -157,14 +157,14 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "DEV",
+			"Default": "Development",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"EXE",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
@@ -408,7 +408,7 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Elastic Load Balancer" },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },

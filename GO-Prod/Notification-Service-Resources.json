@@ -39,7 +39,7 @@
         "Owner": {
             "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
             "Type": "String",
-            "Default": "villanueva.loi@corp.sysco.com",
+            "Default": "krishan.senevirathne@sysco.com",
             "MinLength": "1",
             "MaxLength": "255"
         },
@@ -75,13 +75,14 @@
         "Environment": {
             "Description": "Name of logical build environment designated for service.",
             "Type": "String",
-            "Default": "Non-Production",
+            "Default": "Production",
             "AllowedValues": [
-                "DEV",
-                "QA",
-                "STG",
-                "Production",
-                "Non-Production"
+                "Development",
+                "Quality",
+                "Staging",
+                "Tuning",
+                "Execution",
+                "Production"
             ],
             "ConstraintDescription": "Must be a valid environment."
         },
@@ -197,21 +198,41 @@
                         }
                     },
                     {
-                        "Key": "Application_Name",
+                        "Key": "Technical:ApplicationName",
                         "Value": {
                             "Ref": "ApplicationName"
                         }
                     },
                     {
-                        "Key": "Application_ID",
+                        "Key": "Technical:ApplicationID",
                         "Value": {
                             "Ref": "ApplicationID"
                         }
                     },
                     {
-                        "Key": "Owner",
+                        "Key": "Technical:PlatformOwner",
                         "Value": {
                             "Ref": "Owner"
+                        }
+                    },
+                    {
+                        "Key": "Technical:Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    },
+                    {
+                        "Key": "Technical:ApplicationSubName",
+                        "Value": "Notification Service"
+                    },
+                    {
+                        "Key": "Technical:ApplicationRole",
+                        "Value": "SQS"
+                    },
+                    {
+                        "Key": "Support_Email",
+                        "Value": {
+                            "Ref": "SupportEmail"
                         }
                     },
                     {
@@ -368,21 +389,41 @@
                         }
                     },
                     {
-                        "Key": "Application_Name",
+                        "Key": "Technical:ApplicationName",
                         "Value": {
                             "Ref": "ApplicationName"
                         }
                     },
                     {
-                        "Key": "Application_ID",
+                        "Key": "Technical:ApplicationID",
                         "Value": {
                             "Ref": "ApplicationID"
                         }
                     },
                     {
-                        "Key": "Owner",
+                        "Key": "Technical:PlatformOwner",
                         "Value": {
                             "Ref": "Owner"
+                        }
+                    },
+                    {
+                        "Key": "Technical:Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    },
+                    {
+                        "Key": "Technical:ApplicationSubName",
+                        "Value": "Notification Service"
+                    },
+                    {
+                        "Key": "Technical:ApplicationRole",
+                        "Value": "Database Table"
+                    },
+                    {
+                        "Key": "Support_Email",
+                        "Value": {
+                            "Ref": "SupportEmail"
                         }
                     },
                     {

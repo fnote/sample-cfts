@@ -4,14 +4,14 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: PROD
+    Default: Production
     AllowedValues:
-      - DEV
-      - EXE
-      - QA
-      - STG
-      - PROD
-      - NONPROD
+      - Development
+      - Execution
+      - Quality
+      - Staging
+      - Tuning
+      - Production
     ConstraintDescription: Must be a valid environment
   PONumber:
     Description: PO Number for billing

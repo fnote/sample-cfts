@@ -69,15 +69,19 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: PROD
+    Default: Production
     AllowedValues:
-      - DEV
-      - EXE
-      - QA
-      - STG
-      - PROD
-      - NONPROD
+      - Development
+      - Execution
+      - Quality
+      - Staging
+      - Tuning
+      - Production
     ConstraintDescription: Must be a valid environment.
+  EnvironmentShort:
+    Description: Environment for application
+    Type: String
+    Default: PROD
   ProjectId:
     Description: Project ID
     Type: String
@@ -191,7 +195,7 @@ Resources:
       ClusterName: !Join
         - ''
         - - 'CP-Mimix-Sync-Ecs-Cluster-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
 
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
@@ -205,7 +209,7 @@ Resources:
       AutoScalingGroupName: !Join
         - ''
         - - 'CP-Mimix-Sync-Auto-Scaling-Group-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       AvailabilityZones:
         - us-east-1a
         - us-east-1b
@@ -224,7 +228,7 @@ Resources:
           Value: !Join
             - ''
             - - 'CP-Mimix-Sync-Auto-Scaling-Server-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
           PropagateAtLaunch: 'true'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
@@ -288,7 +292,7 @@ Resources:
       LogGroupName: !Join
         - ''
         - - '/aws/ecs/CP-Mimix-Sync-Task'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       RetentionInDays: !Ref 'RetentionTime'
 
   CpMimixSyncCustomerPricingTaskDefinition:
@@ -297,7 +301,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Customer-Pricing-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -315,7 +319,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: CUSTOMER_PRICING
             - Name: APPLICATION_MODE
@@ -327,7 +331,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Fulfillment-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -345,7 +349,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: FULFILLMENT
             - Name: APPLICATION_MODE
@@ -357,7 +361,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-ProductInfo-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -375,7 +379,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: PRODUCT_INFO
             - Name: APPLICATION_MODE
@@ -397,7 +401,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-product-info-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID
@@ -437,7 +441,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-customer-pricing-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID
@@ -477,7 +481,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-fulfillment-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID
@@ -507,7 +511,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Crash-Handling-Customer-Pricing-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -525,7 +529,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: CUSTOMER_PRICING
             - Name: APPLICATION_MODE
@@ -537,7 +541,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Crash-Handling-Fulfillment-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -555,7 +559,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: FULFILLMENT
             - Name: APPLICATION_MODE
@@ -567,7 +571,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Crash-Handling-ProductInfo-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -585,7 +589,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref 'Environment'
+              Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: PRODUCT_INFO
             - Name: APPLICATION_MODE
@@ -607,7 +611,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-crash-handling-product-info-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID
@@ -647,7 +651,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-crash-handling-customer-pricing-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID
@@ -687,7 +691,7 @@ Resources:
           Value: !Join
             - ''
             - - 'cp-mimix-sync-crash-handling-fulfillment-ecs-service-'
-              - !Ref 'Environment'
+              - !Ref 'EnvironmentShort'
         - Key: Technical:ApplicationName
           Value: !Ref 'ApplicationName'
         - Key: Technical:ApplicationID

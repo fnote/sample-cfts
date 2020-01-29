@@ -112,14 +112,14 @@
     "Approver": {
       "Description": "Name of application approver",
       "Type": "String",
-      "Default": "Thibodeaux.Paula@corp.sysco.com",
+      "Default": "villanueva.loi@corp.sysco.com",
       "MinLength": "1",
       "MaxLength": "255"
     },
     "Owner": {
       "Description": "Name of application owner",
       "Type": "String",
-      "Default": "Owen.James@corp.sysco.com Krishan.Senevirathne@sysco.com",
+      "Default": "krishan.senevirathne@sysco.com",
       "MinLength": "1",
       "MaxLength": "255"
     },
@@ -142,13 +142,11 @@
       "Type": "String",
       "Default": "Production",
       "AllowedValues": [
-        "Sandbox",
         "Development",
         "Quality",
         "Staging",
         "Tuning",
         "Execution",
-        "Training",
         "Production"
       ],
       "ConstraintDescription": "Must be a valid environment."
@@ -179,12 +177,13 @@
         },
         "Tags" : [
           { "Key" : "Name", "Value" : "cp-lambda-file-forwarder" },
-          { "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-          { "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
-          { "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+          { "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+          { "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+          { "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+          { "Key" : "Technical:ApplicationSubName", "Value": "Lambda File forwarder" },
           { "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
           { "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-          { "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
           { "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
           { "Key" : "2WTAGGER", "Value" : "team_managed" },
           { "Key" : "Platform", "Value" : { "Ref" : "Platform" } },

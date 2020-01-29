@@ -4,15 +4,19 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: EXE
+    Default: Execution
     AllowedValues:
-      - DEV
-      - EXE
-      - QA
-      - STG
-      - PROD
-      - NONPROD
+      - Development
+      - Execution
+      - Quality
+      - Staging
+      - Tuning
+      - Production
     ConstraintDescription: Must be a valid environment.
+  EnvironmentShort:
+    Description: Environment for application
+    Type: String
+    Default: EXE
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
@@ -55,7 +59,7 @@ Resources:
       ClusterName: !Join
         - ''
         - - 'CP-Mimix-Sync-Daily-Purge-Cluster-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -63,7 +67,7 @@ Resources:
       LogGroupName: !Join
         - ''
         - - '/aws/ecs/CP-Mimix-Sync-Daily-Purge'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       RetentionInDays: !Ref RetentionTime
 
   MimixDailyPurgeSync001:
@@ -1405,7 +1409,7 @@ Resources:
       Family: !Join
         - ''
         - - 'CP-Mimix-Sync-Daily-Purge-Task-Definition-'
-          - !Ref 'Environment'
+          - !Ref 'EnvironmentShort'
       ExecutionRoleArn: !Ref ExecutionRole
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
@@ -1423,7 +1427,7 @@ Resources:
               awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: !Ref Environment
+              Value: !Ref EnvironmentShort
 Outputs:
   SyncDailyPurgeTaskDefinition:
     Description: The Cp MimixSync purge sync task definition ARN

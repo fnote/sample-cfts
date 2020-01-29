@@ -174,15 +174,14 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "PROD",
+			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"EXE",
-				"STG",
-				"TST",
-				"PROD",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},

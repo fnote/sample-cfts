@@ -67,14 +67,14 @@
 		"Approver": {
 			"Description": "Person approving instance funding.  This should be Email address formatted",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "Owen.James@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -117,12 +117,12 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"TST",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
@@ -155,12 +155,12 @@
 				"VpcSecurityGroupIds" : [{ "Ref" : "SGDefault" }],
 				"Tags" : [
 					{ "Key" : "Name", "Value": "Cloud Pricing eComm MemCached" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },

@@ -159,12 +159,12 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"EXE",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
@@ -393,7 +393,7 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Elastic Load Balancer" },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },

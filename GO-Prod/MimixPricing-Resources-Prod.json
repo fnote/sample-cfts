@@ -125,7 +125,7 @@
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "villanueva.loi@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -182,12 +182,12 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"EXE",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
