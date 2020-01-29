@@ -175,7 +175,7 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
-    Default: '512'
+    Default: '1024'
     MinValue: '256'
     MaxValue: '4096'
   MemoryReserved:
