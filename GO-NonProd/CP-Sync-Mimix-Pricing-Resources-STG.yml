@@ -69,7 +69,7 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Execution
+    Default: Tuning
     AllowedValues:
       - Development
       - Execution
@@ -81,7 +81,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: EXE
+    Default: STG
     AllowedValues:
       - DEV
       - EXE
