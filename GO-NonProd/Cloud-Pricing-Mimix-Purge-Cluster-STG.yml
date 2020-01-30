@@ -1270,7 +1270,7 @@ Resources:
   MimixDailyPurgeSync195:
     Type: AWS::Events::Rule
     Properties:
-      Description: "Mimix Daily Purge Sync for 195BatchServiceRoleBatchServiceRole"
+      Description: "Mimix Daily Purge Sync for 195"
       Name: "Mimix-Daily-Purge-Sync-STG-195-Trigger"
       State: ENABLED
       ScheduleExpression: 'cron(30 07 * * ? *)'
