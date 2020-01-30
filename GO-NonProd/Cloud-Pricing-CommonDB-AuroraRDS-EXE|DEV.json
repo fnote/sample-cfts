@@ -156,12 +156,12 @@
 		}
 	},
 	"Resources": {
-		"CPP02DBCluster" : {
+		"CPC01DBCluster" : {
 			"Type" : "AWS::RDS::DBCluster",
 			"DeletionPolicy" : "Snapshot",
 			"Properties" : {
 				"DatabaseName" : "CPPDB_Common01e",
-				"DBClusterIdentifier" : "cpp02dbcluster",
+				"DBClusterIdentifier" : "cpc01dbcluster",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
@@ -169,7 +169,7 @@
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP02-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPC01-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -187,17 +187,17 @@
 		"DB0Primary01" : {
 			"Type" : "AWS::RDS::DBInstance",
 			"Properties" :  {
-				"DBInstanceIdentifier" : "cpp02exe01",
+				"DBInstanceIdentifier" : "cpc01exe01",
 				"AllowMajorVersionUpgrade" : "true",
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "CPP02DBCluster" },
+				"DBClusterIdentifier" : { "Ref" : "CPC01DBCluster" },
 				"DBInstanceClass" : "db.r5.large",
 				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPC01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
@@ -217,7 +217,7 @@
 	"Outputs" : {
 		"dbUrl00" : {
 			"Description" : "Endpoint for Common DB",
-			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPP02DBCluster", "Endpoint.Address" ]}]] }
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPC01DBCluster", "Endpoint.Address" ]}]] }
 		}
 	}
 }
