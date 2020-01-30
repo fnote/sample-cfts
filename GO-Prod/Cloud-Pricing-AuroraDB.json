@@ -172,7 +172,6 @@
 			"Properties" : {
 				"DatabaseName" : "CPPDB_Common01",
 				"DBClusterIdentifier" : "cpp01dbcluster",
-				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
@@ -259,7 +258,6 @@
 			"Properties" : {
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe01dbcluster",
-				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
@@ -348,7 +346,6 @@
 			"Properties" : {
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe02dbcluster",
-				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
@@ -438,7 +435,6 @@
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe03dbcluster",
 				"Engine" : "aurora",
-				"CACertificateIdentifier": "rds-ca-2019",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
 				"Port" : "3306",
@@ -526,7 +522,6 @@
 			"Properties" : {
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe04dbcluster",
-				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",
 				"MasterUserPassword" : "Cpaws000",
