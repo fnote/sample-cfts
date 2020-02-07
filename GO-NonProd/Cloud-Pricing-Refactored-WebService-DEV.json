@@ -397,7 +397,7 @@
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
-					{ "Key" : "Technical:ApplicationSubName ", "Value": "Cloud Pricing Refactored WS ALB" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
