@@ -383,14 +383,14 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CP-Batch-Refactored-WS-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 2 minutes or 2-1 minute periods",
+				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
 				"Threshold" : "30",
 				"Period" : "60",
-				"EvaluationPeriods" : "2",
+				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
 			}
 		},
