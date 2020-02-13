@@ -208,7 +208,7 @@
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationRole", "Value": "Auto Scaling Group", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName ", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
