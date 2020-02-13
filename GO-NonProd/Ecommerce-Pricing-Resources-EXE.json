@@ -284,6 +284,12 @@
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
 					"# Set System Environment\n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
