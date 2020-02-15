@@ -262,7 +262,7 @@
 					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 					"mkdir -p /usr/local/tomcat\n",
-					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar -C /usr/local/tomcat --strip-components=1\n",
 					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
