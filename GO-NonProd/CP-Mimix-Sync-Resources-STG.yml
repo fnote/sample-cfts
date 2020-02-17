@@ -126,7 +126,7 @@ Parameters:
   InstanceType:
     Description: Application EC2 instance type
     Type: String
-    Default: c5.4xlarge
+    Default: t3.2xlarge
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
@@ -138,15 +138,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '3'
+    Default: '6'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '3'
+    Default: '6'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '3'
+    Default: '6'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -174,7 +174,7 @@ Parameters:
   MemoryReserved:
     Description: The soft limit (in MiB) of memory to reserve for the container.
     Type: Number
-    Default: '3500'
+    Default: '7168'
     MinValue: '256'
     MaxValue: '8192'
   RetentionTime:

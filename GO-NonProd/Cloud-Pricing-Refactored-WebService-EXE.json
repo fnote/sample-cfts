@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-0268b24f6a716130c",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -208,7 +208,7 @@
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationRole", "Value": "Auto Scaling Group", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName ", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
@@ -243,10 +243,7 @@
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
@@ -261,7 +258,6 @@
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
@@ -271,9 +267,13 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Sithija Thewahettige\" sthe3935\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-					"useradd -m -g aix -c \"Malshan Wanigasekara\" mwan5534\n",
+
+					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment \n",
@@ -282,46 +282,53 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
 					"##############################################\n",
-					"# Setting cronjobs and Security Updates\n",
+					"# Install Dependencies.\n",
+					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes;\n' > /etc/cron.d/dotnet\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"chown tomcat -R /settings\n",
-					"chgrp -R -c ec2-user /settings\n",
-					"chmod -R -c 777 /settings\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
+
+					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
+					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
-					"# Splunk - Clear Settings\n",
+					"# Splunk - Configuration\n",
 					"##############################################\n",
-					"/opt/splunkforwarder/bin/splunk stop\n",
-					"sleep 10\n",
+					"SPLUNK_PASSWORD=$(aws --region=us-east-1 ssm get-parameters --names \"/SPLUNK/FORWARDER/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
+
+					"cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
+					"[user_info]\n",
+					"USERNAME = admin\n",
+					"PASSWORD = $SPLUNK_PASSWORD\n",
+					"EOF\n",
+
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk start\n",
-
-					"service awslogs start\n",
-					"chkconfig awslogs on\n",
-
-					"date > /home/ec2-user/stoptime\n",
+					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
+					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
+					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
+					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
-					"# CloudWatch Installaion\n",
+					"# CloudWatch Configuration\n",
 					"##############################################\n",
-
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/EXE/CLOUDWATCH -s\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
 					"####################################\n",
-					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.175.270.sh \"https://10.168.143.75/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=1I4uT41-TJS9B8OhbR23v&arch=x86&amp&flavor=default\"\n",
-					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.175.270.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.175.270.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-perf-", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n"
+					"wget -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
+					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-perf-", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n",
+
+					"date > /home/ec2-user/stoptime"
 				]]}}
 			}
 		},
@@ -420,6 +427,35 @@
 				]
 			}
 		},
+		"LoadBalancerListenerHTTPHealthCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "redirect",
+						"RedirectConfig": {
+							"Host" : "#{host}",
+							"Path" : "/support/healthcheck",
+							"Port" : "#{port}",
+							"Protocol" : "#{protocol}",
+							"StatusCode" : "HTTP_301"
+						}
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/pricerequest/healthcheck"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 1
+			}
+		},
 		"LoadBalancerListenerHTTPS": {
 			"Type": "AWS::ElasticLoadBalancingV2::Listener",
 			"Properties": {
@@ -439,6 +475,35 @@
 				]
 			}
 		},
+                "LoadBalancerListenerHTTPSHealthCheckRule": {
+                        "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+                        "Properties": {
+                                "Actions": [
+                                        {
+                                                "Type": "redirect",
+                                                "RedirectConfig": {
+                                                        "Host" : "#{host}",
+                                                        "Path" : "/support/healthcheck",
+                                                        "Port" : "#{port}",
+                                                        "Protocol" : "#{protocol}",
+                                                        "StatusCode" : "HTTP_301"
+                                                }
+                                        }
+                                ],
+                                "Conditions": [
+                                        {
+                                                "Field": "path-pattern",
+                                                "PathPatternConfig": {
+                                                        "Values": [
+                                                                "/pricerequest/healthcheck"
+                                                        ]
+                                                }
+                                        }
+                                ],
+                                "ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+                                "Priority": 1
+                        }
+                },
 		"TargetGroup": {
 			"Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
 			"Properties": {
