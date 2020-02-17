@@ -91,21 +91,21 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   CPConfidentialSubnetA:
-    Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
+    Description: 'Private PRCP-PROD Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: 'AWS::EC2::Subnet::Id'
     Default: subnet-03f5516cc0d29f5ad
     MinLength: '1'
     MaxLength: '255'
     ConstraintDescription: Must be a valid Private Subnet.
   CPConfidentialSubnetB:
-    Description: 'Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
+    Description: 'Private PRCP-PROD Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
     Type: 'AWS::EC2::Subnet::Id'
     Default: subnet-094d9ade488a4f20b
     MinLength: '1'
     MaxLength: '255'
     ConstraintDescription: Must be a valid Private Subnet.
   CPConfidentialSubnetC:
-    Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
+    Description: 'Private PRCP-PROD Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
     Type: 'AWS::EC2::Subnet::Id'
     Default: subnet-0f279e0609eb542b2
     MinLength: '1'

@@ -275,7 +275,6 @@
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
@@ -285,9 +284,7 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Sithija Thewahettige\" sthe3935\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-					"useradd -m -g aix -c \"Malshan Wanigasekara\" mwan5534\n",
 
 					"##############################################\n",
 					"# Set System Environment \n",
