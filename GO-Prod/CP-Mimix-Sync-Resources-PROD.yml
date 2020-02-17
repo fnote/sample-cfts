@@ -126,7 +126,7 @@ Parameters:
   InstanceType:
     Description: Application EC2 instance type
     Type: String
-    Default: c5.9xlarge
+    Default: t3.2xlarge
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
@@ -138,15 +138,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '3'
+    Default: '1'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '3'
+    Default: '1'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '3'
+    Default: '1'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -160,15 +160,15 @@ Parameters:
   MimixInstanceRole:
     Description: ARN of role attached to Mimix Purge Sync Servers.
     Type: String
-    Default: arn:aws:iam::130227353653:role/Cloud-Pricing-Mimix-Instance-Profile
+    Default: arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
-    Default: TBD
+    Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
-    Default: '4096'
+    Default: '2048'
     MinValue: '256'
     MaxValue: '4096'
   MemoryReserved:
