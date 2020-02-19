@@ -276,6 +276,12 @@
 					"useradd -m -g aix -c \"Malshan Wanigasekara\" mwan5534\n",
 
 					"##############################################\n",
+					"# Increase open file limits\n",
+					"##############################################\n",
+					"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
+
+					"##############################################\n",
 					"# Set System Environment \n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
