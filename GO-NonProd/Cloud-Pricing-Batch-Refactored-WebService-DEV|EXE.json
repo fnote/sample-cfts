@@ -313,7 +313,7 @@
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, code deploy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum update\n",
 					"cd /tmp\n",
