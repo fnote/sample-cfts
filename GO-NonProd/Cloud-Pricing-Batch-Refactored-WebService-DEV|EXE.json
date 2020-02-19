@@ -368,14 +368,14 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CP-Batch-Refactored-WS-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 2 minutes or 2-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
 				"Threshold" : "50",
 				"Period" : "60",
-				"EvaluationPeriods" : "3",
+				"EvaluationPeriods" : "2",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
 			}
 		},
@@ -404,7 +404,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "1"
+				"ScalingAdjustment" : "2"
 			}
 		},
 		"ScaleDownPolicy" : {
