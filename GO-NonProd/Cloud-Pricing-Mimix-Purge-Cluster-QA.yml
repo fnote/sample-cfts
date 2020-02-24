@@ -120,7 +120,7 @@ Parameters:
   CommonAMI:
     Description: CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2
     Type: String
-    Default: ami-029b4991ba32498b2
+    Default: ami-0a3e2d5f8f14d7d57
   ApplicationRole:
     Description: Application Role Tag
     Type: String
