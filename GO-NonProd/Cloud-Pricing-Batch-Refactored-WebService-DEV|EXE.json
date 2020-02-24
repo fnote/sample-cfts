@@ -362,7 +362,7 @@
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
