@@ -209,13 +209,14 @@
 		"DynatraceApplicationName": {
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
-			"Default": "bts-cloudpricing-prod-cpws-ng-refac-batch-",
+			"Default": "bts-cloudpricing-prod-cpws-ng-refac-batch",
 			"AllowedValues": [
-				"bts-cloudpricing-perf-cpws-ng-refac-batch-",
-				"bts-cloudpricing-prod-cpws-ng-refac-batch-"
+				"bts-cloudpricing-perf-cpws-ng-refac-batch-DEV",
+				"bts-cloudpricing-perf-cpws-ng-refac-batch-EXE",
+				"bts-cloudpricing-prod-cpws-ng-refac-batch"
 			]
 		}
-    },
+	},
 	"Resources": {
 		"WebServiceGroup" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
@@ -234,10 +235,10 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
@@ -300,8 +301,8 @@
 					"##############################################\n",
 					"# Increase open file limits\n",
 					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment \n",
@@ -313,15 +314,18 @@
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, code deploy agent, cloud watch agent\n",
 					"##############################################\n",
+					"yum update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" }, "/Tools/ . --recursive\n",
+					"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" },"/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
+
 
 					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
 					"chmod +x ./install\n",
 					"./install auto\n",
+					"service codedeploy-agent status\n",
 
 					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
 
@@ -343,20 +347,19 @@
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
 					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
 					"####################################\n",
 					"wget -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
 					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n"
+					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, "\n"
 				]]}}
 			}
 		},
@@ -402,7 +405,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "1"
+				"ScalingAdjustment" : "2"
 			}
 		},
 		"ScaleDownPolicy" : {
@@ -427,16 +430,16 @@
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Batch-Refactored-WS-ALB-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
+					{ "Key" : "Technical:PlatformOwner ", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS ALB" }
 				]
 			}
@@ -495,10 +498,10 @@
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS Target" },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Target Group" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },

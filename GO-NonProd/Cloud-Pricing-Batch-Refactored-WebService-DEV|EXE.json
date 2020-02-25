@@ -199,10 +199,20 @@
 		"DynatraceApplicationName": {
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
-			"Default": "bts-cloudpricing-perf-cpws-ng-refac-batch-",
+			"Default": "bts-cloudpricing-perf-cpws-ng-refac-batch-DEV",
 			"AllowedValues": [
-				"bts-cloudpricing-perf-cpws-ng-refac-batch-",
-				"bts-cloudpricing-prod-cpws-ng-refac-batch-"
+				"bts-cloudpricing-perf-cpws-ng-refac-batch-DEV",
+				"bts-cloudpricing-perf-cpws-ng-refac-batch-EXE",
+				"bts-cloudpricing-prod-cpws-ng-refac-batch"
+			]
+		},
+		"CodeDeployBucket": {
+			"Description": "Code deploy s3 bucket name",
+			"Type": "String",
+			"Default": "sysco-us-east-1-prcp-nonprod-codedeploy",
+			"AllowedValues": [
+				"sysco-us-east-1-prcp-nonprod-codedeploy",
+				"sysco-us-east-1-prcp-prod-codedeploy"
 			]
 		}
 	},
@@ -290,8 +300,8 @@
 					"##############################################\n",
 					"# Increase open file limits\n",
 					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
+					"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
 					"# Set System Environment \n",
@@ -303,15 +313,29 @@
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, code deploy agent, cloud watch agent\n",
 					"##############################################\n",
+					"yum -y update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" },"/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
+					"count=1\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+					"do\n",
+					"if [ $count -le 3 ]\n",
+					"then\n",
+					"rm -f codeDeployInstaller\n",
+					"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+					"chmod +x ./codeDeployInstaller\n",
+					"./codeDeployInstaller auto\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"((count++))\n",
+					"else\n",
+					"shutdown now\n",
+					"fi\n",
+					"done\n",
 
 					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
 
@@ -333,20 +357,21 @@
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
 					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
 					"####################################\n",
 					"wget -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
 					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, { "Ref" : "EnvironmentShort" }, "\n"
+					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, "\n",
+
+					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
 		},
@@ -356,14 +381,14 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CP-Batch-Refactored-WS-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 2 minutes or 2-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
 				"Threshold" : "50",
 				"Period" : "60",
-				"EvaluationPeriods" : "3",
+				"EvaluationPeriods" : "2",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
 			}
 		},
@@ -392,7 +417,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "1"
+				"ScalingAdjustment" : "2"
 			}
 		},
 		"ScaleDownPolicy" : {
@@ -417,7 +442,7 @@
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Batch-Refactored-WS-ALB-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner ", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
