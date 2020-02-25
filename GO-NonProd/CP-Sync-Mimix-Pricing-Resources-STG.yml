@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-029b4991ba32498b2'
+    Default: 'ami-0ab070b2555223954'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -146,15 +146,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '1'
+    Default: '2'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '1'
+    Default: '2'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '1'
+    Default: '2'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -382,7 +382,7 @@ Resources:
           Image: !Ref 'DockerImageArn'
           Cpu: !Ref 'CPUReserved'
           MemoryReservation: !Ref 'MemoryReserved'
-          LogConfiguration:
+          LogConfiguration:CloudPricing
             LogDriver: awslogs
             Options:
               awslogs-group: !Ref LogGroup
