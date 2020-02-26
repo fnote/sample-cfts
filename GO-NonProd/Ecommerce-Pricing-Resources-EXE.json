@@ -299,13 +299,27 @@
 					"# Install Dependencies.\n",
 					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
+					"yum -y update\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
+					"count=1\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+					"do\n",
+					"if [ $count -le 3 ]\n",
+					"then\n",
+					"rm -f codeDeployInstaller\n",
+					"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+					"chmod +x ./codeDeployInstaller\n",
+					"./codeDeployInstaller auto\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"((count++))\n",
+					"else\n",
+					"shutdown now\n",
+					"fi\n",
+					"done\n",
 
 					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
 
@@ -327,7 +341,6 @@
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
 					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
@@ -335,6 +348,8 @@
 
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
 					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/ECOMM_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+
+					"cd /tmp\n",
 
 					"date > /home/ec2-user/stoptime"
 				]]}}
