@@ -334,7 +334,6 @@
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
 					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
@@ -491,35 +490,37 @@
 				]
 			}
 		},
-                "LoadBalancerListenerHTTPSHealthCheckRule": {
-                        "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
-                        "Properties": {
-                                "Actions": [
-                                        {
-                                                "Type": "redirect",
-                                                "RedirectConfig": {
-                                                        "Host" : "#{host}",
-                                                        "Path" : "/support/healthcheck",
-                                                        "Port" : "#{port}",
-                                                        "Protocol" : "#{protocol}",
-                                                        "StatusCode" : "HTTP_301"
-                                                }
-                                        }
-                                ],
-                                "Conditions": [
-                                        {
-                                                "Field": "path-pattern",
-                                                "PathPatternConfig": {
-                                                        "Values": [
-                                                                "/pricerequest/healthcheck"
-                                                        ]
-                                                }
-                                        }
-                                ],
-                                "ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
-                                "Priority": 1
-                        }
-                },
+		"LoadBalancerListenerHTTPSHealthCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "redirect",
+						"RedirectConfig": {
+							"Host": "#{host}",
+							"Path": "/support/healthcheck",
+							"Port": "#{port}",
+							"Protocol": "#{protocol}",
+							"StatusCode": "HTTP_301"
+						}
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/pricerequest/healthcheck"
+							]
+						}
+					}
+				],
+				"ListenerArn": {
+					"Ref": "LoadBalancerListenerHTTPS"
+				},
+				"Priority": 1
+			}
+		},
 		"TargetGroup": {
 			"Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
 			"Properties": {
