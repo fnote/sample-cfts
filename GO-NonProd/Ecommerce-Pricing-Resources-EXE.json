@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-0c90b8e37dacb290a",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -222,8 +222,8 @@
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true"  },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
@@ -585,36 +585,6 @@
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
-			}
-		},
-		"DB0Primary02" : {
-			"Type" : "AWS::RDS::DBInstance",
-			"DependsOn": "DB0Primary01",
-			"Properties" :  {
-				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "02" ]]},
-				"AllowMajorVersionUpgrade" : "true",
-				"AutoMinorVersionUpgrade" : "true",
-				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
-				"Engine" : "aurora",
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },

@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-EXE.json",
+	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE.json",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -157,7 +157,7 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "Execution",
+			"Default": "Development",
 			"AllowedValues": [
 				"Development",
 				"Quality",
@@ -171,7 +171,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -182,6 +182,20 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
+        "EnvironmentChar": {
+          "Description": "Environment for application in single char",
+          "Type": "String",
+          "Default": "d",
+          "AllowedValues": [
+            "d",
+            "q",
+            "s",
+            "e",
+            "t",
+            ""
+          ],
+          "ConstraintDescription": "Must be a valid environment."
+        },
 		"DynatraceApplicationName": {
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
@@ -248,10 +262,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
+					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
+					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -324,26 +338,27 @@
 					"##############################################\n",
 					"SPLUNK_PASSWORD=$(aws --region=us-east-1 ssm get-parameters --names \"/SPLUNK/FORWARDER/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
 
-					"cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
-					"[user_info]\n",
-					"USERNAME = admin\n",
-					"PASSWORD = $SPLUNK_PASSWORD\n",
-					"EOF\n",
+                    "cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
+                    "[user_info]\n",
+                    "USERNAME = admin\n",
+                    "PASSWORD = $SPLUNK_PASSWORD\n",
+                    "EOF\n",
 
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
-					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
+                    "/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+                    "/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
+                    "/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
+                    "/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
+
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
 					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"cd /tmp\n",
 
-					"date > /home/ec2-user/stoptime"
+                    "date > /home/ec2-user/stoptime"
 				]]}}
 			}
 		},
@@ -497,11 +512,11 @@
 					{
 						"Type": "redirect",
 						"RedirectConfig": {
-							"Host": "#{host}",
-							"Path": "/support/healthcheck",
-							"Port": "#{port}",
-							"Protocol": "#{protocol}",
-							"StatusCode": "HTTP_301"
+							"Host" : "#{host}",
+							"Path" : "/support/healthcheck",
+							"Port" : "#{port}",
+							"Protocol" : "#{protocol}",
+							"StatusCode" : "HTTP_301"
 						}
 					}
 				],
@@ -515,9 +530,7 @@
 						}
 					}
 				],
-				"ListenerArn": {
-					"Ref": "LoadBalancerListenerHTTPS"
-				},
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
 				"Priority": 1
 			}
 		},
