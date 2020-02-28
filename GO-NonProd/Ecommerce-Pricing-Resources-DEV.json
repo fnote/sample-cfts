@@ -478,7 +478,7 @@
 				"Port": "5000",
 				"Protocol": "HTTP",
 				"HealthCheckIntervalSeconds": "30",
-				"HealthCheckPath": "/",
+				"HealthCheckPath": "/api/Values",
 				"HealthCheckPort": "5000",
 				"HealthCheckProtocol": "HTTP",
 				"HealthCheckTimeoutSeconds": "15",
