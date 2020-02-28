@@ -384,7 +384,7 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
-				"Threshold" : "60",
+				"Threshold" : "30",
 				"Period" : "60",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
@@ -398,7 +398,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "2"
+				"ScalingAdjustment" : "1"
 			}
 		},
 		"ScaleDownPolicy" : {
@@ -409,7 +409,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "-2"
+				"ScalingAdjustment" : "-1"
 			}
 		},
 		"WebServiceALB": {
