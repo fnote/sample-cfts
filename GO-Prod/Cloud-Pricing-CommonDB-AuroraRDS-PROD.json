@@ -160,7 +160,7 @@
 			"Type" : "AWS::RDS::DBCluster",
 			"DeletionPolicy" : "Snapshot",
 			"Properties" : {
-				"DatabaseName" : "CPPDB_Common01e",
+				"DatabaseName" : "CPPDB_Common01",
 				"DBClusterIdentifier" : "cpc01dbcluster",
 				"Engine" : "aurora",
 				"MasterUsername" : "svccp000",

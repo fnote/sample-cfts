@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-029b4991ba32498b2'
+    Default: 'ami-0ab070b2555223954'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -119,10 +119,10 @@ Parameters:
     Description: PRCP-DNS-DNSSG-1LVAMR19KIKFS
     Type: String
     Default: sg-086420a2869e44e81
-  SGRDSMySQL:
-    Description: SG-RDSMySQL
+  SGMIMIX:
+    Description: SG-MimixService
     Type: String
-    Default: sg-0914feb8b95bd48c7
+    Default: sg-0b1f3880617a895e9
   InstanceType:
     Description: Application EC2 instance type
     Type: String
@@ -268,7 +268,7 @@ Resources:
       KeyName: !Ref 'PemKey'
       SecurityGroups:
         - !Ref 'SGWebServices'
-        - !Ref 'SGRDSMySQL'
+        - !Ref 'SGMIMIX'
         - !Ref 'SGDNS'
       IamInstanceProfile: !Ref 'MimixInstanceRole'
       BlockDeviceMappings:
@@ -276,16 +276,14 @@ Resources:
           Ebs:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
-      UserData: !Base64
-        Fn::Join:
-          - ''
-          - - "#!/bin/bash\n"
-            - "sudo yum install -y ecs-init\n"
-            - "echo ECS_CLUSTER="
-            - !Ref 'ECSCluster'
-            - " >> /etc/ecs/ecs.config\n"
-            - "sudo service docker start\n"
-            - "sudo start ecs"
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -ex
+            sudo yum install -y ecs-init;
+            echo ECS_CLUSTER=CP-Mimix-Sync-Ecs-Cluster-${EnvironmentShort} >> /etc/ecs/ecs.config;
+            sudo service docker start;
+            sudo start ecs;
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:

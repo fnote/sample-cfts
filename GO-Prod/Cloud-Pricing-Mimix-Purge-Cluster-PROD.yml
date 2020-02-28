@@ -80,7 +80,7 @@ Parameters:
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
-    Default: TBD
+    Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync
   PvtSNa:
     Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24'
     Type: String
@@ -101,10 +101,10 @@ Parameters:
     Description: PRCP-DNS-DNSSG-1LVAMR19KIKFS
     Type: String
     Default: sg-086420a2869e44e81
-  SGRDSMySQL:
-    Description: SG-RDSMySQL
+  SGMIMIX:
+    Description: SG-MimixService
     Type: String
-    Default: sg-0914feb8b95bd48c7
+    Default: sg-0b1f3880617a895e9
   SGWebServices:
     Description: SG-WebServices
     Type: String
@@ -118,9 +118,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: String
-    Default: ami-029b4991ba32498b2
+    Default: ami-0ab070b2555223954
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -1425,7 +1425,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 450"
       Name: "Mimix-Daily-Purge-Sync-PROD-450-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(35 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1497,7 +1497,7 @@ Resources:
         SecurityGroupIds:
         - !Ref 'SGDNS'
         - !Ref 'SGWebServices'
-        - !Ref 'SGRDSMySQL'
+        - !Ref 'SGMIMIX'
         Type: EC2
         Subnets:
         - !Ref 'PvtSNa'
@@ -1556,7 +1556,7 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 10800
       ContainerProperties:
-        Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest'
+        Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync'
         Vcpus: 4
         Memory: 6144
         Command:
