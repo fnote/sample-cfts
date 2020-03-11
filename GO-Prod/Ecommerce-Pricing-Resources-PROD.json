@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-089a2dce1e6a846af",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -265,7 +265,6 @@
 					"# Set Timezone\n",
 					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
@@ -280,7 +279,6 @@
 					"############################################Ecomm_Service##\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"usermod -a -G aix jowe6212\n",
 					"usermod -a -G aix lvil8747\n",
 					"usermod -a -G aix sshe7956\n",
 					"usermod -a -G aix lchi0638\n",
@@ -288,11 +286,8 @@
 					"usermod -a -G aix iasa0862\n",
 					"usermod -a -G aix cwic0864\n",
 					"usermod -a -G aix adis0892\n",
-					"usermod -a -G aix ngun0234\n",
 					"usermod -a -G aix gher1098\n",
-					"usermod -a -G aix sthe3935\n",
 					"usermod -a -G aix gkar5861\n",
-					"usermod -a -G aix mwan5534\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -307,32 +302,70 @@
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
 					"##############################################\n",
-					"# Setting cronjobs for CodeDeploy Install\n",
+					"# Install Dependencies.\n",
+					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes;\n' > /etc/cron.d/dotnet\n",
-
-					"##############################################\n",
-					"# Splunk - Clear Settings\n",
-					"##############################################\n",
-					"/opt/splunkforwarder/bin/splunk stop\n",
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk start\n",
-
-					"date > /home/ec2-user/stoptime\n",
-
-					"##############################################\n",
-					"# CloudWatch Installation\n",
-					"##############################################\n",
-
-					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/ECOMM_SERVICE/PROD/CLOUDWATCH -s\n",
+					"yum -y update\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
 					"####################################\n",
 					"# Install Dynatrace Agent\n",
 					"####################################\n",
 					"wget -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
-					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-prod-", { "Ref" : "DynatraceApplicationName" }, "\n"
+					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-prod-", { "Ref" : "DynatraceApplicationName" }, "\n",
+
+					"count=1\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+					"do\n",
+					"if [ $count -le 3 ]\n",
+					"then\n",
+					"rm -f codeDeployInstaller\n",
+					"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+					"chmod +x ./codeDeployInstaller\n",
+					"./codeDeployInstaller auto\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"((count++))\n",
+					"else\n",
+					"shutdown now\n",
+					"fi\n",
+					"done\n",
+
+					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
+
+					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
+					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
+
+					"##############################################\n",
+					"# Splunk - Configuration\n",
+					"##############################################\n",
+					"SPLUNK_PASSWORD=$(aws --region=us-east-1 ssm get-parameters --names \"/SPLUNK/FORWARDER/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
+
+					"cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
+					"[user_info]\n",
+					"USERNAME = admin\n",
+					"PASSWORD = $SPLUNK_PASSWORD\n",
+					"EOF\n",
+
+					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
+					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
+					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
+					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
+
+					"##############################################\n",
+					"# CloudWatch Configuration\n",
+					"##############################################\n",
+
+					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/ECOMM_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+
+					"cd /tmp\n",
+
+					"date > /home/ec2-user/stoptime"
+
 				]]}}
 			}
 		},
@@ -439,7 +472,7 @@
 				"Port": "5000",
 				"Protocol": "HTTP",
 				"HealthCheckIntervalSeconds": "30",
-				"HealthCheckPath": "/",
+				"HealthCheckPath": "/api/Values",
 				"HealthCheckPort": "5000",
 				"HealthCheckProtocol": "HTTP",
 				"HealthCheckTimeoutSeconds": "15",

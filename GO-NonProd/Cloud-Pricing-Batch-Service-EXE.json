@@ -300,6 +300,89 @@
                 ]
             }
         },
+        "LaunchTemplate": {
+            "LaunchTemplateVersions": [
+                {
+                    "VersionDescription": "version2",
+                    "LaunchTemplateId": "lt-0ca3105645e28999d",
+                    "LaunchTemplateName": "CP-Batch-Service-Launch-Template-EXE",
+                    "VersionNumber": 2,
+                    "CreatedBy": "arn:aws:sts::037295147636:assumed-role/AWSReservedSSO_DevOpsUser_333d7086c6b9320a/cwic0864@corp.sysco.com",
+                    "LaunchTemplateData": {
+                        "BlockDeviceMappings": [
+                            {
+                                "Ebs": {
+                                    "Encrypted": false,
+                                    "DeleteOnTermination": true,
+                                    "VolumeSize": 75,
+                                    "VolumeType": "io1"
+                                },
+                                "DeviceName": "/dev/xvda"
+                            },
+                            {
+                                "Ebs": {
+                                    "Encrypted": false,
+                                    "DeleteOnTermination": true,
+                                    "VolumeSize": 75,
+                                    "VolumeType": "io1"
+                                },
+                                "DeviceName": "/dev/xvdcz"
+                            }
+                        ],
+                        "TagSpecifications": [
+                            {
+                                "ResourceType": "instance",
+                                "Tags": [
+                                    {
+                                        "Key": "Project_ID",
+                                        "Value": "BT.001176"
+                                    },
+                                    {
+                                        "Key": "Technical:ApplicationID",
+                                        "Value": "APP-001151"
+                                    },
+                                    {
+                                        "Key": "2WTAGGER",
+                                        "Value": "team_managed"
+                                    },
+                                    {
+                                        "Key": "Technical:ApplicationRole",
+                                        "Value": "Application Server"
+                                    },
+                                    {
+                                        "Key": "Support_Email",
+                                        "Value": "000-BT-PricingPlatform@Corp.sysco.com"
+                                    },
+                                    {
+                                        "Key": "Technical:PlatformOwner",
+                                        "Value": "krishan.senevirathne@sysco.com"
+                                    },
+                                    {
+                                        "Key": "Name",
+                                        "Value": "CP Batch"
+                                    },
+                                    {
+                                        "Key": "Platform",
+                                        "Value": "Cloud Pricing V4"
+                                    },
+                                    {
+                                        "Key": "Technical:ApplicationSubName",
+                                        "Value": "CP Batch"
+                                    },
+                                    {
+                                        "Key": "Automation:CloudCustodian:LaunchedBy",
+                                        "Value": "AutoScaling"
+                                    }
+                                ]
+                            }
+                        ],
+                        "ImageId": "ami-0ab070b2555223954"
+                    },
+                    "DefaultVersion": true,
+                    "CreateTime": "2019-02-28T19:52:27.000Z"
+                }
+            ]
+        },
         "CPBatchSpotOptimalComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
@@ -330,8 +413,8 @@
                     "Ec2KeyPair": {
                         "Ref": "PemKey"
                     },
-                    "ImageId": {
-                        "Ref": "CommonAMI"
+                    "LaunchTemplate": {
+                        "Ref": "LaunchTemplate"
                     },
                     "InstanceRole": {
                         "Ref": "IamInstanceProfile"
