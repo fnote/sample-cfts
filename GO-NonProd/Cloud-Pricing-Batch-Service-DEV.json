@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create Spot based Compute environmnet, Job queue and Job Definition for DEV environment",
+    "Description": "AWS CloudFormation Template to create EC2 based Compute environmnet, Job queue and Job Definition for DEV environment",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -224,87 +224,96 @@
             }
         },
         "LaunchTemplate": {
-            "LaunchTemplateVersions": [
-                {
-                    "VersionDescription": "version4",
-                    "LaunchTemplateId": "lt-0ef86db54b6c2fc6c",
-                    "LaunchTemplateName": "CP-Batch-Service-Launch-Template-DEV",
-                    "VersionNumber": 4,
-                    "CreatedBy": "arn:aws:sts::037295147636:assumed-role/AWSReservedSSO_DevOpsUser_333d7086c6b9320a/cwic0864@corp.sysco.com",
-                    "LaunchTemplateData": {
-                        "BlockDeviceMappings": [
-                            {
-                                "Ebs": {
-                                    "Encrypted": false,
-                                    "DeleteOnTermination": true,
-                                    "VolumeSize": 75,
-                                    "VolumeType": "io1"
-                                },
-                                "DeviceName": "/dev/xvda"
-                            },
-                            {
-                                "Ebs": {
-                                    "Encrypted": false,
-                                    "DeleteOnTermination": true,
-                                    "VolumeSize": 75,
-                                    "VolumeType": "io1"
-                                },
-                                "DeviceName": "/dev/xvdcz"
-                            }
-                        ],
-                        "TagSpecifications": [
-                            {
-                                "ResourceType": "instance",
-                                "Tags": [
-                                    {
-                                        "Key": "Project_ID",
-                                        "Value": "BT.001176"
-                                    },
-                                    {
-                                        "Key": "Technical:ApplicationID",
-                                        "Value": "APP-001151"
-                                    },
-                                    {
-                                        "Key": "2WTAGGER",
-                                        "Value": "team_managed"
-                                    },
-                                    {
-                                        "Key": "Technical:ApplicationRole",
-                                        "Value": "Application Server"
-                                    },
-                                    {
-                                        "Key": "Support_Email",
-                                        "Value": "000-BT-PricingPlatform@Corp.sysco.com"
-                                    },
-                                    {
-                                        "Key": "Technical:PlatformOwner",
-                                        "Value": "krishan.senevirathne@sysco.com"
-                                    },
-                                    {
-                                        "Key": "Name",
-                                        "Value": "CP Batch"
-                                    },
-                                    {
-                                        "Key": "Platform",
-                                        "Value": "Cloud Pricing V4"
-                                    },
-                                    {
-                                        "Key": "Technical:ApplicationSubName",
-                                        "Value": "CP Batch"
-                                    },
-                                    {
-                                        "Key": "Automation:CloudCustodian:LaunchedBy",
-                                        "Value": "AutoScaling"
-                                    }
-                                ]
-                            }
-                        ],
-                        "ImageId": "ami-0ab070b2555223954"
+            "Type" : "AWS::EC2::LaunchTemplate",
+            "Properties" : {
+                "LaunchTemplateData" : {
+                    "ImageId": "ami-0ab070b2555223954",
+                    "IamInstanceProfile" : {
+                        "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Batch-IAM-Instance-Profile",
+                        "Name" : "Cloud-Pricing-Batch-IAM-Instance-Profile"
                     },
-                    "DefaultVersion": true,
-                    "CreateTime": "2020-02-28T10:27:44.000Z"
+                    "BlockDeviceMappings": [
+                        {
+                            "Ebs": {
+                                "Encrypted": false,
+                                "DeleteOnTermination": true,
+                                "VolumeSize": 75,
+                                "VolumeType": "io1",
+                                "Iops": 2000
+                            },
+                            "DeviceName": "/dev/xvda"
+                        },
+                        {
+                            "Ebs": {
+                                "Encrypted": false,
+                                "DeleteOnTermination": true,
+                                "VolumeSize": 75,
+                                "VolumeType": "io1",
+                                "Iops": 2000
+                            },
+                            "DeviceName": "/dev/xvdcz"
+                        }
+                    ],
+                    "TagSpecifications": [
+                        {
+                            "ResourceType": "instance",
+                            "Tags": [
+                                {
+                                    "Key": "Project_ID",
+                                    "Value": "BT.001176"
+                                },
+                                {
+                                    "Key": "Technical:ApplicationID",
+                                    "Value": "APP-001151"
+                                },
+                                {
+                                    "Key": "2WTAGGER",
+                                    "Value": "team_managed"
+                                },
+                                {
+                                    "Key": "Technical:ApplicationRole",
+                                    "Value": "Application Server"
+                                },
+                                {
+                                    "Key": "Support_Email",
+                                    "Value": "000-BT-PricingPlatform@Corp.sysco.com"
+                                },
+                                {
+                                    "Key": "Technical:PlatformOwner",
+                                    "Value": "krishan.senevirathne@sysco.com"
+                                },
+                                {
+                                    "Key": "Name",
+                                    "Value": "CP Batch"
+                                },
+                                {
+                                    "Key": "Platform",
+                                    "Value": "Cloud Pricing V4"
+                                },
+                                {
+                                    "Key": "Technical:ApplicationSubName",
+                                    "Value": "CP Batch"
+                                },
+                                {
+                                    "Key": "Automation:CloudCustodian:LaunchedBy",
+                                    "Value": "AutoScaling"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "LaunchTemplateName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "Launch-Template-CP-Batch-Service-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
                 }
-            ]
+            }
         },
         "CPBatchSpotOptimalComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
@@ -317,7 +326,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Environment-",
+                            "CP-Batch-Compute-Env-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -325,8 +334,7 @@
                     ]
                 },
                 "ComputeResources": {
-                    "Type": "SPOT",
-                    "BidPercentage": 100,
+                    "Type": "EC2",
                     "MinvCpus": 0,
                     "DesiredvCpus": 4,
                     "MaxvCpus": 200,
@@ -337,7 +345,7 @@
                         "Ref": "PemKey"
                     },
                     "LaunchTemplate": {
-                        "Ref": "LaunchTemplate"
+                        "LaunchTemplateId": { "Ref": "LaunchTemplate" }
                     },
                     "InstanceRole": {
                         "Ref": "IamInstanceProfile"
