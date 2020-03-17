@@ -302,7 +302,7 @@
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
 					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
