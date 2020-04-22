@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-0c90b8e37dacb290a",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -222,8 +222,8 @@
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true"  },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
@@ -299,13 +299,27 @@
 					"# Install Dependencies.\n",
 					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
+					"yum -y update\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
+					"count=1\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+					"do\n",
+					"if [ $count -le 3 ]\n",
+					"then\n",
+					"rm -f codeDeployInstaller\n",
+					"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+					"chmod +x ./codeDeployInstaller\n",
+					"./codeDeployInstaller auto\n",
+					"currentStatus=$(service codedeploy-agent status)\n",
+					"((count++))\n",
+					"else\n",
+					"shutdown now\n",
+					"fi\n",
+					"done\n",
 
 					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
 
@@ -327,7 +341,6 @@
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
 					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
@@ -335,6 +348,8 @@
 
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
 					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/ECOMM_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+
+					"cd /tmp\n",
 
 					"date > /home/ec2-user/stoptime"
 				]]}}
@@ -462,7 +477,7 @@
 				"Port": "5000",
 				"Protocol": "HTTP",
 				"HealthCheckIntervalSeconds": "30",
-				"HealthCheckPath": "/",
+				"HealthCheckPath": "/api/Values",
 				"HealthCheckPort": "5000",
 				"HealthCheckProtocol": "HTTP",
 				"HealthCheckTimeoutSeconds": "15",
@@ -570,36 +585,6 @@
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
-			}
-		},
-		"DB0Primary02" : {
-			"Type" : "AWS::RDS::DBInstance",
-			"DependsOn": "DB0Primary01",
-			"Properties" :  {
-				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "02" ]]},
-				"AllowMajorVersionUpgrade" : "true",
-				"AutoMinorVersionUpgrade" : "true",
-				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
-				"Engine" : "aurora",
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },

@@ -59,7 +59,7 @@
       "CommonAMI": {
         "Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
         "Type": "String",
-        "Default" : "ami-0b8f196e5e09c0e62",
+        "Default" : "ami-089a2dce1e6a846af",
         "AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
         "ConstraintDescription" : "Must be a valid AMI."
       },
@@ -294,7 +294,6 @@
 					"useradd -m -g aix -c \"Chamin Wickramarathna\" cwic0864\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
