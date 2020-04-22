@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-089a2dce1e6a846af",
+			"Default" : "ami-03aed43559a570cee",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -209,8 +209,8 @@
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
-				"MinSize" : "2",
-				"DesiredCapacity" : "2",
+				"MinSize" : "8",
+				"DesiredCapacity" : "8",
 				"MaxSize" : "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
@@ -482,7 +482,7 @@
                                         }
                                 ],
                                 "ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
-                                "Priority": 1
+                                "Priority": 2
                         }
                 },
 		"LoadBalancerListenerHTTPS": {
@@ -530,7 +530,7 @@
                                         }
                                 ],
                                 "ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
-                                "Priority": 1
+                                "Priority": 2
                         }
                 },
 		"TargetGroup": {
