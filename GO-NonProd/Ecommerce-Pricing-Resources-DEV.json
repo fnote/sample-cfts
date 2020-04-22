@@ -280,7 +280,6 @@
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
