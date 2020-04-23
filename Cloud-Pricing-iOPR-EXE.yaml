@@ -236,7 +236,7 @@ Resources:
         - ''
         - - 'Price-Range-066-068-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(31 21 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -268,7 +268,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-001-010-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -300,7 +300,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-011-022-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -332,7 +332,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-023-036-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -364,7 +364,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-037-049-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -396,7 +396,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-050-060-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -428,7 +428,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-061-102-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
@@ -460,7 +460,7 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-137-450-'
           - !Ref 'Environment'
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(00 20 ? * TUE *)'
       RoleArn: !Ref RoleArn
       Targets:
