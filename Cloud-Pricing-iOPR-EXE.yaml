@@ -121,6 +121,9 @@ Resources:
         - ''
         - - 'CP-iOPR-Data-Creation-Cluster-'
           - !Ref 'Environment'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
     
   DataCreationTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -405,7 +408,7 @@ Resources:
             - Arn
           Id: ScheduledTask
           RoleArn: !Ref RoleArn
-          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059, 060"},
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059"},
           {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
           EcsParameters:
             TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
