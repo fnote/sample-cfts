@@ -316,6 +316,330 @@ Resources:
           - !Ref 'Environment'
       RetentionInDays: !Ref RetentionTime
 
+  ScheduleRuleCustomOpcos:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for custom opcos"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Custom-Opcos'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(30 1 ? * THU *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "015, 019, 058"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRule66To68:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 066 - 068"
+      Name: !Join
+        - ''
+        - - 'Price-Range-066-068-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(31 21 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "066, 067, 068"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly1To10:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 001 - 010"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-001-010-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "001, 002, 003, 004, 005, 006, 007, 008, 009, 010"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly11To22:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 011 - 022"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-011-022-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "011, 012, 013, 014, 015, 016, 017, 018, 019, 022"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly23To36:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 023 - 036"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-023-036-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "023, 024, 025, 026, 027, 029, 031, 032, 035, 036"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly37To49:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 037 - 049"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-037-049-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "037, 038, 039, 040, 043, 045, 046, 047, 048, 049"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly50To60:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 050 - 060"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-050-060-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059, 060"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly61To102:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 061 - 102"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-061-102-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "061, 064, 066, 067, 068, 073, 075, 076, 078, 101, 102"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly137To450:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 137 - 450"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-137-450-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "137, 163, 164, 194, 195, 288, 293, 306, 320, 332, 429, 450"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
   EcommDbConnection:
     Type: AWS::Glue::Connection
     Properties:
@@ -354,7 +678,7 @@ Resources:
       DefaultArguments:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-prod-codebuild/Outlier-Price-Range/python-libs/PyMySQL-0.9.3-py2.py3-none-any.whl"
       ExecutionProperty:
-        MaxConcurrentRuns: 75
+        MaxConcurrentRuns: 85
       MaxRetries: 0
       NotificationProperty:
         NotifyDelayAfter: 15
