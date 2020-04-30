@@ -408,7 +408,7 @@ Resources:
             - Arn
           Id: ScheduledTask
           RoleArn: !Ref RoleArn
-          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059"},
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059, 060"},
           {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
           EcsParameters:
             TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
@@ -472,7 +472,7 @@ Resources:
             - Arn
           Id: ScheduledTask
           RoleArn: !Ref RoleArn
-          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "137, 163, 164, 194, 195, 288, 293, 306, 320, 332, 450"},
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "137, 163, 164, 194, 195, 288, 293, 306, 320, 332, 429, 450"},
           {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
           EcsParameters:
             TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
