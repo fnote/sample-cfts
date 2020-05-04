@@ -83,10 +83,6 @@ Parameters:
     Description: URL of the database that Glue Connection Catalog should use
     Type: String
     Default: jdbc:mysql://ecomm01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:33060/ECOMMDB_Common01e
-  DbUser:
-    Description: Username of the database that Glue Connection Catalog should use
-    Type: String
-    Default: TBA
   DbPassword:
     Description: Password of the database that Glue Connection Catalog should use
     Type: String
@@ -497,7 +493,8 @@ Resources:
         ConnectionType: "JDBC"
         ConnectionProperties: {
           "JDBC_CONNECTION_URL": !Ref DbURL,
-          "USERNAME": !Ref DbUser,
+          "USERNAME": !Sub '{{resolve:ssm:/CP/${Environment}/DATABASE/ECOMM/USERNAME:1}}',
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DbPassword
         }
         PhysicalConnectionRequirements:
