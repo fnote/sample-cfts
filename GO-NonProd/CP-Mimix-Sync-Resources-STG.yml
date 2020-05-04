@@ -17,7 +17,7 @@ Parameters:
   ImageId:
     Description: Amazon AMI
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-029b4991ba32498b2'
+    Default: 'ami-0cc25694b8adc1312'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -126,7 +126,7 @@ Parameters:
   InstanceType:
     Description: Application EC2 instance type
     Type: String
-    Default: t3.2xlarge
+    Default: c5.2xlarge
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
@@ -168,7 +168,7 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
-    Default: '2048'
+    Default: '4096'
     MinValue: '256'
     MaxValue: '4096'
   MemoryReserved:
