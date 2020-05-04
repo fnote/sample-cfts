@@ -494,7 +494,7 @@ Resources:
         ConnectionProperties: {
           "JDBC_CONNECTION_URL": !Ref DbURL,
           "USERNAME": !Sub '{{resolve:ssm:/CP/${Environment}/DATABASE/ECOMM/USERNAME:1}}',
-          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+#         SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DbPassword
         }
         PhysicalConnectionRequirements:
