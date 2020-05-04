@@ -284,6 +284,7 @@ Resources:
             echo ECS_CLUSTER=CP-Mimix-Sync-Ecs-Cluster-${EnvironmentShort} >> /etc/ecs/ecs.config;
             sudo service docker start;
             sudo start ecs;
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
