@@ -68,25 +68,6 @@
 			"Type" : "String",
 			"Default" : "Cloud-Pricing-Ecom-Service-Instance-Profile"
 		},
-		"DBUser": {
-			"Description": "The database admin account username",
-			"Type": "String",
-			"MinLength": "1",
-			"MaxLength": "16",
-			"AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
-			"ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
-			"Default": "cpuser"
-		},
-		"DBPassword": {
-			"NoEcho": "true",
-			"Description": "The database admin account password",
-			"Type": "String",
-			"MinLength": "1",
-			"MaxLength": "41",
-			"AllowedPattern": "[a-zA-Z0-9]+",
-			"ConstraintDescription": "must contain only alphanumeric characters.",
-			"Default": "a4T6XrIXJGwp"
-		},
 		"SSLCertificate": {
 			"Description": "The SSL acertificate ARN",
 			"Type": "String",
@@ -549,8 +530,30 @@
 				"DatabaseName" : "ECOMMDB_Common01",
 				"DBClusterIdentifier" : "ecomm01dbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : { "Ref" : "DBUser"},
-				"MasterUserPassword" : { "Ref" : "DBPassword"},
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/ECOMM/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/ECOMM/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : "rds-subnet-group",
