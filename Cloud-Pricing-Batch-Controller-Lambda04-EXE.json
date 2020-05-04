@@ -217,8 +217,30 @@
 				"Environment": {
 					"Variables": {
 						"COMMONDB_NAME": { "Ref" : "CommonDBName" },
-						"COMMONDB_USERNAME": "svccp000",
-						"COMMONDB_PASSWORD": "Cpaws000",
+						"COMMONDB_USERNAME": {
+							"Fn::Join": [
+								"",
+								[
+									"{{resolve:ssm:/CP/",
+									{
+										"Ref": "EnvironmentShort"
+									},
+									"/DATABASE/PLATFORM/USERNAME:1}}"
+								]
+							]
+						},
+						"COMMONDB_PASSWORD": {
+							"Fn::Join": [
+								"",
+								[
+									"{{resolve:ssm-secure:/CP/",
+									{
+										"Ref": "EnvironmentShort"
+									},
+									"/DATABASE/PLATFORM/PASSWORD:1}}"
+								]
+							]
+						},
 						"ENVIRONMENT": { "Ref" : "Environment" },
 						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
 						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
