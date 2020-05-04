@@ -19,22 +19,10 @@ Parameters:
     Default: '1024'
     MinValue: '256'
     MaxValue: '4096'
-  CPUForContainer:
-    Description: The number of cpu units reserved for the container.
-    Type: Number
-    Default: '512'
-    MinValue: '256'
-    MaxValue: '4096'
   MemoryForTask:
     Description: The soft limit (in MiB) of memory to reserve for the task.
     Type: Number
     Default: '2048'
-    MinValue: '256'
-    MaxValue: '8192'
-  MemoryForContainer:
-    Description: The soft limit (in MiB) of memory to reserve for the container.
-    Type: Number
-    Default: '1024'
     MinValue: '256'
     MaxValue: '8192'
   PvtSNa:
@@ -67,10 +55,6 @@ Parameters:
     Description: URL of the database that Glue Connection Catalog should use
     Type: String
     Default: jdbc:mysql://ecomm01dbcluster.cluster-cvxmi1m5icyf.us-east-1.rds.amazonaws.com:33060/ECOMMDB_Common01
-  DbUser:
-    Description: Username of the database that Glue Connection Catalog should use
-    Type: String
-    Default: TBA
   DbPassword:
     Description: Password of the database that Glue Connection Catalog should use
     Type: String
@@ -105,6 +89,9 @@ Resources:
         - ''
         - - 'CP-iOPR-Data-Creation-Cluster-'
           - !Ref 'Environment'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
   iOPRTaskExecutionRole:
     Type: "AWS::IAM::Role"
@@ -322,7 +309,7 @@ Resources:
       Description: "Schedule rule for custom opcos"
       Name: !Join
         - ''
-        - - 'Price-Range-Custom-Opcos'
+        - - 'Price-Range-Custom-Opcos-'
           - !Ref 'Environment'
       State: DISABLED
       ScheduleExpression: 'cron(30 1 ? * THU *)'
@@ -650,7 +637,8 @@ Resources:
         ConnectionType: "JDBC"
         ConnectionProperties: {
           "JDBC_CONNECTION_URL": !Ref DbURL,
-          "USERNAME": !Ref DbUser,
+          "USERNAME": !Sub '{{resolve:ssm:/CP/${Environment}/DATABASE/ECOMM/USERNAME:1}}',
+#          SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DbPassword
         }
         PhysicalConnectionRequirements:
