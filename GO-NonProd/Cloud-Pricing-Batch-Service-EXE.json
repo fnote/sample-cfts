@@ -214,11 +214,19 @@
                     "AttemptDurationSeconds" : 10800
                 },
                 "ContainerProperties": {
-                    "Image": "sysco/cp-batch",
-                    "Vcpus": 1,
-                    "Memory": 1000,
+                    "Image": "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-batch:5050ecf7-0d7b-4f63-9073-fcf37908ecf5",
+                    "Vcpus": 4,
+                    "Memory": 8000,
                     "Privileged": true,
-                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role"
+                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role",
+                    "Environment": [
+                        {
+                            "Name": "SERVER_ENVIRONMENT_VARIABLE",
+                            "Value": {
+                                "Ref": "EnvironmentShort"
+                            }
+                        }
+                    ]
                 }
             }
         },
@@ -386,7 +394,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "Launch-Template-CP-Batch-Service-",
+                            "LT-CP-Batch-Service-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -406,7 +414,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-",
+                            "CP-Batch-Compute-Environment-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
