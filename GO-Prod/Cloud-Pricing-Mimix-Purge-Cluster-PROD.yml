@@ -120,7 +120,7 @@ Parameters:
   CommonAMI:
     Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: String
-    Default: ami-0ab070b2555223954
+    Default: ami-00e06e7775c26730e
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -694,6 +694,8 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 039"
       Name: "Mimix-Daily-Purge-Sync-PROD-039-Trigger"
+SLECT s.id, s.name ifnull (st1.setting_value, false) as 'oo'
+store
       State: DISABLED
       ScheduleExpression: 'cron(00 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'

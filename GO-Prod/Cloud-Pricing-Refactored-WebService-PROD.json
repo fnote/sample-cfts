@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-089a2dce1e6a846af",
+			"Default" : "ami-0db98ff240d2cc9d1",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -197,9 +197,14 @@
 			"Type": "String"
 		},
 		"DynatraceApplicationName": {
+			"AllowedValues": [
+				"bts-cloudpricing-perf-cpws-ng-refac-DEV",
+				"bts-cloudpricing-perf-cpws-ng-refac-EXE",
+				"bts-cloudpricing-prod-cpws-ng"
+			],
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
-			"Default": "cpws-ng-refac-"
+			"Default": "bts-cloudpricing-prod-cpws-ng"
 		}
 	},
 	"Resources": {
@@ -209,8 +214,8 @@
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
-				"MinSize" : "2",
-				"DesiredCapacity" : "2",
+				"MinSize" : "8",
+				"DesiredCapacity" : "8",
 				"MaxSize" : "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
@@ -302,12 +307,12 @@
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
 					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
 					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-prod-", { "Ref" : "DynatraceApplicationName" }, { "Ref": "EnvironmentShort" }, "\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=",{ "Ref" : "DynatraceApplicationName" },"\n",
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
@@ -482,7 +487,7 @@
                                         }
                                 ],
                                 "ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
-                                "Priority": 1
+                                "Priority": 2
                         }
                 },
 		"LoadBalancerListenerHTTPS": {
@@ -530,7 +535,7 @@
                                         }
                                 ],
                                 "ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
-                                "Priority": 1
+                                "Priority": 2
                         }
                 },
 		"TargetGroup": {

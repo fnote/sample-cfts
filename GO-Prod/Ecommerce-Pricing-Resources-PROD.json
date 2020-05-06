@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-089a2dce1e6a846af",
+			"Default" : "ami-0db98ff240d2cc9d1",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -67,25 +67,6 @@
 			"Description" : "Instance Profile Name",
 			"Type" : "String",
 			"Default" : "Cloud-Pricing-Ecom-Service-Instance-Profile"
-		},
-		"DBUser": {
-			"Description": "The database admin account username",
-			"Type": "String",
-			"MinLength": "1",
-			"MaxLength": "16",
-			"AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
-			"ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
-			"Default": "cpuser"
-		},
-		"DBPassword": {
-			"NoEcho": "true",
-			"Description": "The database admin account password",
-			"Type": "String",
-			"MinLength": "1",
-			"MaxLength": "41",
-			"AllowedPattern": "[a-zA-Z0-9]+",
-			"ConstraintDescription": "must contain only alphanumeric characters.",
-			"Default": "a4T6XrIXJGwp"
 		},
 		"SSLCertificate": {
 			"Description": "The SSL acertificate ARN",
@@ -227,10 +208,10 @@
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group" },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
@@ -303,17 +284,14 @@
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"####################################\n",
-					"# Install Dynatrace Agent\n",
-					"####################################\n",
-					"wget -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
+					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
 					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
 					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-prod-", { "Ref" : "DynatraceApplicationName" }, "\n",
 
@@ -534,8 +512,30 @@
 				"DatabaseName" : "ECOMMDB_Common01",
 				"DBClusterIdentifier" : "ecomm01dbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : { "Ref" : "DBUser"},
-				"MasterUserPassword" : { "Ref" : "DBPassword"},
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/ECOMM/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/ECOMM/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : "rds-subnet-group",

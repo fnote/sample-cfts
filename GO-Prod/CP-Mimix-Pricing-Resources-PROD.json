@@ -142,8 +142,30 @@
 				"DatabaseName" : "CPPDB_Common01",
 				"DBClusterIdentifier" : "cpp01mimixdbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername" : {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PLATFORM/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword" : {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PLATFORM/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : "rds-subnet-group",

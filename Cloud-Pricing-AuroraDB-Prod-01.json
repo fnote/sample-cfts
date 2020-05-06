@@ -90,6 +90,20 @@
 				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "PROD",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"SBX",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
 		}
 	},
 	"Resources": {
@@ -99,8 +113,30 @@
 			"Properties" : {
 				"DatabaseName" : "CPDB_Common01",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },

@@ -17,7 +17,7 @@ Parameters:
   ImageId:
     Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0ab070b2555223954'
+    Default: 'ami-00e06e7775c26730e'
   ApplicationName:
     Description: Name of application
     Type: String
