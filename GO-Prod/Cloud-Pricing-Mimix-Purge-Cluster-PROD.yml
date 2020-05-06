@@ -120,7 +120,7 @@ Parameters:
   CommonAMI:
     Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
     Type: String
-    Default: ami-0ab070b2555223954
+    Default: ami-00e06e7775c26730e
   ApplicationRole:
     Description: Application Role Tag
     Type: String

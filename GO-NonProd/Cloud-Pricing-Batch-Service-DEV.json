@@ -161,7 +161,7 @@
         "CommonAMI": {
             "Description": "CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2",
             "Type": "String",
-            "Default": "ami-029b4991ba32498b2",
+            "Default": "ami-00e06e7775c26730e",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -227,7 +227,10 @@
             "Type" : "AWS::EC2::LaunchTemplate",
             "Properties" : {
                 "LaunchTemplateData" : {
-                    "ImageId": "ami-0ab070b2555223954",
+                    "ImageId":
+                    {
+                        "Ref": "CommonAMI"
+                    },
                     "IamInstanceProfile" : {
                         "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Batch-IAM-Instance-Profile",
                         "Name" : "Cloud-Pricing-Batch-IAM-Instance-Profile"
