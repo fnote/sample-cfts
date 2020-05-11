@@ -530,6 +530,12 @@
 				"DatabaseName" : "ECOMMDB_Common01",
 				"DBClusterIdentifier" : "ecomm01dbcluster",
 				"Engine" : "aurora",
+				"DBClusterParameterGroupName": "param-group-loadfroms3",
+				"AssociatedRoles": [
+					{
+						"RoleArn" : "arn:aws:iam::037295147636:role/OutlierPriceRangeRDSLoadFromS3"
+					}
+				],
 				"MasterUsername": {
 					"Fn::Join": [
 						"",
