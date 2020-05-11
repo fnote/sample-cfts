@@ -334,6 +334,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_ONE
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerTwoTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -366,6 +372,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_TWO
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerThreeTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -398,6 +410,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_THREE
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerFourTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -430,6 +448,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_FOUR
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerFiveTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -462,6 +486,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_FIVE
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerSixTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -494,6 +524,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_SIX
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerSevenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -526,6 +562,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_SEVEN
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerEightTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -558,6 +600,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_EIGHT
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerNineTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -590,6 +638,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_NINE
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerTenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -622,6 +676,12 @@ Resources:
               Value: MIMIX_PRICING_SERVER_TEN
             - Name: SYNC_ROLE
               Value: MIMIX_PRICING
+            - Name: 'SENDER'
+              Value: 'CloudPricingAlerts@corp.sysco.com'
+            - Name: 'SUBJECT'
+              Value: 'Pricing-Alerts-PROD'
+            - Name: 'TO_ADDRESSES'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerOneEcsService:
     Type: AWS::ECS::Service
