@@ -118,9 +118,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2
+    Description: SYSCO-GOLD -> ami-00e06e7775c26730e
     Type: String
-    Default: ami-0a3e2d5f8f14d7d57
+    Default: ami-00e06e7775c26730e
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -191,32 +191,32 @@ Resources:
         TagSpecifications:
           - ResourceType: volume
             Tags:
-            - Key: Technical:ApplicationName
-              Value: !Ref 'ApplicationName'
-            - Key: Technical:ApplicationID
-              Value: !Ref 'ApplicationID'
-            - Key: Technical:PlatformOwner
-              Value: !Ref 'Owner'
-            - Key: Technical:Environment
-              Value: !Ref 'Environment'
-            - Key: Technical:ApplicationSubName
-              Value: !Ref 'Component'
-            - Key: Technical:ApplicationRole
-              Value: !Ref 'ApplicationRole'
-            - Key: Approver
-              Value: !Ref 'Approver'
-            - Key: PO_Number
-              Value: !Ref 'PONumber'
-            - Key: Project_ID
-              Value: !Ref 'ProjectID'
-            - Key: Support_Email
-              Value: !Ref 'SupportEmail'
-            - Key: 2WTAGGER
-              Value: !Ref '2WTAGGER'
-            - Key: Platform
-              Value: !Ref 'Platform'
-            - Key: Name
-              Value: !Ref 'Component'
+              - Key: Technical:ApplicationName
+                Value: !Ref 'ApplicationName'
+              - Key: Technical:ApplicationID
+                Value: !Ref 'ApplicationID'
+              - Key: Technical:PlatformOwner
+                Value: !Ref 'Owner'
+              - Key: Technical:Environment
+                Value: !Ref 'Environment'
+              - Key: Technical:ApplicationSubName
+                Value: !Ref 'Component'
+              - Key: Technical:ApplicationRole
+                Value: !Ref 'ApplicationRole'
+              - Key: Approver
+                Value: !Ref 'Approver'
+              - Key: PO_Number
+                Value: !Ref 'PONumber'
+              - Key: Project_ID
+                Value: !Ref 'ProjectID'
+              - Key: Support_Email
+                Value: !Ref 'SupportEmail'
+              - Key: 2WTAGGER
+                Value: !Ref '2WTAGGER'
+              - Key: Platform
+                Value: !Ref 'Platform'
+              - Key: Name
+                Value: !Ref 'Component'
       LaunchTemplateName:
         Fn::Join:
           - ''
@@ -231,57 +231,57 @@ Resources:
         Ref: 'MimixPurgeServiceRole'
       ComputeEnvironmentName:
         Fn::Join:
-        - ''
-        - - CP-Mimix-Purge-Sync-Compute-Environment-
-          - Ref: 'EnvironmentShort'
+          - ''
+          - - CP-Mimix-Purge-Sync-Compute-Environment-
+            - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
         SecurityGroupIds:
-        - !Ref 'SGDNS'
-        - !Ref 'SGWebServices'
-        - !Ref 'SGRDSMySQL'
+          - !Ref 'SGDNS'
+          - !Ref 'SGWebServices'
+          - !Ref 'SGRDSMySQL'
         Type: EC2
         Subnets:
-        - !Ref 'PvtSNa'
-        - !Ref 'PvtSNb'
-        - !Ref 'PvtSNc'
+          - !Ref 'PvtSNa'
+          - !Ref 'PvtSNb'
+          - !Ref 'PvtSNc'
         MinvCpus: 0
         ImageId: !Ref 'CommonAMI'
         InstanceRole: !Ref 'PurgeInstanceRole'
         InstanceTypes:
-        - optimal
+          - optimal
         Ec2KeyPair: !Ref 'PemKey'
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
           Version: $Default
         Tags:
-            Technical:ApplicationName:
-              Ref: 'ApplicationName'
-            Technical:ApplicationID:
-              Ref: 'ApplicationID'
-            Technical:PlatformOwner:
-              Ref: 'Owner'
-            Technical:Environment:
-              Ref: 'Environment'
-            Technical:ApplicationSubName:
-              Ref: 'Component'
-            Technical:ApplicationRole:
-              Ref: 'ApplicationRole'
-            Approver:
-              Ref: 'Approver'
-            PO_Number:
-              Ref: 'PONumber'
-            Project_ID:
-              Ref: 'ProjectID'
-            Support_Email:
-              Ref: 'SupportEmail'
-            2WTAGGER:
-              Ref: '2WTAGGER'
-            Platform:
-              Ref: 'Platform'
-            Name:
-              Ref: 'Component'
+          Technical:ApplicationName:
+            Ref: 'ApplicationName'
+          Technical:ApplicationID:
+            Ref: 'ApplicationID'
+          Technical:PlatformOwner:
+            Ref: 'Owner'
+          Technical:Environment:
+            Ref: 'Environment'
+          Technical:ApplicationSubName:
+            Ref: 'Component'
+          Technical:ApplicationRole:
+            Ref: 'ApplicationRole'
+          Approver:
+            Ref: 'Approver'
+          PO_Number:
+            Ref: 'PONumber'
+          Project_ID:
+            Ref: 'ProjectID'
+          Support_Email:
+            Ref: 'SupportEmail'
+          2WTAGGER:
+            Ref: '2WTAGGER'
+          Platform:
+            Ref: 'Platform'
+          Name:
+            Ref: 'Component'
       State: ENABLED
 
   JobDefinition:
@@ -311,6 +311,12 @@ Resources:
         Environment:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: 'QA'
+          - Name: 'SENDER'
+            Value: 'CloudPricingAlerts@corp.sysco.com'
+          - Name: 'SUBJECT'
+            Value: 'MIMIX-Purging-Alerts-QA'
+          - Name: 'TO_ADDRESSES'
+            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   JobQueue:
     Type: AWS::Batch::JobQueue
@@ -326,4 +332,3 @@ Resources:
         - Order: 1
           ComputeEnvironment:
             Ref: 'MimixPurgeEC2ComputeEnvironment'
-

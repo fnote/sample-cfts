@@ -118,7 +118,7 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.02.18
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.05.01
     Type: String
     Default: ami-00e06e7775c26730e
   ApplicationRole:
@@ -1571,6 +1571,12 @@ store
         Environment:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: 'PROD'
+          - Name: 'SENDER'
+            Value: 'CloudPricingAlerts@corp.sysco.com'
+          - Name: 'SUBJECT'
+            Value: 'MIMIX-Purging-Alerts-PROD'
+          - Name: 'TO_ADDRESSES'
+            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   JobQueue:
     Type: AWS::Batch::JobQueue
