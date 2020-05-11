@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-089a2dce1e6a846af",
+			"Default" : "ami-0db98ff240d2cc9d1",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},

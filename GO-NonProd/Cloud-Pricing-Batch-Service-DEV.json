@@ -161,7 +161,7 @@
         "CommonAMI": {
             "Description": "CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2",
             "Type": "String",
-            "Default": "ami-029b4991ba32498b2",
+            "Default": "ami-00e06e7775c26730e",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -215,11 +215,19 @@
                     "AttemptDurationSeconds" : 10800
                 },
                 "ContainerProperties": {
-                    "Image": "sysco/cp-batch",
-                    "Vcpus": 1,
-                    "Memory": 1000,
+                    "Image": "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-batch-dev:5050ecf7-0d7b-4f63-9073-fcf37908ecf5",
+                    "Vcpus": 4,
+                    "Memory": 8000,
                     "Privileged": true,
-                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role"
+                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role",
+                    "Environment": [
+                        {
+                            "Name": "SERVER_ENVIRONMENT_VARIABLE",
+                            "Value": {
+                                "Ref": "EnvironmentShort"
+                            }
+                        }
+                    ]
                 }
             }
         },
@@ -227,7 +235,10 @@
             "Type" : "AWS::EC2::LaunchTemplate",
             "Properties" : {
                 "LaunchTemplateData" : {
-                    "ImageId": "ami-0ab070b2555223954",
+                    "ImageId":
+                    {
+                        "Ref": "CommonAMI"
+                    },
                     "IamInstanceProfile" : {
                         "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Batch-IAM-Instance-Profile",
                         "Name" : "Cloud-Pricing-Batch-IAM-Instance-Profile"
@@ -306,7 +317,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "Launch-Template-CP-Batch-Service-",
+                            "LT-CP-Batch-Service-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -326,7 +337,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-",
+                            "CP-Batch-Compute-Environment-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
