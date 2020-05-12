@@ -41,6 +41,11 @@
 			"Type": "String",
 			"Default": "sg-0914feb8b95bd48c7"
 		},
+		"SGRDSSelfRef": {
+			"Description": "SG-RDS-SelfRef",
+			"Type": "String",
+			"Default": "sg-02ed9df769d0b902f"
+		},
 		"SGWebServices": {
 			"Description": "SG-WebServices",
 			"Type": "String",
@@ -512,6 +517,12 @@
 				"DatabaseName" : "ECOMMDB_Common01",
 				"DBClusterIdentifier" : "ecomm01dbcluster",
 				"Engine" : "aurora",
+				"DBClusterParameterGroupName": "param-group-loadfroms3",
+				"AssociatedRoles": [
+					{
+						"RoleArn" : "arn:aws:iam::130227353653:role/OutlierPriceRangeRDSLoadFromS3"
+					}
+				],
 				"MasterUsername": {
 					"Fn::Join": [
 						"",
@@ -537,7 +548,7 @@
 					]
 				},
 				"Port" : "3306",
-				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGRDSSelfRef" }],
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMMDB-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
