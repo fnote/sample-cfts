@@ -41,6 +41,11 @@
 			"Type": "String",
 			"Default": "sg-039f822d40c446322"
 		},
+		"SGRDSSelfRef": {
+			"Description": "SG-RDS-SelfRef",
+			"Type": "String",
+			"Default": "sg-06a4893b70fc2f68f"
+		},
 		"SGWebServices": {
 			"Description": "SG-WebServices",
 			"Type": "String",
@@ -561,7 +566,7 @@
 					]
 				},
 				"Port" : "3306",
-				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGRDSSelfRef" }],
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMMDB-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
