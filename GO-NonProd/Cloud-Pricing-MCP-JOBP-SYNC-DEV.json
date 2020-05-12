@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-MCP-DEV.json",
+	"Description": "AWS CloudFormation Template to create Ec2 instances for MCP, Job Processor amd Sync Processors",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -52,9 +52,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-0db98ff240d2cc9d1",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -292,17 +292,19 @@
 				]]}}
 			}
 		},
-		"JobProcessorGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"lx238cpjp01d" : {
+			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c"],
-				"LaunchConfigurationName" : { "Ref" : "JobProcessorLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" } ],
+				"AvailabilityZone" : "us-east-1c",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t3.medium",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : "lx238cpjp01d", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true"  },
@@ -318,30 +320,6 @@
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" }, "PropagateAtLaunch" : "true"  },
 					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
-				]
-			},
-			"UpdatePolicy" : {
-				"AutoScalingScheduledAction" : {
-					"IgnoreUnmodifiedGroupSizeProperties" : "true"
-				},
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT1M",
-					"WaitOnResourceSignals" : "false"
-				}
-			}
-		},
-		"JobProcessorLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
@@ -361,6 +339,24 @@
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
@@ -371,29 +367,13 @@
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
 					"##############################################\n",
 					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1229,46 +1209,6 @@
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
-			}
-		},
-		"CPMCPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-MCP",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPJPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Job-Processor",
-				"AutoScalingGroups" : [ { "Ref" : "JobProcessorGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPlatformDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Platform-Sync",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPricingDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Pricing-Sync",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}

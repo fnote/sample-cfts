@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-MCP-EXE.json",
+	"Description": "AWS CloudFormation Template to create Ec2 instances for MCP, Job Processor amd Sync Processors",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -52,7 +52,7 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL-2020.02.07 -> ami-0b8f196e5e09c0e62",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
 			"Default" : "ami-0db98ff240d2cc9d1",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
@@ -306,56 +306,34 @@
 				]]}}
 			}
 		},
-		"JobProcessorGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"lx238cpjp01e" : {
+			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c"],
-				"LaunchConfigurationName" : { "Ref" : "JobProcessorLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" } ],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpjp01e", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
-				]
-			},
-			"UpdatePolicy" : {
-				"AutoScalingScheduledAction" : {
-					"IgnoreUnmodifiedGroupSizeProperties" : "true"
-				},
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT1M",
-					"WaitOnResourceSignals" : "false"
-				}
-			}
-		},
-		"JobProcessorLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
 				"InstanceType" : "t3.medium",
 				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpjp01e"},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Component", "Value": "Job Processor"}
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
@@ -395,17 +373,13 @@
 					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
@@ -1317,62 +1291,6 @@
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
-			}
-		},
-		"CPMCPCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-MCP" }
-		},
-		"CPJobProcessorCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Job-Processor" }
-		},
-		"CPPlatformSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Platform-Sync" }
-		},
-		"CPPricingSyncCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "CP-Pricing-Sync" }
-		},
-		"CPMCPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPMCPCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPJPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPJobProcessorCodeDeployApp"},
-				"AutoScalingGroups" : [ { "Ref" : "JobProcessorGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPlatformDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPlatformSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPricingDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : {"Ref":"CPPricingSyncCodeDeployApp"},
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*e" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}
