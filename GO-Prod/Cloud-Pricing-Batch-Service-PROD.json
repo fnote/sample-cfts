@@ -194,7 +194,7 @@
         "IamInstanceProfile" : {
             "Type" :"String",
             "Description" : "Instance profile for CP batch pricing",
-            "Default": "Cloud-Pricing-Batch-IAM-Instance-Profile"
+            "Default": "Cloud-Pricing-IAM-ECS-Instance-Profile"
         },
         "AmazonEC2SpotFleetRole" : {
             "Type" :"String",
@@ -330,8 +330,8 @@
                         "Ref": "CommonAMI"
                     },
                     "IamInstanceProfile" : {
-                        "Arn" : "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Batch-IAM-Instance-Profile",
-                        "Name" : "Cloud-Pricing-Batch-IAM-Instance-Profile"
+                        "Arn" : "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-IAM-ECS-Instance-Profile",
+                        "Name" : "Cloud-Pricing-IAM-ECS-Instance-Profile"
                     },
                     "BlockDeviceMappings": [
                         {
