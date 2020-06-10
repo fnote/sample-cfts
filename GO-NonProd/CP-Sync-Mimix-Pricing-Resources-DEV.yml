@@ -69,7 +69,7 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Tuning
+    Default: Development
     AllowedValues:
       - Development
       - Execution
@@ -81,7 +81,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: STG
+    Default: DEV
     AllowedValues:
       - DEV
       - EXE
@@ -146,15 +146,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '2'
+    Default: '0'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '2'
+    Default: '0'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '2'
+    Default: '0'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -337,7 +337,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -375,7 +375,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -413,7 +413,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -451,7 +451,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -489,7 +489,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -527,7 +527,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -565,7 +565,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -603,7 +603,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -641,7 +641,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
@@ -679,7 +679,7 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-STG'
+              Value: 'Pricing-Alerts-DEV'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
