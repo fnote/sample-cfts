@@ -110,6 +110,7 @@
             "Type": "String",
             "Default": "EXE",
             "AllowedValues": [
+                "DEV",
                 "EXE",
                 "QA",
                 "STG",
@@ -159,7 +160,7 @@
             "Default": "KeyPair-Sysco-CloudPricing-NonProd"
         },
         "CommonAMI": {
-            "Description": "CP-Linux-ECS-Base-20190712 -> ami-029b4991ba32498b2",
+            "Description": "Sysco Gold Team managed AMI",
             "Type": "String",
             "Default": "ami-00e06e7775c26730e",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
@@ -167,27 +168,22 @@
         },
         "AmazonEC2SpotFleetRole" : {
             "Type" :"String",
-            "Description" : "CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role",
+            "Description" : "EC2 spot fleet tagging role for CP  batch pricing",
             "Default": "arn:aws:iam::037295147636:role/CloudPricing-IAM-EC2-Spot-Fleet-Tagging-Role"
         },
         "BatchServiceRole" : {
             "Type" : "String",
             "Description" : "Cloud-Pricing-Batch-Service-Role",
-            "Default": "arn:aws:iam::037295147636:role/Cloud-Pricing-Batch-Service-Role"
+            "Default": "arn:aws:iam::037295147636:role/Cloud-Pricing-IAM-Batch-Service-Role"
         },
         "IamInstanceProfile" : {
             "Type" :"String",
-            "Description" : "Cloud-Pricing-Batch-IAM-Instance-Profile",
+            "Description" : "Instance profile for CP batch pricing",
             "Default": "Cloud-Pricing-Batch-IAM-Instance-Profile"
-        },
-        "EcsInstanceRole" : {
-            "Type" :"String",
-            "Description" : "CloudPricing-Batch-IAM-ECS-Instance-Role",
-            "Default": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Ecs-Instance-Role"
         },
         "AWSBatchJobRole" : {
             "Type" :"String",
-            "Description" : "IAM role for batch job",
+            "Description" : "IAM role for batch jobs",
             "Default": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role"
         }
     },
@@ -218,7 +214,9 @@
                     "Vcpus": 4,
                     "Memory": 8000,
                     "Privileged": true,
-                    "JobRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-Batch-IAM-Job-Role",
+                    "JobRoleArn": {
+                        "Ref": "AWSBatchJobRole"
+                    },
                     "Environment": [
                         {
                             "Name": "SERVER_ENVIRONMENT_VARIABLE",

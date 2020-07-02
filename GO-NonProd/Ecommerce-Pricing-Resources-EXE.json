@@ -41,6 +41,11 @@
 			"Type": "String",
 			"Default": "sg-039f822d40c446322"
 		},
+		"SGRDSSelfRef": {
+			"Description": "SG-RDS-SelfRef",
+			"Type": "String",
+			"Default": "sg-06a4893b70fc2f68f"
+		},
 		"SGWebServices": {
 			"Description": "SG-WebServices",
 			"Type": "String",
@@ -260,9 +265,8 @@
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -530,6 +534,12 @@
 				"DatabaseName" : "ECOMMDB_Common01",
 				"DBClusterIdentifier" : "ecomm01dbcluster",
 				"Engine" : "aurora",
+				"DBClusterParameterGroupName": "param-group-loadfroms3",
+				"AssociatedRoles": [
+					{
+						"RoleArn" : "arn:aws:iam::037295147636:role/OutlierPriceRangeRDSLoadFromS3"
+					}
+				],
 				"MasterUsername": {
 					"Fn::Join": [
 						"",
@@ -555,7 +565,7 @@
 					]
 				},
 				"Port" : "3306",
-				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGRDSSelfRef" }],
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMMDB-Cluster-", { "Ref" : "EnvironmentShort" }]]}},

@@ -69,7 +69,7 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Tuning
+    Default: Development
     AllowedValues:
       - Development
       - Execution
@@ -81,7 +81,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: STG
+    Default: DEV
   ProjectId:
     Description: Project ID
     Type: String
@@ -138,15 +138,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '6'
+    Default: '0'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '6'
+    Default: '0'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '6'
+    Default: '0'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -286,6 +286,11 @@ Resources:
             - " >> /etc/ecs/ecs.config\n"
             - "sudo service docker start\n"
             - "sudo start ecs"
+            - "wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
+            - "rpm -U ./amazon-cloudwatch-agent.rpm"
+            - "mkdir -p /tmp/cpmimixysnc/logs"
+            - "cd /opt/aws/amazon-cloudwatch-agent/bin"
+            - "./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/MIMIX_SYNC/DEV/CLOUDWATCH -s"
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:

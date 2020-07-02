@@ -175,7 +175,7 @@
             "Default": "KeyPair-Sysco-CloudPricing-Prod"
         },
         "CommonAMI": {
-            "Description": "CP-Linux-Base-20181112 -> ami-029b4991ba32498b2",
+            "Description": "Sysco Gold Team managed AMI",
             "Type": "String",
             "Default": "ami-00e06e7775c26730e",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
@@ -189,17 +189,12 @@
         "AWSBatchJobRole" : {
             "Type" :"String",
             "Description" : "IAM role for batch jobs",
-            "Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-ECS-Task-Role"
+            "Default": "arn:aws:iam::130227353653:role/CloudPricing-Batch-IAM-Job-Role"
         },
         "IamInstanceProfile" : {
             "Type" :"String",
-            "Description" : "Instance profile foe CP batch pricing",
+            "Description" : "Instance profile for CP batch pricing",
             "Default": "Cloud-Pricing-IAM-ECS-Instance-Profile"
-        },
-        "EcsInstanceRole" : {
-            "Type" :"String",
-            "Description" : "ECS instance role for CP batch pricing",
-            "Default": "arn:aws:iam::130227353653:role/Cloud-Pricing-IAM-ECS-Instance-Role"
         },
         "AmazonEC2SpotFleetRole" : {
             "Type" :"String",
@@ -230,11 +225,21 @@
                     "AttemptDurationSeconds" : 21600
                 },
                 "ContainerProperties": {
-                    "Image": "sysco/cp-batch",
-                    "Vcpus": 1,
-                    "Memory": 1000,
+                    "Image": "130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-batch:6bbb3d97-33b3-4701-9ec3-3dd4b4545648",
+                    "Vcpus": 4,
+                    "Memory": 8000,
                     "Privileged": true,
-                    "JobRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-IAM-ECS-Task-Role"
+                    "JobRoleArn": {
+                        "Ref": "AWSBatchJobRole"
+                    },
+                    "Environment": [
+                        {
+                            "Name": "SERVER_ENVIRONMENT_VARIABLE",
+                            "Value": {
+                                "Ref": "EnvironmentShort"
+                            }
+                        }
+                    ]
                 }
             }
         },
@@ -325,8 +330,8 @@
                         "Ref": "CommonAMI"
                     },
                     "IamInstanceProfile" : {
-                        "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Batch-IAM-Instance-Profile",
-                        "Name" : "Cloud-Pricing-Batch-IAM-Instance-Profile"
+                        "Arn" : "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-IAM-ECS-Instance-Profile",
+                        "Name" : "Cloud-Pricing-IAM-ECS-Instance-Profile"
                     },
                     "BlockDeviceMappings": [
                         {
@@ -402,7 +407,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "Launch-Template-CP-Batch-Service-",
+                            "LT-CP-Batch-Service-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -422,7 +427,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env",
+                            "CP-Batch-Compute-Environment-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
