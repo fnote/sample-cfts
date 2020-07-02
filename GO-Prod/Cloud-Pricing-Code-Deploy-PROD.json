@@ -18,7 +18,7 @@
     "EnvironmentChar": {
       "Description": "Environment for application in single char",
       "Type": "String",
-      "Default": "e",
+      "Default": "",
       "AllowedValues": [
         "d",
         "q",
@@ -54,7 +54,7 @@
         "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*" }],
         "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
         "DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
-        "ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
       }
     },
     "CPJPCodeDeployGroup": {
@@ -64,7 +64,7 @@
         "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpjp*" }],
         "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
         "DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
-        "ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
       }
     },
     "CPSyncPlatformDeployGroup": {
@@ -74,7 +74,7 @@
         "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*" }],
         "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
         "DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
-        "ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
       }
     },
     "CPSyncPricingDeployGroup": {
@@ -84,7 +84,7 @@
         "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*" }],
         "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
         "DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
-        "ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
       }
     }
   }
