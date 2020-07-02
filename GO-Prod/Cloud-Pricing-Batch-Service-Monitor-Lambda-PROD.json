@@ -76,11 +76,6 @@
       "Description" : "User name of the Common DB",
       "Default": "svccp000"
     },
-    "CommonDBPassword" : {
-      "Type" : "String",
-      "Description" : "User password of the Common DB",
-      "Default": "TBD"
-    },
     "CommonDBURL" : {
       "Type" : "String",
       "Description" : "URL for Common DB",
@@ -198,7 +193,7 @@
         "Runtime": "python3.7",
         "Description": "Controller function for Cloud Pricing Batch Service Monitor",
         "MemorySize": 512,
-        "Timeout": 300,
+        "Timeout": 900,
         "Role": { "Ref": "IAMRole" },
         "VpcConfig": {
           "SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
@@ -228,7 +223,6 @@
           "Variables": {
             "COMMONDB_NAME": { "Ref" : "CommonDBName" },
             "COMMONDB_USERNAME": { "Ref" : "CommonDBUserName" },
-            "COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
             "COMMONDB_URL": { "Ref" : "CommonDBURL" },
             "SERVER_ENVIRONMENT_VARIABLE": { "Ref" : "EnvironmentShort" }
           }

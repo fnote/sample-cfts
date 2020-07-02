@@ -1,0 +1,91 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Template to create Code Deploy Application and Groups",
+  "Parameters": {
+    "EnvironmentShort": {
+      "Description": "Environment for application",
+      "Type": "String",
+      "Default": "PROD",
+      "AllowedValues": [
+        "DEV",
+        "QA",
+        "STG",
+        "EXE",
+        "PROD"
+      ],
+      "ConstraintDescription": "Must be a valid environment."
+    },
+    "EnvironmentChar": {
+      "Description": "Environment for application in single char",
+      "Type": "String",
+      "Default": "",
+      "AllowedValues": [
+        "d",
+        "q",
+        "s",
+        "e",
+        "t",
+        ""
+      ],
+      "ConstraintDescription": "Must be a valid environment."
+    }
+  },
+  "Resources": {
+    "CPMCPCodeDeployApp": {
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : { "ApplicationName" : "CP-MCP" }
+    },
+    "CPJobProcessorCodeDeployApp": {
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : { "ApplicationName" : "CP-Job-Processor" }
+    },
+    "CPPlatformSyncCodeDeployApp": {
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : { "ApplicationName" : "CP-Platform-Sync" }
+    },
+    "CPPricingSyncCodeDeployApp": {
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : { "ApplicationName" : "CP-Pricing-Sync" }
+    },
+    "CPMCPCodeDeployGroup": {
+      "Type" : "AWS::CodeDeploy::DeploymentGroup",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"CPMCPCodeDeployApp"},
+        "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*" }],
+        "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+        "DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
+      }
+    },
+    "CPJPCodeDeployGroup": {
+      "Type" : "AWS::CodeDeploy::DeploymentGroup",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"CPJobProcessorCodeDeployApp"},
+        "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpjp*" }],
+        "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+        "DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
+      }
+    },
+    "CPSyncPlatformDeployGroup": {
+      "Type" : "AWS::CodeDeploy::DeploymentGroup",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"CPPlatformSyncCodeDeployApp"},
+        "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*" }],
+        "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+        "DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
+      }
+    },
+    "CPSyncPricingDeployGroup": {
+      "Type" : "AWS::CodeDeploy::DeploymentGroup",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"CPPricingSyncCodeDeployApp"},
+        "Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*" }],
+        "DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+        "DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
+        "ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
+      }
+    }
+  }
+}

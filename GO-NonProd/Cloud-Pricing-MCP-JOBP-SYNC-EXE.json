@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-MCP-DEV.json",
+	"Description": "AWS CloudFormation Template to create Ec2 instances for MCP, Job Processor amd Sync Processors",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -52,9 +52,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
-			"Default" : "ami-0321a6ac5fe506c98",
+			"Default" : "ami-09c970c4cc71b6bd2",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -164,7 +164,7 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "Development",
+			"Default": "Execution",
 			"AllowedValues": [
 				"Development",
 				"Quality",
@@ -178,7 +178,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "DEV",
+			"Default": "EXE",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -190,7 +190,7 @@
 		}
 	},
 	"Resources": {
-		"lx238cpmcp01d" : {
+		"lx238cpmcp01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -204,7 +204,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpmcp01d" },
+					{ "Key" : "Name", "Value" : "lx238cpmcp01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -229,25 +229,49 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpmcp01d.na.sysco.net\n",
+					"hostname lx238cpmcp01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpmcp01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpmcp01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -256,20 +280,17 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"##############################################\n",
 					"# Setting cronjobs for Tomcat\n",
 					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
 
 					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"/usr/local/tomcat/bin/startup.sh\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -281,67 +302,38 @@
 					"chgrp -R -c ec2-user /settings\n",
 					"chmod -R -c 777 /settings\n",
 
-					"##############################################\n",
-					"# Splunk - Clear Settings\n",
-					"##############################################\n",
-					"/opt/splunkforwarder/bin/splunk stop\n",
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk start\n",
-
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
 			}
 		},
-		"JobProcessorGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+		"lx238cpjp01e" : {
+			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"AvailabilityZones" : ["us-east-1c"],
-				"LaunchConfigurationName" : { "Ref" : "JobProcessorLaunchConfig" },
-				"MinSize" : "1",
-				"MaxSize" : "2",
-				"DesiredCapacity" : "1",
-				"HealthCheckType": "EC2",
-				"HealthCheckGracePeriod": "300",
-				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNc" } ],
-				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpjp01d", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" }, "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Component", "Value": "Job Processor", "PropagateAtLaunch" : "true" }
-				]
-			},
-			"UpdatePolicy" : {
-				"AutoScalingScheduledAction" : {
-					"IgnoreUnmodifiedGroupSizeProperties" : "true"
-				},
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT1M",
-					"WaitOnResourceSignals" : "false"
-				}
-			}
-		},
-		"JobProcessorLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
+				"AvailabilityZone" : "us-east-1c",
 				"ImageId" : {"Ref" : "CommonAMI"},
 				"InstanceType" : "t3.medium",
 				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
+				"SecurityGroupIds" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"SubnetId": { "Ref": "PvtSNc" },
 				"BlockDeviceMappings" : [
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "lx238cpjp01e"},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Ref" : "Component" } },
+					{ "Key" : "Technical:ApplicationRole", "Value": { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Component", "Value": "Job Processor"}
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
@@ -353,12 +345,30 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpjp01d.na.sysco.net\n",
+					"hostname lx238cpjp01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpjp01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpjp01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
+
+					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
 
 					"##############################################\n",
 					"# Add Users to server\n",
@@ -371,29 +381,13 @@
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
 					"##############################################\n",
 					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
-
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx2048M\\\"'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -411,7 +405,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplm01d" : {
+		"lx238cpsyncplm01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -425,7 +419,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "100", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplm01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplm01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -450,25 +444,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplm01d.na.sysco.net\n",
+					"hostname lx238cpsyncplm01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplm01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplm01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -477,29 +497,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
 					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -516,7 +516,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpla01d" : {
+		"lx238cpsyncpla01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -530,7 +530,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpla01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpla01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -555,25 +555,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpla01d.na.sysco.net\n",
+					"hostname lx238cpsyncpla01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpla01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpla01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -582,29 +608,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
 					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -621,7 +627,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplr01d" : {
+		"lx238cpsyncplr01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -635,7 +641,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplr01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplr01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -660,25 +666,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplr01d.na.sysco.net\n",
+					"hostname lx238cpsyncplr01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplr01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplr01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -687,29 +719,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
 					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -726,7 +738,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncplc01d" : {
+		"lx238cpsyncplc01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -740,7 +752,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncplc01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncplc01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -765,25 +777,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncplc01d.na.sysco.net\n",
+					"hostname lx238cpsyncplc01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncplc01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncplc01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -792,29 +830,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PLATFORM'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
-
-					"##############################################\n",
 					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo '0 2 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -831,7 +849,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprm01d" : {
+		"lx238cpsyncprm01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -845,7 +863,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprm01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprm01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -870,25 +888,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprm01d.na.sysco.net\n",
+					"hostname lx238cpsyncprm01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprm01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprm01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -897,24 +941,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=masterdata'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -931,7 +960,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncpra01d" : {
+		"lx238cpsyncpra01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -945,7 +974,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncpra01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncpra01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -970,25 +999,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncpra01d.na.sysco.net\n",
+					"hostname lx238cpsyncpra01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncpra01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncpra01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -997,24 +1052,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=agreements'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=agreements'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1031,7 +1071,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprr01d" : {
+		"lx238cpsyncprr01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1045,7 +1085,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprr01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprr01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -1070,25 +1110,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprr01d.na.sysco.net\n",
+					"hostname lx238cpsyncprr01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprr01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprr01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -1097,24 +1163,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=rules'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=rules'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1131,7 +1182,7 @@
 				]]}}
 			}
 		},
-		"lx238cpsyncprc01d" : {
+		"lx238cpsyncprc01e" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"AvailabilityZone" : "us-east-1c",
@@ -1145,7 +1196,7 @@
 					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
 				],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : "lx238cpsyncprc01d" },
+					{ "Key" : "Name", "Value" : "lx238cpsyncprc01e" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
@@ -1170,25 +1221,51 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"hostname lx238cpsyncprc01d.na.sysco.net\n",
+					"hostname lx238cpsyncprc01e.na.sysco.net\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=lx238cpsyncprc01d.na.sysco.net\n",
+					"HOSTNAME=lx238cpsyncprc01e.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
 					"##############################################\n",
+					"# Set System Environment and Tomcat JVM Heap size\n",
+					"##############################################\n",
+					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
+					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
+
+					"##############################################\n",
+					"# Install Java/Tomcat/CodeDeploy\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"yum install -y jdk-8u131-linux-x64.rpm\n",
+					"mkdir -p /usr/local/tomcat\n",
+					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
+					"# usermod -a -G aix jowe6212\n",
+					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
 					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
 					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathna\" gkar5861\n",
+					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -1197,24 +1274,9 @@
 					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
 					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
+					"# Setting a cronjob for restart the instance daily\n",
 					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms512M -Xmx3072M\\\"'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_ROLE=PRICING'\" >> /etc/environment\n",
-					"sh -c \"echo 'export SYNCHRONIZATION_TYPE=costs'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SYNCHRONIZATION_TYPE=costs'\" >> /etc/environment\n",
-
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat8/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
-
-					"# Start Tomcat\n",
-					"/usr/local/tomcat8/bin/startup.sh\n",
+					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
 					"####################################\n",
 					"# Create settings folder\n",
@@ -1229,46 +1291,6 @@
 
 					"date > /home/ec2-user/stoptime\n"
 				]]}}
-			}
-		},
-		"CPMCPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-MCP",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpmcp*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-MCP04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPJPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Job-Processor",
-				"AutoScalingGroups" : [ { "Ref" : "JobProcessorGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP-Job-Processor04-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPlatformDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Platform-Sync",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpl*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Platform-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
-			}
-		},
-		"CPSyncPricingDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "CP-Pricing-Sync",
-				"Ec2TagFilters" : [{ "Key" : "Name", "Type": "KEY_AND_VALUE", "Value" : "lx238cpsyncpr*d" }],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["CPSync-Pricing-", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}
