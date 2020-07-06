@@ -162,7 +162,7 @@
         "CommonAMI": {
             "Description": "Sysco Gold Team managed AMI",
             "Type": "String",
-            "Default": "ami-00e06e7775c26730e",
+            "Default": "ami-0ca349b191791437f",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -315,7 +315,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "LT-CP-Batch-Service-",
+                            "Launch-Template-CP-Batch-Service-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -335,7 +335,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Environment-",
+                            "CP-Batch-Compute-Env-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
