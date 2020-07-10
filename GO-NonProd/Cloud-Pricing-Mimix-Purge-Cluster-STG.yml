@@ -112,7 +112,7 @@ Parameters:
   RootVolumeSize:
     Description: Root Volume Size
     Type: String
-    Default: 150
+    Default: 80
   PemKey:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: String
