@@ -151,7 +151,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 001"
       Name: "Mimix-Daily-Purge-Sync-PROD-001-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 05 * * ? *)'
+      ScheduleExpression: 'cron(30 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -168,7 +168,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 002"
       Name: "Mimix-Daily-Purge-Sync-PROD-002-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 02 * * ? *)'
+      ScheduleExpression: 'cron(00 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -185,7 +185,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 003"
       Name: "Mimix-Daily-Purge-Sync-PROD-003-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 02 * * ? *)'
+      ScheduleExpression: 'cron(08 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -202,7 +202,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 004"
       Name: "Mimix-Daily-Purge-Sync-PROD-004-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 06 * * ? *)'
+      ScheduleExpression: 'cron(15 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -219,7 +219,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 005"
       Name: "Mimix-Daily-Purge-Sync-PROD-005-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 07 * * ? *)'
+      ScheduleExpression: 'cron(45 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -236,7 +236,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 006"
       Name: "Mimix-Daily-Purge-Sync-PROD-006-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 05 * * ? *)'
+      ScheduleExpression: 'cron(00 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -253,7 +253,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 007"
       Name: "Mimix-Daily-Purge-Sync-PROD-007-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 04 * * ? *)'
+      ScheduleExpression: 'cron(30 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -270,7 +270,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 008"
       Name: "Mimix-Daily-Purge-Sync-PROD-008-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 02 * * ? *)'
+      ScheduleExpression: 'cron(30 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -287,7 +287,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 009"
       Name: "Mimix-Daily-Purge-Sync-PROD-009-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 02 * * ? *)'
+      ScheduleExpression: 'cron(15 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -304,7 +304,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 010"
       Name: "Mimix-Daily-Purge-Sync-PROD-010-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 02 * * ? *)'
+      ScheduleExpression: 'cron(38 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -321,7 +321,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 011"
       Name: "Mimix-Daily-Purge-Sync-PROD-011-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 02 * * ? *)'
+      ScheduleExpression: 'cron(23 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -338,7 +338,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 012"
       Name: "Mimix-Daily-Purge-Sync-PROD-012-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 03 * * ? *)'
+      ScheduleExpression: 'cron(00 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -355,7 +355,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 013"
       Name: "Mimix-Daily-Purge-Sync-PROD-013-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 04 * * ? *)'
+      ScheduleExpression: 'cron(30 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -372,7 +372,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 014"
       Name: "Mimix-Daily-Purge-Sync-PROD-014-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 05 * * ? *)'
+      ScheduleExpression: 'cron(00 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -389,7 +389,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 015"
       Name: "Mimix-Daily-Purge-Sync-PROD-015-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(00 03 * * ? *)'
+      ScheduleExpression: 'cron(45 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -406,7 +406,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 016"
       Name: "Mimix-Daily-Purge-Sync-PROD-016-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 03 * * ? *)'
+      ScheduleExpression: 'cron(08 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -423,7 +423,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 017"
       Name: "Mimix-Daily-Purge-Sync-PROD-017-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 07 * * ? *)'
+      ScheduleExpression: 'cron(15 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -440,7 +440,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 018"
       Name: "Mimix-Daily-Purge-Sync-PROD-018-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 05 * * ? *)'
+      ScheduleExpression: 'cron(08 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -457,7 +457,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 019"
       Name: "Mimix-Daily-Purge-Sync-PROD-019-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 03 * * ? *)'
+      ScheduleExpression: 'cron(15 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -491,7 +491,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 023"
       Name: "Mimix-Daily-Purge-Sync-PROD-023-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 05 * * ? *)'
+      ScheduleExpression: 'cron(38 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -508,7 +508,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 024"
       Name: "Mimix-Daily-Purge-Sync-PROD-024-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 06 * * ? *)'
+      ScheduleExpression: 'cron(23 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -525,7 +525,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 025"
       Name: "Mimix-Daily-Purge-Sync-PROD-025-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 03 * * ? *)'
+      ScheduleExpression: 'cron(38 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -542,7 +542,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 026"
       Name: "Mimix-Daily-Purge-Sync-PROD-026-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 06 * * ? *)'
+      ScheduleExpression: 'cron(30 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -559,7 +559,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 027"
       Name: "Mimix-Daily-Purge-Sync-PROD-027-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 03 * * ? *)'
+      ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -576,7 +576,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 031"
       Name: "Mimix-Daily-Purge-Sync-PROD-031-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(00 07 * * ? *)'
+      ScheduleExpression: 'cron(45 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -593,7 +593,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 029"
       Name: "Mimix-Daily-Purge-Sync-PROD-029-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 06 * * ? *)'
+      ScheduleExpression: 'cron(45 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -610,7 +610,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 032"
       Name: "Mimix-Daily-Purge-Sync-PROD-032-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 03 * * ? *)'
+      ScheduleExpression: 'cron(00 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -627,7 +627,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 035"
       Name: "Mimix-Daily-Purge-Sync-PROD-035-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 06 * * ? *)'
+      ScheduleExpression: 'cron(53 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -644,7 +644,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 036"
       Name: "Mimix-Daily-Purge-Sync-PROD-036-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 07 * * ? *)'
+      ScheduleExpression: 'cron(23 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -661,7 +661,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 037"
       Name: "Mimix-Daily-Purge-Sync-PROD-037-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 04 * * ? *)'
+      ScheduleExpression: 'cron(38 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -678,7 +678,7 @@ Resources:
       Description: "Mimix Daily Purge Sync for 038"
       Name: "Mimix-Daily-Purge-Sync-PROD-038-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 03 * * ? *)'
+      ScheduleExpression: 'cron(53 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -697,7 +697,7 @@ Resources:
 SLECT s.id, s.name ifnull (st1.setting_value, false) as 'oo'
 store
       State: DISABLED
-      ScheduleExpression: 'cron(00 06 * * ? *)'
+      ScheduleExpression: 'cron(15 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -714,7 +714,7 @@ store
       Description: "Mimix Daily Purge Sync for 040"
       Name: "Mimix-Daily-Purge-Sync-PROD-040-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 07 * * ? *)'
+      ScheduleExpression: 'cron(53 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -731,7 +731,7 @@ store
       Description: "Mimix Daily Purge Sync for 043"
       Name: "Mimix-Daily-Purge-Sync-PROD-043-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(00 08 * * ? *)'
+      ScheduleExpression: 'cron(15 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -748,7 +748,7 @@ store
       Description: "Mimix Daily Purge Sync for 045"
       Name: "Mimix-Daily-Purge-Sync-PROD-045-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 07 * * ? *)'
+      ScheduleExpression: 'cron(00 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -765,7 +765,7 @@ store
       Description: "Mimix Daily Purge Sync for 046"
       Name: "Mimix-Daily-Purge-Sync-PROD-046-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 06 * * ? *)'
+      ScheduleExpression: 'cron(23 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -782,7 +782,7 @@ store
       Description: "Mimix Daily Purge Sync for 047"
       Name: "Mimix-Daily-Purge-Sync-PROD-047-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 06 * * ? *)'
+      ScheduleExpression: 'cron(38 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -799,7 +799,7 @@ store
       Description: "Mimix Daily Purge Sync for 048"
       Name: "Mimix-Daily-Purge-Sync-PROD-048-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 03 * * ? *)'
+      ScheduleExpression: 'cron(08 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -816,7 +816,7 @@ store
       Description: "Mimix Daily Purge Sync for 049"
       Name: "Mimix-Daily-Purge-Sync-PROD-049-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 06 * * ? *)'
+      ScheduleExpression: 'cron(00 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -833,7 +833,7 @@ store
       Description: "Mimix Daily Purge Sync for 050"
       Name: "Mimix-Daily-Purge-Sync-PROD-050-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 08 * * ? *)'
+      ScheduleExpression: 'cron(23 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -850,7 +850,7 @@ store
       Description: "Mimix Daily Purge Sync for 051"
       Name: "Mimix-Daily-Purge-Sync-PROD-051-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 04 * * ? *)'
+      ScheduleExpression: 'cron(00 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -867,7 +867,7 @@ store
       Description: "Mimix Daily Purge Sync for 052"
       Name: "Mimix-Daily-Purge-Sync-PROD-052-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 08 * * ? *)'
+      ScheduleExpression: 'cron(45 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -884,7 +884,7 @@ store
       Description: "Mimix Daily Purge Sync for 054"
       Name: "Mimix-Daily-Purge-Sync-PROD-054-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 04 * * ? *)'
+      ScheduleExpression: 'cron(38 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -901,7 +901,7 @@ store
       Description: "Mimix Daily Purge Sync for 056"
       Name: "Mimix-Daily-Purge-Sync-PROD-056-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 07 * * ? *)'
+      ScheduleExpression: 'cron(08 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -918,7 +918,7 @@ store
       Description: "Mimix Daily Purge Sync for 055"
       Name: "Mimix-Daily-Purge-Sync-PROD-055-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 05 * * ? *)'
+      ScheduleExpression: 'cron(08 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -935,7 +935,7 @@ store
       Description: "Mimix Daily Purge Sync for 057"
       Name: "Mimix-Daily-Purge-Sync-PROD-057-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 04 * * ? *)'
+      ScheduleExpression: 'cron(08 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -952,7 +952,7 @@ store
       Description: "Mimix Daily Purge Sync for 058"
       Name: "Mimix-Daily-Purge-Sync-PROD-058-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(00 04 * * ? *)'
+      ScheduleExpression: 'cron(15 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -969,7 +969,7 @@ store
       Description: "Mimix Daily Purge Sync for 059"
       Name: "Mimix-Daily-Purge-Sync-PROD-059-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 08 * * ? *)'
+      ScheduleExpression: 'cron(30 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -986,7 +986,7 @@ store
       Description: "Mimix Daily Purge Sync for 060"
       Name: "Mimix-Daily-Purge-Sync-PROD-060-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(00 05 * * ? *)'
+      ScheduleExpression: 'cron(45 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1003,7 +1003,7 @@ store
       Description: "Mimix Daily Purge Sync for 061"
       Name: "Mimix-Daily-Purge-Sync-PROD-061-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 07 * * ? *)'
+      ScheduleExpression: 'cron(53 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1020,7 +1020,7 @@ store
       Description: "Mimix Daily Purge Sync for 064"
       Name: "Mimix-Daily-Purge-Sync-PROD-064-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 05 * * ? *)'
+      ScheduleExpression: 'cron(15 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1037,7 +1037,7 @@ store
       Description: "Mimix Daily Purge Sync for 066"
       Name: "Mimix-Daily-Purge-Sync-PROD-066-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 08 * * ? *)'
+      ScheduleExpression: 'cron(53 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1054,7 +1054,7 @@ store
       Description: "Mimix Daily Purge Sync for 067"
       Name: "Mimix-Daily-Purge-Sync-PROD-067-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(10 07 * * ? *)'
+      ScheduleExpression: 'cron(00 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1071,7 +1071,7 @@ store
       Description: "Mimix Daily Purge Sync for 068"
       Name: "Mimix-Daily-Purge-Sync-PROD-068-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(20 04 * * ? *)'
+      ScheduleExpression: 'cron(45 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1088,7 +1088,7 @@ store
       Description: "Mimix Daily Purge Sync for 073"
       Name: "Mimix-Daily-Purge-Sync-PROD-073-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 05 * * ? *)'
+      ScheduleExpression: 'cron(45 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1105,7 +1105,7 @@ store
       Description: "Mimix Daily Purge Sync for 075"
       Name: "Mimix-Daily-Purge-Sync-PROD-075-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 04 * * ? *)'
+      ScheduleExpression: 'cron(53 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1122,7 +1122,7 @@ store
       Description: "Mimix Daily Purge Sync for 076"
       Name: "Mimix-Daily-Purge-Sync-PROD-076-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 04 * * ? *)'
+      ScheduleExpression: 'cron(15 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1139,7 +1139,7 @@ store
       Description: "Mimix Daily Purge Sync for 078"
       Name: "Mimix-Daily-Purge-Sync-PROD-078-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 06 * * ? *)'
+      ScheduleExpression: 'cron(08 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1156,7 +1156,7 @@ store
       Description: "Mimix Daily Purge Sync for 101"
       Name: "Mimix-Daily-Purge-Sync-PROD-101-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 08 * * ? *)'
+      ScheduleExpression: 'cron(38 10 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1173,7 +1173,7 @@ store
       Description: "Mimix Daily Purge Sync for 102"
       Name: "Mimix-Daily-Purge-Sync-PROD-102-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(40 08 * * ? *)'
+      ScheduleExpression: 'cron(15 11 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1190,7 +1190,7 @@ store
       Description: "Mimix Daily Purge Sync for 134"
       Name: "Mimix-Daily-Purge-Sync-PROD-134-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 03 * * ? *)'
+      ScheduleExpression: 'cron(23 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1207,7 +1207,7 @@ store
       Description: "Mimix Daily Purge Sync for 137"
       Name: "Mimix-Daily-Purge-Sync-PROD-137-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 05 * * ? *)'
+      ScheduleExpression: 'cron(53 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1224,7 +1224,7 @@ store
       Description: "Mimix Daily Purge Sync for 163"
       Name: "Mimix-Daily-Purge-Sync-PROD-163-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(25 05 * * ? *)'
+      ScheduleExpression: 'cron(23 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1241,7 +1241,7 @@ store
       Description: "Mimix Daily Purge Sync for 164"
       Name: "Mimix-Daily-Purge-Sync-PROD-164-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(50 06 * * ? *)'
+      ScheduleExpression: 'cron(30 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1258,7 +1258,7 @@ store
       Description: "Mimix Daily Purge Sync for 194"
       Name: "Mimix-Daily-Purge-Sync-PROD-194-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 05 * * ? *)'
+      ScheduleExpression: 'cron(53 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1275,7 +1275,7 @@ store
       Description: "Mimix Daily Purge Sync for 195BatchServiceRoleBatchServiceRole"
       Name: "Mimix-Daily-Purge-Sync-PROD-195-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 07 * * ? *)'
+      ScheduleExpression: 'cron(30 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1292,7 +1292,7 @@ store
       Description: "Mimix Daily Purge Sync for 288"
       Name: "Mimix-Daily-Purge-Sync-PROD-288-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 03 * * ? *)'
+      ScheduleExpression: 'cron(53 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1309,7 +1309,7 @@ store
       Description: "Mimix Daily Purge Sync for 293"
       Name: "Mimix-Daily-Purge-Sync-PROD-293-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(15 07 * * ? *)'
+      ScheduleExpression: 'cron(08 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1326,7 +1326,7 @@ store
       Description: "Mimix Daily Purge Sync for 306"
       Name: "Mimix-Daily-Purge-Sync-PROD-306-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 04 * * ? *)'
+      ScheduleExpression: 'cron(23 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1343,7 +1343,7 @@ store
       Description: "Mimix Daily Purge Sync for 320"
       Name: "Mimix-Daily-Purge-Sync-PROD-320-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(30 08 * * ? *)'
+      ScheduleExpression: 'cron(00 11 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref JobQueue
@@ -1360,7 +1360,7 @@ store
       Description: "Mimix Daily Purge Sync for 332"
       Name: "Mimix-Daily-Purge-Sync-PROD-332-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(35 07 * * ? *)'
+      ScheduleExpression: 'cron(38 09 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1377,7 +1377,7 @@ store
       Description: "Mimix Daily Purge Sync for 335"
       Name: "Mimix-Daily-Purge-Sync-PROD-335-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(45 08 * * ? *)'
+      ScheduleExpression: 'cron(20 11 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1394,7 +1394,7 @@ store
       Description: "Mimix Daily Purge Sync for 344"
       Name: "Mimix-Daily-Purge-Sync-PROD-344-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(05 04 * * ? *)'
+      ScheduleExpression: 'cron(23 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1411,7 +1411,7 @@ store
       Description: "Mimix Daily Purge Sync for 429"
       Name: "Mimix-Daily-Purge-Sync-PROD-429-Trigger"
       State: DISABLED
-      ScheduleExpression: 'cron(55 06 * * ? *)'
+      ScheduleExpression: 'cron(38 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1428,7 +1428,7 @@ store
       Description: "Mimix Daily Purge Sync for 450"
       Name: "Mimix-Daily-Purge-Sync-PROD-450-Trigger"
       State: ENABLED
-      ScheduleExpression: 'cron(35 08 * * ? *)'
+      ScheduleExpression: 'cron(08 11 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
