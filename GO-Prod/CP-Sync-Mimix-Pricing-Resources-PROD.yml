@@ -160,11 +160,11 @@ Parameters:
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::130227353653:role/CloudPricing-Mimix-Task-Role
+    Default: arn:aws:iam::130227353653:role/CLoud-Pricing-Pricing-Sync-Job-Role
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::130227353653:role/CloudPricing-Mimix-Task-Role
+    Default: arn:aws:iam::130227353653:role/CLoud-Pricing-Pricing-Sync-Job-Role
   MimixInstanceRole:
     Description: ARN of role attached to Mimix Purge Sync Servers.
     Type: String
@@ -690,8 +690,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerOneTaskDefinition'
       Tags:
@@ -730,8 +730,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerTwoTaskDefinition'
       Tags:
@@ -770,8 +770,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerThreeTaskDefinition'
       Tags:
@@ -810,8 +810,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerFourTaskDefinition'
       Tags:
@@ -850,8 +850,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerFiveTaskDefinition'
       Tags:
@@ -890,8 +890,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerSixTaskDefinition'
       Tags:
@@ -930,8 +930,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerSevenTaskDefinition'
       Tags:
@@ -970,8 +970,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerEightTaskDefinition'
       Tags:
@@ -1010,8 +1010,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerNineTaskDefinition'
       Tags:
@@ -1050,8 +1050,8 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
+        MaximumPercent: 100
+        MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
       TaskDefinition: !Ref 'ServerTenTaskDefinition'
       Tags:
