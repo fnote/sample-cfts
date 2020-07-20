@@ -362,9 +362,13 @@
 					"targetUri = splunkdeploy.na.sysco.net:8089\n",
 					"EOF\n",
 
-					"/opt/splunkforwarder/bin/splunk restart --accept-license --answer-yes --no-prompt\n",
 					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
 					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
+					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
+					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
+
+					"/opt/splunkforwarder/bin/splunk restart --accept-license --answer-yes --no-prompt\n",
+					"/opt/splunkforwarder/bin/splunk status\n",
 					"/opt/splunkforwarder/bin/splunk stop --accept-license --answer-yes --no-prompt\n",
 					"sleep 5\n",
 
