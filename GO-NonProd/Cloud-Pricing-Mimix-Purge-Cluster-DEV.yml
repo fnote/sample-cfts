@@ -81,6 +81,10 @@ Parameters:
     Description: Docker image of mimix sync processor
     Type: String
     Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync
+  JobDefinitionArn:
+    Description: Job Definition Arn
+    Type: String
+    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition-DEV
   PvtSNa:
     Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: String
@@ -159,7 +163,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "001"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '001-Purge-Sync-Job'
 
   MimixDailyPurgeSync002:
@@ -176,7 +180,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "002"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '002-Purge-Sync-Job'
 
   MimixDailyPurgeSync003:
@@ -193,7 +197,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "003"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '003-Purge-Sync-Job'
 
   MimixDailyPurgeSync004:
@@ -210,7 +214,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "004"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '004-Purge-Sync-Job'
 
   MimixDailyPurgeSync005:
@@ -227,7 +231,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "005"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '005-Purge-Sync-Job'
 
   MimixDailyPurgeSync006:
@@ -244,7 +248,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "006"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '006-Purge-Sync-Job'
 
   MimixDailyPurgeSync007:
@@ -261,7 +265,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "007"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '007-Purge-Sync-Job'
 
   MimixDailyPurgeSync008:
@@ -278,7 +282,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "008"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '008-Purge-Sync-Job'
 
   MimixDailyPurgeSync009:
@@ -295,7 +299,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "009"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '009-Purge-Sync-Job'
 
   MimixDailyPurgeSync010:
@@ -312,7 +316,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "010"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '010-Purge-Sync-Job'
 
   MimixDailyPurgeSync011:
@@ -329,7 +333,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "011"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '011-Purge-Sync-Job'
 
   MimixDailyPurgeSync012:
@@ -346,7 +350,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "012"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '012-Purge-Sync-Job'
 
   MimixDailyPurgeSync013:
@@ -363,7 +367,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "013"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '013-Purge-Sync-Job'
 
   MimixDailyPurgeSync014:
@@ -380,7 +384,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "014"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '014-Purge-Sync-Job'
 
   MimixDailyPurgeSync015:
@@ -397,7 +401,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "015"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '015-Purge-Sync-Job'
 
   MimixDailyPurgeSync016:
@@ -414,7 +418,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "016"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '016-Purge-Sync-Job'
 
   MimixDailyPurgeSync017:
@@ -431,7 +435,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "017"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '017-Purge-Sync-Job'
 
   MimixDailyPurgeSync018:
@@ -448,7 +452,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "018"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '018-Purge-Sync-Job'
 
   MimixDailyPurgeSync019:
@@ -465,7 +469,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "019"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '019-Purge-Sync-Job'
 
   MimixDailyPurgeSync022:
@@ -482,7 +486,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "022"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '022-Purge-Sync-Job'
 
   MimixDailyPurgeSync023:
@@ -499,7 +503,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "023"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '023-Purge-Sync-Job'
 
   MimixDailyPurgeSync024:
@@ -516,7 +520,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "024"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '024-Purge-Sync-Job'
 
   MimixDailyPurgeSync025:
@@ -533,7 +537,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "025"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '025-Purge-Sync-Job'
 
   MimixDailyPurgeSync026:
@@ -550,7 +554,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "026"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '026-Purge-Sync-Job'
 
   MimixDailyPurgeSync027:
@@ -567,7 +571,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "027"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '027-Purge-Sync-Job'
 
   MimixDailyPurgeSync031:
@@ -584,7 +588,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "031"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '031-Purge-Sync-Job'
 
   MimixDailyPurgeSync029:
@@ -601,7 +605,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "029"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '029-Purge-Sync-Job'
 
   MimixDailyPurgeSync032:
@@ -618,7 +622,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "032"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '032-Purge-Sync-Job'
 
   MimixDailyPurgeSync035:
@@ -635,7 +639,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "035"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '035-Purge-Sync-Job'
 
   MimixDailyPurgeSync036:
@@ -652,7 +656,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "036"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '036-Purge-Sync-Job'
 
   MimixDailyPurgeSync037:
@@ -669,7 +673,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "037"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '037-Purge-Sync-Job'
 
   MimixDailyPurgeSync038:
@@ -686,7 +690,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "038"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '038-Purge-Sync-Job'
 
   MimixDailyPurgeSync039:
@@ -703,7 +707,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "039"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '039-Purge-Sync-Job'
 
   MimixDailyPurgeSync040:
@@ -720,7 +724,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "040"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '040-Purge-Sync-Job'
 
   MimixDailyPurgeSync043:
@@ -737,7 +741,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "043"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '043-Purge-Sync-Job'
 
   MimixDailyPurgeSync045:
@@ -754,7 +758,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "045"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '045-Purge-Sync-Job'
 
   MimixDailyPurgeSync046:
@@ -771,7 +775,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "046"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '046-Purge-Sync-Job'
 
   MimixDailyPurgeSync047:
@@ -788,7 +792,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "047"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '047-Purge-Sync-Job'
 
   MimixDailyPurgeSync048:
@@ -805,7 +809,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "048"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '048-Purge-Sync-Job'
 
   MimixDailyPurgeSync049:
@@ -822,7 +826,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "049"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '049-Purge-Sync-Job'
 
   MimixDailyPurgeSync050:
@@ -839,7 +843,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "050"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '050-Purge-Sync-Job'
 
   MimixDailyPurgeSync051:
@@ -856,7 +860,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "051"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '051-Purge-Sync-Job'
 
   MimixDailyPurgeSync052:
@@ -873,7 +877,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "052"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '052-Purge-Sync-Job'
 
   MimixDailyPurgeSync054:
@@ -890,7 +894,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "054"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '054-Purge-Sync-Job'
 
   MimixDailyPurgeSync056:
@@ -907,7 +911,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "056"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '056-Purge-Sync-Job'
 
   MimixDailyPurgeSync055:
@@ -924,7 +928,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "055"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '055-Purge-Sync-Job'
 
   MimixDailyPurgeSync057:
@@ -941,7 +945,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "057"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '057-Purge-Sync-Job'
 
   MimixDailyPurgeSync058:
@@ -958,7 +962,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "058"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '058-Purge-Sync-Job'
 
   MimixDailyPurgeSync059:
@@ -975,7 +979,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "059"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '059-Purge-Sync-Job'
 
   MimixDailyPurgeSync060:
@@ -992,7 +996,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "060"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '060-Purge-Sync-Job'
 
   MimixDailyPurgeSync061:
@@ -1009,7 +1013,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "061"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '061-Purge-Sync-Job'
 
   MimixDailyPurgeSync064:
@@ -1026,7 +1030,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "064"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '064-Purge-Sync-Job'
 
   MimixDailyPurgeSync066:
@@ -1043,7 +1047,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "066"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '066-Purge-Sync-Job'
 
   MimixDailyPurgeSync067:
@@ -1060,7 +1064,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "067"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '067-Purge-Sync-Job'
 
   MimixDailyPurgeSync068:
@@ -1077,7 +1081,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "068"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '068-Purge-Sync-Job'
 
   MimixDailyPurgeSync073:
@@ -1094,7 +1098,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "073"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '073-Purge-Sync-Job'
 
   MimixDailyPurgeSync075:
@@ -1111,7 +1115,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "075"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '075-Purge-Sync-Job'
 
   MimixDailyPurgeSync076:
@@ -1128,7 +1132,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "076"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '076-Purge-Sync-Job'
 
   MimixDailyPurgeSync078:
@@ -1145,7 +1149,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "078"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '078-Purge-Sync-Job'
 
   MimixDailyPurgeSync101:
@@ -1162,7 +1166,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "101"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '101-Purge-Sync-Job'
 
   MimixDailyPurgeSync102:
@@ -1179,7 +1183,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "102"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '102-Purge-Sync-Job'
 
   MimixDailyPurgeSync134:
@@ -1196,7 +1200,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "134"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '134-Purge-Sync-Job'
 
   MimixDailyPurgeSync137:
@@ -1213,7 +1217,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "137"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '137-Purge-Sync-Job'
 
   MimixDailyPurgeSync163:
@@ -1230,7 +1234,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "163"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '163-Purge-Sync-Job'
 
   MimixDailyPurgeSync164:
@@ -1247,7 +1251,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "164"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '164-Purge-Sync-Job'
 
   MimixDailyPurgeSync194:
@@ -1264,7 +1268,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "194"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '194-Purge-Sync-Job'
 
   MimixDailyPurgeSync195:
@@ -1281,7 +1285,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "195"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '195-Purge-Sync-Job'
 
   MimixDailyPurgeSync288:
@@ -1298,7 +1302,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "288"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '288-Purge-Sync-Job'
 
   MimixDailyPurgeSync293:
@@ -1315,7 +1319,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "293"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '293-Purge-Sync-Job'
 
   MimixDailyPurgeSync306:
@@ -1332,7 +1336,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "306"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '306-Purge-Sync-Job'
 
   MimixDailyPurgeSync320:
@@ -1349,7 +1353,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "320"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref JobDefinition
+            JobDefinition: !Ref JobDefinitionArn
             JobName: '320-Purge-Sync-Job'
 
   MimixDailyPurgeSync332:
@@ -1366,7 +1370,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "332"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '332-Purge-Sync-Job'
 
   MimixDailyPurgeSync335:
@@ -1383,7 +1387,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "335"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '335-Purge-Sync-Job'
 
   MimixDailyPurgeSync344:
@@ -1400,7 +1404,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "344"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '344-Purge-Sync-Job'
 
   MimixDailyPurgeSync429:
@@ -1417,7 +1421,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "429"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '429-Purge-Sync-Job'
 
   MimixDailyPurgeSync450:
@@ -1434,7 +1438,7 @@ Resources:
           Input: '{"Parameters": {"business_unit": "450"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref 'JobDefinition'
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '450-Purge-Sync-Job'
 
   LaunchTemplate:
@@ -1541,40 +1545,6 @@ Resources:
           Name:
             Ref: 'Component'
       State: ENABLED
-
-  JobDefinition:
-    Type: AWS::Batch::JobDefinition
-    Properties:
-      Type: container
-      JobDefinitionName:
-        Fn::Join:
-          - ''
-          - - CP-Mimix-Purge-Job-Definition-
-            - Ref: 'EnvironmentShort'
-      RetryStrategy:
-        Attempts: 1
-      Timeout:
-        AttemptDurationSeconds: 10800
-      ContainerProperties:
-        Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest'
-        Vcpus: 4
-        Memory: 6144
-        Command:
-          - java
-          - "-Xmx6144M"
-          - "-jar"
-          - mimix-query-syncing-processor.jar
-          - Ref::business_unit
-        JobRoleArn: !Ref 'TaskRole'
-        Environment:
-          - Name: 'SERVER_ENVIRONMENT_VARIABLE'
-            Value: 'DEV'
-          - Name: 'SENDER'
-            Value: 'CloudPricingAlerts@corp.sysco.com'
-          - Name: 'SUBJECT'
-            Value: 'MIMIX-Purging-Alerts-DEV'
-          - Name: 'TO_ADDRESSES'
-            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   JobQueue:
     Type: AWS::Batch::JobQueue
