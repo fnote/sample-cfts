@@ -11,9 +11,9 @@ Parameters:
     Type: String
     Default: PROD
   EmailSubject:
-      Description: Subject for alert emails
-      Type: String
-      Default: MIMIX-Purging-Alerts-PROD
+    Description: Subject for alert emails
+    Type: String
+    Default: MIMIX-Purging-Alerts-PROD
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
@@ -44,12 +44,12 @@ Resources:
           - mimix-query-syncing-processor.jar
           - Ref::business_unit
         JobRoleArn: !Ref 'TaskRole'
-          Environment:
-            - Name: 'SERVER_ENVIRONMENT_VARIABLE'
-              Value: !Ref 'EnvironmentShort'
-            - Name: 'SENDER'
-              Value: 'CloudPricingAlerts@corp.sysco.com'
-            - Name: 'SUBJECT'
-              Value: !Ref 'EmailSubject'
-            - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+        Environment:
+          - Name: 'SERVER_ENVIRONMENT_VARIABLE'
+            Value: !Ref 'EnvironmentShort'
+          - Name: 'SENDER'
+            Value: 'CloudPricingAlerts@corp.sysco.com'
+          - Name: 'SUBJECT'
+            Value: !Ref 'EmailSubject'
+          - Name: 'TO_ADDRESSES'
+            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'

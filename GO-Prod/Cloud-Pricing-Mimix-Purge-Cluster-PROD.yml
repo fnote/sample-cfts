@@ -698,8 +698,6 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 039"
       Name: "Mimix-Daily-Purge-Sync-PROD-039-Trigger"
-SLECT s.id, s.name ifnull (st1.setting_value, false) as 'oo'
-store
       State: ENABLED
       ScheduleExpression: 'cron(15 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
