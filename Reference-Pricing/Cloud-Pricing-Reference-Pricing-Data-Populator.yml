@@ -1,0 +1,357 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Reference Price Data Populator for Prize Zone data"
+Parameters:
+  LambdaRole:
+    Description: ARN of the iam role for the lambda function
+    Type: String
+    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
+  StepFuctionExecutionRole:
+    Description: ARN of the iam role for the step function
+    Type: String
+    Default: arn:aws:iam::037295147636:role/step-function-execution-role
+  GlueJobExecutionRole:
+    Description: ARN of the iam role for the glue job
+    Type: String
+    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
+  IntermediateStorage:
+    Description: S3 bucket name to store intermediate files
+    Type: String
+    Default: rp-data-populator-poc
+  EnvironmentShort:
+    Description: Environment for application
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - QA
+      - STG
+      - EXE
+      - TST
+      - PROD
+    ConstraintDescription: Must be a valid environment
+  NotifierLambdaSecutyGroup:
+    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Default: sg-014f39d2fd8370bf6
+  NotifierLambdaSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: The list of Subnets to use the Cloud Pricing Notification Service Api
+    Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
+
+Mappings:
+  EnvMap:
+    DEV:
+      val: dev
+    QA:
+      val: qa
+    STG:
+      val: stg
+    EXE:
+      val: exe
+    TST:
+      val: tst
+    PROD:
+      val: prod
+
+Resources:
+  PrizeZoneStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub
+        - 'cp-ref-etl-prize-zone-storage-${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt PriceZoneInputTrigger.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: gz
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt PriceZoneInputTrigger.Arn
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub
+        - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+
+  PriceZoneInputTrigger:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that listens to price zone data file uploads and triggers the step function
+      FunctionName: !Sub 'CP-REF-etl-price-zone-trigger-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref LambdaRole
+      Handler: s3_trigger_lambda.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: ReferencePricingApi/DataPopulator/price_zone/s3_trigger_lambda5.py.zip
+      Environment:
+        Variables:
+          stepFunctionArn: !Ref PriceZoneStateMachine
+          intermediateStorageS3: !Ref IntermediateStorage
+  PrizeZoneDecompressJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/decompress_job.py
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-disable"
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/smart_open-2.1.0-py3.6.egg"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Timeout: 4320
+      Name: !Sub 'CP-REF-etl-prize-zone-decompression-job-${EnvironmentShort}'
+      Role: !Ref GlueJobExecutionRole
+
+  PrizeZoneTransformJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/transform_spark_job.py
+      DefaultArguments:
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/constants.py"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
+      Role: !Ref GlueJobExecutionRole
+
+  OpCoFilesFetchLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that fetches the list of OpCo wise partitioned files
+      FunctionName: !Sub 'CP-REF-etl-price-zone-opco-files-fetch-${EnvironmentShort}'
+      Runtime: python3.7
+      Role: !Ref LambdaRole
+      Handler: index.lambda_handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import re
+
+          def extract_opco_id(x):
+               p = re.search('opco_id=(\d+?)/', x['Key'])
+               return p and p.group(1)
+          def lambda_handler(event, context):
+              client = boto3.client('s3')
+              response = client.list_objects_v2(
+                  Bucket=event['intermediate_s3_name'],
+                  Prefix=event['partitioned_files_key']
+              )
+              opco_ids = map(extract_opco_id, response['Contents'])
+              return list(set(opco_ids))
+
+  PrizeZoneDataLoadJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/load_job.py
+      DefaultArguments:
+        "--extra-py-files": 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
+      ExecutionProperty:
+        MaxConcurrentRuns: 3
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Connections:
+        Connections:
+          - "cp-ref-data-poc-common"
+      Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
+      Role: !Ref GlueJobExecutionRole
+
+  NotifierLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that use CPNS to notify
+      FunctionName: !Sub 'CP-REF-etl-notifier-${EnvironmentShort}'
+      Runtime: python3.7
+      Role: !Ref LambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier5.zip
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          env: !Ref EnvironmentShort
+
+  PriceZoneStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub 'CP-REF-etl-prize-zone-state-machine-${EnvironmentShort}'
+      StateMachineType: STANDARD
+      DefinitionString: !Sub
+        - |-
+          {
+            "Comment": "Transform and Loads EATs data from S3 to DB",
+            "StartAt": "Decompress",
+            "States": {
+              "Decompress": {
+                "Comment": "Decompress python shell job",
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                  "Parameters": {
+                  "JobName": "${prizeZoneDecompressJobName}",
+                  "Arguments": {
+                    "--s3_path.$": "$.s3_path",
+                    "--decompressed_file_path.$": "$.decompressed_file_path"
+                  }
+                },
+                "ResultPath": "$.response",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
+                "Next": "Transform"
+              },
+              "Transform": {
+                "Comment": "Transform spark job",
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                  "Parameters": {
+                  "JobName": "${prizeZoneTransformJobName}",
+                  "Arguments": {
+                    "--decompressed_file_path.$": "$.decompressed_file_path",
+                    "--partitioned_files_path.$": "$.partitioned_files_path"
+                  }
+                },
+                "ResultPath": "$.response",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
+                "Next": "Fetch File List"
+              },
+              "Fetch File List": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${opCoFilesFetchLambdaArn}",
+                  "Payload":{
+                     "intermediate_s3_name.$":"$.intermediate_s3_name",
+                     "partitioned_files_key.$":"$.partitioned_files_key"
+                  }
+                },
+                "ResultPath": "$.opcoList",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
+                "Next": "Load All"
+              },
+              "Notify Failure": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                     "opco_id.$":"$.id",
+                     "message.$":"$.error.Cause"
+                  }
+                },
+                "End": true
+              },
+              "Load All": {
+                "Type": "Map",
+                "ItemsPath": "$.opcoList.Payload",
+                "MaxConcurrency": 2,
+                "Parameters": {
+                  "id.$": "$$.Map.Item.Value",
+                  "partitioned_files_key.$": "$.partitioned_files_key",
+                  "intermediate_s3_name.$": "$.intermediate_s3_name"
+                },
+                "Iterator": {
+                  "StartAt": "Load Job",
+                  "States": {
+                    "Load Job": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                      "Parameters": {
+                        "JobName": "${prizeZoneDataLoadJobName}",
+                        "Arguments": {
+                          "--opco_id.$": "$.id",
+                          "--partitioned_files_key.$": "$.partitioned_files_key",
+                          "--intermediate_s3_name.$": "$.intermediate_s3_name"
+                        }
+                      },
+                      "Retry": [
+                        {
+                          "ErrorEquals": [
+                            "States.TaskFailed"
+                          ],
+                          "IntervalSeconds": 3,
+                          "MaxAttempts": 2,
+                          "BackoffRate": 10
+                        }
+                      ],
+                      "Catch": [
+                        {
+                          "ErrorEquals": [
+                            "States.TaskFailed"
+                          ],
+                          "ResultPath": "$.error",
+                          "Next": "Notify Job Failure"
+                        }
+                      ],
+                      "ResultPath": "$.loadJob",
+                      "End": true
+                    },
+                    "Notify Job Failure": {
+                      "Type": "Task",
+                      "Resource": "arn:aws:states:::lambda:invoke",
+                      "Parameters": {
+                        "FunctionName": "${notifierLambdaArn}",
+                        "Payload":{
+                           "opco_id.$":"$.id",
+                           "message.$":"$.error.Cause"
+                        }
+                      },
+                      "End": true
+                    }
+                  }
+                },
+                "End": true
+              }
+            }
+          }
+        - {
+            prizeZoneDecompressJobName: !Ref PrizeZoneDecompressJob,
+            prizeZoneTransformJobName: !Ref PrizeZoneTransformJob,
+            opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
+            prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
+            notifierLambdaArn: !GetAtt NotifierLambda.Arn
+        }
+      RoleArn: !Ref StepFuctionExecutionRole
