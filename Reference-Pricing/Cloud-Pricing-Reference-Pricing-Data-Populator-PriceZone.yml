@@ -199,6 +199,7 @@ Resources:
         Variables:
           stepFunctionArn: !Ref PriceZoneStateMachine
           intermediateStorageS3: !Ref IntermediateStorage
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -239,6 +240,19 @@ Resources:
       Timeout: 4320
       Name: !Sub 'CP-REF-etl-prize-zone-decompression-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   PrizeZoneTransformJob:
     Type: AWS::Glue::Job
@@ -253,6 +267,19 @@ Resources:
       MaxRetries: 0
       Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   OpCoFilesFetchLambda:
     Type: AWS::Lambda::Function
@@ -279,6 +306,7 @@ Resources:
               )
               opco_ids = map(extract_opco_id, response['Contents'])
               return list(set(opco_ids))
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -322,6 +350,19 @@ Resources:
           - "cp-ref-data-poc-common"
       Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   PriceZoneStateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -484,6 +525,12 @@ Resources:
             prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
             notifierLambdaArn: !Ref NotifierLambdaArn
         }
+      LoggingConfiguration:
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt PriceZOneStepFunctionExecutionLogs.Arn
+        IncludeExecutionData: TRUE
+        Level: ALL
       RoleArn: !Ref StepFuctionExecutionRole
       Tags:
         - Key: Technical:ApplicationName
