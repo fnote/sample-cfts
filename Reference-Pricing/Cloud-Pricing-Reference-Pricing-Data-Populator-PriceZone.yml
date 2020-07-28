@@ -455,7 +455,6 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                     "opco_id.$":"$.id",
                      "message.$":"$.error.Cause"
                   }
                 },
