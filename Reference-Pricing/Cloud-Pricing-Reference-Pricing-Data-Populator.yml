@@ -198,6 +198,7 @@ Resources:
         Variables:
           stepFunctionArn: !Ref PriceZoneStateMachine
           intermediateStorageS3: !Ref IntermediateStorage
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -304,6 +305,7 @@ Resources:
               )
               opco_ids = map(extract_opco_id, response['Contents'])
               return list(set(opco_ids))
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -380,6 +382,7 @@ Resources:
       Environment:
         Variables:
           env: !Ref EnvironmentShort
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
