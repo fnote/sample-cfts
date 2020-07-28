@@ -136,6 +136,7 @@ Mappings:
 Resources:
   PrizeZoneStorage:
     Type: AWS::S3::Bucket
+    DependsOn: LambdaInvokePermission
     Properties:
       BucketName: !Sub
         - 'cp-ref-etl-prize-zone-storage-${env}'
@@ -455,7 +456,6 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                     "opco_id.$":"$.id",
                      "message.$":"$.error.Cause"
                   }
                 },
