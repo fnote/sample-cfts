@@ -37,6 +37,10 @@ Parameters:
     Type: List<AWS::EC2::Subnet::Id>
     Description: The list of Subnets to use the Cloud Pricing Notification Service Api
     Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
+  PADatabaseConnection:
+    Description: Name of the databse connection
+    Type: String
+    Default: cp-ref-data-poc-common
   PONumber:
     Description: PO Number for billing
     Type: String
