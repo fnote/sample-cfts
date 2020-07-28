@@ -29,18 +29,15 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
-  NotifierLambdaSecutyGroup:
-    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
-    Type: List<AWS::EC2::SecurityGroup::Id>
-    Default: sg-014f39d2fd8370bf6
-  NotifierLambdaSubnets:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: The list of Subnets to use the Cloud Pricing Notification Service Api
-    Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
-  PADatabaseConnection:
+  DatabaseConnection:
     Description: Name of the databse connection
     Type: String
     Default: cp-ref-data-poc-common
+  NotifierLambdaArn:
+    Description: Arn of the notifier Lambda
+    Type: String
+    Default: arn:aws:lambda:us-east-1:037295147636:function:CP-REF-etl-notifier-DEV
+
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -315,7 +312,7 @@ Resources:
         ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/load_job.py
       DefaultArguments:
         "--extra-py-files": 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
-        "--GLUE_CONNECTION_NAME": !Ref PADatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
       ExecutionProperty:
         MaxConcurrentRuns: 3
       MaxRetries: 0
@@ -325,49 +322,6 @@ Resources:
           - "cp-ref-data-poc-common"
       Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
-
-  NotifierLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: Lambda function that use CPNS to notify
-      FunctionName: !Sub 'CP-REF-etl-notifier-${EnvironmentShort}'
-      Runtime: python3.7
-      Role: !Ref LambdaRole
-      Handler: index.lambda_handler
-      Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier5.zip
-      VpcConfig:
-        SecurityGroupIds:
-          !Ref NotifierLambdaSecutyGroup
-        SubnetIds:
-          !Ref NotifierLambdaSubnets
-      Environment:
-        Variables:
-          env: !Ref EnvironmentShort
-      Tags:
-        - Key: Technical:ApplicationName
-          Value: !Ref ApplicationName
-        - Key: Technical:ApplicationID
-          Value: !Ref ApplicationID
-        - Key: Technical:PlatformOwner
-          Value: !Ref Owner
-        - Key: Technical:Environment
-          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
-        - Key: Support_Email
-          Value: !Ref SupportEmail
-        - Key: Approver
-          Value: !Ref Approver
-        - Key: PO_Number
-          Value: !Ref PONumber
-        - Key: Project_ID
-          Value: !Ref ProjectID
-        - Key: 2WTAGGER
-          Value: !Ref 2WTAGGER
-        - Key: Platform
-          Value: !Ref Platform
-        - Key: Component
-          Value: !Ref Component
 
   PriceZoneStateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -528,7 +482,7 @@ Resources:
             prizeZoneTransformJobName: !Ref PrizeZoneTransformJob,
             opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
             prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
-            notifierLambdaArn: !GetAtt NotifierLambda.Arn
+            notifierLambdaArn: !Ref NotifierLambdaArn
         }
       RoleArn: !Ref StepFuctionExecutionRole
       Tags:
