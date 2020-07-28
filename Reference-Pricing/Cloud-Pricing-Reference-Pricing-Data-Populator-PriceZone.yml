@@ -364,6 +364,12 @@ Resources:
         'Component': !Ref Component
       }
 
+  PriceZoneStepFunctionExecutionLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub 'cp-ref-etl-prize-zone-step-function-logs-${EnvironmentShort}'
+      RetentionInDays: 30
+
   PriceZoneStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -528,7 +534,7 @@ Resources:
       LoggingConfiguration:
         Destinations:
           - CloudWatchLogsLogGroup:
-              LogGroupArn: !GetAtt PriceZOneStepFunctionExecutionLogs.Arn
+              LogGroupArn: !GetAtt PriceZoneStepFunctionExecutionLogs.Arn
         IncludeExecutionData: TRUE
         Level: ALL
       RoleArn: !Ref StepFuctionExecutionRole
