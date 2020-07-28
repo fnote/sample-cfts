@@ -1,6 +1,22 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: "Reference Price PA Data Populator"
 Parameters:
+  LambdaRole:
+    Description: ARN of the iam role for the lambda function
+    Type: String
+    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
+    StepFuctionExecutionRole:
+      Description: ARN of the iam role for the step function
+      Type: String
+      Default: arn:aws:iam::037295147636:role/step-function-execution-role
+    GlueJobExecutionRole:
+      Description: ARN of the iam role for the glue job
+      Type: String
+      Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
+  DatabaseConnection:
+    Description: Name of the databse connection
+    Type: String
+    Default: cp-ref-data-poc-common
   PADataStoragePrefix:
     Description: Prefix of PA input data BucketName
     Type: String
@@ -11,34 +27,6 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-price-poc-bucket
-  PADatabaseJDBCUrl:
-    Type: String
-    Description: JDBC url of the database used to persist PA data
-    Default: "jdbc:mysql://reference-db-mysql-cluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_001"
-  PADatabasePassword:
-    Type: String
-    Description: Password of the database used for glue connection
-    Default: ""
-    NoEcho: true
-  SecurityGroupListForGlueConnction:
-    Type: CommaDelimitedList
-    Description: Security group list for glue connection
-    Default: sg-06a4893b70fc2f68f
-  SubnetIdForGlueConnection:
-    Type: String
-    Description: The subnetId to be referred
-    Default: subnet-0ad1216eb31e15186
-  AvailabilityZoneForGlueConnection:
-    Type: String
-    Description: The Availability Zone of the glue connection
-    Default: us-east-1b
-    AllowedValues:
-      - us-east-1a
-      - us-east-1b
-      - us-east-1c
-      - us-east-1d
-      - us-east-1e
-      - us-east-1f
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -147,140 +135,6 @@ Mappings:
       name: Production
 
 Resources:
-
-  PAETLTriggerLambaRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub 'PAETLTriggerLambaRole-${EnvironmentShort}'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Policies:
-        - PolicyName: StartStepFunctionExecutionPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - states:StartExecution
-                Resource:
-                  - '*'
-      Path: '/'
-
-  PAETLStepFunctionExecutionRole:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      RoleName: !Sub 'PAETLStepFunctionExecutionRole-${EnvironmentShort}'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: 'Allow'
-            Principal:
-              Service:
-                - !Sub 'states.${AWS::Region}.amazonaws.com'
-            Action: 'sts:AssumeRole'
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-      Policies:
-        - PolicyName: ExecuteGlueJobPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - glue:GetJobs
-                  - glue:BatchStopJobRun
-                  - glue:ListJobs
-                  - glue:CreateJob
-                  - glue:BatchGetJobs
-                  - glue:StartJobRun
-                  - glue:GetJobRun
-                  - glue:UpdateJob
-                  - glue:GetJobRuns
-                  - glue:GetJob
-                Resource: "*"
-        - PolicyName: LogStepFunctionEventPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:DescribeDestinations
-                  - logs:PutDestination
-                  - logs:CreateLogDelivery
-                  - logs:GetLogDelivery
-                  - logs:UpdateLogDelivery
-                  - logs:DeleteLogDelivery
-                  - logs:ListLogDeliveries
-                  - logs:PutResourcePolicy
-                  - logs:DescribeResourcePolicies
-                  - logs:DescribeLogGroups
-                Resource: '*'
-      Path: '/'
-
-  PAETLGlueRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub 'PAETLGlueRole-${EnvironmentShort}'
-      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - 'glue.amazonaws.com'
-            Action:
-              - 'sts:AssumeRole'
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
-        - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
-      Policies:
-        - PolicyName: PAETLGlueJob
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:CreateLogGroup
-                  - logs:PutLogEvents
-                  - logs:AssociateKmsKey
-                Resource: 'arn:aws:logs:*:*:/aws-glue/*'
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/*'
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                Resource:
-                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
-              - Effect: Allow
-                Action:
-                  - s3:ListBucket
-                Resource:
-                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                Resource: !Sub
-                  - 'arn:aws:s3:::cp-ref-${PADataStoragePrefix}-storage-${env}/*'
-                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
-      Path: '/'
-
   PADataStorage:
     DependsOn: LambdaInvokePermission
     Type: AWS::S3::Bucket
@@ -338,7 +192,7 @@ Resources:
       Description: Lambda function that listens to pa data file uploads and triggers the step function
       FunctionName: !Sub 'CP-REF-etl-pa-trigger-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !GetAtt PAETLTriggerLambaRole.Arn
+      Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
@@ -415,7 +269,7 @@ Resources:
               LogGroupArn: !GetAtt PAStepFunctionExecutionLogs.Arn
         IncludeExecutionData: TRUE
         Level: ALL
-      RoleArn: !GetAtt PAETLStepFunctionExecutionRole.Arn
+      RoleArn: !Ref StepFuctionExecutionRole
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -457,7 +311,7 @@ Resources:
         ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/scripts/pa_etl_script.py
       Connections:
         Connections:
-        - !Ref PADatabaseConnection
+        - !Ref DatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
@@ -469,7 +323,7 @@ Resources:
       MaxRetries: 0
       Timeout: 2880
       GlueVersion: 1.0
-      Role: !GetAtt PAETLGlueRole.Arn
+      Role: !Ref GlueJobExecutionRole
       Tags: {
             'Technical:ApplicationName': !Ref ApplicationName,
             'Technical:ApplicationID': !Ref ApplicationID,
@@ -483,22 +337,3 @@ Resources:
             'Platform': !Ref Platform,
             'Component': !Ref Component
           }
-
-  PADatabaseConnection:
-    Type: AWS::Glue::Connection
-    Properties:
-      CatalogId: !Ref AWS::AccountId
-      ConnectionInput:
-        ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref PADatabaseJDBCUrl,
-          "USERNAME": !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]],
-          # SSM Secure reference is not supported in: [AWS::glue::Connection]
-          "PASSWORD": !Ref PADatabasePassword
-        }
-        Description: Glue Connection to Referrence pricing database
-        ConnectionType: JDBC
-        Name: !Sub 'cp-ref-pa-etl-common-connection-${EnvironmentShort}'
-        PhysicalConnectionRequirements:
-          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
-          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
-          SubnetId: !Ref SubnetIdForGlueConnection
