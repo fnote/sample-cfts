@@ -238,6 +238,19 @@ Resources:
       Timeout: 4320
       Name: !Sub 'CP-REF-etl-prize-zone-decompression-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   PrizeZoneTransformJob:
     Type: AWS::Glue::Job
@@ -252,6 +265,19 @@ Resources:
       MaxRetries: 0
       Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   OpCoFilesFetchLambda:
     Type: AWS::Lambda::Function
@@ -321,6 +347,19 @@ Resources:
           - "cp-ref-data-poc-common"
       Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
 
   NotifierLambda:
     Type: AWS::Lambda::Function
@@ -364,6 +403,12 @@ Resources:
           Value: !Ref Platform
         - Key: Component
           Value: !Ref Component
+
+  PriceZOneStepFunctionExecutionLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub 'cp-ref-etl-prize-zone-step-function-logs-${EnvironmentShort}'
+      RetentionInDays: 30
 
   PriceZoneStateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -526,6 +571,12 @@ Resources:
             prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
             notifierLambdaArn: !GetAtt NotifierLambda.Arn
         }
+      LoggingConfiguration:
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt PriceZOneStepFunctionExecutionLogs.Arn
+        IncludeExecutionData: TRUE
+        Level: ALL
       RoleArn: !Ref StepFuctionExecutionRole
       Tags:
         - Key: Technical:ApplicationName
