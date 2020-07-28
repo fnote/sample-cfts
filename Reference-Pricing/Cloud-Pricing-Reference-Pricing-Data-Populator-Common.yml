@@ -355,3 +355,20 @@ Resources:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
           SubnetId: !Ref SubnetIdForGlueConnection
+
+Outputs:
+  CommonDBConnectionName:
+    Description: Reference price common glue database connection
+    Value: !Ref CommonDatabaseConnection
+  ETLGlueRoleArn:
+    Description: ETL glue role arn
+    Value: !GetAtt ETLGlueRole.Arn
+  ETLStepFunctionExecutionRoleArn:
+    Description: ETL step function execution role arn
+    Value: !GetAtt ETLStepFunctionExecutionRole.Arn
+  ETLTriggerLambaRoleArn:
+    Description: ETL trigger lambda role arn
+    Value: !GetAtt ETLTriggerLambaRole.Arn
+  NotifierLambdaArn:
+    Description: Common lambda notifier arn
+    Value: !GetAtt NotifierLambda.Arn
