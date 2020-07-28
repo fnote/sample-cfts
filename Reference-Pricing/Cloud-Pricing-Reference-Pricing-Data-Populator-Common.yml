@@ -48,7 +48,7 @@ Parameters:
       - us-east-1f
   DatabaseJDBCUrl:
     Type: String
-    Description: JDBC url of the database used to persist PA data
+    Description: JDBC url of the database used to persist Reference pricing data
     Default: "jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
   DatabasePassword:
     Type: String
@@ -203,7 +203,7 @@ Resources:
   ETLTriggerLambaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'PAETLTriggerLambaRole-${EnvironmentShort}'
+      RoleName: !Sub 'CP-REF-ETLTriggerLambaRole-${EnvironmentShort}'
       PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -217,7 +217,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
-        - PolicyName: StartStepFunctionExecutionPolicy
+        - PolicyName: CP-REF-StartStepFunctionExecutionPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -236,7 +236,7 @@ Resources:
   ETLStepFunctionExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !Sub 'PAETLStepFunctionExecutionRole-${EnvironmentShort}'
+      RoleName: !Sub 'CP-REF-ETLStepFunctionExecutionRole-${EnvironmentShort}'
       PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -249,7 +249,7 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
       Policies:
-        - PolicyName: ExecuteGlueJobPolicy
+        - PolicyName: CP-REF-ExecuteGlueJobPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -288,7 +288,7 @@ Resources:
   ETLGlueRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'PAETLGlueRole-${EnvironmentShort}'
+      RoleName: !Sub 'CP-REF-ETLGlueRole-${EnvironmentShort}'
       PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -303,7 +303,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
         - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
       Policies:
-        - PolicyName: PAETLGlueJob
+        - PolicyName: CP-REF-ETLGlueJobPolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -324,13 +324,11 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                 Resource:
-                  #- !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref IntermediateStorage, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]]
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
                 Resource:
-                  #- !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref IntermediateStorage, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]]
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}'
               - Effect: Allow
                 Action:
@@ -338,8 +336,14 @@ Resources:
                 Resource: !Sub
                   - 'arn:aws:s3:::cp-ref-${PADataStoragePrefix}-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
-  PADatabaseConnection:
+  CommonDatabaseConnection:
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
@@ -352,7 +356,7 @@ Resources:
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-ref-pa-etl-common-connection-${EnvironmentShort}'
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
