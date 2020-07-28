@@ -46,11 +46,11 @@ Parameters:
       - us-east-1d
       - us-east-1e
       - us-east-1f
-  PADatabaseJDBCUrl:
+  DatabaseJDBCUrl:
     Type: String
     Description: JDBC url of the database used to persist PA data
     Default: "jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
-  PADatabasePassword:
+  DatabasePassword:
     Type: String
     Description: Password of the database used for glue connection
     Default: ""
@@ -345,10 +345,10 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref PADatabaseJDBCUrl,
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
           "USERNAME": !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
-          "PASSWORD": !Ref PADatabasePassword
+          "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
