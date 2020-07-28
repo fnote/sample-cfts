@@ -225,6 +225,16 @@ Resources:
                   - ec2:AttachNetworkInterface
                 Resource:
                   - '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
       Path: '/'
 
   ETLStepFunctionExecutionRole:
