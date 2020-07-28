@@ -5,11 +5,11 @@ Parameters:
     Description: ARN of the iam role for the lambda function
     Type: String
     Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
-    StepFuctionExecutionRole:
+  StepFuctionExecutionRole:
       Description: ARN of the iam role for the step function
       Type: String
       Default: arn:aws:iam::037295147636:role/step-function-execution-role
-    GlueJobExecutionRole:
+  GlueJobExecutionRole:
       Description: ARN of the iam role for the glue job
       Type: String
       Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
@@ -17,12 +17,6 @@ Parameters:
     Description: Name of the databse connection
     Type: String
     Default: cp-ref-data-poc-common
-  PADataStoragePrefix:
-    Description: Prefix of PA input data BucketName
-    Type: String
-    Default: pa-data
-    AllowedValues:
-      - pa-data
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
@@ -140,7 +134,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub
-        - 'cp-ref-${PADataStoragePrefix}-storage-${env}'
+        - 'cp-ref-etl-pa-data-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       NotificationConfiguration:
         LambdaConfigurations:
@@ -183,7 +177,7 @@ Resources:
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
       SourceArn: !Sub
-        - 'arn:aws:s3:::cp-ref-${PADataStoragePrefix}-storage-${env}'
+        - 'arn:aws:s3:::cp-ref-etl-pa-data-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
 
   PAInputTriggerLambda:
@@ -315,7 +309,7 @@ Resources:
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref PADatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
       ExecutionProperty:
         MaxConcurrentRuns: 1

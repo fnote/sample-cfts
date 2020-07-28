@@ -25,12 +25,6 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-price-zone-partition-bucket-exe
-  PADataStoragePrefix:
-    Description: Prefix of PA input data BucketName
-    Type: String
-    Default: pa-data
-    AllowedValues:
-      - pa-data
   SubnetIdForGlueConnection:
     Type: String
     Description: The subnetId to be referred
@@ -231,6 +225,16 @@ Resources:
                   - ec2:AttachNetworkInterface
                 Resource:
                   - '*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
       Path: '/'
 
   ETLStepFunctionExecutionRole:
@@ -334,7 +338,13 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource: !Sub
-                  - 'arn:aws:s3:::cp-ref-${PADataStoragePrefix}-storage-${env}/*'
+                  - 'arn:aws:s3:::cp-ref-etl-pa-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
   CommonDatabaseConnection:
@@ -355,3 +365,20 @@ Resources:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
           SubnetId: !Ref SubnetIdForGlueConnection
+
+Outputs:
+  CommonDBConnectionName:
+    Description: Reference price common glue database connection
+    Value: !Ref CommonDatabaseConnection
+  ETLGlueRoleArn:
+    Description: ETL glue role arn
+    Value: !GetAtt ETLGlueRole.Arn
+  ETLStepFunctionExecutionRoleArn:
+    Description: ETL step function execution role arn
+    Value: !GetAtt ETLStepFunctionExecutionRole.Arn
+  ETLTriggerLambaRoleArn:
+    Description: ETL trigger lambda role arn
+    Value: !GetAtt ETLTriggerLambaRole.Arn
+  NotifierLambdaArn:
+    Description: Common lambda notifier arn
+    Value: !GetAtt NotifierLambda.Arn
