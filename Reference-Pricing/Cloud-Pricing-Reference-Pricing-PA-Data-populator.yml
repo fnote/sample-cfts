@@ -129,16 +129,22 @@ Mappings:
   EnvMap:
     DEV:
       val: dev
+      name: Development
     QA:
       val: qa
+      name: Quality
     STG:
       val: stg
+      name: Staging
     EXE:
       val: exe
+      name: Execution
     TST:
       val: tst
+      name: Tuning
     PROD:
       val: prod
+      name: Production
 
 Resources:
 
@@ -285,25 +291,48 @@ Resources:
       NotificationConfiguration:
         LambdaConfigurations:
           - Event: s3:ObjectCreated:*
-            Function: !GetAtt PAInputTrigger.Arn
+            Function: !GetAtt PAInputTriggerLambda.Arn
             Filter:
               S3Key:
                 Rules:
                   - Name: suffix
                     Value: gz
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt PAInputTrigger.Arn
+      FunctionName: !GetAtt PAInputTriggerLambda.Arn
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
       SourceArn: !Sub
         - 'arn:aws:s3:::cp-ref-${PADataStoragePrefix}-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
 
-  PAInputTrigger:
+  PAInputTriggerLambda:
     Type: AWS::Lambda::Function
     Properties:
       Description: Lambda function that listens to pa data file uploads and triggers the step function
@@ -318,6 +347,29 @@ Resources:
         Variables:
           stepFunctionArn: !Ref PAStateMachine
       Timeout: 60
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
 
   PAStateMachine:
     Type: AWS::StepFunctions::StateMachine
@@ -360,15 +412,38 @@ Resources:
       LoggingConfiguration:
         Destinations:
           - CloudWatchLogsLogGroup:
-              LogGroupArn: !GetAtt StepFunctionExecutionLogs.Arn
+              LogGroupArn: !GetAtt PAStepFunctionExecutionLogs.Arn
         IncludeExecutionData: TRUE
         Level: ALL
       RoleArn: !GetAtt PAETLStepFunctionExecutionRole.Arn
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
 
-  StepFunctionExecutionLogs:
+  PAStepFunctionExecutionLogs:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub 'step-function-execution-logs-${EnvironmentShort}'
+      LogGroupName: !Sub 'cp-ref-etl-pa-step-function-logs-${EnvironmentShort}'
       RetentionInDays: 30
 
   PAETLGlueJob:
@@ -395,6 +470,19 @@ Resources:
       Timeout: 2880
       GlueVersion: 1.0
       Role: !GetAtt PAETLGlueRole.Arn
+      Tags: {
+            'Technical:ApplicationName': !Ref ApplicationName,
+            'Technical:ApplicationID': !Ref ApplicationID,
+            'Technical:PlatformOwner': !Ref Owner,
+            'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+            'Support_Email': !Ref SupportEmail,
+            'Approver': !Ref Approver,
+            'PO_Number': !Ref PONumber,
+            'Project_ID': !Ref ProjectID,
+            '2WTAGGER': !Ref 2WTAGGER,
+            'Platform': !Ref Platform,
+            'Component': !Ref Component
+          }
 
   PADatabaseConnection:
     Type: AWS::Glue::Connection
