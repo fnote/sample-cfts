@@ -175,6 +175,7 @@ Resources:
       Environment:
         Variables:
           env: !Ref EnvironmentShort
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
