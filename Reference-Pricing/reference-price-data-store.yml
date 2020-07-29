@@ -395,6 +395,24 @@ Resources:
         ScaleInCooldown: 300
         DisableScaleIn: false
 
+  DBCLusterReaderEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/READER_ENDPOINT']]
+      Type: String
+      Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
+      Tier: Standard
+      Description: Ref Price DB Cluster Reader Endpoint
+  
+  DBCLusterWriterEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/WRITER_ENDPOINT']]
+      Type: String
+      Value: !Join ['', [!GetAtt CPRefPriceDBCluster.Endpoint.Address]]
+      Tier: Standard
+      Description: Ref Price DB Cluster Writer Endpoint
+
 Outputs:
   dbUrl00:
     Description: Endpoint for Cluster
