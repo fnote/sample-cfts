@@ -85,7 +85,8 @@ Resources:
             NetworkConfiguration:
                 AwsvpcConfiguration:
                     AssignPublicIp: 'false'
-                    SecurityGroups: !Ref ECSServiceSecurityGroup
+                    SecurityGroups:
+                        - !Ref ECSServiceSecurityGroup
                     Subnets: !Ref subnets
             LoadBalancers:
                 - ContainerName: String
