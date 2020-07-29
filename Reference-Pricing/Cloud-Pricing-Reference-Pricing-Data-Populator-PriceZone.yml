@@ -174,6 +174,36 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  PrizeZoneSparkJobLogStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub
+        - 'cp-ref-etl-prize-zone-spark-logs-${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -263,6 +293,11 @@ Resources:
         ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/transform_spark_job.py
       DefaultArguments:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/constants.py"
+        "--enable-metrics": ""
+        "--enable-continuous-cloudwatch-log": "true"
+        "--enable-continuous-log-filter": "true"
+        "--enable-spark-ui": 'true'
+        "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxRetries: 0

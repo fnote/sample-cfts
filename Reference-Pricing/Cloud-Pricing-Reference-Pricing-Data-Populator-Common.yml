@@ -346,6 +346,13 @@ Resources:
                 Resource: !Sub
                   - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-spark-logs-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
   CommonDatabaseConnection:
     Type: AWS::Glue::Connection
