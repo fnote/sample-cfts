@@ -78,18 +78,19 @@ Resources:
             ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
             TaskDefinition: !Ref TaskDefinition
             LaunchType: FARGATE
+            HealthCheckGracePeriodSeconds: 60
             DesiredCount: 2
             DeploymentConfiguration:
                 MaximumPercent: 200
                 MinimumHealthyPercent: 100
             NetworkConfiguration:
                 AwsvpcConfiguration:
-                    AssignPublicIp: 'false'
+                    AssignPublicIp: DISABLED
                     SecurityGroups:
                         - !Ref ECSServiceSecurityGroup
                     Subnets: !Ref subnets
             LoadBalancers:
-                - ContainerName: String
+                - ContainerName: !Join [ "-", [!Ref namingPrefix, api]]
                   ContainerPort: !Ref containerPort
                   TargetGroupArn: !Ref TargetGroup
     LogGroup:
@@ -114,7 +115,7 @@ Resources:
             TargetType: ip
             VpcId: !Ref vpcId
             HealthCheckPath: '/'
-            HealthCheckIntervalSeconds: 150
+            HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
             UnhealthyThresholdCount: 3
@@ -149,3 +150,7 @@ Resources:
                   IpProtocol: tcp
                   FromPort: !Ref albListenerPort
                   ToPort: !Ref albListenerPort
+Outputs:
+    LoadBalancerDNS:
+        Description: Loadbalancer DNS
+        Value: !GetAtt LoadBalancer.DNSName
