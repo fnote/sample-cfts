@@ -189,7 +189,10 @@ Resources:
               - s3:GetObject
               - s3:ListBucket
               - s3:GetObjectVersion
-            Resource: !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]]
+            Resource: [
+                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]],
+                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
+            ]
 
   ReferencePriceETLS3ReadAccessRole:
     Type: AWS::IAM::Role
