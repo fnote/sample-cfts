@@ -18,7 +18,7 @@ Parameters:
   PartitionedPZS3:
     Description: This bucket will be used to store partitioned Price zone data
     Type: String
-    Default: cp-ref-etl-price-zone-partition-bucket
+    Default: cp-ref-etl-output-bucket
   PONumber:
     Description: PO Number for billing
     Type: String
