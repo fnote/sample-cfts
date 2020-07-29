@@ -90,7 +90,6 @@ Resources:
             LoadBalancers:
                 - ContainerName: String
                   ContainerPort: !Ref containerPort
-                  LoadBalancerName: String
                   TargetGroupArn: !Ref TargetGroup
     LogGroup:
         Type: AWS::Logs::LogGroup
@@ -103,7 +102,8 @@ Resources:
             Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
             Scheme: internal
             Subnets: !Ref subnets
-            SecurityGroups: !Ref LoadBalancerSecurityGroup
+            SecurityGroups:
+                - !Ref LoadBalancerSecurityGroup
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
