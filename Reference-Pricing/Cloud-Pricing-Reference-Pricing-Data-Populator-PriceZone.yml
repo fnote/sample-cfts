@@ -225,7 +225,7 @@ Resources:
       Handler: s3_trigger_lambda.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/s3_trigger_lambda5.py.zip
+        S3Key: ReferencePricingApi/DataPopulator/price_zone/s3_trigger_lambda.zip
       Environment:
         Variables:
           stepFunctionArn: !Ref PriceZoneStateMachine
