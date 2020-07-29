@@ -290,6 +290,7 @@ Resources:
     Properties:
       Command:
         Name: glueetl
+        PythonVersion: 3
         ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/transform_spark_job.py
       DefaultArguments:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/constants.py"
@@ -384,7 +385,7 @@ Resources:
       MaxCapacity: 1.0
       Connections:
         Connections:
-          - "cp-ref-data-poc-common"
+          - !Ref DatabaseConnection
       Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
       Tags: {
@@ -426,7 +427,8 @@ Resources:
                   "JobName": "${prizeZoneDecompressJobName}",
                   "Arguments": {
                     "--s3_path.$": "$.s3_path",
-                    "--decompressed_file_path.$": "$.decompressed_file_path"
+                    "--decompressed_file_path.$": "$.decompressed_file_path",
+                    "--enable-continuous-cloudwatch-log": "true"
                   }
                 },
                 "ResultPath": "$.response",
