@@ -34,10 +34,10 @@ Parameters:
         Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
     taskRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role"
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role-new"
     taskExecutionRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role"
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-execution-role"
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
