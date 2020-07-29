@@ -178,7 +178,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub
-        - 'cp-ref-etl-prize-zone-spark-logs-${env}'
+        - 'cp-ref-etl-prize-zone-spark-temp-dir-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Tags:
         - Key: Technical:ApplicationName
@@ -299,6 +299,7 @@ Resources:
         "--enable-continuous-log-filter": "true"
         "--enable-spark-ui": 'true'
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
+        "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
