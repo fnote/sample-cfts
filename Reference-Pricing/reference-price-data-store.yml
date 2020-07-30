@@ -420,3 +420,6 @@ Outputs:
   dbUrl01:
     Description: Read Endpoint Cluster
     Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
+  etlOutputBucket:
+    Description: ETL Output Bucket Name
+    Value: !Join ['-', [!Ref PartitionedPZS3, !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]
