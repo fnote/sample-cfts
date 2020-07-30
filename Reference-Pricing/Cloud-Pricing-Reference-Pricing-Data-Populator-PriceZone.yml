@@ -428,8 +428,7 @@ Resources:
                   "JobName": "${prizeZoneDecompressJobName}",
                   "Arguments": {
                     "--s3_path.$": "$.s3_path",
-                    "--decompressed_file_path.$": "$.decompressed_file_path",
-                    "--enable-continuous-cloudwatch-log": "true"
+                    "--decompressed_file_path.$": "$.decompressed_file_path"
                   }
                 },
                 "ResultPath": "$.response",
@@ -452,7 +451,8 @@ Resources:
                   "JobName": "${prizeZoneTransformJobName}",
                   "Arguments": {
                     "--decompressed_file_path.$": "$.decompressed_file_path",
-                    "--partitioned_files_path.$": "$.partitioned_files_path"
+                    "--partitioned_files_path.$": "$.partitioned_files_path",
+                    "--enable-continuous-cloudwatch-log": "true"
                   }
                 },
                 "ResultPath": "$.response",
