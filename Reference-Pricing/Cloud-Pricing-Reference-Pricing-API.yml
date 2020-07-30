@@ -34,10 +34,10 @@ Parameters:
         Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
     taskRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role"
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role-new"
     taskExecutionRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role"
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-execution-role"
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
@@ -78,19 +78,20 @@ Resources:
             ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
             TaskDefinition: !Ref TaskDefinition
             LaunchType: FARGATE
+            HealthCheckGracePeriodSeconds: 60
             DesiredCount: 2
             DeploymentConfiguration:
                 MaximumPercent: 200
                 MinimumHealthyPercent: 100
             NetworkConfiguration:
                 AwsvpcConfiguration:
-                    AssignPublicIp: 'false'
-                    SecurityGroups: !Ref ECSServiceSecurityGroup
+                    AssignPublicIp: DISABLED
+                    SecurityGroups:
+                        - !Ref ECSServiceSecurityGroup
                     Subnets: !Ref subnets
             LoadBalancers:
-                - ContainerName: String
+                - ContainerName: !Join [ "-", [!Ref namingPrefix, api]]
                   ContainerPort: !Ref containerPort
-                  LoadBalancerName: String
                   TargetGroupArn: !Ref TargetGroup
     LogGroup:
         Type: AWS::Logs::LogGroup
@@ -103,7 +104,8 @@ Resources:
             Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
             Scheme: internal
             Subnets: !Ref subnets
-            SecurityGroups: !Ref LoadBalancerSecurityGroup
+            SecurityGroups:
+                - !Ref LoadBalancerSecurityGroup
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
@@ -113,7 +115,7 @@ Resources:
             TargetType: ip
             VpcId: !Ref vpcId
             HealthCheckPath: '/'
-            HealthCheckIntervalSeconds: 150
+            HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
             UnhealthyThresholdCount: 3
@@ -148,3 +150,7 @@ Resources:
                   IpProtocol: tcp
                   FromPort: !Ref albListenerPort
                   ToPort: !Ref albListenerPort
+Outputs:
+    LoadBalancerDNS:
+        Description: Loadbalancer DNS
+        Value: !GetAtt LoadBalancer.DNSName
