@@ -456,7 +456,8 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                     "message.$":"$.error.Cause"
+                     "message.$":"$.error.Cause",
+                     "event": "ETL-PRICE_ZONE"
                   }
                 },
                 "End": true
@@ -513,7 +514,8 @@ Resources:
                         "FunctionName": "${notifierLambdaArn}",
                         "Payload":{
                            "opco_id.$":"$.id",
-                           "message.$":"$.error.Cause"
+                           "message.$":"$.error.Cause",
+                            "event": "ETL-PRICE_ZONE"
                         }
                       },
                       "End": true

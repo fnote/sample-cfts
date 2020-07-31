@@ -53,7 +53,14 @@ Parameters:
     Type: CommaDelimitedList
     Description: Security group list for glue connection
     Default: sg-06a4893b70fc2f68f
-
+  NotificationURL:
+    Type: String
+    Description: Cloud pricing Notification service URL
+    Default: https://vpce-0ee878fea3ffd19c4-6bsoxvze.execute-api.us-east-1.vpce.amazonaws.com/stg/v1/cpns/notifications
+  NotificationHost:
+    Type: String
+    Description: Cloud Pricing Notification service host
+    Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -169,6 +176,8 @@ Resources:
       Environment:
         Variables:
           env: !Ref EnvironmentShort
+          cp_notification_url: !Ref NotificationURL
+          cp_notification_host: !Ref NotificationHost
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
