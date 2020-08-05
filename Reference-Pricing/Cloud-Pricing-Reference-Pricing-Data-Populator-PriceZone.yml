@@ -236,6 +236,7 @@ Resources:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/smart_open-2.1.0-py3.6.egg"
       ExecutionProperty:
         MaxConcurrentRuns: 1
+      GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
       Timeout: 4320
@@ -344,6 +345,7 @@ Resources:
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
       ExecutionProperty:
         MaxConcurrentRuns: 3
+      GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
       Connections:

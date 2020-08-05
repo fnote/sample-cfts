@@ -282,79 +282,77 @@ Resources:
             PADataETLJobName: !Ref PAETLGlueJob,
             notifierLambdaArn: !Ref NotifierLambdaArn
         }
+      LoggingConfiguration:
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt PAStepFunctionExecutionLogs.Arn
+        IncludeExecutionData: TRUE
+        Level: ALL
+      RoleArn: !Ref StepFuctionExecutionRole
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
 
-            LoggingConfiguration:
-              Destinations:
-                - CloudWatchLogsLogGroup:
-                    LogGroupArn: !GetAtt PAStepFunctionExecutionLogs.Arn
-              IncludeExecutionData: TRUE
-              Level: ALL
-            RoleArn: !Ref StepFuctionExecutionRole
-            Tags:
-              - Key: Technical:ApplicationName
-                Value: !Ref ApplicationName
-              - Key: Technical:ApplicationID
-                Value: !Ref ApplicationID
-              - Key: Technical:PlatformOwner
-                Value: !Ref Owner
-              - Key: Technical:Environment
-                Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
-              - Key: Support_Email
-                Value: !Ref SupportEmail
-              - Key: Approver
-                Value: !Ref Approver
-              - Key: PO_Number
-                Value: !Ref PONumber
-              - Key: Project_ID
-                Value: !Ref ProjectID
-              - Key: 2WTAGGER
-                Value: !Ref 2WTAGGER
-              - Key: Platform
-                Value: !Ref Platform
-              - Key: Component
-                Value: !Ref Component
+  PAStepFunctionExecutionLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub 'cp-ref-etl-pa-step-function-logs-${EnvironmentShort}'
+      RetentionInDays: 30
 
-            PAStepFunctionExecutionLogs:
-              Type: AWS::Logs::LogGroup
-              Properties:
-                LogGroupName: !Sub 'cp-ref-etl-pa-step-function-logs-${EnvironmentShort}'
-                RetentionInDays: 30
-
-            PAETLGlueJob:
-              Type: AWS::Glue::Job
-              Properties:
-                Name: !Sub 'CP-REF-etl-pa-job-${EnvironmentShort}'
-                Description: Glue job to ETL pa data
-                Command:
-                  Name: pythonshell
-                  PythonVersion: 3
-                  ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/scripts/pa_etl_script.py
-                Connections:
-                  Connections:
-                    - !Ref DatabaseConnection
-                DefaultArguments:
-                  "--job-bookmark-option": "job-bookmark-disable"
-                  "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-                  "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
-                  "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
-                ExecutionProperty:
-                  MaxConcurrentRuns: 1
-                MaxCapacity: 1.0
-                MaxRetries: 0
-                Timeout: 2880
-                GlueVersion: 1.0
-                Role: !Ref GlueJobExecutionRole
-                Tags: {
-                  'Technical:ApplicationName': !Ref ApplicationName,
-                  'Technical:ApplicationID': !Ref ApplicationID,
-                  'Technical:PlatformOwner': !Ref Owner,
-                  'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
-                  'Support_Email': !Ref SupportEmail,
-                  'Approver': !Ref Approver,
-                  'PO_Number': !Ref PONumber,
-                  'Project_ID': !Ref ProjectID,
-                  '2WTAGGER': !Ref 2WTAGGER,
-                  'Platform': !Ref Platform,
-                  'Component': !Ref Component
-                }
-        }
+  PAETLGlueJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: !Sub 'CP-REF-etl-pa-job-${EnvironmentShort}'
+      Description: Glue job to ETL pa data
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/scripts/pa_etl_script.py
+      Connections:
+        Connections:
+          - !Ref DatabaseConnection
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-disable"
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
+        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
+        "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1.0
+      MaxRetries: 0
+      Timeout: 2880
+      GlueVersion: 1.0
+      Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }

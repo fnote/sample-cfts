@@ -162,12 +162,12 @@ Resources:
     Properties:
       Description: Lambda function that use CPNS to notify
       FunctionName: !Sub 'CP-REF-etl-notifier-${EnvironmentShort}'
-      Runtime: python3.7
+      Runtime: python3.8
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier5.zip
+        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier.zip
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
