@@ -24,7 +24,7 @@ Parameters:
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
-    Default: cp-ref-etl-price-zone-partition-bucket-exe
+    Default: cp-ref-etl-output-bucket-dev
   SubnetIdForGlueConnection:
     Type: String
     Description: The subnetId to be referred

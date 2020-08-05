@@ -4,23 +4,23 @@ Parameters:
   LambdaRole:
     Description: ARN of the iam role for the lambda function
     Type: String
-    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLTriggerLambaRole-DEV
   StepFuctionExecutionRole:
       Description: ARN of the iam role for the step function
       Type: String
-      Default: arn:aws:iam::037295147636:role/step-function-execution-role
+      Default: arn:aws:iam::037295147636:role/CP-REF-ETLStepFunctionExecutionRole-DEV
   GlueJobExecutionRole:
       Description: ARN of the iam role for the glue job
       Type: String
-      Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
+      Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
-    Default: cp-ref-data-poc-common
+    Default: cp-ref-etl-output-bucket-dev
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
-    Default: cp-ref-price-poc-bucket
+    Default: cp-ref-etl-output-bucket-dev
   EnvironmentShort:
     Description: Environment for application
     Type: String
