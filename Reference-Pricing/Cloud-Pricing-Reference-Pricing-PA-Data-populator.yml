@@ -238,7 +238,7 @@ Resources:
                 "Type": "Task",
                 "Resource": "arn:aws:states:::glue:startJobRun.sync",
                 "Parameters": {
-                  "JobName": "CP-REF-etl-pa-job-DEV",
+                  "JobName": "${PADataETLJobName}",
                   "Arguments": {
                     "--s3_path.$": "$.s3_path"
                   }
