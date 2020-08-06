@@ -312,7 +312,7 @@ Resources:
 
               print(list(opco_id_set))
               return list(opco_id_set)
-      Timeout: 60
+      Timeout: 180
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
