@@ -13,6 +13,10 @@ Parameters:
     Description: ARN of the iam role for the glue job
     Type: String
     Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
+  GlueJobCleanDataRole:
+    Description: ARN of the iam role for the glue job to clean data
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
@@ -367,6 +371,34 @@ Resources:
         'Component': !Ref Component
       }
 
+  PrizeZoneDataCleanJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/clean_job.py
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: 1.0
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Name: !Sub 'CP-REF-etl-prize-zone-clean-job-${EnvironmentShort}'
+      Role: !Ref GlueJobCleanDataRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
+
   PriceZoneStepFunctionExecutionLogs:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -524,6 +556,29 @@ Resources:
                     }
                   }
                 },
+                "Next": "Clean Data"
+              },
+              "Clean Data": {
+                "Comment": "Clean data python shell job",
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "${PrizeZoneDataCleanJob}",
+                  "Arguments": {
+                    "--s3_path.$": "$.s3_path",
+                    "--decompressed_file_path.$": "$.decompressed_file_path"
+                  }
+                },
+                "ResultPath": "$.response",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
                 "End": true
               }
             }
