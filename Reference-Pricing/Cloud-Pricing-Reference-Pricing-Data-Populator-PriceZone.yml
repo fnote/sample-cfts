@@ -292,7 +292,6 @@ Resources:
       Handler: index.lambda_handler
       Code:
         ZipFile: |
-          import json
           import boto3
           import re
 
@@ -301,12 +300,18 @@ Resources:
                return p and p.group(1)
           def lambda_handler(event, context):
               client = boto3.client('s3')
-              response = client.list_objects_v2(
-                  Bucket=event['intermediate_s3_name'],
-                  Prefix=event['partitioned_files_key']
-              )
-              opco_ids = map(extract_opco_id, response['Contents'])
-              return list(set(opco_ids))
+
+              paginator = client.get_paginator('list_objects_v2')
+              pages = paginator.paginate(Bucket=event['intermediate_s3_name'], Prefix=event['partitioned_files_key'])
+
+              opco_id_set = set()
+              for page in pages:
+                  opco_ids = map(extract_opco_id, page['Contents'])
+                  for opco_id in set(opco_ids):
+                      opco_id_set.add(opco_id)
+
+              print(list(opco_id_set))
+              return list(opco_id_set)
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
