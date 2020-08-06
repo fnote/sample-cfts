@@ -24,7 +24,7 @@ Parameters:
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
-    Default: cp-ref-etl-price-zone-partition-bucket-exe
+    Default: cp-ref-etl-output-bucket-dev
   SubnetIdForGlueConnection:
     Type: String
     Description: The subnetId to be referred
@@ -53,7 +53,14 @@ Parameters:
     Type: CommaDelimitedList
     Description: Security group list for glue connection
     Default: sg-06a4893b70fc2f68f
-
+  NotificationURL:
+    Type: String
+    Description: Cloud pricing Notification service URL
+    Default: https://vpce-0ee878fea3ffd19c4-6bsoxvze.execute-api.us-east-1.vpce.amazonaws.com/stg/v1/cpns/notifications
+  NotificationHost:
+    Type: String
+    Description: Cloud Pricing Notification service host
+    Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -155,12 +162,12 @@ Resources:
     Properties:
       Description: Lambda function that use CPNS to notify
       FunctionName: !Sub 'CP-REF-etl-notifier-${EnvironmentShort}'
-      Runtime: python3.7
+      Runtime: python3.8
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier5.zip
+        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier.zip
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
@@ -169,6 +176,8 @@ Resources:
       Environment:
         Variables:
           env: !Ref EnvironmentShort
+          cp_notification_url: !Ref NotificationURL
+          cp_notification_host: !Ref NotificationHost
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName

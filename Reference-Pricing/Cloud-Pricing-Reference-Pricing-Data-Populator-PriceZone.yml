@@ -4,19 +4,19 @@ Parameters:
   LambdaRole:
     Description: ARN of the iam role for the lambda function
     Type: String
-    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLTriggerLambaRole-DEV
   StepFuctionExecutionRole:
     Description: ARN of the iam role for the step function
     Type: String
-    Default: arn:aws:iam::037295147636:role/step-function-execution-role
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLStepFunctionExecutionRole-DEV
   GlueJobExecutionRole:
     Description: ARN of the iam role for the glue job
     Type: String
-    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
-    Default: rp-data-populator-poc
+    Default: cp-ref-etl-output-bucket-dev
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -32,7 +32,7 @@ Parameters:
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
-    Default: cp-ref-data-poc-common
+    Default: cp-ref-etl-common-connection-DEV
   NotifierLambdaArn:
     Description: Arn of the notifier Lambda
     Type: String
@@ -266,6 +266,7 @@ Resources:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/smart_open-2.1.0-py3.6.egg"
       ExecutionProperty:
         MaxConcurrentRuns: 1
+      GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
       Timeout: 4320
@@ -387,6 +388,7 @@ Resources:
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
       ExecutionProperty:
         MaxConcurrentRuns: 3
+      GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
       Connections:
@@ -500,7 +502,8 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                     "message.$":"$.error.Cause"
+                     "message.$":"$.error.Cause",
+                     "event": "ETL-PRICE_ZONE"
                   }
                 },
                 "End": true
@@ -557,7 +560,8 @@ Resources:
                         "FunctionName": "${notifierLambdaArn}",
                         "Payload":{
                            "opco_id.$":"$.id",
-                           "message.$":"$.error.Cause"
+                           "message.$":"$.error.Cause",
+                            "event": "ETL-PRICE_ZONE"
                         }
                       },
                       "End": true

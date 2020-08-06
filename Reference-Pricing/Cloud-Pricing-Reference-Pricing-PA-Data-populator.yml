@@ -4,23 +4,23 @@ Parameters:
   LambdaRole:
     Description: ARN of the iam role for the lambda function
     Type: String
-    Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-role
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLTriggerLambaRole-DEV
   StepFuctionExecutionRole:
       Description: ARN of the iam role for the step function
       Type: String
-      Default: arn:aws:iam::037295147636:role/step-function-execution-role
+      Default: arn:aws:iam::037295147636:role/CP-REF-ETLStepFunctionExecutionRole-DEV
   GlueJobExecutionRole:
       Description: ARN of the iam role for the glue job
       Type: String
-      Default: arn:aws:iam::037295147636:role/rp-data-populator-poc-glue-role
+      Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
-    Default: cp-ref-data-poc-common
+    Default: cp-ref-etl-output-bucket-dev
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
-    Default: cp-ref-price-poc-bucket
+    Default: cp-ref-etl-output-bucket-dev
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -33,6 +33,10 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
+  NotifierLambdaArn:
+    Description: Arn of the notifier Lambda
+    Type: String
+    Default: arn:aws:lambda:us-east-1:037295147636:function:CP-REF-etl-notifier-DEV
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -227,36 +231,57 @@ Resources:
       DefinitionString: !Sub
         - |-
           {
-          "Comment": "Transform and Loads PA data from S3 to DB",
-          "StartAt": "PA ETL Job",
-          "States": {
-             "PA ETL Job": {
+            "Comment": "Transform and Loads PA data from S3 to DB",
+            "StartAt": "PA ETL Job",
+            "States": {
+              "PA ETL Job": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::glue:startJobRun.sync",
-                  "Parameters": {
-                    "JobName": "${PADataETLJobName}",
-                    "Arguments": {
-                      "--s3_path.$": "$.s3_path"
-                    }
-                  },
-                "Retry": [{
-                  "ErrorEquals": ["States.TaskFailed"],
-                  "IntervalSeconds": 3,
-                  "MaxAttempts": 2,
-                  "BackoffRate": 10}],
-                "Catch": [{
-                  "ErrorEquals": ["States.TaskFailed"],
-                  "Next": "Load Job Failed"}
+                "Parameters": {
+                  "JobName": "${PADataETLJobName}",
+                  "Arguments": {
+                    "--s3_path.$": "$.s3_path"
+                  }
+                },
+                "Retry": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 3,
+                    "MaxAttempts": 1,
+                    "BackoffRate": 10
+                  }
+                ],
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify ETL Failure"
+                  }
                 ],
                 "End": true
               },
-              "Load Job Failed": {
-                "Type": "Pass",
+              "Notify ETL Failure": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                    "event": "ETL-PA",
+                    "message.$": "$.error.Cause"
+                  }
+                },
                 "End": true
-               }
+              }
             }
           }
-        - PADataETLJobName: !Ref PAETLGlueJob
+        - {
+            PADataETLJobName: !Ref PAETLGlueJob,
+            notifierLambdaArn: !Ref NotifierLambdaArn
+        }
       LoggingConfiguration:
         Destinations:
           - CloudWatchLogsLogGroup:
@@ -305,7 +330,7 @@ Resources:
         ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/scripts/pa_etl_script.py
       Connections:
         Connections:
-        - !Ref DatabaseConnection
+          - !Ref DatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
@@ -319,15 +344,15 @@ Resources:
       GlueVersion: 1.0
       Role: !Ref GlueJobExecutionRole
       Tags: {
-            'Technical:ApplicationName': !Ref ApplicationName,
-            'Technical:ApplicationID': !Ref ApplicationID,
-            'Technical:PlatformOwner': !Ref Owner,
-            'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
-            'Support_Email': !Ref SupportEmail,
-            'Approver': !Ref Approver,
-            'PO_Number': !Ref PONumber,
-            'Project_ID': !Ref ProjectID,
-            '2WTAGGER': !Ref 2WTAGGER,
-            'Platform': !Ref Platform,
-            'Component': !Ref Component
-          }
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
