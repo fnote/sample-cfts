@@ -391,8 +391,8 @@ Resources:
       LifecycleConfiguration:
         Rules:
           - Transitions:
-              StorageClass: GLACIER
-              TransitionInDays: 30
+              - StorageClass: GLACIER
+                TransitionInDays: 30
             Id: Transition-To-Glacier-Rule
             Status: Enabled
       Tags:
@@ -479,16 +479,16 @@ Resources:
                   - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
               - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                  Resource:
-                    - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}'
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
               - Effect: Allow
-                  Action:
-                    - s3:ListBucket
-                  Resource:
-                    - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}'
       Path: '/'
 
 Outputs:
