@@ -278,7 +278,8 @@ Resources:
                 "Parameters": {
                   "JobName": "${PAETLGlueJob}",
                   "Arguments": {
-                    "--s3_path.$": "$.s3_path"
+                    "--s3_path.$": "$.s3_path",
+                    "--etl_output_path_key.$": "$.etl_output_path_key"
                   }
                 },
                 "Retry": [
@@ -300,6 +301,7 @@ Resources:
                     "Next": "Notify ETL Failure"
                   }
                 ],
+                "ResultPath": "$.response",
                 "Next": "Backup Data"
               },
               "Backup Data": {

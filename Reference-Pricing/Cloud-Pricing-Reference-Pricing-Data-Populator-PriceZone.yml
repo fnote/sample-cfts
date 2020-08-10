@@ -299,9 +299,9 @@ Resources:
       Command:
         Name: glueetl
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
+        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
       DefaultArguments:
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
         "--enable-metrics": ""
         "--enable-continuous-cloudwatch-log": "true"
         "--enable-continuous-log-filter": "true"
