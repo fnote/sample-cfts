@@ -167,7 +167,7 @@ Resources:
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier.zip
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
