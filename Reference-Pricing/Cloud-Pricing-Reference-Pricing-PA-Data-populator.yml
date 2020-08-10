@@ -273,7 +273,7 @@ Resources:
                 "Type": "Task",
                 "Resource": "arn:aws:states:::glue:startJobRun.sync",
                 "Parameters": {
-                  "JobName": "CP-REF-etl-pa-job-DEV",
+                  "JobName": "${PAETLGlueJob}",
                   "Arguments": {
                     "--s3_path.$": "$.s3_path"
                   }
@@ -327,7 +327,7 @@ Resources:
                 "Type": "Task",
                 "Resource": "arn:aws:states:::lambda:invoke",
                 "Parameters": {
-                  "FunctionName": "arn:aws:lambda:us-east-1:037295147636:function:CP-REF-etl-notifier-DEV",
+                  "FunctionName": "${NotifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-PA",
                     "message.$": "$.error.Cause"
