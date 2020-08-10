@@ -25,6 +25,9 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  ETLDataBackUpStorage:
+    Description: S3 bucket to archive files
+    Type: String
   EnvironmentShort:
     Description: Environment for application
     Type: String
