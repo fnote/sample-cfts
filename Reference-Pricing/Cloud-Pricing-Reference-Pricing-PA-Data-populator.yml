@@ -240,6 +240,7 @@ Resources:
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0

@@ -479,6 +479,7 @@ Resources:
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
@@ -703,7 +704,8 @@ Resources:
                   "Arguments": {
                     "--s3_path.$": "$.s3_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--etl_output_path_key.$": "$.etl_output_path_key"
+                    "--partitioned_files_key.$": "$.partitioned_files_key",
+                    "--decompressed_file_path.$": "$.decompressed_file_path"
                   }
                 },
                 "ResultPath": "$.response",
