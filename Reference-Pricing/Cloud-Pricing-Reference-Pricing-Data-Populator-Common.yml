@@ -167,7 +167,7 @@ Resources:
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/Notifier.zip
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
@@ -382,6 +382,115 @@ Resources:
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
           SubnetId: !Ref SubnetIdForGlueConnection
 
+  ETLDataBackUpStorage:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub
+        - 'cp-ref-etl-data-backup-storage-${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+      LifecycleConfiguration:
+        Rules:
+          - Transitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 30
+            Id: Transition-To-Glacier-Rule
+            Status: Enabled
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+
+  ETLDataBackUpGlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'CP-REF-ETLDataBackupGlueRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'glue.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: CP-REF-ETLDataBackupGlueJobPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                  - logs:PutLogEvents
+                  - logs:AssociateKmsKey
+                Resource: 'arn:aws:logs:*:*:/aws-glue/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-ref-etl-pa-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:DeleteObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}'
+      Path: '/'
+
 Outputs:
   CommonDBConnectionName:
     Description: Reference price common glue database connection
@@ -398,3 +507,9 @@ Outputs:
   NotifierLambdaArn:
     Description: Common lambda notifier arn
     Value: !GetAtt NotifierLambda.Arn
+  ETLDataBackUpGlueRole:
+    Description: ETL Data backup glue role
+    Value: !GetAtt ETLDataBackUpGlueRole.Arn
+  ETLDataBackUpStorage:
+    Description: S3 bucket to archive ETL related files
+    Value: !Ref ETLDataBackUpStorage

@@ -13,10 +13,17 @@ Parameters:
     Description: ARN of the iam role for the glue job
     Type: String
     Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
+  GlueJobDataBackupRole:
+    Description: ARN of the iam role for the glue job to backup data
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLDataBackupGlueRole-DEV
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  ETLDataBackUpStorage:
+    Description: S3 bucket to archive files
+    Type: String
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -225,7 +232,7 @@ Resources:
       Handler: s3_trigger_lambda.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/price_zone/s3_trigger_lambda.zip
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/s3_trigger_lambda.zip'
       Environment:
         Variables:
           stepFunctionArn: !Ref PriceZoneStateMachine
@@ -260,10 +267,10 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/decompress_job.py
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/decompress_job.py'
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/smart_open-2.1.0-py3.6.egg"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/smart_open-2.1.0-py3.6.egg"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
@@ -292,9 +299,9 @@ Resources:
       Command:
         Name: glueetl
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/transform_spark_job.py
+        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
       DefaultArguments:
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/constants.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
         "--enable-metrics": ""
         "--enable-continuous-cloudwatch-log": "true"
         "--enable-continuous-log-filter": "true"
@@ -376,15 +383,67 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  PriceZoneJobStatusAnalyzerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that analyzes status of previous job runs
+      FunctionName: !Sub 'CP-REF-etl-price-zone-job-status-analyzer-${EnvironmentShort}'
+      Runtime: python3.7
+      Role: !Ref LambdaRole
+      Handler: index.lambda_handler
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+
+              jobStatuses = event['loadJobStatuses']
+
+              isAllSuccess = True
+              for jobStatus in jobStatuses:
+                  if 'loadJob' in jobStatus:
+                      if 'JobRunState' in jobStatus['loadJob']:
+                          if jobStatus['loadJob']['JobRunState'] != "SUCCEEDED":
+                              isAllSuccess = False
+                              break
+                  else:
+                      isAllSuccess = False
+                      break
+              return {
+                  'isAllSuccess': isAllSuccess
+                    }
+      Timeout: 60
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
   PrizeZoneDataLoadJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/load_job.py
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
       DefaultArguments:
-        "--extra-py-files": 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
+        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
       ExecutionProperty:
         MaxConcurrentRuns: 3
@@ -396,6 +455,38 @@ Resources:
           - !Ref DatabaseConnection
       Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
+
+  PrizeZoneDataBackupJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/data_backup_job.py'
+      DefaultArguments:
+        "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: 1.0
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Name: !Sub 'CP-REF-etl-prize-zone-backup-job-${EnvironmentShort}'
+      Role: !Ref GlueJobDataBackupRole
       Tags: {
         'Technical:ApplicationName': !Ref ApplicationName,
         'Technical:ApplicationID': !Ref ApplicationID,
@@ -502,8 +593,8 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                     "message.$":"$.error.Cause",
-                     "event": "ETL-PRICE_ZONE"
+                    "message.$": "$.error.Cause",
+                    "event": "ETL-PRICE_ZONE"
                   }
                 },
                 "End": true
@@ -568,15 +659,79 @@ Resources:
                     }
                   }
                 },
+                "ResultPath": "$.loadJobsResult",
+                "Next": "Analyze load job statuses"
+              },
+              "Analyze load job statuses": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${jobStatusAnalyzerLambdaArn}",
+                  "Payload": {
+                    "loadJobStatuses.$": "$.loadJobsResult"
+                  }
+                },
+                "ResultPath": "$.loadJobStatuses",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
+                "Next": "BackupOrNot"
+              },
+              "BackupOrNot": {
+                "Comment": "Check on load job statuses and decide data backup",
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.loadJobStatuses.Payload.isAllSuccess",
+                    "BooleanEquals": true,
+                    "Next": "Backup Data"
+                  }
+                ],
+                "Default": "Skip Backup"
+              },
+              "Backup Data": {
+                "Comment": "Backup data python shell job",
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "${prizeZoneDataBackupJobName}",
+                  "Arguments": {
+                    "--s3_path.$": "$.s3_path",
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--partitioned_files_key.$": "$.partitioned_files_key",
+                    "--decompressed_file_path.$": "$.decompressed_file_path"
+                  }
+                },
+                "ResultPath": "$.response",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify Failure"
+                  }
+                ],
                 "End": true
+              },
+              "Skip Backup": {
+                "Type": "Succeed"
               }
             }
           }
         - {
             prizeZoneDecompressJobName: !Ref PrizeZoneDecompressJob,
             prizeZoneTransformJobName: !Ref PrizeZoneTransformJob,
-            opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
             prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
+            prizeZoneDataBackupJobName: !Ref PrizeZoneDataBackupJob,
+            opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
+            jobStatusAnalyzerLambdaArn: !GetAtt PriceZoneJobStatusAnalyzerLambda.Arn,
             notifierLambdaArn: !Ref NotifierLambdaArn
         }
       LoggingConfiguration:
