@@ -279,7 +279,8 @@ Resources:
                 "Parameters": {
                   "JobName": "${PADataETLJobName}",
                   "Arguments": {
-                    "--s3_path.$": "$.s3_path",
+                    "--s3_input_bucket.$": "$.s3_input_bucket",
+                    "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key"
                   }
                 },
@@ -312,7 +313,8 @@ Resources:
                 "Parameters": {
                   "JobName": "${paDataBackupJobName}",
                   "Arguments": {
-                    "--s3_path.$": "$.s3_path",
+                    "--s3_input_bucket.$": "$.s3_input_bucket",
+                    "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--etl_output_path_key.$": "$.etl_output_path_key"
                   }
