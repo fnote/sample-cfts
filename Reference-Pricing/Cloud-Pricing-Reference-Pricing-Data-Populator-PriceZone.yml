@@ -702,7 +702,8 @@ Resources:
                 "Parameters": {
                   "JobName": "${prizeZoneDataBackupJobName}",
                   "Arguments": {
-                    "--s3_path.$": "$.s3_path",
+                    "--s3_input_bucket.$": "$.s3_input_bucket",
+                    "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--partitioned_files_key.$": "$.partitioned_files_key",
                     "--decompressed_file_path.$": "$.decompressed_file_path"
