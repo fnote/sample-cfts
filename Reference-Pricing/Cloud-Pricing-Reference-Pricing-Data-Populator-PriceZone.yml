@@ -606,7 +606,8 @@ Resources:
                 "Parameters": {
                   "id.$": "$$.Map.Item.Value",
                   "partitioned_files_key.$": "$.partitioned_files_key",
-                  "intermediate_s3_name.$": "$.intermediate_s3_name"
+                  "intermediate_s3_name.$": "$.intermediate_s3_name",
+                  "etl_timestamp.$": "$.etl_timestamp"
                 },
                 "Iterator": {
                   "StartAt": "Load Job",
@@ -619,7 +620,8 @@ Resources:
                         "Arguments": {
                           "--opco_id.$": "$.id",
                           "--partitioned_files_key.$": "$.partitioned_files_key",
-                          "--intermediate_s3_name.$": "$.intermediate_s3_name"
+                          "--intermediate_s3_name.$": "$.intermediate_s3_name",
+                          "--etl_timestamp.$": "$.etl_timestamp"
                         }
                       },
                       "Retry": [
