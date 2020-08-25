@@ -13,6 +13,11 @@ Parameters:
     Type: String
     Description: JDBC url of the database used to persist Reference pricing data
     Default: "jdbc:mysql://cp-discounts-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_DISCOUNTS_1"
+  DatabasePassword:
+    Type: String
+    Description: Password of the database used for glue connection
+    Default: ""
+    NoEcho: true
   AvailabilityZoneForGlueConnection:
     Type: String
     Description: The Availability Zone of the glue connection
@@ -48,10 +53,22 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
-  NotifierLambdaArn:
-    Description: Arn of the notifier Lambda
+  NotifierLambdaSecutyGroup:
+    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Default: sg-014f39d2fd8370bf6
+  NotifierLambdaSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: The list of Subnets to use the Cloud Pricing Notification Service Api
+    Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
+  NotificationURL:
     Type: String
-    Default: arn:aws:lambda:us-east-1:037295147636:function:CP-REF-etl-notifier-DEV
+    Description: Cloud pricing Notification service URL
+    Default: https://vpce-0ee878fea3ffd19c4-6bsoxvze.execute-api.us-east-1.vpce.amazonaws.com/stg/v1/cpns/notifications
+  NotificationHost:
+    Type: String
+    Description: Cloud Pricing Notification service host
+    Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -311,7 +328,7 @@ Resources:
           "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
           "USERNAME": cpuser,
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
-          "PASSWORD": a4T6XrIXJGwp
+          "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
@@ -501,7 +518,7 @@ Resources:
           }
         - {
           MasterDiscountTableDataLoadJob: !Ref MasterDiscountTableDataLoadJob,
-          notifierLambdaArn: Ref_MasterDiscountTableDataLoadJob,
+          notifierLambdaArn: !GetAtt NotifierLambda.Arn,
           CustomerEligibilityDataLoadJob: !Ref CustomerEligibilityDataLoadJob,
           DiscountDataBackupJob: !Ref DiscountDataBackupJob
         }
@@ -619,7 +636,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: 2
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -719,6 +736,85 @@ Resources:
                 TransitionInDays: 30
             Id: Transition-To-Glacier-Rule
             Status: Enabled
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  ETLTriggerLambaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'CP-DISCOUNTS-ETLTriggerLambdaRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CP-REF-StartStepFunctionExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeInstances
+                  - ec2:AttachNetworkInterface
+                Resource:
+                  - '*'
+      Path: '/'
+
+  NotifierLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that use CPNS to notify
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-notifier-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt ETLTriggerLambaRole.Arn
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          env: !Ref EnvironmentShort
+          cp_notification_url: !Ref NotificationURL
+          cp_notification_host: !Ref NotificationHost
+      Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
