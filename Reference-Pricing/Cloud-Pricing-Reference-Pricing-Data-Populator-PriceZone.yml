@@ -730,7 +730,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "message.$": "$.error.Cause",
-                    "event": "ETL-PRICE_ZONE"
+                    "event": "ETL-PRICE_ZONE",
+                    "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }
                 },
                 "End": true
@@ -790,7 +791,8 @@ Resources:
                         "Payload":{
                            "opco_id.$":"$.id",
                            "message.$":"$.error.Cause",
-                            "event": "ETL-PRICE_ZONE"
+                            "event": "ETL-PRICE_ZONE",
+                            "stepFunctionExecutionId.$": "$$.Execution.Id"
                         }
                       },
                       "End": true
