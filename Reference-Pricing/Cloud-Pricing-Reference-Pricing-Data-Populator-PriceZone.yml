@@ -235,19 +235,28 @@ Resources:
       Tier: Standard
       Description: Maximum concurrency allowed for Glue jobs
 
-  PriceZoneETLMaxDPUCount:
+  PriceZoneETLWorkerType:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DPU_COUNT/MAX']]
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/WORKER_TYPE']]
+      Type: String
+      Value: Standard
+      Tier: Standard
+      Description: Worker type for ETL Transform job
+
+  PriceZoneETLMaxWorkerCount:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/WORKER_COUNT/MAX']]
       Type: String
       Value: !Ref TransformJobMaxDPUCount
       Tier: Standard
       Description: DPU count for ETL spark job for Full load
 
-  PriceZoneETLMinDPUCount:
+  PriceZoneETLMinWorkerCount:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DPU_COUNT/MIN']]
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/WORKER_COUNT/MIN']]
       Type: String
       Value: !Ref TransformJobMinDPUCount
       Tier: Standard
@@ -354,7 +363,9 @@ Resources:
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
-      GlueVersion: 1.0
+      GlueVersion: 2.0
+      WorkerType: Standard
+      NumberOfWorkers: !Ref TransformJobMaxDPUCount
       MaxRetries: 0
       Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
@@ -675,7 +686,8 @@ Resources:
                     "--partitioned_files_path.$": "$.partitioned_files_path",
                     "--enable-continuous-cloudwatch-log": "true"
                   },
-                  "MaxCapacity.$": "$.dpu_count"
+                  "NumberOfWorkers.$": "$.worker_count",
+                  "WorkerType.$": "$.worker_type"
                 },
                 "ResultPath": "$.response",
                 "Catch": [
