@@ -325,8 +325,8 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
-          "USERNAME": cpuser,
+          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/ENDPOINT/WRITER:1}}"]],
+          "USERNAME": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
@@ -390,6 +390,7 @@ Resources:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--ENV": !Ref EnvironmentShort
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
