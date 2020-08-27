@@ -13,6 +13,10 @@ Parameters:
       Description: ARN of the iam role for the glue job
       Type: String
       Default: arn:aws:iam::037295147636:role/CP-REF-ETLGlueRole-DEV
+  GlueJobDataBackupRole:
+    Description: ARN of the iam role for the glue job to backup data
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CP-REF-ETLDataBackupGlueRole-DEV
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
@@ -21,6 +25,9 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  ETLDataBackUpStorage:
+    Description: S3 bucket to archive files
+    Type: String
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -194,7 +201,7 @@ Resources:
       Handler: s3_trigger_lambda.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: ReferencePricingApi/DataPopulator/pa/scripts/s3_trigger_lambda.zip
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/s3_trigger_lambda.zip'
       Environment:
         Variables:
           stepFunctionArn: !Ref PAStateMachine
@@ -223,6 +230,38 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  PADataBackupJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/data_backup_job.py'
+      DefaultArguments:
+        "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: 1.0
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Name: !Sub 'CP-REF-etl-pa-backup-job-${EnvironmentShort}'
+      Role: !Ref GlueJobDataBackupRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
+
   PAStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -240,7 +279,10 @@ Resources:
                 "Parameters": {
                   "JobName": "${PADataETLJobName}",
                   "Arguments": {
-                    "--s3_path.$": "$.s3_path"
+                    "--s3_input_bucket.$": "$.s3_input_bucket",
+                    "--s3_input_file_key.$": "$.s3_input_file_key",
+                    "--etl_output_path_key.$": "$.etl_output_path_key",
+                    "--etl_timestamp.$": "$.etl_timestamp"
                   }
                 },
                 "Retry": [
@@ -253,6 +295,32 @@ Resources:
                     "BackoffRate": 10
                   }
                 ],
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify ETL Failure"
+                  }
+                ],
+                "ResultPath": "$.response",
+                "Next": "Backup Data"
+              },
+              "Backup Data": {
+                "Comment": "Backup data python shell job",
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "${paDataBackupJobName}",
+                  "Arguments": {
+                    "--s3_input_bucket.$": "$.s3_input_bucket",
+                    "--s3_input_file_key.$": "$.s3_input_file_key",
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--etl_output_path_key.$": "$.etl_output_path_key"
+                  }
+                },
+                "ResultPath": "$.response",
                 "Catch": [
                   {
                     "ErrorEquals": [
@@ -280,7 +348,8 @@ Resources:
           }
         - {
             PADataETLJobName: !Ref PAETLGlueJob,
-            notifierLambdaArn: !Ref NotifierLambdaArn
+            notifierLambdaArn: !Ref NotifierLambdaArn,
+            paDataBackupJobName: !Ref PADataBackupJob
         }
       LoggingConfiguration:
         Destinations:
@@ -327,13 +396,13 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/scripts/pa_etl_script.py
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
       Connections:
         Connections:
           - !Ref DatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
       ExecutionProperty:
