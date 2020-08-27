@@ -227,11 +227,14 @@ Resources:
               - Effect: Allow
                 Action:
                   - states:StartExecution
+                  - states:ListExecutions
                   - ec2:CreateNetworkInterface
                   - ec2:DescribeNetworkInterfaces
                   - ec2:DeleteNetworkInterface
                   - ec2:DescribeInstances
                   - ec2:AttachNetworkInterface
+                  - ssm:GetParameters
+                  - ssm:GetParameter
                 Resource:
                   - '*'
               - Effect: Allow
