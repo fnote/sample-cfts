@@ -1,18 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: "Discount Service Data Populator"
 Parameters:
-  LambdaRole:
-    Description: ARN of the iam role for the lambda function
-    Type: String
-    Default: arn:aws:iam::037295147636:role/CP-REF-ETLTriggerLambaRole-DEV
-  StepFuctionExecutionRole:
-      Description: ARN of the iam role for the step function
-      Type: String
-      Default: arn:aws:iam::037295147636:role/CP-REF-ETLStepFunctionExecutionRole-DEV
-  DatabaseJDBCUrl:
-    Type: String
-    Description: JDBC url of the database used to persist Reference pricing data
-    Default: "jdbc:mysql://cp-discounts-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_DISCOUNTS_1"
   DatabasePassword:
     Type: String
     Description: Password of the database used for glue connection
@@ -263,7 +251,7 @@ Resources:
       Description: Lambda function that listens to pa data file uploads and triggers the step function
       FunctionName: !Sub 'CP-DISCOUNTS-etl-trigger-${EnvironmentShort}'
       Runtime: python3.7
-      Role: !Ref LambdaRole
+      Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
         ZipFile: |
@@ -344,7 +332,7 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/customer_eligibility.py
+        ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/customer_eligibility.py"
       Connections:
         Connections:
           - !Ref CommonDatabaseConnection
@@ -381,7 +369,7 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/mdt.py
+        ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/mdt.py"
       Connections:
         Connections:
           - !Ref CommonDatabaseConnection
@@ -529,7 +517,7 @@ Resources:
               LogGroupArn: !GetAtt PAStepFunctionExecutionLogs.Arn
         IncludeExecutionData: TRUE
         Level: ALL
-      RoleArn: !Ref StepFuctionExecutionRole
+      RoleArn: !GetAtt ETLStepFunctionExecutionRole.Arn
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -632,7 +620,7 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/data_backup_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/data_backup_job.py'
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
@@ -804,7 +792,7 @@ Resources:
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
@@ -839,3 +827,55 @@ Resources:
           Value: !Ref Platform
         - Key: Component
           Value: !Ref Component
+
+  ETLStepFunctionExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub 'CP-DISCOUNTS-ETLStepFunctionExecutionRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - !Sub 'states.${AWS::Region}.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+      Policies:
+        - PolicyName: CP-REF-ExecuteGlueJobPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - glue:GetJobs
+                  - glue:BatchStopJobRun
+                  - glue:ListJobs
+                  - glue:CreateJob
+                  - glue:BatchGetJobs
+                  - glue:StartJobRun
+                  - glue:GetJobRun
+                  - glue:UpdateJob
+                  - glue:GetJobRuns
+                  - glue:GetJob
+                Resource: "*"
+        - PolicyName: LogStepFunctionEventPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:DescribeDestinations
+                  - logs:PutDestination
+                  - logs:CreateLogDelivery
+                  - logs:GetLogDelivery
+                  - logs:UpdateLogDelivery
+                  - logs:DeleteLogDelivery
+                  - logs:ListLogDeliveries
+                  - logs:PutResourcePolicy
+                  - logs:DescribeResourcePolicies
+                  - logs:DescribeLogGroups
+                Resource: '*'
+      Path: '/'
