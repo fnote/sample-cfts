@@ -32,6 +32,12 @@ Resources:
         Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
         Vcpus: 4
         Memory: 8000
+        Command:
+          - java
+          - "-Xmx6144M"
+          - "-jar"
+          - mimix-query-syncing-processor.jar
+          - Ref::business_unit
         JobRoleArn: !Ref 'TaskRole'
         Environment:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
