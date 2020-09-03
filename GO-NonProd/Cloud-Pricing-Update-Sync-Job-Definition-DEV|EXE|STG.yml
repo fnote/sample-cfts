@@ -36,7 +36,7 @@ Resources:
           - java
           - "-Xmx6144M"
           - "-jar"
-          - mimix-query-syncing-processor.jar
+          - update-sync-processor.jar
           - Ref::business_unit
         JobRoleArn: !Ref 'TaskRole'
         Environment:
