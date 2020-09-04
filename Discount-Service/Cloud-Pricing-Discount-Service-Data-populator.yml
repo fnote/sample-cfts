@@ -421,7 +421,7 @@ Resources:
                     "Next": "MDT ETL Job"
                   }
                 ],
-                "Default": "CE ETL Job"
+                "Default": "CE Decompress Job"
               },
               "MDT ETL Job": {
                 "Type": "Task",
@@ -444,6 +444,50 @@ Resources:
                 ],
                 "ResultPath": "$.loadJob",
                 "Next": "Clean and backup Job"
+              },
+              "CE Decompress Job": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "${CustomerEligibilityDecompressionJob}",
+                  "Arguments": {
+                    "--s3_file_path.$": "$.s3_file_path",
+                    "--etl_timestamp.$": "$.etl_timestamp"
+                  }
+                },
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify ETL Failure"
+                  }
+                ],
+                "ResultPath": "$.loadJob",
+                "Next": "CE Partition Job"
+              },
+              "CE Partition Job": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Parameters": {
+                  "JobName": "${CustomerEligibilityPartitionJob}",
+                  "Arguments": {
+                    "--s3_file_path.$": "$.s3_file_path",
+                    "--etl_timestamp.$": "$.etl_timestamp"
+                  }
+                },
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify ETL Failure"
+                  }
+                ],
+                "ResultPath": "$.loadJob",
+                "Next": "CE ETL Job"
               },
               "CE ETL Job": {
                 "Type": "Task",
@@ -509,7 +553,9 @@ Resources:
           MasterDiscountTableDataLoadJob: !Ref MasterDiscountTableDataLoadJob,
           notifierLambdaArn: !GetAtt NotifierLambda.Arn,
           CustomerEligibilityDataLoadJob: !Ref CustomerEligibilityDataLoadJob,
-          DiscountDataBackupJob: !Ref DiscountDataBackupJob
+          DiscountDataBackupJob: !Ref DiscountDataBackupJob,
+          CustomerEligibilityDecompressionJob: !Ref CustomerEligibilityDecompressionJob,
+          CustomerEligibilityPartitionJob: !Ref CustomerEligibilityPartitionJob
         }
       LoggingConfiguration:
         Destinations:
@@ -879,3 +925,69 @@ Resources:
                   - logs:DescribeLogGroups
                 Resource: '*'
       Path: '/'
+
+  CustomerEligibilityDecompressionJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: 3
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/decompress_job.py'
+      DefaultArguments:
+        "--job-bookmark-option": "job-bookmark-disable"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg"
+        "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: 1.0
+      MaxRetries: 0
+      MaxCapacity: 1.0
+      Timeout: 4320
+      Name: !Sub 'CP-DISCOUNTS-etl-customer-eligibility-decompress-job-${EnvironmentShort}'
+      Role: !Ref ETLGlueRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
+
+  CustomerEligibilityPartitionJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: 3
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/customer_eligibility_partitioner.py'
+      DefaultArguments:
+        "--enable-metrics": ""
+        "--enable-continuous-cloudwatch-log": "true"
+        "--enable-continuous-log-filter": "true"
+        "--enable-spark-ui": 'true'
+        "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      GlueVersion: 2.0
+      MaxRetries: 0
+      Name: !Sub 'CP-DISCOUNTS-etl-customer-eligibility-partition-job-${EnvironmentShort}'
+      Role: !Ref ETLGlueRole
+      Tags: {
+        'Technical:ApplicationName': !Ref ApplicationName,
+        'Technical:ApplicationID': !Ref ApplicationID,
+        'Technical:PlatformOwner': !Ref Owner,
+        'Technical:Environment': !FindInMap [ EnvMap, !Ref EnvironmentShort, name ],
+        'Support_Email': !Ref SupportEmail,
+        'Approver': !Ref Approver,
+        'PO_Number': !Ref PONumber,
+        'Project_ID': !Ref ProjectID,
+        '2WTAGGER': !Ref 2WTAGGER,
+        'Platform': !Ref Platform,
+        'Component': !Ref Component
+      }
