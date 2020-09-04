@@ -60,6 +60,12 @@ Parameters:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
     Default: 5
+  TransformJobWorkerType:
+    Description: AWS Glue worker type for Spark job
+    Type: String
+    Default: Standard
+    AllowedValues:
+      - Standard
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -240,7 +246,7 @@ Resources:
     Properties:
       Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/WORKER_TYPE']]
       Type: String
-      Value: Standard
+      Value: !Ref TransformJobWorkerType
       Tier: Standard
       Description: Worker type for ETL Transform job
 
@@ -364,7 +370,7 @@ Resources:
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
-      WorkerType: !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/ETL/REF_PRICE/PRICE_ZONE/WORKER_TYPE:1}}"]]
+      WorkerType: !Ref TransformJobWorkerType
       NumberOfWorkers: !Ref TransformJobMaxDPUCount
       MaxRetries: 0
       Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
