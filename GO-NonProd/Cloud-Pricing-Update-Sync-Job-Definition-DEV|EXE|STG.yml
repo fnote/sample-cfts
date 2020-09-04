@@ -30,7 +30,7 @@ Resources:
         AttemptDurationSeconds: 10800
       ContainerProperties:
         Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
-        Vcpus: 4
+        Vcpus: 8
         Memory: 8000
         Command:
           - java
