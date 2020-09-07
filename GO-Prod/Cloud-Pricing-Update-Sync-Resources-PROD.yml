@@ -80,7 +80,7 @@ Parameters:
   JobDefinitionArn:
     Description: Job Definition Arn
     Type: String
-    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Update-Sync-Job-Definition-EXE
+    Default: arn:aws:batch:us-east-1:130227353653:job-definition/CP-Update-Sync-Job-Definition-PROD
   PvtSNa:
     Description: 'Private PRCP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: String
@@ -118,9 +118,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: SYSCO-GOLD-ECS -> ami-04a8c7bc3ed4e4bd1
+    Description: SYSCO-GOLD-ECS -> ami-0a0cdd2cc483521d1
     Type: String
-    Default: ami-04a8c7bc3ed4e4bd1
+    Default: ami-0a0cdd2cc483521d1
   ApplicationRole:
     Description: Application Role Tag
     Type: String
