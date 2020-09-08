@@ -264,12 +264,12 @@ Resources:
             Ref: 'Platform'
           Name:
             Ref: 'Component'
-      State: DISABLED
+      State: ENABLED
 
   JobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
-      State: DISABLED
+      State: ENABLED
       JobQueueName:
         Fn::Join:
           - ''
