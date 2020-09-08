@@ -700,3 +700,2776 @@ Resources:
           BatchParameters:
             JobDefinition: !Ref JobDefinitionArn
             JobName: '010-Update-Sync-Job'
+
+  UpdateSyncTrigger011:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'Update Sync trigger for 011'
+      Name: !Sub 'Update-sync-011-Trigger-${EnvironmentShort}'
+      EventPattern: !Sub
+        - |-
+          {
+            "source": [
+              "aws.batch"
+            ],
+            "detail-type": [
+              "Batch Job State Change"
+            ],
+            "detail": {
+              "jobQueue": [
+                "${mimixPurgeJobQueue}"
+              ],
+              "jobName": ["${mimixPurgeJobName}"],
+              "status": [
+                "SUCCEEDED"
+              ]
+            }
+          }
+        - {
+          mimixPurgeJobName: !Sub '011-${MimixPurgeJobNameSuffix}',
+          mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+        }
+      State: DISABLED
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          InputTransformer:
+            InputPathsMap:
+              'business_unit' : '$.detail.parameters.business_unit'
+            InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref JobDefinitionArn
+            JobName: '011-Update-Sync-Job'
+
+    UpdateSyncTrigger012:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 012'
+        Name: !Sub 'Update-sync-012-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '012-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '012-Update-Sync-Job'
+
+    UpdateSyncTrigger013:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 013'
+        Name: !Sub 'Update-sync-013-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '013-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '013-Update-Sync-Job'
+
+    UpdateSyncTrigger014:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 014'
+        Name: !Sub 'Update-sync-014-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '014-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '014-Update-Sync-Job'
+
+    UpdateSyncTrigger015:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 015'
+        Name: !Sub 'Update-sync-015-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '015-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '015-Update-Sync-Job'
+
+    UpdateSyncTrigger016:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 016'
+        Name: !Sub 'Update-sync-016-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '016-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '016-Update-Sync-Job'
+
+    UpdateSyncTrigger017:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 017'
+        Name: !Sub 'Update-sync-017-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '017-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '017-Update-Sync-Job'
+
+    UpdateSyncTrigger018:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 018'
+        Name: !Sub 'Update-sync-018-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '018-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '018-Update-Sync-Job'
+
+    UpdateSyncTrigger019:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 019'
+        Name: !Sub 'Update-sync-019-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '019-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '019-Update-Sync-Job'
+
+    UpdateSyncTrigger022:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 022'
+        Name: !Sub 'Update-sync-022-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '022-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '022-Update-Sync-Job'
+
+    UpdateSyncTrigger023:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 023'
+        Name: !Sub 'Update-sync-023-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '023-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '023-Update-Sync-Job'
+
+    UpdateSyncTrigger024:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 024'
+        Name: !Sub 'Update-sync-024-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '024-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '024-Update-Sync-Job'
+
+    UpdateSyncTrigger025:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 025'
+        Name: !Sub 'Update-sync-025-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '025-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '025-Update-Sync-Job'
+
+    UpdateSyncTrigger026:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 026'
+        Name: !Sub 'Update-sync-026-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '026-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '026-Update-Sync-Job'
+
+    UpdateSyncTrigger027:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 027'
+        Name: !Sub 'Update-sync-027-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '027-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '027-Update-Sync-Job'
+
+    UpdateSyncTrigger031:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 031'
+        Name: !Sub 'Update-sync-031-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '031-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '031-Update-Sync-Job'
+
+    UpdateSyncTrigger029:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 029'
+        Name: !Sub 'Update-sync-029-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '029-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '029-Update-Sync-Job'
+
+    UpdateSyncTrigger032:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 032'
+        Name: !Sub 'Update-sync-032-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '032-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '032-Update-Sync-Job'
+
+    UpdateSyncTrigger035:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 035'
+        Name: !Sub 'Update-sync-035-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '035-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '035-Update-Sync-Job'
+
+    UpdateSyncTrigger036:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 036'
+        Name: !Sub 'Update-sync-036-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '036-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '036-Update-Sync-Job'
+
+    UpdateSyncTrigger037:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 037'
+        Name: !Sub 'Update-sync-037-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '037-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '037-Update-Sync-Job'
+
+    UpdateSyncTrigger038:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 038'
+        Name: !Sub 'Update-sync-038-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '038-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '038-Update-Sync-Job'
+
+    UpdateSyncTrigger039:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 039'
+        Name: !Sub 'Update-sync-039-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '039-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '039-Update-Sync-Job'
+
+    UpdateSyncTrigger040:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 040'
+        Name: !Sub 'Update-sync-040-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '040-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '040-Update-Sync-Job'
+
+    UpdateSyncTrigger043:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 043'
+        Name: !Sub 'Update-sync-043-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '043-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '043-Update-Sync-Job'
+
+    UpdateSyncTrigger045:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 045'
+        Name: !Sub 'Update-sync-045-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '045-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '045-Update-Sync-Job'
+
+
+    UpdateSyncTrigger046:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 046'
+        Name: !Sub 'Update-sync-046-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '046-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '046-Update-Sync-Job'
+
+    UpdateSyncTrigger047:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 047'
+        Name: !Sub 'Update-sync-047-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '047-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '047-Update-Sync-Job'
+
+    UpdateSyncTrigger048:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 048'
+        Name: !Sub 'Update-sync-048-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '048-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '048-Update-Sync-Job'
+
+    UpdateSyncTrigger049:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 049'
+        Name: !Sub 'Update-sync-049-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '049-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '049-Update-Sync-Job'
+
+    UpdateSyncTrigger050:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 050'
+        Name: !Sub 'Update-sync-050-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '050-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '050-Update-Sync-Job'
+
+    UpdateSyncTrigger051:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 051'
+        Name: !Sub 'Update-sync-051-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '051-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '051-Update-Sync-Job'
+
+    UpdateSyncTrigger052:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 052'
+        Name: !Sub 'Update-sync-052-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '052-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '052-Update-Sync-Job'
+
+    UpdateSyncTrigger054:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 054'
+        Name: !Sub 'Update-sync-054-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '054-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '054-Update-Sync-Job'
+
+    UpdateSyncTrigger056:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 056'
+        Name: !Sub 'Update-sync-056-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '056-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '056-Update-Sync-Job'
+
+    UpdateSyncTrigger055:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 055'
+        Name: !Sub 'Update-sync-055-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '055-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '055-Update-Sync-Job'
+
+    UpdateSyncTrigger057:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 057'
+        Name: !Sub 'Update-sync-057-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '057-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '057-Update-Sync-Job'
+
+    UpdateSyncTrigger058:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 058'
+        Name: !Sub 'Update-sync-058-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '058-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '058-Update-Sync-Job'
+
+    UpdateSyncTrigger059:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 059'
+        Name: !Sub 'Update-sync-059-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '059-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '059-Update-Sync-Job'
+
+    UpdateSyncTrigger060:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 060'
+        Name: !Sub 'Update-sync-060-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '060-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '060-Update-Sync-Job'
+
+    UpdateSyncTrigger061:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 061'
+        Name: !Sub 'Update-sync-061-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '061-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '061-Update-Sync-Job'
+
+    UpdateSyncTrigger064:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 064'
+        Name: !Sub 'Update-sync-064-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '064-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '064-Update-Sync-Job'
+
+    UpdateSyncTrigger066:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 066'
+        Name: !Sub 'Update-sync-066-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '066-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '066-Update-Sync-Job'
+
+    UpdateSyncTrigger067:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 067'
+        Name: !Sub 'Update-sync-067-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '067-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '067-Update-Sync-Job'
+
+    UpdateSyncTrigger068:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 068'
+        Name: !Sub 'Update-sync-068-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '068-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '068-Update-Sync-Job'
+
+    UpdateSyncTrigger073:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 073'
+        Name: !Sub 'Update-sync-073-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '073-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '073-Update-Sync-Job'
+
+    UpdateSyncTrigger075:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 075'
+        Name: !Sub 'Update-sync-075-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '075-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '075-Update-Sync-Job'
+
+    UpdateSyncTrigger076:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 076'
+        Name: !Sub 'Update-sync-076-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '076-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '076-Update-Sync-Job'
+
+    UpdateSyncTrigger078:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 078'
+        Name: !Sub 'Update-sync-078-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '078-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '078-Update-Sync-Job'
+
+    UpdateSyncTrigger101:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 101'
+        Name: !Sub 'Update-sync-101-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '101-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '101-Update-Sync-Job'
+
+    UpdateSyncTrigger102:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 102'
+        Name: !Sub 'Update-sync-102-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '102-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '102-Update-Sync-Job'
+
+    UpdateSyncTrigger134:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 134'
+        Name: !Sub 'Update-sync-134-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '134-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '134-Update-Sync-Job'
+
+    UpdateSyncTrigger137:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 137'
+        Name: !Sub 'Update-sync-137-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '137-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '137-Update-Sync-Job'
+
+    UpdateSyncTrigger163:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 163'
+        Name: !Sub 'Update-sync-163-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '163-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '163-Update-Sync-Job'
+
+    UpdateSyncTrigger164:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 164'
+        Name: !Sub 'Update-sync-164-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '164-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '164-Update-Sync-Job'
+
+    UpdateSyncTrigger194:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 194'
+        Name: !Sub 'Update-sync-194-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '194-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '194-Update-Sync-Job'
+
+    UpdateSyncTrigger195:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 195'
+        Name: !Sub 'Update-sync-195-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '195-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '195-Update-Sync-Job'
+
+    UpdateSyncTrigger288:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 288'
+        Name: !Sub 'Update-sync-288-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '288-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '288-Update-Sync-Job'
+
+    UpdateSyncTrigger293:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 293'
+        Name: !Sub 'Update-sync-293-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '293-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '293-Update-Sync-Job'
+
+    UpdateSyncTrigger306:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 306'
+        Name: !Sub 'Update-sync-306-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '306-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '306-Update-Sync-Job'
+
+    UpdateSyncTrigger320:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 320'
+        Name: !Sub 'Update-sync-320-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '320-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '320-Update-Sync-Job'
+
+    UpdateSyncTrigger332:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 332'
+        Name: !Sub 'Update-sync-332-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '332-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '332-Update-Sync-Job'
+
+    UpdateSyncTrigger335:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 335'
+        Name: !Sub 'Update-sync-335-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '335-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '335-Update-Sync-Job'
+
+    UpdateSyncTrigger344:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 344'
+        Name: !Sub 'Update-sync-344-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '344-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '344-Update-Sync-Job'
+
+    UpdateSyncTrigger429:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 429'
+        Name: !Sub 'Update-sync-429-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '429-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '429-Update-Sync-Job'
+
+    UpdateSyncTrigger450:
+      Type: AWS::Events::Rule
+      Properties:
+        Description: 'Update Sync trigger for 450'
+        Name: !Sub 'Update-sync-450-Trigger-${EnvironmentShort}'
+        EventPattern: !Sub
+          - |-
+            {
+              "source": [
+                "aws.batch"
+              ],
+              "detail-type": [
+                "Batch Job State Change"
+              ],
+              "detail": {
+                "jobQueue": [
+                  "${mimixPurgeJobQueue}"
+                ],
+                "jobName": ["${mimixPurgeJobName}"],
+                "status": [
+                  "SUCCEEDED"
+                ]
+              }
+            }
+          - {
+            mimixPurgeJobName: !Sub '450-${MimixPurgeJobNameSuffix}',
+            mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+        State: DISABLED
+        RoleArn: !Ref 'TriggeringRole'
+        Targets:
+          - Arn: !Ref 'JobQueue'
+            Id: EC2
+            InputTransformer:
+              InputPathsMap:
+                'business_unit' : '$.detail.parameters.business_unit'
+              InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+            RoleArn: !Ref 'TriggeringRole'
+            BatchParameters:
+              JobDefinition: !Ref JobDefinitionArn
+              JobName: '450-Update-Sync-Job'
