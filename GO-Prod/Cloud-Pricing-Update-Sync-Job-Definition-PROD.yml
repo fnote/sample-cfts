@@ -28,11 +28,11 @@ Resources:
         AttemptDurationSeconds: 10800
       ContainerProperties:
         Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
-        Vcpus: 8
+        Vcpus: 4
         Memory: 8000
         Command:
           - java
-          - "-Xmx6144M"
+          - "-Xmx6000M"
           - "-jar"
           - update-sync-processor.jar
           - Ref::business_unit
