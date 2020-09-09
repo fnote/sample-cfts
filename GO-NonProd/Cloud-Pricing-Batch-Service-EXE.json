@@ -162,7 +162,7 @@
         "CommonAMI": {
             "Description": "Sysco Gold Team managed AMI",
             "Type": "String",
-            "Default": "ami-0ca349b191791437f",
+            "Default": "ami-0a0cdd2cc483521d1",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -431,7 +431,8 @@
                         "Ref": "PemKey"
                     },
                     "LaunchTemplate": {
-                        "LaunchTemplateId": { "Ref": "LaunchTemplate" }
+                        "LaunchTemplateId": { "Ref": "LaunchTemplate" },
+                        "Version": "$Latest"
                     },
                     "InstanceRole": {
                         "Ref": "IamInstanceProfile"
