@@ -50,6 +50,9 @@ Parameters:
             - 731
             - 1827
             - 3653
+    paramStoreConfigPrefix:
+        Type: String
+        Default: "/CP/DISCOUNT_SERVICE"
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
@@ -83,11 +86,19 @@ Resources:
                         awslogs-stream-prefix: !Ref namingPrefix
                   Environment:
                     - Name: spring_profiles_active
-                      Value: local
+                      Value: !Ref environment
     ECSService:
         Type: AWS::ECS::Service
         DependsOn:
             - ALBListener
+            - ConfigMaxLifeLowerLimit
+            - ConfigMaxLifeUpperLimit
+            - ConfigReaderMaxPoolSize
+            - ConfigReaderInitialPoolSize
+            - ConfigWriterMaxPoolSize
+            - ConfigWriterInitialPoolSize
+            - ConfigConnectionValidationQuery
+            - ConfigDatabaseDriver
         Properties:
             Cluster: !Ref ECSCluster
             ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
@@ -169,6 +180,76 @@ Resources:
                   IpProtocol: tcp
                   FromPort: 443
                   ToPort: 443
+    ConfigMaxLifeLowerLimit:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/LIFE/LOWER/LIMIT]]
+            Type: String
+            Description: Lower limit of the connection pool max life and max idle time
+            Value: 30000
+    ConfigMaxLifeUpperLimit:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/LIFE/UPPER/LIMIT]]
+            Type: String
+            Description: Upper limit of the connection pool max life and max idle time
+            Value: 210000
+    ConfigReaderMaxPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/READER/MAX/POOL/SIZE]]
+            Type: String
+            Description: Maximum number of connections per opco pool for reader
+            Value: 40
+    ConfigReaderInitialPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/READER/INITIAL/POOL/SIZE]]
+            Type: String
+            Description: Initial number of connections per opco pool for reader
+            Value: 10
+    ConfigWriterMaxPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/WRITER/POOL/SIZE]]
+            Type: String
+            Description: Maximum number of connections per opco pool for writer
+            Value: 10
+    ConfigWriterInitialPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/WRITER/INITIAL/POOL/SIZE]]
+            Type: String
+            Description: Initial number of connections per opco pool for writer
+            Value: 2
+    ConfigConnectionValidationQuery:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/CONNECTION/VALIDATION/QUERY]]
+            Type: String
+            Description: DB connection validation query
+            Value: SELECT 1
+    ConfigDatabaseDriver:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/DRIVER]]
+            Type: String
+            Description: Database driver of the discount database
+            Value: mysql
+    ActiveBusinessUnits:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+            Type: String
+            Description: Active business units
+            Value: "019"
+    AuthorizedClients:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS]]
+            Type: String
+            Description: Authorized clients for the customer discounts endpoint
+            Value: "ctt"
 Outputs:
     LoadBalancerDNS:
         Description: Loadbalancer DNS
