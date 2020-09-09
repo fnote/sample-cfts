@@ -9,6 +9,7 @@ Parameters:
             - DEV
             - QE
             - EXE
+            - STG
             - PROD
     namingPrefix:
         Description: Naming prefix for the components created using this script
