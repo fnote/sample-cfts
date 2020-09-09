@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Reference Pricing API SSM Parameters"
+Parameters:
+  environment:
+    Description: Name of the environment
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - QE
+      - EXE
+      - STAG
+      - PROD
+  paramStoreConfigPrefix:
+    Type: String
+    Default: "/CP/REF_PRICE_SERVICE"
+  paramStoreDBHost:
+    Type: String
+    Default: cp-ref-price-db-cluster-01-dev.cluster-ro-c6xai0tt38eb.us-east-1.rds.amazonaws.com
+  paramStoreDBUser:
+    Type: String
+    Default: cpuser
+Resources:
+  ConfigMaxLifeLowerLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/MAX/LIFE/LOWER/LIMIT]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: 30000
+  ConfigMaxLifeUpperLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/MAX/LIFE/UPPER/LIMIT]]
+      Type: String
+      Description: Upper limit of the connection pool max life and max idle time
+      Value: 210000
+  ConfigMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/MAX/POOL/SIZE]]
+      Type: String
+      Description: Maximum number of connections per opco pool
+      Value: 40
+  ConfigInitialPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/INITIAL/POOL/SIZE]]
+      Type: String
+      Description: Initial number of connections per opco pool
+      Value: 10
+  ConfigMaxConnectionCreateTime:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/MAX/CONNECTION/CREATE/TIME]]
+      Type: String
+      Description: Maximum time for db connection creation
+      Value: 5000
+  ConfigMaxConnectionAcquireTime:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/MAX/CONNECTION/ACQUIRE/TIME]]
+      Type: String
+      Description: Maximum time for db connection acquiring
+      Value: 6000
+  ConfigConnectionValidationQuery:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/CONNECTION/VALIDATION/QUERY]]
+      Type: String
+      Description: DB connection validation query
+      Value: SELECT 1
+  ConfigDatabaseDriver:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/DRIVER]]
+      Type: String
+      Description: Database driver of the discount database
+      Value: mysql
+  ConfigActiveBusinessUnits:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+      Type: String
+      Description: Active business units
+      Value: "019"
+  ConfigSUPCsPerQuery:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SUPCS/PER/QUERY]]
+      Type: String
+      Description: Default SUPCs per Query
+      Value: 5
+  ConfigDBHost:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/HOST]]
+      Type: String
+      Description: DB host
+      Value: !Ref paramStoreDBHost
+  ConfigDBUsername:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/USERNAME]]
+      Type: String
+      Description: DB username
+      Value: !Ref paramStoreDBUser
