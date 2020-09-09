@@ -17,7 +17,7 @@ Parameters:
     ecrImageUri:
         Description: URI of the docker image used to run the api container
         Type: String
-        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-ref-api:v0.0.1"
+        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-ref-api-webflux:6dd51d51-3f35-4487-ad36-c9e2de774626"
     containerPort:
         Description: API container port number
         Type: Number
