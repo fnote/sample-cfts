@@ -166,6 +166,8 @@ Resources:
               VolumeType: io1
               Iops: 2000
               DeleteOnTermination: true
+        UserData:
+          TUlNRS1WZXJzaW9uOiAxLjANCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOyBib3VuZGFyeT0iPT1NWUJPVU5EQVJZPT0iDQoNCi0tPT1NWUJPVU5EQVJZPT0NCk1JTUUtVmVyc2lvbjogMS4wIA0KQ29udGVudC1UeXBlOiB0ZXh0L2Nsb3VkLWJvb3Rob29rOyBjaGFyc2V0PSJ1cy1hc2NpaSINCg0KIyEvYmluL2Jhc2gNCmNsb3VkLWluaXQtcGVyIG9uY2UgZG9ja2VyX29wdGlvbnMgZWNobyAnRE9DS0VSX1NUT1JBR0VfT1BUSU9OUz0iJHtET0NLRVJfU1RPUkFHRV9PUFRJT05TfSAtLXN0b3JhZ2Utb3B0IGRtLmJhc2VzaXplPTIwRyInID4+IC9ldGMvc3lzY29uZmlnL2RvY2tlci1zdG9yYWdlDQoNCi0tPT1NWUJPVU5EQVJZPT0tLQ==
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -201,7 +203,7 @@ Resources:
           - - CP-Update-Sync-Launch-Template-
             - Ref: 'EnvironmentShort'
 
-  UpdateSyncFargateComputeEnvironment:
+  UpdateSyncComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
@@ -210,7 +212,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Update-Sync-Compute-Environment-
+          - - CP-Update-Sync-EC2-Compute-Environment-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34

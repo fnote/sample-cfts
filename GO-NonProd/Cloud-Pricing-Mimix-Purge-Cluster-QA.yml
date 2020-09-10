@@ -122,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD -> ami-0ca349b191791437f
+    Description: SYSCO-GOLD -> ami-0a0cdd2cc483521d1
     Type: String
-    Default: ami-0ca349b191791437f
+    Default: ami-0a0cdd2cc483521d1
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -187,6 +187,7 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
+        ImageId: !Ref 'CommonAMI'
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
@@ -250,7 +251,6 @@ Resources:
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
         MinvCpus: 0
-        ImageId: !Ref 'CommonAMI'
         InstanceRole: !Ref 'PurgeInstanceRole'
         InstanceTypes:
           - optimal
@@ -258,7 +258,7 @@ Resources:
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
-          Version: $Default
+          Version: $Latest
         Tags:
           Technical:ApplicationName:
             Ref: 'ApplicationName'

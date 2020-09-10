@@ -32,7 +32,7 @@ Resources:
         Memory: 8000
         Command:
           - java
-          - "-Xmx6144M"
+          - "-Xmx6000M"
           - "-jar"
           - update-sync-processor.jar
           - Ref::business_unit
