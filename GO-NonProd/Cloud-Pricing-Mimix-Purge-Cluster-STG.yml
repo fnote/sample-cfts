@@ -1445,7 +1445,6 @@ Resources:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
-        ImageId: !Ref 'CommonAMI'
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
@@ -1513,6 +1512,7 @@ Resources:
         InstanceTypes:
           - optimal
         Ec2KeyPair: !Ref 'PemKey'
+        ImageId: !Ref 'CommonAMI'
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
