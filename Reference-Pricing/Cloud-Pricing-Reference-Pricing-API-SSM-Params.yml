@@ -9,7 +9,7 @@ Parameters:
       - DEV
       - QE
       - EXE
-      - STAG
+      - STG
       - PROD
   paramStoreConfigPrefix:
     Type: String
