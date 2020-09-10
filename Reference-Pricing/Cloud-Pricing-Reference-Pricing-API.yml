@@ -23,10 +23,14 @@ Parameters:
         Description: API container port number
         Type: Number
         Default: 8082
-    albListenerPort:
-        Description: ALB Listener port number
+    albListenerPortHttp:
+        Description: ALB HTTP Listener port number
         Type: Number
         Default: 80
+    albListenerPortHttps:
+        Description: ALB HTTPS Listener port number
+        Type: Number
+        Default: 443
     vpcId:
         Type: String
         Default: "vpc-091c7e3e5578d7a4f"
@@ -58,7 +62,7 @@ Parameters:
         AllowedValues:
             - ELBSecurityPolicy-2016-08
             - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
-    httpsListenerCertificate:
+    httpsListenerCertificateArn:
         Description: Certificate to use with the HTTPS listener
         Type: String
         Default: arn:aws:acm:us-east-1:037295147636:certificate/44f64fb1-43d9-4f60-b954-e4791e909321
@@ -93,6 +97,9 @@ Resources:
                         awslogs-region: !Ref "AWS::Region"
                         awslogs-group: !Ref LogGroup
                         awslogs-stream-prefix: !Ref namingPrefix
+                  Environment:
+                      - Name: spring_profiles_active
+                        Value: !Ref environment
     ECSService:
         Type: AWS::ECS::Service
         DependsOn:
@@ -148,7 +155,7 @@ Resources:
         Type: AWS::ElasticLoadBalancingV2::Listener
         Properties:
             LoadBalancerArn: !Ref LoadBalancer
-            Port: 80
+            Port: !Ref albListenerPortHttp
             Protocol: HTTP
             DefaultActions:
                 - Type: forward
@@ -157,11 +164,11 @@ Resources:
         Type: AWS::ElasticLoadBalancingV2::Listener
         Properties:
             LoadBalancerArn: !Ref LoadBalancer
-            Port: 443
+            Port: !Ref albListenerPortHttps
             Protocol: HTTPS
             SslPolicy: !Ref httpsListenerSslPolicy
             Certificates:
-                - !Ref httpsListenerCertificate
+                - CertificateArn: !Ref httpsListenerCertificateArn
             DefaultActions:
                 - Type: forward
                   TargetGroupArn: !Ref TargetGroup
@@ -185,8 +192,12 @@ Resources:
             SecurityGroupIngress:
                 - CidrIp: "10.0.0.0/8"
                   IpProtocol: tcp
-                  FromPort: !Ref albListenerPort
-                  ToPort: !Ref albListenerPort
+                  FromPort: !Ref albListenerPortHttp
+                  ToPort: !Ref albListenerPortHttp
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttps
+                  ToPort: !Ref albListenerPortHttps
 Outputs:
     LoadBalancerDNS:
         Description: Loadbalancer DNS
