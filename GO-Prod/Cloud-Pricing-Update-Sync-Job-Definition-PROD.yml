@@ -41,5 +41,5 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'chamin.wickramarathna@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com'
 
