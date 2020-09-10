@@ -232,7 +232,7 @@ Resources:
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
-          Version: $Default
+          Version: $Latest
         Tags:
           Technical:ApplicationName:
             Ref: 'ApplicationName'

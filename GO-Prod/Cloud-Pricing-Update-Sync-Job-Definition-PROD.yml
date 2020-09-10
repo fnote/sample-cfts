@@ -28,7 +28,7 @@ Resources:
         AttemptDurationSeconds: 10800
       ContainerProperties:
         Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
-        Vcpus: 8
+        Vcpus: 4
         Memory: 8000
         Command:
           - java
@@ -41,5 +41,5 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'chamin.wickramarathna@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com'
 
