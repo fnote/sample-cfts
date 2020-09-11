@@ -17,7 +17,7 @@ Parameters:
   ImageId:
     Description: Amazon AMI
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0ca349b191791437f'
+    Default: 'ami-0a0cdd2cc483521d1'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -149,7 +149,7 @@ Parameters:
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '1'
+    Default: '2'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
@@ -206,6 +206,8 @@ Resources:
 
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    Metadata:
+      Description: "Meta info for cfn signaling"
     UpdatePolicy:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
@@ -292,7 +294,23 @@ Resources:
             - !Ref 'ECSCluster'
             - " >> /etc/ecs/ecs.config\n"
             - "sudo service docker start\n"
-            - "sudo start ecs"
+            - "sudo start ecs\n"
+            - '/opt/aws/bin/cfn-init -v '
+            - '         --stack '
+            - !Ref 'AWS::StackName'
+            - '         --resource ECSAutoScalingGroup '
+            - '         --region '
+            - !Ref 'AWS::Region'
+            - |+
+
+            - |
+            - '/opt/aws/bin/cfn-signal -e $? '
+            - '         --stack '
+            - !Ref 'AWS::StackName'
+            - '         --resource ECSAutoScalingGroup '
+            - '         --region '
+            - !Ref 'AWS::Region'
+            - |+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
