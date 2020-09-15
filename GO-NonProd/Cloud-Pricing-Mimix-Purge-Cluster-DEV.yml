@@ -1450,6 +1450,19 @@ Resources:
             Ebs:
               VolumeSize: !Ref 'RootVolumeSize'
               VolumeType: gp2
+        UserData: !Base64
+          |
+          MIME-Version: 1.0
+          Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+          --==MYBOUNDARY==
+          MIME-Version: 1.0
+          Content-Type: text/cloud-boothook; charset="us-ascii"
+
+          #!/bin/bash
+          cloud-init-per once docker_options echo 'DOCKER_STORAGE_OPTIONS="${DOCKER_STORAGE_OPTIONS} --storage-opt dm.basesize=20G"' >> /etc/sysconfig/docker-storage
+
+          --==MYBOUNDARY==
         TagSpecifications:
           - ResourceType: volume
             Tags:
