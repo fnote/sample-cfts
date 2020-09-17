@@ -192,7 +192,7 @@ Parameters:
     MinValue: '1'
     MaxValue: '3653'
   DesiredCount:
-    Default: '0'
+    Default: '1'
     Description: The minimum size of the Auto Scaling group
     Type: String
 
