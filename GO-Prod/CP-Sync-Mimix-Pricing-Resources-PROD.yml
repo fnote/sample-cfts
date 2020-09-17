@@ -213,7 +213,7 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT5M
+        PauseTime: PT10M
         WaitOnResourceSignals: 'true'
     Properties:
       AutoScalingGroupName: !Join
