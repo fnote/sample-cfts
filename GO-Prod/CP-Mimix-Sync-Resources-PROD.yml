@@ -286,6 +286,13 @@ Resources:
             echo ECS_CLUSTER=CP-Mimix-Sync-Ecs-Cluster-${EnvironmentShort} >> /etc/ecs/ecs.config;
             sudo service docker start;
             sudo start ecs;
+            sh -c "echo \"*   soft   nofile   50000\" >> /etc/security/limits.conf";
+            sh -c "echo \"*   hard   nofile   102400\" >> /etc/security/limits.conf";
+            wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+            rpm -U ./amazon-cloudwatch-agent.rpm
+            mkdir -p /tmp/cpmimixysnc/logs
+            cd /opt/aws/amazon-cloudwatch-agent/bin
+            ./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/MIMIX_SYNC/PROD/CLOUDWATCH -s
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
 
