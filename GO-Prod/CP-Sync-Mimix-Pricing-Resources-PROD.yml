@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.06.19
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.09.04
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0ca349b191791437f'
+    Default: 'ami-0a0cdd2cc483521d1'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -192,7 +192,7 @@ Parameters:
     MinValue: '1'
     MaxValue: '3653'
   DesiredCount:
-    Default: '0'
+    Default: '1'
     Description: The minimum size of the Auto Scaling group
     Type: String
 
@@ -207,11 +207,13 @@ Resources:
 
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    Metadata:
+      Description: "Meta info for cfn signaling"
     UpdatePolicy:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT5M
+        PauseTime: PT10M
         WaitOnResourceSignals: 'true'
     Properties:
       AutoScalingGroupName: !Join
@@ -293,7 +295,23 @@ Resources:
             - !Ref 'ECSCluster'
             - " >> /etc/ecs/ecs.config\n"
             - "sudo service docker start\n"
-            - "sudo start ecs"
+            - "sudo start ecs\n"
+            - '/opt/aws/bin/cfn-init -v '
+            - '         --stack '
+            - !Ref 'AWS::StackName'
+            - '         --resource ECSAutoScalingGroup '
+            - '         --region '
+            - !Ref 'AWS::Region'
+            - |+
+
+            - |
+            - '/opt/aws/bin/cfn-signal -e $? '
+            - '         --stack '
+            - !Ref 'AWS::StackName'
+            - '         --resource ECSAutoScalingGroup '
+            - '         --region '
+            - !Ref 'AWS::Region'
+            - |+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
