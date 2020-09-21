@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE.json",
+	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE | STG",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -200,6 +200,7 @@
         "AllowedValues": [
           "bts-cloudpricing-perf-cpws-ng-refac-DEV",
           "bts-cloudpricing-perf-cpws-ng-refac-EXE",
+			"bts-cloudpricing-perf-cpws-ng-refac-STG",
           "bts-cloudpricing-prod-cpws-ng"
         ],
         "Description": "Dynatrace Application Name",
