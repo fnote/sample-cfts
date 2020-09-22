@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "Infrastructure of Reference Price API"
+Description: "Infrastructure of pricing service web service"
 Parameters:
     environment:
         Description: Name of the environment
@@ -7,22 +7,26 @@ Parameters:
         Default: DEV
         AllowedValues:
             - DEV
-            - QE
-            - EXE
             - STG
+            - EXE
             - PROD
     namingPrefix:
-        Description: Naming prefix for the components created using this script
+        Description: Naming prefix for the components
         Type: String
-        Default: cp-ref
+        Default: cp-pricing
     ecrImageUri:
         Description: URI of the docker image used to run the api container
         Type: String
-        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-ref-api-webflux:6dd51d51-3f35-4487-ad36-c9e2de774626"
+        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-service-dev:latest"
+        AllowedValues:
+            - "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-service-dev:latest"
+            - "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-service-exe:latest"
+            - "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-service-stg:latest"
+            - "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-service-prod:latest"
     containerPort:
         Description: API container port number
         Type: Number
-        Default: 8082
+        Default: 8080
     albListenerPortHttp:
         Description: ALB HTTP Listener port number
         Type: Number
@@ -32,21 +36,23 @@ Parameters:
         Type: Number
         Default: 443
     vpcId:
+        Description: Name of VPC
         Type: String
         Default: "vpc-091c7e3e5578d7a4f"
     subnets:
+        Description: Private Confidential Subnet
         Type: CommaDelimitedList
-        Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
+        Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186,subnet-0a5d9eea71b9c97c6"
     taskRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role-new"
+        Default: "arn:aws:iam::037295147636:role/cp-pricing-task-role"
     taskExecutionRoleArn:
         Type: String
-        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-execution-role"
+        Default: "arn:aws:iam::037295147636:role/cp-pricing-execution-role"
     retentionPeriod:
         Description: Log retention period in days
         Type: Number
-        Default: 180
+        Default: 365
         AllowedValues:
             - 90
             - 180
@@ -70,7 +76,7 @@ Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
         Properties:
-            ClusterName: !Join [ "-", [!Ref namingPrefix, api-cluster, !Ref environment]]
+            ClusterName: !Join [ "-", [!Ref namingPrefix, ecs-cluster, !Ref environment]]
             ClusterSettings:
                 - Name: containerInsights
                   Value: enabled
@@ -91,6 +97,9 @@ Resources:
                   PortMappings:
                       - ContainerPort: !Ref containerPort
                         Protocol: tcp
+                  Environment:
+                      - Name: SERVER_ENVIRONMENT_VARIABLE
+                        Value: !Ref 'environment'
                   LogConfiguration:
                       LogDriver: awslogs
                       Options:
@@ -104,14 +113,14 @@ Resources:
             - ALBListenerHttps
         Properties:
             Cluster: !Ref ECSCluster
-            ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
+            ServiceName: !Join [ "-", [!Ref namingPrefix, ecs-service, !Ref environment]]
             TaskDefinition: !Ref TaskDefinition
             LaunchType: FARGATE
             HealthCheckGracePeriodSeconds: 60
             DesiredCount: 2
             DeploymentConfiguration:
-                MaximumPercent: 200
-                MinimumHealthyPercent: 100
+                MaximumPercent: 100
+                MinimumHealthyPercent: 50
             NetworkConfiguration:
                 AwsvpcConfiguration:
                     AssignPublicIp: DISABLED
@@ -125,12 +134,12 @@ Resources:
     LogGroup:
         Type: AWS::Logs::LogGroup
         Properties:
-            LogGroupName: !Join [ "-", [!Ref namingPrefix, api-log-group, !Ref environment]]
+            LogGroupName: !Join [ "-", [!Ref namingPrefix, log-group, !Ref environment]]
             RetentionInDays: !Ref retentionPeriod
     LoadBalancer:
         Type: AWS::ElasticLoadBalancingV2::LoadBalancer
         Properties:
-            Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
+            Name: !Join [ "-", [!Ref namingPrefix, alb, !Ref environment]]
             Scheme: internal
             Subnets: !Ref subnets
             SecurityGroups:
@@ -138,12 +147,12 @@ Resources:
     TargetGroup:
         Type: AWS::ElasticLoadBalancingV2::TargetGroup
         Properties:
-            Name: !Join [ "-", [!Ref namingPrefix, api-target-group, !Ref environment]]
+            Name: !Join [ "-", [!Ref namingPrefix, target-group, !Ref environment]]
             Port: !Ref containerPort
             Protocol: HTTP
             TargetType: ip
             VpcId: !Ref vpcId
-            HealthCheckPath: '/ref-price/v1/health'
+            HealthCheckPath: '/pricing/support/healthcheck'
             HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
@@ -172,8 +181,8 @@ Resources:
     ECSServiceSecurityGroup:
         Type: AWS::EC2::SecurityGroup
         Properties:
-            GroupName: !Join [ "-", [!Ref namingPrefix, api-sg, !Ref environment]]
-            GroupDescription: Reference price api ecs service security group
+            GroupName: !Join [ "-", [!Ref namingPrefix, ecs-sg, !Ref environment]]
+            GroupDescription: Pricing service ecs security group
             VpcId: !Ref vpcId
             SecurityGroupIngress:
                 - CidrIp: "10.0.0.0/8"
@@ -183,8 +192,8 @@ Resources:
     LoadBalancerSecurityGroup:
         Type: AWS::EC2::SecurityGroup
         Properties:
-            GroupName: !Join [ "-", [!Ref namingPrefix, api-alb-sg, !Ref environment]]
-            GroupDescription: Reference price api load balancer security group
+            GroupName: !Join [ "-", [!Ref namingPrefix, alb-sg, !Ref environment]]
+            GroupDescription: Pricing service load balancer security group
             VpcId: !Ref vpcId
             SecurityGroupIngress:
                 - CidrIp: "10.0.0.0/8"
