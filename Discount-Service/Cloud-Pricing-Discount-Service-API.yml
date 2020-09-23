@@ -157,7 +157,7 @@ Resources:
             Protocol: HTTP
             TargetType: ip
             VpcId: !Ref vpcId
-            HealthCheckPath: '/'
+            HealthCheckPath: '/cp-discounts/v1/health'
             HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
