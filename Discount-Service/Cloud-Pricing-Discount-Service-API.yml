@@ -251,6 +251,20 @@ Resources:
             Type: String
             Description: Initial number of connections per opco pool for writer
             Value: 2
+    ConfigMaxConnectionCreateTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/CREATE/TIME]]
+            Type: String
+            Description: Maximum time for db connection creation
+            Value: 5000
+    ConfigMaxConnectionAcquireTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/ACQUIRE/TIME]]
+            Type: String
+            Description: Maximum time for db connection acquiring
+            Value: 6000
     ConfigConnectionValidationQuery:
         Type: AWS::SSM::Parameter
         Properties:
