@@ -27,7 +27,7 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 10800
       ContainerProperties:
-        Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+        Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:9b3cb0e0-3a96-4aa4-b0e4-1f118051891a'
         Vcpus: 4
         Memory: 8000
         Command:
