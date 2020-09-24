@@ -118,9 +118,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: SYSCO-GOLD-ECS -> ami-0a0cdd2cc483521d1
+    Description: SYSCO-GOLD-ECS
     Type: String
-    Default: ami-0a0cdd2cc483521d1
+    Default: ami-008052ade16587590
   ApplicationRole:
     Description: Application Role Tag
     Type: String
