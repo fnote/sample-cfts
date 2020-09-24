@@ -279,36 +279,19 @@ Resources:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
       UserData: !Base64
-        Fn::Join:
-          - ''
-          - - "#!/bin/bash\n"
-            - "sudo yum install -y ecs-init\n"
-            - "echo ECS_CLUSTER="
-            - !Ref 'ECSCluster'
-            - " >> /etc/ecs/ecs.config\n"
-            - "sudo service docker start\n"
-            - "sudo start ecs"
-            - "wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
-            - "rpm -U ./amazon-cloudwatch-agent.rpm"
-            - "mkdir -p /tmp/cpmimixysnc/logs"
-            - "cd /opt/aws/amazon-cloudwatch-agent/bin"
-            - "./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/MIMIX_SYNC/DEV/CLOUDWATCH -s\n"
-            - '/opt/aws/bin/cfn-init -v '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource ECSAutoScalingGroup '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+
-
-            - |
-            - '/opt/aws/bin/cfn-signal -e $? '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource ECSAutoScalingGroup '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+
+          !Sub |
+            #!/bin/bash
+            sudo yum install -y ecs-init
+            echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+            sudo service docker start
+            sudo start ecs
+            wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+            rpm -U ./amazon-cloudwatch-agent.rpm
+            mkdir -p /tmp/cpmimixysnc/logs
+            cd /opt/aws/amazon-cloudwatch-agent/bin
+            ./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/MIMIX_SYNC/DEV/CLOUDWATCH -s
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
 
   LogGroup:
     Type: AWS::Logs::LogGroup

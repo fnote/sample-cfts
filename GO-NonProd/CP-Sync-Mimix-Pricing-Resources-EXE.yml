@@ -4,12 +4,12 @@ Parameters:
   VPCID:
     Description: Name of the VPC for CP-NP
     Type: 'AWS::EC2::VPC::Id'
-    Default: vpc-0f55b12524f7459f9
+    Default: vpc-091c7e3e5578d7a4f
     ConstraintDescription: Must be a valid VPC.
   PemKey:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: 'AWS::EC2::KeyPair::KeyName'
-    Default: KeyPair-Sysco-CloudPricing-Prod
+    Default: KeyPair-Sysco-CloudPricing-NonProd
     MinLength: '1'
     MaxLength: '255'
     AllowedPattern: '[\x20-\x7E]*'
@@ -69,7 +69,7 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Production
+    Default: Execution
     AllowedValues:
       - Development
       - Execution
@@ -81,7 +81,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: PROD
+    Default: EXE
     AllowedValues:
       - DEV
       - EXE
@@ -99,38 +99,38 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   CPConfidentialSubnetA:
-    Description: 'Private PRCP-PROD Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
+    Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-03f5516cc0d29f5ad
+    Default: subnet-0186b43162a344d9a
     MinLength: '1'
     MaxLength: '255'
     ConstraintDescription: Must be a valid Private Subnet.
   CPConfidentialSubnetB:
-    Description: 'Private PRCP-PROD Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
+    Description: 'Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
     Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-094d9ade488a4f20b
+    Default: subnet-0ad1216eb31e15186
     MinLength: '1'
     MaxLength: '255'
     ConstraintDescription: Must be a valid Private Subnet.
   CPConfidentialSubnetC:
-    Description: 'Private PRCP-PROD Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
+    Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
     Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-0f279e0609eb542b2
+    Default: subnet-0a5d9eea71b9c97c6
     MinLength: '1'
     MaxLength: '255'
     ConstraintDescription: Must be a valid Private Subnet.
   SGWebServices:
     Description: Security group for webServices
     Type: String
-    Default: sg-0abcdcef90427fcd7
+    Default: sg-0a56447308e39b902
   SGDNS:
-    Description: PRCP-DNS-DNSSG-1LVAMR19KIKFS
+    Description: PRCP-NP-DNS-DNSSG-3J5600OVNNBR
     Type: String
-    Default: sg-086420a2869e44e81
+    Default: sg-078061ddab53c5c41
   SGRDSMySQL:
     Description: SG-RDSMySQL
     Type: String
-    Default: sg-0914feb8b95bd48c7
+    Default: sg-039f822d40c446322
   InstanceType:
     Description: Application EC2 instance type
     Type: String
@@ -150,7 +150,7 @@ Parameters:
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '1'
+    Default: '2'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
@@ -160,19 +160,19 @@ Parameters:
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::130227353653:role/CLoud-Pricing-Pricing-Sync-Job-Role
+    Default: arn:aws:iam::037295147636:role/CloudPricing-PricingSync-JobRole
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
-    Default: arn:aws:iam::130227353653:role/CLoud-Pricing-Pricing-Sync-Job-Role
+    Default: arn:aws:iam::037295147636:role/CloudPricing-PricingSync-JobRole
   MimixInstanceRole:
     Description: ARN of role attached to Mimix Purge Sync Servers.
     Type: String
-    Default: arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
+    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
-    Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-sync
+    Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-sync
   CPUReserved:
     Description: The number of cpu units reserved for the container.
     Type: Number
@@ -192,7 +192,7 @@ Parameters:
     MinValue: '1'
     MaxValue: '3653'
   DesiredCount:
-    Default: '1'
+    Default: '0'
     Description: The minimum size of the Auto Scaling group
     Type: String
 
@@ -213,7 +213,7 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT10M
+        PauseTime: PT5M
         WaitOnResourceSignals: 'true'
     Properties:
       AutoScalingGroupName: !Join
@@ -339,9 +339,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerTwoTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -377,9 +377,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerThreeTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -415,9 +415,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerFourTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -453,9 +453,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerFiveTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -491,9 +491,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerSixTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -529,9 +529,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerSevenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -567,9 +567,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerEightTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -605,9 +605,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerNineTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -643,9 +643,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerTenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -681,9 +681,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-PROD'
+              Value: 'Pricing-Alerts-EXE'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
 
   ServerOneEcsService:
     Type: AWS::ECS::Service

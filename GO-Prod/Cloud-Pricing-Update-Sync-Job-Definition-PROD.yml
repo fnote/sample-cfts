@@ -10,9 +10,9 @@ Parameters:
   EcrImage:
     Description: Environment for application
     Type: String
-    Default: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+    Default: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:9b3cb0e0-3a96-4aa4-b0e4-1f118051891a'
     AllowedValues:
-      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+      - '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:9b3cb0e0-3a96-4aa4-b0e4-1f118051891a'
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
