@@ -244,6 +244,13 @@ Resources:
             Type: String
             Description: Active business units
             Value: "019"
+    AllowedDiscountNames:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ALLOWED/DISCOUNT/NAMES]]
+            Type: String
+            Description: Allowed discount names for the fetch eligible products endpoing
+            Value: "NEW_CUSTOMER_DISCOUNT"
     AuthorizedClients:
         Type: AWS::SSM::Parameter
         Properties:
