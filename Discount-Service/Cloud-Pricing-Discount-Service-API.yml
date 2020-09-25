@@ -23,10 +23,14 @@ Parameters:
         Description: API container port number
         Type: Number
         Default: 8082
-    albListenerPort:
+    albListenerPortHttp:
         Description: ALB Listener port number
         Type: Number
         Default: 80
+    albListenerPortHttps:
+        Description: ALB HTTPS Listener port number
+        Type: Number
+        Default: 443
     vpcId:
         Type: String
         Default: "vpc-091c7e3e5578d7a4f"
@@ -54,6 +58,17 @@ Parameters:
     paramStoreConfigPrefix:
         Type: String
         Default: "/CP/DISCOUNT_SERVICE"
+    httpsListenerSslPolicy:
+        Description: HTTPS listener SSL policy
+        Type: String
+        Default: ELBSecurityPolicy-2016-08
+        AllowedValues:
+            - ELBSecurityPolicy-2016-08
+            - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+    httpsListenerCertificateArn:
+        Description: Certificate to use with the HTTPS listener
+        Type: String
+        Default: arn:aws:acm:us-east-1:037295147636:certificate/44f64fb1-43d9-4f60-b954-e4791e909321
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
@@ -91,7 +106,8 @@ Resources:
     ECSService:
         Type: AWS::ECS::Service
         DependsOn:
-            - ALBListener
+            - ALBListenerHttp
+            - ALBListenerHttps
             - ConfigMaxLifeLowerLimit
             - ConfigMaxLifeUpperLimit
             - ConfigReaderMaxPoolSize
@@ -141,17 +157,29 @@ Resources:
             Protocol: HTTP
             TargetType: ip
             VpcId: !Ref vpcId
-            HealthCheckPath: '/'
+            HealthCheckPath: '/cp-discounts/v1/health'
             HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
             UnhealthyThresholdCount: 3
-    ALBListener:
+    ALBListenerHttp:
         Type: AWS::ElasticLoadBalancingV2::Listener
         Properties:
             LoadBalancerArn: !Ref LoadBalancer
             Port: 80
             Protocol: HTTP
+            DefaultActions:
+                - Type: forward
+                  TargetGroupArn: !Ref TargetGroup
+    ALBListenerHttps:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancer
+            Port: !Ref albListenerPortHttps
+            Protocol: HTTPS
+            SslPolicy: !Ref httpsListenerSslPolicy
+            Certificates:
+                - CertificateArn: !Ref httpsListenerCertificateArn
             DefaultActions:
                 - Type: forward
                   TargetGroupArn: !Ref TargetGroup
@@ -175,12 +203,12 @@ Resources:
             SecurityGroupIngress:
                 - CidrIp: "10.0.0.0/8"
                   IpProtocol: tcp
-                  FromPort: !Ref albListenerPort
-                  ToPort: !Ref albListenerPort
+                  FromPort: !Ref albListenerPortHttp
+                  ToPort: !Ref albListenerPortHttp
                 - CidrIp: "10.0.0.0/8"
                   IpProtocol: tcp
-                  FromPort: 443
-                  ToPort: 443
+                  FromPort: !Ref albListenerPortHttps
+                  ToPort: !Ref albListenerPortHttps
     ConfigMaxLifeLowerLimit:
         Type: AWS::SSM::Parameter
         Properties:
@@ -223,6 +251,20 @@ Resources:
             Type: String
             Description: Initial number of connections per opco pool for writer
             Value: 2
+    ConfigMaxConnectionCreateTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/CREATE/TIME]]
+            Type: String
+            Description: Maximum time for db connection creation
+            Value: 5000
+    ConfigMaxConnectionAcquireTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/ACQUIRE/TIME]]
+            Type: String
+            Description: Maximum time for db connection acquiring
+            Value: 6000
     ConfigConnectionValidationQuery:
         Type: AWS::SSM::Parameter
         Properties:

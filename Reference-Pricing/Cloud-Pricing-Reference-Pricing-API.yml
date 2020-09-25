@@ -9,6 +9,7 @@ Parameters:
             - DEV
             - QE
             - EXE
+            - STG
             - PROD
     namingPrefix:
         Description: Naming prefix for the components created using this script
@@ -22,10 +23,14 @@ Parameters:
         Description: API container port number
         Type: Number
         Default: 8082
-    albListenerPort:
-        Description: ALB Listener port number
+    albListenerPortHttp:
+        Description: ALB HTTP Listener port number
         Type: Number
         Default: 80
+    albListenerPortHttps:
+        Description: ALB HTTPS Listener port number
+        Type: Number
+        Default: 443
     vpcId:
         Type: String
         Default: "vpc-091c7e3e5578d7a4f"
@@ -50,6 +55,17 @@ Parameters:
             - 731
             - 1827
             - 3653
+    httpsListenerSslPolicy:
+        Description: HTTPS listener SSL policy
+        Type: String
+        Default: ELBSecurityPolicy-2016-08
+        AllowedValues:
+            - ELBSecurityPolicy-2016-08
+            - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+    httpsListenerCertificateArn:
+        Description: Certificate to use with the HTTPS listener
+        Type: String
+        Default: arn:aws:acm:us-east-1:037295147636:certificate/44f64fb1-43d9-4f60-b954-e4791e909321
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
@@ -81,10 +97,14 @@ Resources:
                         awslogs-region: !Ref "AWS::Region"
                         awslogs-group: !Ref LogGroup
                         awslogs-stream-prefix: !Ref namingPrefix
+                  Environment:
+                      - Name: spring_profiles_active
+                        Value: !Ref environment
     ECSService:
         Type: AWS::ECS::Service
         DependsOn:
-            - ALBListener
+            - ALBListenerHttp
+            - ALBListenerHttps
         Properties:
             Cluster: !Ref ECSCluster
             ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
@@ -126,17 +146,29 @@ Resources:
             Protocol: HTTP
             TargetType: ip
             VpcId: !Ref vpcId
-            HealthCheckPath: '/'
+            HealthCheckPath: '/ref-price/v1/health'
             HealthCheckIntervalSeconds: 30
             HealthCheckTimeoutSeconds: 5
             HealthyThresholdCount: 5
             UnhealthyThresholdCount: 3
-    ALBListener:
+    ALBListenerHttp:
         Type: AWS::ElasticLoadBalancingV2::Listener
         Properties:
             LoadBalancerArn: !Ref LoadBalancer
-            Port: 80
+            Port: !Ref albListenerPortHttp
             Protocol: HTTP
+            DefaultActions:
+                - Type: forward
+                  TargetGroupArn: !Ref TargetGroup
+    ALBListenerHttps:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancer
+            Port: !Ref albListenerPortHttps
+            Protocol: HTTPS
+            SslPolicy: !Ref httpsListenerSslPolicy
+            Certificates:
+                - CertificateArn: !Ref httpsListenerCertificateArn
             DefaultActions:
                 - Type: forward
                   TargetGroupArn: !Ref TargetGroup
@@ -160,8 +192,12 @@ Resources:
             SecurityGroupIngress:
                 - CidrIp: "10.0.0.0/8"
                   IpProtocol: tcp
-                  FromPort: !Ref albListenerPort
-                  ToPort: !Ref albListenerPort
+                  FromPort: !Ref albListenerPortHttp
+                  ToPort: !Ref albListenerPortHttp
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttps
+                  ToPort: !Ref albListenerPortHttps
 Outputs:
     LoadBalancerDNS:
         Description: Loadbalancer DNS
