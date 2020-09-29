@@ -7,6 +7,12 @@ Parameters:
     Default: PROD
     AllowedValues:
       - PROD
+  EcrImage:
+    Description: Environment for application
+    Type: String
+    Default: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+    AllowedValues:
+      - '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
@@ -27,7 +33,7 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 10800
       ContainerProperties:
-        Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:9b3cb0e0-3a96-4aa4-b0e4-1f118051891a'
+        Image: !Ref 'EcrImage'
         Vcpus: 4
         Memory: 8000
         Command:
@@ -41,5 +47,5 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@syscolabs.com'
 
