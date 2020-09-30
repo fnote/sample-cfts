@@ -300,6 +300,13 @@ Resources:
             Type: String
             Description: Authorized clients for the customer discounts endpoint
             Value: "ctt"
+    AuthorizedClientsForEligibleProducts:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS/ELIGIBLE/PRODUCTS]]
+            Type: String
+            Description: Authorized clients for the eligible products endpoint
+            Value: "MSS-MOBILE-BFF-SVCS,MSS-ORDER-SVCS,MSS-WEB-BFF-SVCS"
 Outputs:
     LoadBalancerDNS:
         Description: Loadbalancer DNS
