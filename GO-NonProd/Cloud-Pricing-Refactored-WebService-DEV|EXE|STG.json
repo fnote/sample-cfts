@@ -346,7 +346,7 @@
 					"   - application:cpwsng-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
-					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
+					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
 					"EOF\n",
