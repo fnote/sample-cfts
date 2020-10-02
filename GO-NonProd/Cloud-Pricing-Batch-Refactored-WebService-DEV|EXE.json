@@ -354,7 +354,7 @@
 					"api_key: $DATADOG_TOKEN\n",
 					"site: datadoghq.com\n",
 					"tags:\n",
-					"   - application:cpbatchrefwebsvc-prod\n",
+					"   - application:cpbatchrefwebsvc-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
