@@ -866,10 +866,23 @@ Resources:
                     "Next": "Notify Failure"
                   }
                 ],
-                "End": true
+                "Next": "Notify ETL Success"
               },
               "Skip Backup": {
                 "Type": "Succeed"
+              },
+              "Notify ETL Success": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                    "event": "ETL-PA",
+                    "message.$": "$.s3_path",
+                    "status.$": "$.response.JobRunState"
+                  }
+                },
+                "End": true
               }
             }
           }

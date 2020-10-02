@@ -404,7 +404,7 @@ Resources:
   DiscountsStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      StateMachineName: !Sub 'CP-DISCOUNTS-mdt-state-machine-${EnvironmentShort}'
+      StateMachineName: !Sub 'CP-DISCOUNTS-state-machine-${EnvironmentShort}'
       StateMachineType: STANDARD
       DefinitionString: !Sub
         - |-
@@ -533,7 +533,7 @@ Resources:
                   }
                 ],
                 "ResultPath": "$.backupJob",
-                "End": true
+                "Next": "Notify ETL Success"
               },
               "Notify ETL Failure": {
                 "Type": "Task",
@@ -541,8 +541,21 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                    "event": "ETL-PA",
+                    "event": "ETL-Discount Service",
                     "message.$": "$.error.Cause"
+                  }
+                },
+                "End": true
+              },
+              "Notify ETL Success": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                    "event": "ETL-Discount Service",
+                    "message.$": "$.s3_file_path",
+                    "status.$": "$.backupJob.JobRunState"
                   }
                 },
                 "End": true
