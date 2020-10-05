@@ -9,6 +9,14 @@ Parameters:
       - DEV
       - EXE
       - STG
+  EcrImage:
+    Description: Environment for application
+    Type: String
+    Default: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+    AllowedValues:
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-dev:latest'
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-stg:latest'
   TaskRole:
     Description: ARN of task role attached to ECS task.
     Type: String
@@ -29,7 +37,7 @@ Resources:
       Timeout:
         AttemptDurationSeconds: 10800
       ContainerProperties:
-        Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+        Image: !Ref 'EcrImage'
         Vcpus: 4
         Memory: 8000
         Command:
@@ -43,5 +51,5 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'chamin.wickramarathna@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,amoda.dissanayake@sysco.com,piyumi.rameshka@syscolabs.com'
 

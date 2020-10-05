@@ -17,7 +17,7 @@ Parameters:
   ImageId:
     Description: Amazon AMI
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0ca349b191791437f'
+    Default: 'ami-0a0cdd2cc483521d1'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -138,15 +138,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '6'
+    Default: '4'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '6'
+    Default: '4'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '6'
+    Default: '1'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -199,11 +199,13 @@ Resources:
 
   ECSAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
+    Metadata:
+      Description: "Meta info for cfn signaling"
     UpdatePolicy:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT5M
+        PauseTime: PT10M
         WaitOnResourceSignals: 'true'
     Properties:
       AutoScalingGroupName: !Join
@@ -277,15 +279,15 @@ Resources:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
       UserData: !Base64
-        Fn::Join:
-          - ''
-          - - "#!/bin/bash\n"
-            - "sudo yum install -y ecs-init\n"
-            - "echo ECS_CLUSTER="
-            - !Ref 'ECSCluster'
-            - " >> /etc/ecs/ecs.config\n"
-            - "sudo service docker start\n"
-            - "sudo start ecs"
+          !Sub |
+            #!/bin/bash
+            sudo yum install -y ecs-init
+            echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+            sudo service docker start
+            sudo start ecs
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:

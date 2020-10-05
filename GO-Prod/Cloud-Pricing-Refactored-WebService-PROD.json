@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-09c970c4cc71b6bd2",
+			"Default" : "ami-0e31c9d230876347e",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -331,46 +331,8 @@
 					"fi\n",
 					"done\n",
 
-					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
-
 					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
-
-					"##############################################\n",
-					"# Splunk - Configuration\n",
-					"##############################################\n",
-					"SPLUNK_PASSWORD=$(aws --region=us-east-1 ssm get-parameters --names \"/SPLUNK/FORWARDER/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
-
-					"cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
-					"[user_info]\n",
-					"USERNAME = admin\n",
-					"PASSWORD = $SPLUNK_PASSWORD\n",
-					"EOF\n",
-
-					"cat > /opt/splunkforwarder/etc/system/local/outputs.conf <<EOF\n",
-					"[tcpout]\n",
-					"defaultGroup = default-autolb-group\n",
-					"\n",
-					"[tcpout:default-autolb-group]\n",
-					"server = splunkindex.na.sysco.net:9997\n",
-					"\n",
-					"[tcpout-server://splunkindex.na.sysco.net:9997]\n",
-					"EOF\n",
-
-					"cat > /opt/splunkforwarder/etc/system/local/deploymentclient.conf <<EOF\n",
-					"[target-broker:deploymentServer]\n",
-					"targetUri = splunkdeploy.na.sysco.net:8089\n",
-					"EOF\n",
-
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
-					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
-
-					"/opt/splunkforwarder/bin/splunk restart --accept-license --answer-yes --no-prompt\n",
-					"/opt/splunkforwarder/bin/splunk status\n",
-					"/opt/splunkforwarder/bin/splunk stop --accept-license --answer-yes --no-prompt\n",
-					"sleep 5\n",
 
 					"##############################################\n",
 					"# CloudWatch Installaion\n",
