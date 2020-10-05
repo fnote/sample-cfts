@@ -330,7 +330,7 @@ Resources:
                     "Next": "Notify ETL Failure"
                   }
                 ],
-                "End": true
+                "Next": "Notify ETL Success"
               },
               "Notify ETL Failure": {
                 "Type": "Task",
@@ -340,6 +340,19 @@ Resources:
                   "Payload": {
                     "event": "ETL-PA",
                     "message.$": "$.error.Cause"
+                  }
+                },
+                "End": true
+              },
+              "Notify ETL Success": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                    "event": "[ETL] - [Ref Price] [Price Data]",
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                    "status": "SUCCEEDED"
                   }
                 },
                 "End": true

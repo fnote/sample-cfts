@@ -866,10 +866,23 @@ Resources:
                     "Next": "Notify Failure"
                   }
                 ],
-                "End": true
+                "Next": "Notify ETL Success"
               },
               "Skip Backup": {
                 "Type": "Succeed"
+              },
+              "Notify ETL Success": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${notifierLambdaArn}",
+                  "Payload": {
+                    "event": "[ETL] - [Ref Price] [Price Zone Data]",
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                    "status": "SUCCEEDED"
+                  }
+                },
+                "End": true
               }
             }
           }
