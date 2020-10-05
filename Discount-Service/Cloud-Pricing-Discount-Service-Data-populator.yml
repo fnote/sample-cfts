@@ -554,8 +554,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-Discount Service",
-                    "message.$": "$.s3_file_path",
-                    "status.$": "$.backupJob.JobRunState"
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
+                    "status.$": "States.Format('SUCCEEDED')"
                   }
                 },
                 "End": true
