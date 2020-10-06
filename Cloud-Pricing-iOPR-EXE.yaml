@@ -32,25 +32,13 @@ Parameters:
   CPUForTask:
     Description: The number of cpu units reserved for the task.
     Type: Number
-    Default: '1024'
-    MinValue: '256'
-    MaxValue: '4096'
-  CPUForContainer:
-    Description: The number of cpu units reserved for the container.
-    Type: Number
-    Default: '512'
+    Default: '2048'
     MinValue: '256'
     MaxValue: '4096'
   MemoryForTask:
     Description: The soft limit (in MiB) of memory to reserve for the task.
     Type: Number
-    Default: '2048'
-    MinValue: '256'
-    MaxValue: '8192'
-  MemoryForContainer:
-    Description: The soft limit (in MiB) of memory to reserve for the container.
-    Type: Number
-    Default: '1024'
+    Default: '4096'
     MinValue: '256'
     MaxValue: '8192'
   PvtSNa:
