@@ -4,7 +4,7 @@ Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Development
+    Default: Execution
     AllowedValues:
       - Development
       - Execution
@@ -56,7 +56,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: DEV
+    Default: EXE
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
@@ -84,7 +84,7 @@ Parameters:
   JobDefinitionArn:
     Description: Job Definition Arn
     Type: String
-    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition-DEV
+    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition-EXE
   PvtSNa:
     Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: String
@@ -153,8 +153,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 001"
-      Name: "Mimix-Daily-Purge-Sync-DEV-001-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-001-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(30 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -170,8 +170,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 002"
-      Name: "Mimix-Daily-Purge-Sync-DEV-002-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-002-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -187,8 +187,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 003"
-      Name: "Mimix-Daily-Purge-Sync-DEV-003-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-003-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -204,8 +204,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 004"
-      Name: "Mimix-Daily-Purge-Sync-DEV-004-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-004-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(40 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -221,8 +221,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 005"
-      Name: "Mimix-Daily-Purge-Sync-DEV-005-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-005-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(40 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -238,8 +238,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 006"
-      Name: "Mimix-Daily-Purge-Sync-DEV-006-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-006-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(10 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -255,8 +255,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 007"
-      Name: "Mimix-Daily-Purge-Sync-DEV-007-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-007-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(50 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -272,8 +272,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 008"
-      Name: "Mimix-Daily-Purge-Sync-DEV-008-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-008-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -289,8 +289,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 009"
-      Name: "Mimix-Daily-Purge-Sync-DEV-009-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-009-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -306,8 +306,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 010"
-      Name: "Mimix-Daily-Purge-Sync-DEV-010-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-010-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -323,7 +323,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 011"
-      Name: "Mimix-Daily-Purge-Sync-DEV-011-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-011-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -340,7 +340,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 012"
-      Name: "Mimix-Daily-Purge-Sync-DEV-012-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-012-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(10 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -357,8 +357,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 013"
-      Name: "Mimix-Daily-Purge-Sync-DEV-013-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-013-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(10 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -374,7 +374,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 014"
-      Name: "Mimix-Daily-Purge-Sync-DEV-014-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-014-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(50 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -391,7 +391,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 015"
-      Name: "Mimix-Daily-Purge-Sync-DEV-015-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-015-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -408,7 +408,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 016"
-      Name: "Mimix-Daily-Purge-Sync-DEV-016-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-016-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -425,7 +425,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 017"
-      Name: "Mimix-Daily-Purge-Sync-DEV-017-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-017-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -442,7 +442,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 018"
-      Name: "Mimix-Daily-Purge-Sync-DEV-018-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-018-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(55 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -459,7 +459,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 019"
-      Name: "Mimix-Daily-Purge-Sync-DEV-019-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-019-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -476,7 +476,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 022"
-      Name: "Mimix-Daily-Purge-Sync-DEV-022-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-022-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(30 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -493,7 +493,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 023"
-      Name: "Mimix-Daily-Purge-Sync-DEV-023-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-023-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(35 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -510,7 +510,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 024"
-      Name: "Mimix-Daily-Purge-Sync-DEV-024-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-024-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -527,7 +527,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 025"
-      Name: "Mimix-Daily-Purge-Sync-DEV-025-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-025-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(35 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -544,7 +544,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 026"
-      Name: "Mimix-Daily-Purge-Sync-DEV-026-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-026-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(10 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -561,7 +561,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 027"
-      Name: "Mimix-Daily-Purge-Sync-DEV-027-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-027-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(40 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -578,7 +578,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 031"
-      Name: "Mimix-Daily-Purge-Sync-DEV-031-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-031-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -595,7 +595,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 029"
-      Name: "Mimix-Daily-Purge-Sync-DEV-029-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-029-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -612,7 +612,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 032"
-      Name: "Mimix-Daily-Purge-Sync-DEV-032-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-032-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(50 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -629,7 +629,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 035"
-      Name: "Mimix-Daily-Purge-Sync-DEV-035-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-035-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -646,7 +646,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 036"
-      Name: "Mimix-Daily-Purge-Sync-DEV-036-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-036-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -663,7 +663,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 037"
-      Name: "Mimix-Daily-Purge-Sync-DEV-037-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-037-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -680,7 +680,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 038"
-      Name: "Mimix-Daily-Purge-Sync-DEV-038-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-038-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -697,7 +697,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 039"
-      Name: "Mimix-Daily-Purge-Sync-DEV-039-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-039-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -714,7 +714,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 040"
-      Name: "Mimix-Daily-Purge-Sync-DEV-040-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-040-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -731,7 +731,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 043"
-      Name: "Mimix-Daily-Purge-Sync-DEV-043-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-043-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -748,7 +748,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 045"
-      Name: "Mimix-Daily-Purge-Sync-DEV-045-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-045-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(50 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -765,7 +765,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 046"
-      Name: "Mimix-Daily-Purge-Sync-DEV-046-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-046-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -782,7 +782,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 047"
-      Name: "Mimix-Daily-Purge-Sync-DEV-047-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-047-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -799,7 +799,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 048"
-      Name: "Mimix-Daily-Purge-Sync-DEV-048-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-048-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(55 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -816,7 +816,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 049"
-      Name: "Mimix-Daily-Purge-Sync-DEV-049-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-049-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(30 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -833,7 +833,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 050"
-      Name: "Mimix-Daily-Purge-Sync-DEV-050-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-050-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -850,7 +850,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 051"
-      Name: "Mimix-Daily-Purge-Sync-DEV-051-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-051-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(30 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -867,7 +867,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 052"
-      Name: "Mimix-Daily-Purge-Sync-DEV-052-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-052-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -884,7 +884,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 054"
-      Name: "Mimix-Daily-Purge-Sync-DEV-054-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-054-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(55 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -901,7 +901,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 056"
-      Name: "Mimix-Daily-Purge-Sync-DEV-056-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-056-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(55 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -918,7 +918,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 055"
-      Name: "Mimix-Daily-Purge-Sync-DEV-055-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-055-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -935,7 +935,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 057"
-      Name: "Mimix-Daily-Purge-Sync-DEV-057-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-057-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(35 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -952,7 +952,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 058"
-      Name: "Mimix-Daily-Purge-Sync-DEV-058-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-058-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -969,7 +969,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 059"
-      Name: "Mimix-Daily-Purge-Sync-DEV-059-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-059-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(10 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -986,7 +986,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 060"
-      Name: "Mimix-Daily-Purge-Sync-DEV-060-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-060-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(00 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1003,7 +1003,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 061"
-      Name: "Mimix-Daily-Purge-Sync-DEV-061-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-061-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1020,7 +1020,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 064"
-      Name: "Mimix-Daily-Purge-Sync-DEV-064-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-064-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1037,7 +1037,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 066"
-      Name: "Mimix-Daily-Purge-Sync-DEV-066-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-066-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1054,7 +1054,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 067"
-      Name: "Mimix-Daily-Purge-Sync-DEV-067-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-067-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(10 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1071,7 +1071,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 068"
-      Name: "Mimix-Daily-Purge-Sync-DEV-068-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-068-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(20 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1088,7 +1088,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 073"
-      Name: "Mimix-Daily-Purge-Sync-DEV-073-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-073-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(40 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1105,7 +1105,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 075"
-      Name: "Mimix-Daily-Purge-Sync-DEV-075-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-075-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1122,7 +1122,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 076"
-      Name: "Mimix-Daily-Purge-Sync-DEV-076-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-076-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(40 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1139,7 +1139,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 078"
-      Name: "Mimix-Daily-Purge-Sync-DEV-078-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-078-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(35 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1156,7 +1156,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 101"
-      Name: "Mimix-Daily-Purge-Sync-DEV-101-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-101-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1173,7 +1173,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 102"
-      Name: "Mimix-Daily-Purge-Sync-DEV-102-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-102-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(40 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1190,7 +1190,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 134"
-      Name: "Mimix-Daily-Purge-Sync-DEV-134-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-134-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1207,7 +1207,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 137"
-      Name: "Mimix-Daily-Purge-Sync-DEV-137-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-137-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1224,7 +1224,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 163"
-      Name: "Mimix-Daily-Purge-Sync-DEV-163-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-163-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(25 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1241,7 +1241,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 164"
-      Name: "Mimix-Daily-Purge-Sync-DEV-164-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-164-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(50 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1258,7 +1258,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 194"
-      Name: "Mimix-Daily-Purge-Sync-DEV-194-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-194-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1275,7 +1275,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 195"
-      Name: "Mimix-Daily-Purge-Sync-DEV-195-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-195-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(30 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1292,7 +1292,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 288"
-      Name: "Mimix-Daily-Purge-Sync-DEV-288-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-288-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1309,7 +1309,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 293"
-      Name: "Mimix-Daily-Purge-Sync-DEV-293-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-293-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(15 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1326,7 +1326,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 306"
-      Name: "Mimix-Daily-Purge-Sync-DEV-306-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-306-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1343,7 +1343,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 320"
-      Name: "Mimix-Daily-Purge-Sync-DEV-320-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-320-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(30 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1353,14 +1353,14 @@ Resources:
           Input: '{"Parameters": {"business_unit": "320"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
-            JobDefinition: !Ref JobDefinitionArn
+            JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '320-Purge-Sync-Job'
 
   MimixDailyPurgeSync332:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 332"
-      Name: "Mimix-Daily-Purge-Sync-DEV-332-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-332-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(35 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1377,7 +1377,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 335"
-      Name: "Mimix-Daily-Purge-Sync-DEV-335-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-335-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(45 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1394,7 +1394,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 344"
-      Name: "Mimix-Daily-Purge-Sync-DEV-344-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-344-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(05 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1411,7 +1411,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 429"
-      Name: "Mimix-Daily-Purge-Sync-DEV-429-Trigger"
+      Name: "Mimix-Daily-Purge-Sync-EXE-429-Trigger"
       State: DISABLED
       ScheduleExpression: 'cron(55 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
@@ -1428,8 +1428,8 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 450"
-      Name: "Mimix-Daily-Purge-Sync-DEV-450-Trigger"
-      State: DISABLED
+      Name: "Mimix-Daily-Purge-Sync-EXE-450-Trigger"
+      State: ENABLED
       ScheduleExpression: 'cron(35 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1507,7 +1507,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-
+          - - CP-Mimix-Purge-Sync-Compute-Environment-1-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34

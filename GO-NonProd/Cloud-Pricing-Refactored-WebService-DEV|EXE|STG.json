@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE.json",
+	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE | STG",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
-			"Default" : "ami-09c970c4cc71b6bd2",
+			"Default" : "ami-0e31c9d230876347e",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -200,6 +200,7 @@
         "AllowedValues": [
           "bts-cloudpricing-perf-cpws-ng-refac-DEV",
           "bts-cloudpricing-perf-cpws-ng-refac-EXE",
+			"bts-cloudpricing-perf-cpws-ng-refac-STG",
           "bts-cloudpricing-prod-cpws-ng"
         ],
         "Description": "Dynatrace Application Name",
@@ -328,47 +329,46 @@
 					"shutdown now\n",
 					"fi\n",
 					"done\n",
-
-					"yum install -y splunkforwarder-8.0.1-6db836e2fb9e-linux-2.6-x86_64.rpm\n",
-
 					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
-					"# Splunk - Configuration\n",
+					"# Datadog - Configuration\n",
 					"##############################################\n",
-					"SPLUNK_PASSWORD=$(aws --region=us-east-1 ssm get-parameters --names \"/SPLUNK/FORWARDER/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/CloudPricing/Datadog/datadog-agent-7.22.1-1.x86_64.rpm . \n",
+					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
+					"yum install -y datadog-agent-7.22.1-1.x86_64.rpm\n",
 
-                    "cat > /opt/splunkforwarder/etc/system/local/user-seed.conf <<EOF\n",
-                    "[user_info]\n",
-                    "USERNAME = admin\n",
-                    "PASSWORD = $SPLUNK_PASSWORD\n",
-                    "EOF\n",
-
-					"cat > /opt/splunkforwarder/etc/system/local/outputs.conf <<EOF\n",
-					"[tcpout]\n",
-					"defaultGroup = default-autolb-group\n",
-					"\n",
-					"[tcpout:default-autolb-group]\n",
-					"server = splunkindex.na.sysco.net:9997\n",
-					"\n",
-					"[tcpout-server://splunkindex.na.sysco.net:9997]\n",
+					"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
+					"api_key: $DATADOG_TOKEN\n",
+					"site: datadoghq.com\n",
+					"tags:\n",
+					"   - application:cpwsng-",{ "Ref" : "EnvironmentShort" },"\n",
+					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
+					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
+					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
+					"env: development\n",
+					"logs_enabled: true\n",
 					"EOF\n",
 
-					"cat > /opt/splunkforwarder/etc/system/local/deploymentclient.conf <<EOF\n",
-					"[target-broker:deploymentServer]\n",
-					"targetUri = splunkdeploy.na.sysco.net:8089\n",
+					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
+					"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
+					"logs:\n",
+					"    - type: file\n",
+					"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
+					"      source: cp_metrics\n",
+					"      service: cpwsng\n",
 					"EOF\n",
 
-					"/opt/splunkforwarder/bin/splunk clone-prep-clear-config\n",
-					"/opt/splunkforwarder/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt\n",
-					"/opt/splunkforwarder/bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:$SPLUNK_PASSWORD\n",
-					"/opt/splunkforwarder/bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:$SPLUNK_PASSWORD\n",
+					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
+					"instances:\n",
+					"    - use_mount: false\n",
+					"      mount_point_blacklist:\n",
+					"      - /opt/sentinelone/mount\n",
+					"EOF\n",
 
-					"/opt/splunkforwarder/bin/splunk restart --accept-license --answer-yes --no-prompt\n",
-					"/opt/splunkforwarder/bin/splunk status\n",
-					"/opt/splunkforwarder/bin/splunk stop --accept-license --answer-yes --no-prompt\n",
-					"sleep 5\n",
+					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
+					"start datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",

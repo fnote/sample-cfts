@@ -122,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD -> ami-0ca349b191791437f
+    Description: SYSCO-GOLD -> ami-0a0cdd2cc483521d1
     Type: String
-    Default: ami-0ca349b191791437f
+    Default: ami-0a0cdd2cc483521d1
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -1450,6 +1450,19 @@ Resources:
             Ebs:
               VolumeSize: !Ref 'RootVolumeSize'
               VolumeType: gp2
+        UserData: !Base64
+          |
+          MIME-Version: 1.0
+          Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+          --==MYBOUNDARY==
+          MIME-Version: 1.0
+          Content-Type: text/cloud-boothook; charset="us-ascii"
+
+          #!/bin/bash
+          cloud-init-per once docker_options echo 'DOCKER_STORAGE_OPTIONS="${DOCKER_STORAGE_OPTIONS} --storage-opt dm.basesize=20G"' >> /etc/sysconfig/docker-storage
+
+          --==MYBOUNDARY==
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -1494,7 +1507,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-
+          - - CP-Mimix-Purge-Sync-Compute-Environment-1-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
@@ -1508,15 +1521,15 @@ Resources:
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
         MinvCpus: 0
-        ImageId: !Ref 'CommonAMI'
         InstanceRole: !Ref 'PurgeInstanceRole'
         InstanceTypes:
           - optimal
         Ec2KeyPair: !Ref 'PemKey'
+        ImageId: !Ref 'CommonAMI'
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
-          Version: $Default
+          Version: $Latest
         Tags:
           Technical:ApplicationName:
             Ref: 'ApplicationName'
