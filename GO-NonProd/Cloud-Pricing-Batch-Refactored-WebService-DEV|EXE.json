@@ -370,7 +370,16 @@
 					"      source: cp_batch_metrics\n",
 					"      service: cpbatchrefwebsvc\n",
 					"EOF\n",
-					"datadog-agent start\n",
+
+					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
+					"instances:\n",
+					"    - use_mount: false\n",
+					"      mount_point_blacklist:\n",
+					"      - /opt/sentinelone/mount\n",
+					"EOF\n",
+
+					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
+					"start datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
