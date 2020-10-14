@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "Reference Price Data Populator for Prize Zone data"
+Description: "Reference Price Data Populator for Price Zone data"
 Parameters:
   EnvironmentShort:
     Description: Environment for application
@@ -356,14 +356,14 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource: !Sub
-                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
+                  - 'arn:aws:s3:::cp-ref-etl-price-zone-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
               - Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:PutObject
                 Resource: !Sub
-                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-spark-temp-dir-${env}/*'
+                  - 'arn:aws:s3:::cp-ref-etl-price-zone-spark-temp-dir-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
   CommonDatabaseConnection:
@@ -479,7 +479,7 @@ Resources:
                   - s3:GetObject
                   - s3:DeleteObject
                 Resource: !Sub
-                  - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}/*'
+                  - 'arn:aws:s3:::cp-ref-etl-price-zone-storage-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
               - Effect: Allow
                 Action:
