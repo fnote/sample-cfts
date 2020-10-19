@@ -166,7 +166,7 @@ Resources:
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-prod-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
@@ -334,7 +334,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/*'
+                  - 'arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -455,7 +455,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/*'
+                  - 'arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
