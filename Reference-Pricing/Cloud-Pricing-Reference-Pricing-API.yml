@@ -97,6 +97,9 @@ Resources:
                           awslogs-region: !Ref "AWS::Region"
                           awslogs-group: !Ref LogGroup
                           awslogs-stream-prefix: !Ref namingPrefix
+                  Environment:
+                      - Name: spring_profiles_active
+                        Value: !Ref environment
     ECSService:
         Type: AWS::ECS::Service
         DependsOn:

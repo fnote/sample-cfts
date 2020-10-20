@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Reference Price Data Store
+Description: Discounts Service Data Store
 Mappings:
   EnvMap:
     DEV:
@@ -16,9 +16,9 @@ Mappings:
       val: prod
 Parameters:
   PartitionedPZS3:
-    Description: This bucket will be used to store partitioned Price zone data
+    Description: This bucket will be used to store PV data
     Type: String
-    Default: cp-ref-etl-output-bucket
+    Default: cp-discounts-etl-output-bucket
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -133,12 +133,12 @@ Parameters:
   ClusterName:
     Description: Cluster Name
     Type: String
-    Default: cp-ref-price-db-cluster-01
+    Default: cp-discounts-db-cluster-01
     AllowedValues:
-      - cp-ref-price-db-cluster-01
-      - cp-ref-price-db-cluster-02
-      - cp-ref-price-db-cluster-03
-      - cp-ref-price-db-cluster-04
+      - cp-discounts-db-cluster-01
+      - cp-discounts-db-cluster-02
+      - cp-discounts-db-cluster-03
+      - cp-discounts-db-cluster-04
     ConstraintDescription: Must be a cluster name
   PermissionBoundary:
     Description: Maximum permission boundary
@@ -176,10 +176,10 @@ Resources:
         - Key: Component
           Value: S3 bucket
 
-  ReferencePriceETLS3ReadAccessPolicy:
+  DiscountsETLS3ReadAccessPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: !Sub 'CP-REF-etl-s3-read-policy-${EnvironmentShort}'
+      ManagedPolicyName: !Sub 'cp-discounts-etl-s3-read-policy-${EnvironmentShort}'
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -194,10 +194,10 @@ Resources:
                 !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
             ]
 
-  ReferencePriceETLS3ReadAccessRole:
+  DiscountsETLS3ReadAccessRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub 'CP-REF-etl-s3-read-access-role-${EnvironmentShort}'
+      RoleName: !Sub 'cp-discounts-etl-s3-read-access-role-${EnvironmentShort}'
       Description: role to allow etl s3 buckets read access
       PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/${PermissionBoundary}'
       AssumeRolePolicyDocument:
@@ -210,18 +210,18 @@ Resources:
               Service:
                 - rds.amazonaws.com
       Path: "/"
-      ManagedPolicyArns: [!Ref ReferencePriceETLS3ReadAccessPolicy]
+      ManagedPolicyArns: [!Ref DiscountsETLS3ReadAccessPolicy]
 
-  CpRefLoadFromS3ParameterGroup:
+  DiscountsLoadFromS3ParameterGroup:
     Type: AWS::RDS::DBClusterParameterGroup
     Properties:
       Description: Parameter group to enable aurora_load_from_s3_role
       Family: aurora-mysql5.7
       Parameters:
-        aurora_load_from_s3_role: !GetAtt ReferencePriceETLS3ReadAccessRole.Arn
+        aurora_load_from_s3_role: !GetAtt DiscountsETLS3ReadAccessRole.Arn
       Tags:
         - Key: Name
-          Value: !Join ['', ['cp-ref-price-db-parameter-group', !Ref EnvironmentShort]]
+          Value: !Join ['', ['cp-discounts-db-parameter-group', !Ref EnvironmentShort]]
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
         - Key: Technical:ApplicationID
@@ -245,24 +245,24 @@ Resources:
         - Key: Component
           Value: Aurora DB
 
-  CPRefPriceDBCluster:
+  DiscountsDBCluster:
     Type: AWS::RDS::DBCluster
-    DependsOn: CpRefLoadFromS3ParameterGroup
+    DependsOn: DiscountsLoadFromS3ParameterGroup
     DeletionPolicy: Snapshot
     Properties:
       AssociatedRoles:
-        - RoleArn: !GetAtt ReferencePriceETLS3ReadAccessRole.Arn
+        - RoleArn: !GetAtt DiscountsETLS3ReadAccessRole.Arn
       AvailabilityZones:
         - us-east-1a
         - us-east-1c
         - us-east-1b
       DBClusterIdentifier: !Join ['-', [!Ref ClusterName, !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]
-      DBClusterParameterGroupName: !Ref CpRefLoadFromS3ParameterGroup
+      DBClusterParameterGroupName: !Ref DiscountsLoadFromS3ParameterGroup
       Engine: aurora-mysql
       EngineMode: provisioned
       EngineVersion: 5.7.mysql_aurora.2.08.1
-      MasterUsername: !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]]
-      MasterUserPassword: !Join ['', ["{{resolve:ssm-secure:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/PASSWORD:1}}"]]
+      MasterUsername: !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]]
+      MasterUserPassword: !Join ['', ["{{resolve:ssm-secure:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/PASSWORD:1}}"]]
       Port: '3306'
       VpcSecurityGroupIds: [!Ref SGRDSMySQL]
       DBSubnetGroupName: !Ref snDB
@@ -295,11 +295,11 @@ Resources:
   DB01Primary01:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-01-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-discounts-01-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
-      DBClusterIdentifier: !Ref CPRefPriceDBCluster
+      DBClusterIdentifier: !Ref DiscountsDBCluster
       DBInstanceClass: !Ref DBInstanceType
       CACertificateIdentifier: rds-ca-2019
       Engine: aurora-mysql
@@ -333,11 +333,11 @@ Resources:
   DB01Primary02:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-02-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-discounts-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
-      DBClusterIdentifier: !Ref CPRefPriceDBCluster
+      DBClusterIdentifier: !Ref DiscountsDBCluster
       DBInstanceClass: !Ref DBInstanceType
       CACertificateIdentifier: rds-ca-2019
       Engine: aurora-mysql
@@ -374,7 +374,7 @@ Resources:
     Properties:
       MinCapacity: 1
       MaxCapacity: 15
-      ResourceId: !Sub 'cluster:${CPRefPriceDBCluster}'
+      ResourceId: !Sub 'cluster:${DiscountsDBCluster}'
       ScalableDimension: rds:cluster:ReadReplicaCount
       ServiceNamespace: rds
       RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/rds.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_RDSCluster'
@@ -398,28 +398,28 @@ Resources:
   DBCLusterReaderEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/READER_ENDPOINT']]
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT/DB/ENDPOINT/READER']]
       Type: String
-      Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
+      Value: !Join ['', [!GetAtt DiscountsDBCluster.ReadEndpoint.Address]]
       Tier: Standard
       Description: Ref Price DB Cluster Reader Endpoint
-
+  
   DBCLusterWriterEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/WRITER_ENDPOINT']]
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT/DB/ENDPOINT/WRITER']]
       Type: String
-      Value: !Join ['', [!GetAtt CPRefPriceDBCluster.Endpoint.Address]]
+      Value: !Join ['', [!GetAtt DiscountsDBCluster.Endpoint.Address]]
       Tier: Standard
       Description: Ref Price DB Cluster Writer Endpoint
 
 Outputs:
   dbUrl00:
     Description: Endpoint for Cluster
-    Value: !Join ['', [!GetAtt CPRefPriceDBCluster.Endpoint.Address]]
+    Value: !Join ['', [!GetAtt DiscountsDBCluster.Endpoint.Address]]
   dbUrl01:
     Description: Read Endpoint Cluster
-    Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
+    Value: !Join ['', [!GetAtt DiscountsDBCluster.ReadEndpoint.Address]]
   etlOutputBucket:
     Description: ETL Output Bucket Name
     Value: !Join ['-', [!Ref PartitionedPZS3, !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]

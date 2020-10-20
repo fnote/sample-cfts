@@ -1,0 +1,313 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Infrastructure of Discount Service API"
+Parameters:
+    environment:
+        Description: Name of the environment
+        Type: String
+        Default: DEV
+        AllowedValues:
+            - DEV
+            - QE
+            - EXE
+            - STG
+            - PROD
+    namingPrefix:
+        Description: Naming prefix for the components created using this script
+        Type: String
+        Default: cp-discount
+    ecrImageUri:
+        Description: URI of the docker image used to run the api container
+        Type: String
+        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-discount-api:1c55d37e-537e-4e6b-9749-581d483cad84"
+    containerPort:
+        Description: API container port number
+        Type: Number
+        Default: 8082
+    albListenerPortHttp:
+        Description: ALB Listener port number
+        Type: Number
+        Default: 80
+    albListenerPortHttps:
+        Description: ALB HTTPS Listener port number
+        Type: Number
+        Default: 443
+    vpcId:
+        Type: String
+        Default: "vpc-091c7e3e5578d7a4f"
+    subnets:
+        Type: CommaDelimitedList
+        Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
+    taskRoleArn:
+        Type: String
+        Default: "arn:aws:iam::037295147636:role/cp-discount-api-task-role"
+    taskExecutionRoleArn:
+        Type: String
+        Default: "arn:aws:iam::037295147636:role/cp-discount-api-task-execution-role"
+    retentionPeriod:
+        Description: Log retention period in days
+        Type: Number
+        Default: 180
+        AllowedValues:
+            - 90
+            - 180
+            - 365
+            - 400
+            - 731
+            - 1827
+            - 3653
+    paramStoreConfigPrefix:
+        Type: String
+        Default: "/CP/DISCOUNT_SERVICE"
+    httpsListenerSslPolicy:
+        Description: HTTPS listener SSL policy
+        Type: String
+        Default: ELBSecurityPolicy-2016-08
+        AllowedValues:
+            - ELBSecurityPolicy-2016-08
+            - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+    httpsListenerCertificateArn:
+        Description: Certificate to use with the HTTPS listener
+        Type: String
+        Default: arn:aws:acm:us-east-1:037295147636:certificate/44f64fb1-43d9-4f60-b954-e4791e909321
+Resources:
+    ECSCluster:
+        Type: AWS::ECS::Cluster
+        Properties:
+            ClusterName: !Join [ "-", [!Ref namingPrefix, api-cluster, !Ref environment]]
+            ClusterSettings:
+                - Name: containerInsights
+                  Value: enabled
+    TaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: !Join [ "-", [!Ref namingPrefix, api-task-definition, !Ref environment]]
+            Cpu: 2048
+            Memory: 4096
+            NetworkMode: awsvpc
+            RequiresCompatibilities:
+                - FARGATE
+            TaskRoleArn: !Ref taskRoleArn
+            ExecutionRoleArn: !Ref taskExecutionRoleArn
+            ContainerDefinitions:
+                - Name: !Join [ "-", [!Ref namingPrefix, api]]
+                  Image: !Ref ecrImageUri
+                  PortMappings:
+                    - ContainerPort: !Ref containerPort
+                      Protocol: tcp
+                  LogConfiguration:
+                    LogDriver: awslogs
+                    Options:
+                        awslogs-region: !Ref "AWS::Region"
+                        awslogs-group: !Ref LogGroup
+                        awslogs-stream-prefix: !Ref namingPrefix
+                  Environment:
+                    - Name: spring_profiles_active
+                      Value: !Ref environment
+    ECSService:
+        Type: AWS::ECS::Service
+        DependsOn:
+            - ALBListenerHttp
+            - ALBListenerHttps
+            - ConfigMaxLifeLowerLimit
+            - ConfigMaxLifeUpperLimit
+            - ConfigReaderMaxPoolSize
+            - ConfigReaderInitialPoolSize
+            - ConfigWriterMaxPoolSize
+            - ConfigWriterInitialPoolSize
+            - ConfigConnectionValidationQuery
+            - ConfigDatabaseDriver
+        Properties:
+            Cluster: !Ref ECSCluster
+            ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
+            TaskDefinition: !Ref TaskDefinition
+            LaunchType: FARGATE
+            HealthCheckGracePeriodSeconds: 60
+            DesiredCount: 2
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: DISABLED
+                    SecurityGroups:
+                        - !Ref ECSServiceSecurityGroup
+                    Subnets: !Ref subnets
+            LoadBalancers:
+                - ContainerName: !Join [ "-", [!Ref namingPrefix, api]]
+                  ContainerPort: !Ref containerPort
+                  TargetGroupArn: !Ref TargetGroup
+    LogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: !Join [ "-", [!Ref namingPrefix, api-log-group, !Ref environment]]
+            RetentionInDays: !Ref retentionPeriod
+    LoadBalancer:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+            Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
+            Scheme: internal
+            Subnets: !Ref subnets
+            SecurityGroups:
+                - !Ref LoadBalancerSecurityGroup
+    TargetGroup:
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+            Name: !Join [ "-", [!Ref namingPrefix, api-target-group, !Ref environment]]
+            Port: !Ref containerPort
+            Protocol: HTTP
+            TargetType: ip
+            VpcId: !Ref vpcId
+            HealthCheckPath: '/cp-discounts/v1/health'
+            HealthCheckIntervalSeconds: 30
+            HealthCheckTimeoutSeconds: 5
+            HealthyThresholdCount: 5
+            UnhealthyThresholdCount: 3
+    ALBListenerHttp:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancer
+            Port: 80
+            Protocol: HTTP
+            DefaultActions:
+                - Type: forward
+                  TargetGroupArn: !Ref TargetGroup
+    ALBListenerHttps:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancer
+            Port: !Ref albListenerPortHttps
+            Protocol: HTTPS
+            SslPolicy: !Ref httpsListenerSslPolicy
+            Certificates:
+                - CertificateArn: !Ref httpsListenerCertificateArn
+            DefaultActions:
+                - Type: forward
+                  TargetGroupArn: !Ref TargetGroup
+    ECSServiceSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Join [ "-", [!Ref namingPrefix, api-sg, !Ref environment]]
+            GroupDescription: Reference price api ecs service security group
+            VpcId: !Ref vpcId
+            SecurityGroupIngress:
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref containerPort
+                  ToPort: !Ref containerPort
+    LoadBalancerSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Join [ "-", [!Ref namingPrefix, api-alb-sg, !Ref environment]]
+            GroupDescription: Reference price api load balancer security group
+            VpcId: !Ref vpcId
+            SecurityGroupIngress:
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttp
+                  ToPort: !Ref albListenerPortHttp
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttps
+                  ToPort: !Ref albListenerPortHttps
+    ConfigMaxLifeLowerLimit:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/LIFE/LOWER/LIMIT]]
+            Type: String
+            Description: Lower limit of the connection pool max life and max idle time
+            Value: 30000
+    ConfigMaxLifeUpperLimit:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/LIFE/UPPER/LIMIT]]
+            Type: String
+            Description: Upper limit of the connection pool max life and max idle time
+            Value: 210000
+    ConfigReaderMaxPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/READER/MAX/POOL/SIZE]]
+            Type: String
+            Description: Maximum number of connections per opco pool for reader
+            Value: 40
+    ConfigReaderInitialPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/READER/INITIAL/POOL/SIZE]]
+            Type: String
+            Description: Initial number of connections per opco pool for reader
+            Value: 10
+    ConfigWriterMaxPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/WRITER/POOL/SIZE]]
+            Type: String
+            Description: Maximum number of connections per opco pool for writer
+            Value: 10
+    ConfigWriterInitialPoolSize:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/WRITER/INITIAL/POOL/SIZE]]
+            Type: String
+            Description: Initial number of connections per opco pool for writer
+            Value: 2
+    ConfigMaxConnectionCreateTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/CREATE/TIME]]
+            Type: String
+            Description: Maximum time for db connection creation
+            Value: 5000
+    ConfigMaxConnectionAcquireTime:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/MAX/CONNECTION/ACQUIRE/TIME]]
+            Type: String
+            Description: Maximum time for db connection acquiring
+            Value: 6000
+    ConfigConnectionValidationQuery:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/CONNECTION/VALIDATION/QUERY]]
+            Type: String
+            Description: DB connection validation query
+            Value: SELECT 1
+    ConfigDatabaseDriver:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, DISCOUNT/DB/DRIVER]]
+            Type: String
+            Description: Database driver of the discount database
+            Value: mysql
+    ActiveBusinessUnits:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+            Type: String
+            Description: Active business units
+            Value: "019"
+    AllowedDiscountNames:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ALLOWED/DISCOUNT/NAMES]]
+            Type: String
+            Description: Allowed discount names for the fetch eligible products endpoing
+            Value: "NEW_CUSTOMER_DISCOUNT"
+    AuthorizedClients:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS]]
+            Type: String
+            Description: Authorized clients for the customer discounts endpoint
+            Value: "ctt"
+    AuthorizedClientsForEligibleProducts:
+        Type: AWS::SSM::Parameter
+        Properties:
+            Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS/ELIGIBLE/PRODUCTS]]
+            Type: String
+            Description: Authorized clients for the eligible products endpoint
+            Value: "MSS-MOBILE-BFF-SVCS,MSS-ORDER-SVCS,MSS-WEB-BFF-SVCS"
+Outputs:
+    LoadBalancerDNS:
+        Description: Loadbalancer DNS
+        Value: !GetAtt LoadBalancer.DNSName
