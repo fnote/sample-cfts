@@ -225,7 +225,7 @@
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
 				"MinSize" : "1",
 				"DesiredCapacity" : "1",
-				"MaxSize" : "8",
+				"MaxSize" : "30",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNa" }, { "Ref" : "PvtSNb" }, { "Ref" : "PvtSNc" } ],
