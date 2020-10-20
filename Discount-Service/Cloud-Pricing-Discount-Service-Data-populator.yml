@@ -542,7 +542,7 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-Discount Service",
-                    "message.$": "$.error.Cause"
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                   }
                 },
                 "End": true
