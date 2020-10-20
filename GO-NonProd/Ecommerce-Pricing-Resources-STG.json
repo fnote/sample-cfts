@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "AWS CloudFormation Template to create resources related to Ecommerce pricing web service and data populator in EXE environmnet",
+	"Description": "AWS CloudFormation Template to create resources related to Ecommerce pricing web service and data populator in STG environmnet",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -162,7 +162,7 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "Execution",
+			"Default": "Staging",
 			"AllowedValues": [
 				"Development",
 				"Quality",
@@ -176,7 +176,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "STG",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -248,10 +248,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
+					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
+					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)s.na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -509,7 +509,7 @@
 		"S3BucketeComm": {
 			"Type": "AWS::S3::Bucket",
 			"Properties": {
-				"BucketName": "sysco-us-east-1-prcp-nonprod-ecomm-pricing",
+				"BucketName": "sysco-us-east-1-prcp-stg-ecomm-pricing",
 				"LifecycleConfiguration": {
 					"Rules": [{
 						"Id" : "Retention365Days",
@@ -552,7 +552,7 @@
 			"DeletionPolicy" : "Snapshot",
 			"Properties" : {
 				"DatabaseName" : "ECOMMDB_Common01",
-				"DBClusterIdentifier" : "ecomm01dbcluster",
+				"DBClusterIdentifier" : "ecomm01dbcluster-stg",
 				"Engine" : "aurora",
 				"DBClusterParameterGroupName": "param-group-loadfroms3",
 				"AssociatedRoles": [
@@ -613,7 +613,7 @@
 				"AutoMinorVersionUpgrade" : "true",
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
+				"DBInstanceClass" : "db.r5.large",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : "rds-subnet-group",
 				"Tags" : [

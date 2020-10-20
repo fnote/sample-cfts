@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'IAM roles of Discount Service API'
+Parameters:
+    namingPrefix:
+        Description: Naming prefix for the components created using this script
+        Type: String
+        Default: cp-discount
+    permissionBoundry:
+        Description: Permission boundary policy of the IAM rolres created
+        Type: String
+        Default: 'arn:aws:iam::037295147636:policy/PermissionBoundary-DevOps'
+Resources:
+    ECSTaskRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                    - Effect: Allow
+                      Action: 'sts:AssumeRole'
+                      Principal:
+                        Service: 'ecs-tasks.amazonaws.com'
+            RoleName: !Join ["-", [!Ref namingPrefix, api-task-role]]
+            PermissionsBoundary: !Ref permissionBoundry
+            ManagedPolicyArns:
+                - 'arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess'
+            Tags:
+                - Key: Technical:ApplicationID
+                  Value: APP-001151
+                - Key: Technical:ApplicationName
+                  Value: Cloud Pricing
+                - Key: Technical:PlatformOwner
+                  Value: krishan.senevirathne@sysco.com
+    ECSTaskExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                    - Effect: Allow
+                      Action: 'sts:AssumeRole'
+                      Principal:
+                        Service: 'ecs-tasks.amazonaws.com'
+            RoleName: !Join ["-", [!Ref namingPrefix, api-task-execution-role]]
+            PermissionsBoundary: !Ref permissionBoundry
+            ManagedPolicyArns:
+                - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+            Tags:
+                - Key: Technical:ApplicationID
+                  Value: APP-001151
+                - Key: Technical:ApplicationName
+                  Value: Cloud Pricing
+                - Key: Technical:PlatformOwner
+                  Value: krishan.senevirathne@sysco.com
+Outputs:
+    TaskRoleName:
+        Description: 'Name of the Discount API task role'
+        Value: !Ref ECSTaskRole
+    TaskExecutionRoleName:
+        Description: 'Name of the Discount API task execution role'
+        Value: !Ref ECSTaskExecutionRole
+
+

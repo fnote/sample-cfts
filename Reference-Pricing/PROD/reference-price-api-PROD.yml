@@ -55,17 +55,6 @@ Parameters:
             - 731
             - 1827
             - 3653
-    httpsListenerSslPolicy:
-        Description: HTTPS listener SSL policy
-        Type: String
-        Default: ELBSecurityPolicy-2016-08
-        AllowedValues:
-            - ELBSecurityPolicy-2016-08
-            - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
-    httpsListenerCertificateArn:
-        Description: Certificate to use with the HTTPS listener
-        Type: String
-        Default: arn:aws:acm:us-east-1:037295147636:certificate/44f64fb1-43d9-4f60-b954-e4791e909321
 Resources:
     ECSCluster:
         Type: AWS::ECS::Cluster
@@ -101,7 +90,6 @@ Resources:
         Type: AWS::ECS::Service
         DependsOn:
             - ALBListenerHttp
-            - ALBListenerHttps
         Properties:
             Cluster: !Ref ECSCluster
             ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
@@ -154,18 +142,6 @@ Resources:
             LoadBalancerArn: !Ref LoadBalancer
             Port: !Ref albListenerPortHttp
             Protocol: HTTP
-            DefaultActions:
-                - Type: forward
-                  TargetGroupArn: !Ref TargetGroup
-    ALBListenerHttps:
-        Type: AWS::ElasticLoadBalancingV2::Listener
-        Properties:
-            LoadBalancerArn: !Ref LoadBalancer
-            Port: !Ref albListenerPortHttps
-            Protocol: HTTPS
-            SslPolicy: !Ref httpsListenerSslPolicy
-            Certificates:
-                - CertificateArn: !Ref httpsListenerCertificateArn
             DefaultActions:
                 - Type: forward
                   TargetGroupArn: !Ref TargetGroup
