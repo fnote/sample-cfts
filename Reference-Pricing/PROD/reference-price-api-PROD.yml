@@ -1,0 +1,177 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Infrastructure of Reference Price API"
+Parameters:
+    environment:
+        Description: Name of the environment
+        Type: String
+        Default: DEV
+        AllowedValues:
+            - DEV
+            - QE
+            - EXE
+            - STG
+            - PROD
+    namingPrefix:
+        Description: Naming prefix for the components created using this script
+        Type: String
+        Default: cp-ref
+    ecrImageUri:
+        Description: URI of the docker image used to run the api container
+        Type: String
+        Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-ref-api-webflux:6dd51d51-3f35-4487-ad36-c9e2de774626"
+    containerPort:
+        Description: API container port number
+        Type: Number
+        Default: 8082
+    albListenerPortHttp:
+        Description: ALB HTTP Listener port number
+        Type: Number
+        Default: 80
+    albListenerPortHttps:
+        Description: ALB HTTPS Listener port number
+        Type: Number
+        Default: 443
+    vpcId:
+        Type: String
+        Default: "vpc-091c7e3e5578d7a4f"
+    subnets:
+        Type: CommaDelimitedList
+        Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
+    taskRoleArn:
+        Type: String
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-role-new"
+    taskExecutionRoleArn:
+        Type: String
+        Default: "arn:aws:iam::037295147636:role/cp-ref-api-task-execution-role"
+    retentionPeriod:
+        Description: Log retention period in days
+        Type: Number
+        Default: 180
+        AllowedValues:
+            - 90
+            - 180
+            - 365
+            - 400
+            - 731
+            - 1827
+            - 3653
+Resources:
+    ECSCluster:
+        Type: AWS::ECS::Cluster
+        Properties:
+            ClusterName: !Join [ "-", [!Ref namingPrefix, api-cluster, !Ref environment]]
+            ClusterSettings:
+                - Name: containerInsights
+                  Value: enabled
+    TaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            Family: !Join [ "-", [!Ref namingPrefix, api-task-definition, !Ref environment]]
+            Cpu: 2048
+            Memory: 4096
+            NetworkMode: awsvpc
+            RequiresCompatibilities:
+                - FARGATE
+            TaskRoleArn: !Ref taskRoleArn
+            ExecutionRoleArn: !Ref taskExecutionRoleArn
+            ContainerDefinitions:
+                - Name: !Join [ "-", [!Ref namingPrefix, api]]
+                  Image: !Ref ecrImageUri
+                  PortMappings:
+                      - ContainerPort: !Ref containerPort
+                        Protocol: tcp
+                  LogConfiguration:
+                      LogDriver: awslogs
+                      Options:
+                          awslogs-region: !Ref "AWS::Region"
+                          awslogs-group: !Ref LogGroup
+                          awslogs-stream-prefix: !Ref namingPrefix
+    ECSService:
+        Type: AWS::ECS::Service
+        DependsOn:
+            - ALBListenerHttp
+        Properties:
+            Cluster: !Ref ECSCluster
+            ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
+            TaskDefinition: !Ref TaskDefinition
+            LaunchType: FARGATE
+            HealthCheckGracePeriodSeconds: 60
+            DesiredCount: 2
+            DeploymentConfiguration:
+                MaximumPercent: 200
+                MinimumHealthyPercent: 100
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: DISABLED
+                    SecurityGroups:
+                        - !Ref ECSServiceSecurityGroup
+                    Subnets: !Ref subnets
+            LoadBalancers:
+                - ContainerName: !Join [ "-", [!Ref namingPrefix, api]]
+                  ContainerPort: !Ref containerPort
+                  TargetGroupArn: !Ref TargetGroup
+    LogGroup:
+        Type: AWS::Logs::LogGroup
+        Properties:
+            LogGroupName: !Join [ "-", [!Ref namingPrefix, api-log-group, !Ref environment]]
+            RetentionInDays: !Ref retentionPeriod
+    LoadBalancer:
+        Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+        Properties:
+            Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
+            Scheme: internal
+            Subnets: !Ref subnets
+            SecurityGroups:
+                - !Ref LoadBalancerSecurityGroup
+    TargetGroup:
+        Type: AWS::ElasticLoadBalancingV2::TargetGroup
+        Properties:
+            Name: !Join [ "-", [!Ref namingPrefix, api-target-group, !Ref environment]]
+            Port: !Ref containerPort
+            Protocol: HTTP
+            TargetType: ip
+            VpcId: !Ref vpcId
+            HealthCheckPath: '/ref-price/v1/health'
+            HealthCheckIntervalSeconds: 30
+            HealthCheckTimeoutSeconds: 5
+            HealthyThresholdCount: 5
+            UnhealthyThresholdCount: 3
+    ALBListenerHttp:
+        Type: AWS::ElasticLoadBalancingV2::Listener
+        Properties:
+            LoadBalancerArn: !Ref LoadBalancer
+            Port: !Ref albListenerPortHttp
+            Protocol: HTTP
+            DefaultActions:
+                - Type: forward
+                  TargetGroupArn: !Ref TargetGroup
+    ECSServiceSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Join [ "-", [!Ref namingPrefix, api-sg, !Ref environment]]
+            GroupDescription: Reference price api ecs service security group
+            VpcId: !Ref vpcId
+            SecurityGroupIngress:
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref containerPort
+                  ToPort: !Ref containerPort
+    LoadBalancerSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupName: !Join [ "-", [!Ref namingPrefix, api-alb-sg, !Ref environment]]
+            GroupDescription: Reference price api load balancer security group
+            VpcId: !Ref vpcId
+            SecurityGroupIngress:
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttp
+                  ToPort: !Ref albListenerPortHttp
+                - CidrIp: "10.0.0.0/8"
+                  IpProtocol: tcp
+                  FromPort: !Ref albListenerPortHttps
+                  ToPort: !Ref albListenerPortHttps
+Outputs:
+    LoadBalancerDNS:
+        Description: Loadbalancer DNS
+        Value: !GetAtt LoadBalancer.DNSName

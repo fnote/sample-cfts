@@ -16,13 +16,13 @@ Parameters:
   CPUForTask:
     Description: The number of cpu units reserved for the task.
     Type: Number
-    Default: '1024'
+    Default: '2048'
     MinValue: '256'
     MaxValue: '4096'
   MemoryForTask:
     Description: The soft limit (in MiB) of memory to reserve for the task.
     Type: Number
-    Default: '2048'
+    Default: '4096'
     MinValue: '256'
     MaxValue: '8192'
   PvtSNa:
@@ -383,8 +383,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-001-010-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -419,8 +419,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-011-022-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -455,8 +455,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-023-036-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -491,8 +491,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-037-049-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -527,8 +527,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-050-060-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -540,7 +540,7 @@ Resources:
           RoleArn: !GetAtt
             - iOPRCloudWatchEventRole
             - Arn
-          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059, 060"},
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059"},
           {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
           EcsParameters:
             TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
@@ -563,8 +563,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-061-102-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
@@ -599,8 +599,8 @@ Resources:
         - ''
         - - 'Price-Range-Weekly-137-450-'
           - !Ref 'Environment'
-      State: DISABLED
-      ScheduleExpression: 'cron(00 20 ? * TUE *)'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
       RoleArn: !GetAtt
         - iOPRCloudWatchEventRole
         - Arn
