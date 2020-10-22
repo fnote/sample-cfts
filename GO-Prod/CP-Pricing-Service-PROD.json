@@ -446,7 +446,7 @@
 								"##############################################\n",
 								"yum -y update\n",
 								"cd /tmp\n",
-								"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+								"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 								"yum install -y jdk-8u131-linux-x64.rpm\n",
 								"count=1\n",
 								"currentStatus=$(service codedeploy-agent status)\n",
@@ -470,7 +470,7 @@
 								"##############################################\n",
 								"# Datadog - Configuration\n",
 								"##############################################\n",
-								"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/CloudPricing/Datadog/datadog-agent-7.22.1-1.x86_64.rpm . \n",
+								"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/CloudPricing/Datadog/datadog-agent-7.22.1-1.x86_64.rpm . \n",
 								"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
 								"yum install -y datadog-agent-7.22.1-1.x86_64.rpm\n",
 
