@@ -367,6 +367,7 @@ Resources:
         "--enable-spark-ui": 'true'
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
+        "--ENV": !Ref EnvironmentShort
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
