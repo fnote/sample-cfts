@@ -541,7 +541,7 @@
 				"ComparisonOperator": "GreaterThanThreshold",
 				"Threshold": "50",
 				"Period": "60",
-				"EvaluationPeriods": "3",
+				"EvaluationPeriods": "2",
 				"AlarmActions": [
 					{
 						"Ref": "ScaleUpPolicy"
