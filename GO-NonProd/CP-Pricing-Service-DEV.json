@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description": "Latest Sysco Gold Team Managed Amazon Linux AMI",
 			"Type": "String",
-			"Default": "ami-0e31c9d230876347e",
+			"Default": "ami-02123613088cbbe7d",
 			"AllowedPattern": "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription": "Must be a valid AMI."
 		},
@@ -480,7 +480,7 @@
 								"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
 								"logs:\n",
 								"    - type: file\n",
-								"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
+								"      path: /cp-pricing-service/service/logs/cp-pricing-service-metrics.log\n",
 								"      source: cp_metrics\n",
 								"      service: cp-pricing-service\n",
 								"EOF\n",
