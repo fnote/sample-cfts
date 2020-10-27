@@ -171,7 +171,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -185,7 +185,7 @@
 		"EnvironmentChar": {
 			"Description": "Environment for application in single char",
 			"Type": "String",
-			"Default": "e",
+			"Default": "d",
 			"AllowedValues": [
 				"d",
 				"q",
@@ -199,17 +199,7 @@
 		"PricingServiceTargetGroup": {
 			"Description": "Target group of the pricing-service",
 			"Type": "String",
-			"Default": {
-				"Fn::Join": [
-					"",
-					[
-						"target-group-pricing-service-",
-						{
-							"Ref": "EnvironmentShort"
-						}
-					]
-				]
-			}
+			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-DEV/8ec356a42e453663"
 		},
 		"DynatraceApplicationName": {
 			"AllowedValues": [

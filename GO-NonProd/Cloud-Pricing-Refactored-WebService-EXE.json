@@ -199,17 +199,7 @@
 		"PricingServiceTargetGroup": {
 			"Description": "Target group of the pricing-service",
 			"Type": "String",
-			"Default": {
-				"Fn::Join": [
-					"",
-					[
-						"target-group-pricing-service-",
-						{
-							"Ref": "EnvironmentShort"
-						}
-					]
-				]
-			}
+			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-EXE/d00a2b1b6505ba7f"
 		},
 		"DynatraceApplicationName": {
 			"AllowedValues": [
