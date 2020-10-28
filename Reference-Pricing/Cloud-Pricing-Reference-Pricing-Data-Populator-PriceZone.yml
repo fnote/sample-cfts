@@ -63,7 +63,7 @@ Parameters:
   TransformActiveOpcos:
     Description: Active Opcos
     Type: String
-    Default: '001,002,003'
+    Default: '019'
   PriceZoneFilePartialLoadPrefixes:
     Description: List of prefixes for price zone file partial load prefixes
     Type: String
@@ -392,7 +392,6 @@ Resources:
         "--enable-spark-ui": 'true'
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
-        "--ENV": !Ref EnvironmentShort
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
