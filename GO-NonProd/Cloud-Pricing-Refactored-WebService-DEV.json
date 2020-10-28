@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-Batch-Refactored-WebService-DEV|EXE.json",
+	"Description": "Deployed via Cloud-Pricing-Refactored-WebService-DEV | EXE | STG",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
@@ -171,7 +171,7 @@
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
-			"Default": "EXE",
+			"Default": "DEV",
 			"AllowedValues": [
 				"DEV",
 				"QA",
@@ -185,7 +185,7 @@
 		"EnvironmentChar": {
 			"Description": "Environment for application in single char",
 			"Type": "String",
-			"Default": "e",
+			"Default": "d",
 			"AllowedValues": [
 				"d",
 				"q",
@@ -196,24 +196,21 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
+		"PricingServiceTargetGroup": {
+			"Description": "Target group of the pricing-service",
+			"Type": "String",
+			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-DEV/8ec356a42e453663"
+		},
 		"DynatraceApplicationName": {
+			"AllowedValues": [
+				"bts-cloudpricing-perf-cpws-ng-refac-DEV",
+				"bts-cloudpricing-perf-cpws-ng-refac-EXE",
+				"bts-cloudpricing-perf-cpws-ng-refac-STG",
+				"bts-cloudpricing-prod-cpws-ng"
+			],
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
-			"Default": "bts-cloudpricing-perf-cpws-ng-refac-batch-EXE",
-			"AllowedValues": [
-				"bts-cloudpricing-perf-cpws-ng-refac-batch-DEV",
-				"bts-cloudpricing-perf-cpws-ng-refac-batch-EXE",
-				"bts-cloudpricing-prod-cpws-ng-refac-batch"
-			]
-		},
-		"CodeDeployBucket": {
-			"Description": "Code deploy s3 bucket name",
-			"Type": "String",
-			"Default": "sysco-us-east-1-prcp-nonprod-codedeploy",
-			"AllowedValues": [
-				"sysco-us-east-1-prcp-nonprod-codedeploy",
-				"sysco-us-east-1-prcp-prod-codedeploy"
-			]
+			"Default": "bts-cloudpricing-perf-cpws-ng-refac-EXE"
 		}
 	},
 	"Resources": {
@@ -223,27 +220,27 @@
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
-				"MinSize" : "1",
-				"DesiredCapacity" : "1",
-				"MaxSize" : "30",
+				"MinSize" : "2",
+				"DesiredCapacity" : "2",
+				"MaxSize" : "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNa" }, { "Ref" : "PvtSNb" }, { "Ref" : "PvtSNc" } ],
 				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP BatchPricing Refactored WS AS-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CP Refactored Web Service AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationRole", "Value": "Auto Scaling Group", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Batch Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Batch Pricing Refactored Web Service", "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -276,10 +273,10 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
+					"sh -c \"hostname cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
+					"HOSTNAME=cprefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -290,8 +287,8 @@
 					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
 					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
 					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-                    "useradd -m -g aix -c \"Chamin Wickramarathna\" cwic0864\n",
-                    "useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
+					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
+					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
@@ -307,21 +304,19 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export BATCH_MODE=TRUE'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'BATCH_MODE=TRUE'\" >> /etc/environment\n",
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, Dynatrace Agent, code deploy agent, cloud watch agent\n",
+					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
-					"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" },"/Tools/ . --recursive\n",
+					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
 					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
 					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, "\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=",{ "Ref" : "DynatraceApplicationName" },"\n",
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
@@ -339,7 +334,6 @@
 					"shutdown now\n",
 					"fi\n",
 					"done\n",
-
 					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
@@ -354,7 +348,7 @@
 					"api_key: $DATADOG_TOKEN\n",
 					"site: datadoghq.com\n",
 					"tags:\n",
-					"   - application:cpbatchrefwebsvc-",{ "Ref" : "EnvironmentShort" },"\n",
+					"   - application:cpwsng-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
@@ -367,8 +361,8 @@
 					"logs:\n",
 					"    - type: file\n",
 					"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
-					"      source: cp_batch_metrics\n",
-					"      service: cpbatchrefwebsvc\n",
+					"      source: cp_metrics\n",
+					"      service: cpwsng\n",
 					"EOF\n",
 
 					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
@@ -384,12 +378,13 @@
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
+
 					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
 					"cd /tmp\n",
 
-					"date > /home/ec2-user/stoptime\n"
+                    "date > /home/ec2-user/stoptime"
 				]]}}
 			}
 		},
@@ -397,16 +392,16 @@
 			"Type" : "AWS::CloudWatch::Alarm",
 			"DependsOn": "WebServiceGroup",
 			"Properties" : {
-				"AlarmName" : { "Fn::Join" : ["", ["CP-Batch-Refactored-WS-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
+				"AlarmName" : { "Fn::Join" : ["", ["CP-Refactored-WebService-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 2 minutes or 2-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
 				"Threshold" : "50",
 				"Period" : "60",
-				"EvaluationPeriods" : "2",
+				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
 			}
 		},
@@ -414,7 +409,7 @@
 			"Type" : "AWS::CloudWatch::Alarm",
 			"DependsOn": "WebServiceGroup",
 			"Properties" : {
-				"AlarmName" : { "Fn::Join" : ["", ["CP-Batch-Refactored-WS-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
+				"AlarmName" : { "Fn::Join" : ["", ["CP-Refactored-WebService-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
 				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
@@ -435,7 +430,7 @@
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
 				"Cooldown" : "60",
-				"ScalingAdjustment" : "2"
+				"ScalingAdjustment" : "1"
 			}
 		},
 		"ScaleDownPolicy" : {
@@ -452,24 +447,24 @@
 		"WebServiceALB": {
 			"Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
 			"Properties": {
-				"Name": { "Fn::Join" : ["", ["alb-cp-batch-refactored-ws-", { "Ref" : "EnvironmentShort" }]]},
+				"Name": { "Fn::Join" : ["", ["alb-cp-refactored-ws-", { "Ref" : "EnvironmentShort" }]]},
 				"Subnets": [{ "Ref" : "PvtSNa" },{ "Ref" : "PvtSNb" },{ "Ref" : "PvtSNc" }],
 				"Scheme": "internal",
 				"SecurityGroups": [ { "Ref": "SGELBs" } ],
 				"Tags": [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Batch-Refactored-WS-ALB-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Refactored-WS-ALB-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS ALB" }
 				]
 			}
@@ -486,6 +481,84 @@
 						"TargetGroupArn": { "Ref": "TargetGroup" }
 					}
 				]
+			}
+		},
+		"LoadBalancerListenerHTTPPathCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/product-prices",
+								"/order-prices",
+								"/pci-prices"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 2
+			}
+		},
+		"LoadBalancerListenerHTTPQueryCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "query-string",
+						"QueryStringConfig": {
+							"Values": [{
+								"Key": "customer-type",
+								"Value": "TRS"
+							}]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 3
+			}
+		},
+		"LoadBalancerListenerHTTPHealthCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "redirect",
+						"RedirectConfig": {
+							"Host" : "#{host}",
+							"Path" : "/support/healthcheck",
+							"Port" : "#{port}",
+							"Protocol" : "#{protocol}",
+							"StatusCode" : "HTTP_301"
+						}
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/pricerequest/healthcheck"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 4
 			}
 		},
 		"LoadBalancerListenerHTTPS": {
@@ -507,10 +580,88 @@
 				]
 			}
 		},
+		"LoadBalancerListenerHTTPSPathCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/product-prices",
+								"/order-prices",
+								"/pci-prices"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+				"Priority": 2
+			}
+		},
+		"LoadBalancerListenerHTTPSQueryCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "query-string",
+						"QueryStringConfig": {
+							"Values": [{
+								"Key": "customer-type",
+								"Value": "TRS"
+							}]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+				"Priority": 3
+			}
+		},
+		"LoadBalancerListenerHTTPSHealthCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "redirect",
+						"RedirectConfig": {
+							"Host" : "#{host}",
+							"Path" : "/support/healthcheck",
+							"Port" : "#{port}",
+							"Protocol" : "#{protocol}",
+							"StatusCode" : "HTTP_301"
+						}
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/pricerequest/healthcheck"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+				"Priority": 4
+			}
+		},
 		"TargetGroup": {
 			"Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
 			"Properties": {
-				"Name": { "Fn::Join" : ["", ["cp-batch-refactored-ws-", { "Ref" : "EnvironmentShort" }]]},
+				"Name": { "Fn::Join" : ["", ["target-group-refactored-ws-", { "Ref" : "EnvironmentShort" }]]},
 				"VpcId": { "Ref" : "VPCID" },
 				"Port": "8080",
 				"Protocol": "HTTP",
@@ -522,21 +673,31 @@
 				"HealthyThresholdCount": "3",
 				"TargetType": "instance",
 				"Tags": [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Batch-Refactored-WS-Target-Group", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Refactored-WS-Target-Group", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS Target" },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Target Group" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS Target" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS Target" }
 				]
+			}
+		},
+		"CPRefacWebSvcCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "CP_Refactored_WebService",
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["CP_Refactored_WebService", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}

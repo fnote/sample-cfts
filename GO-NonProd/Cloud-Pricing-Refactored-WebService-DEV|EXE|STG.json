@@ -182,31 +182,46 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
-        "EnvironmentChar": {
-          "Description": "Environment for application in single char",
-          "Type": "String",
-          "Default": "e",
-          "AllowedValues": [
-            "d",
-            "q",
-            "s",
-            "e",
-            "t",
-            ""
-          ],
-          "ConstraintDescription": "Must be a valid environment."
-        },
-      "DynatraceApplicationName": {
-        "AllowedValues": [
-          "bts-cloudpricing-perf-cpws-ng-refac-DEV",
-          "bts-cloudpricing-perf-cpws-ng-refac-EXE",
-			"bts-cloudpricing-perf-cpws-ng-refac-STG",
-          "bts-cloudpricing-prod-cpws-ng"
-        ],
-        "Description": "Dynatrace Application Name",
-        "Type": "String",
-        "Default": "bts-cloudpricing-perf-cpws-ng-refac-EXE"
-      }
+		"EnvironmentChar": {
+			"Description": "Environment for application in single char",
+			"Type": "String",
+			"Default": "e",
+			"AllowedValues": [
+				"d",
+				"q",
+				"s",
+				"e",
+				"t",
+				""
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"PricingServiceTargetGroup": {
+			"Description": "Target group of the pricing-service",
+			"Type": "String",
+			"Default": {
+				"Fn::Join": [
+					"",
+					[
+						"target-group-pricing-service-",
+						{
+							"Ref": "EnvironmentShort"
+						}
+					]
+				]
+			}
+		},
+		"DynatraceApplicationName": {
+			"AllowedValues": [
+				"bts-cloudpricing-perf-cpws-ng-refac-DEV",
+				"bts-cloudpricing-perf-cpws-ng-refac-EXE",
+				"bts-cloudpricing-perf-cpws-ng-refac-STG",
+				"bts-cloudpricing-prod-cpws-ng"
+			],
+			"Description": "Dynatrace Application Name",
+			"Type": "String",
+			"Default": "bts-cloudpricing-perf-cpws-ng-refac-EXE"
+		}
 	},
 	"Resources": {
 		"WebServiceGroup" : {
@@ -478,6 +493,55 @@
 				]
 			}
 		},
+		"LoadBalancerListenerHTTPPathCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/product-prices",
+								"/order-prices",
+								"/pci-prices"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 2
+			}
+		},
+		"LoadBalancerListenerHTTPQueryCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "query-string",
+						"QueryStringConfig": {
+							"Values": [{
+								"Key": "customer-type",
+								"Value": "TRS"
+							}]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
+				"Priority": 3
+			}
+		},
 		"LoadBalancerListenerHTTPHealthCheckRule": {
 			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
 			"Properties": {
@@ -504,7 +568,7 @@
 					}
 				],
 				"ListenerArn": { "Ref": "LoadBalancerListenerHTTP" },
-				"Priority": 2
+				"Priority": 4
 			}
 		},
 		"LoadBalancerListenerHTTPS": {
@@ -524,6 +588,55 @@
 						"TargetGroupArn": { "Ref": "TargetGroup" }
 					}
 				]
+			}
+		},
+		"LoadBalancerListenerHTTPSPathCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "path-pattern",
+						"PathPatternConfig": {
+							"Values": [
+								"/product-prices",
+								"/order-prices",
+								"/pci-prices"
+							]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+				"Priority": 2
+			}
+		},
+		"LoadBalancerListenerHTTPSQueryCheckRule": {
+			"Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+			"Properties": {
+				"Actions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "PricingServiceTargetGroup" }
+					}
+				],
+				"Conditions": [
+					{
+						"Field": "query-string",
+						"QueryStringConfig": {
+							"Values": [{
+								"Key": "customer-type",
+								"Value": "TRS"
+							}]
+						}
+					}
+				],
+				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
+				"Priority": 3
 			}
 		},
 		"LoadBalancerListenerHTTPSHealthCheckRule": {
@@ -552,7 +665,7 @@
 					}
 				],
 				"ListenerArn": { "Ref": "LoadBalancerListenerHTTPS" },
-				"Priority": 2
+				"Priority": 4
 			}
 		},
 		"TargetGroup": {

@@ -60,6 +60,10 @@ Parameters:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
     Default: 5
+  PriceZoneFilePartialLoadPrefixes:
+    Description: List of prefixes for price zone file partial load prefixes
+    Type: String
+    Default: ctt,itt
   ActiveOpcos:
     Description: Active Opcos
     Type: String
@@ -271,6 +275,15 @@ Resources:
       Value: !Ref TransformJobMinDPUCount
       Tier: Standard
       Description: DPU count for ETL spark job for New customer
+
+  PriceZoneETLPartialLoadPrefixes:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/PARTIAL_LOAD_PREFIXES']]
+      Type: String
+      Value: !Ref PriceZoneFilePartialLoadPrefixes
+      Tier: Standard
+      Description: List of prefixes for price zone file partial load prefixes
 
   PriceZoneETLActiveOpcos:
     Type: AWS::SSM::Parameter
@@ -748,7 +761,7 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                    "message.$": "$.error.Cause",
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
                     "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }

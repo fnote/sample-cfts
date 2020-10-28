@@ -64,6 +64,10 @@ Parameters:
     Description: Active Opcos
     Type: String
     Default: '019'
+  PriceZoneFilePartialLoadPrefixes:
+    Description: List of prefixes for price zone file partial load prefixes
+    Type: String
+    Default: ctt,itt
   TransformJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
@@ -279,6 +283,15 @@ Resources:
       Type: String
       Value: !Ref ActiveOpcos
       Description: Active opcos available for prize zone
+
+  PriceZoneETLPartialLoadPrefixes:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/PARTIAL_LOAD_PREFIXES']]
+      Type: String
+      Value: !Ref PriceZoneFilePartialLoadPrefixes
+      Tier: Standard
+      Description: List of prefixes for price zone file partial load prefixes
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -748,7 +761,7 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                    "message.$": "$.error.Cause",
+                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
                     "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }
