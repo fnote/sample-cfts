@@ -393,7 +393,6 @@ Resources:
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--ENV": !Ref EnvironmentShort
-        "--active-opcos": !Ref TransformActiveOpcos
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
