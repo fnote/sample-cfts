@@ -60,6 +60,10 @@ Parameters:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
     Default: 5
+  TransformActiveOpcos:
+    Description: Active Opcos
+    Type: String
+    Default: '001,002,003'
   TransformJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
@@ -268,6 +272,14 @@ Resources:
       Tier: Standard
       Description: DPU count for ETL spark job for New customer
 
+  PriceZoneETLActiveOpcos:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/ACTIVE/BUSINESS/UNITS']]
+      Type: String
+      Value: !Ref TransformActiveOpcos
+      Description: Active opcos available for prize zone
+
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -368,6 +380,7 @@ Resources:
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--ENV": !Ref EnvironmentShort
+        "--active-opcos": !Ref TransformActiveOpcos
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
@@ -691,7 +704,8 @@ Resources:
                   "Arguments": {
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--partitioned_files_path.$": "$.partitioned_files_path",
-                    "--enable-continuous-cloudwatch-log": "true"
+                    "--enable-continuous-cloudwatch-log": "true",
+                    "--active_opcos.$": "$.active_opcos",
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
