@@ -60,7 +60,7 @@ Parameters:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
     Default: 5
-  TransformActiveOpcos:
+  ActiveOpcos:
     Description: Active Opcos
     Type: String
     Default: '019'
@@ -281,7 +281,7 @@ Resources:
     Properties:
       Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/ACTIVE/BUSINESS/UNITS']]
       Type: String
-      Value: !Ref TransformActiveOpcos
+      Value: !Ref ActiveOpcos
       Description: Active opcos available for prize zone
 
   PriceZoneETLPartialLoadPrefixes:
