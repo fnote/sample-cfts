@@ -718,7 +718,7 @@ Resources:
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--partitioned_files_path.$": "$.partitioned_files_path",
                     "--enable-continuous-cloudwatch-log": "true",
-                    "--active_opcos.$": "$.active_opcos",
+                    "--active_opcos.$": "$.active_opcos"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
