@@ -255,12 +255,12 @@ Resources:
       Handler: index.lambda_handler
       Code:
         ZipFile: |
-          import logging
-          import json
           import os
+          import time
           # Import Boto 3 for AWS Glue
           import boto3
-          import time
+          import logging
+          import json
           from urllib.parse import unquote_plus
 
           logger = logging.getLogger()
@@ -269,13 +269,13 @@ Resources:
 
           def get_values_from_ssm(keys):
               client_ssm = boto3.client('ssm')
-              logger.info("GetParameter called for ssm key: {}".format(keys))
+              logger.info("GetParameter called for ssm key: %s ", keys)
               response = client_ssm.get_parameters(Names=keys)
               parameters = response['Parameters']
-              invalidParameters = response['InvalidParameters']
+              invalid_parameters = response['InvalidParameters']
 
-              if invalidParameters:
-                  raise KeyError('Found invalid ssm parameter keys:' + ','.join(invalidParameters))
+              if invalid_parameters:
+                  raise KeyError('Found invalid ssm parameter keys:' + ','.join(invalid_parameters))
 
               parameter_dictionary = {}
               for parameter in parameters:
@@ -284,7 +284,7 @@ Resources:
               return parameter_dictionary
 
 
-          def lambda_handler(event, context):
+          def lambda_handler(event, _):
               step_function_arn = os.environ['stepFunctionArn']
               s3 = event['Records'][0]['s3']
               s3_object_key = unquote_plus(s3['object']['key'])
@@ -310,6 +310,8 @@ Resources:
               client = boto3.client('stepfunctions')
               response = client.start_execution(stateMachineArn=step_function_arn,
                                                 input=json.dumps(step_function_input_params))
+              logger.info(response)
+
       Timeout: 180
       Environment:
         Variables:
