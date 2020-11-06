@@ -138,11 +138,11 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '1'
+    Default: '4'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '2'
+    Default: '4'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
