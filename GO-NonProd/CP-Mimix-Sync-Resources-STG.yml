@@ -17,7 +17,7 @@ Parameters:
   ImageId:
     Description: Amazon AMI
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0a0cdd2cc483521d1'
+    Default: 'ami-0e38f2a5bea6a80ec'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -278,7 +278,8 @@ Resources:
           Ebs:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
-      UserData: !Base64
+      UserData:
+        Fn::Base64:
           !Sub |
             #!/bin/bash
             sudo yum install -y ecs-init
