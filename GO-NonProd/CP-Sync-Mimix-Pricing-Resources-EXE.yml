@@ -286,7 +286,8 @@ Resources:
           Ebs:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
-      UserData: !Base64
+      UserData:
+        Fn::Base64:
           !Sub |
             #!/bin/bash
             sudo yum install -y ecs-init
