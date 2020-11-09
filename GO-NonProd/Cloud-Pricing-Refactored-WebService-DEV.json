@@ -364,7 +364,7 @@
 					"      service: cpwsng\n",
 					"EOF\n",
 					"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
-					"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/",
+					"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
 					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
 					"instances:\n",
 					"    - use_mount: false\n",
