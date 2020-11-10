@@ -376,6 +376,19 @@
 					"restart datadog-agent\n",
 
 					"##############################################\n",
+					"# DD APM related changes\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"cat >> /etc/environment <<EOF\n",
+					"JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-web-service -Ddd.env=dev\"\n",
+					"EOF\n",
+
+					"##############################################\n",
 					"# CloudWatch Configuration\n",
 					"##############################################\n",
 
