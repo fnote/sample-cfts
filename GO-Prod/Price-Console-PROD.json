@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL-2020.10.30 -> ami-0565195ca8aeb0a55",
 			"Type": "String",
-			"Default" : "ami-0e31c9d230876347e",
+			"Default" : "ami-0565195ca8aeb0a55",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
