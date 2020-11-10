@@ -304,6 +304,8 @@
 					"# Set System Environment \n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+					"sh -c \"echo 'export JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-web-service -Ddd.env=dev\"'\", >> /etc/profile.d/jvmsettings.sh\n",
+
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
 					"##############################################\n",
@@ -384,9 +386,7 @@
 					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
 					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
 
-					"cat >> /etc/environment <<EOF\n",
-					"JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-web-service -Ddd.env=dev\"\n",
-					"EOF\n",
+
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
