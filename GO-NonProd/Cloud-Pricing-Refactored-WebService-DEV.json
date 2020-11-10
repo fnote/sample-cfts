@@ -304,9 +304,14 @@
 					"# Set System Environment \n",
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'export JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-web-service -Ddd.env=dev\"'\", >> /etc/profile.d/jvmsettings.sh\n",
-
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+
+					"# For DD APM\n",
+
+					"cat >> /etc/profile.d/javaopts.sh <<EOF\n",
+					"export JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-web-service -Ddd.env=dev\"\n",
+					"EOF\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
@@ -341,7 +346,16 @@
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
-					"# Datadog - Configuration\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"##############################################\n",
+					"# DD log - Configuration\n",
 					"##############################################\n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
 
@@ -355,6 +369,8 @@
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
@@ -376,16 +392,6 @@
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
 					"restart datadog-agent\n",
-
-					"##############################################\n",
-					"# DD APM related changes\n",
-					"##############################################\n",
-
-					"mkdir /etc/dd-java-agent/\n",
-					"cd /etc/dd-java-agent/\n",
-					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
-					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
-
 
 
 					"##############################################\n",
