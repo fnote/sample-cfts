@@ -120,7 +120,7 @@ Parameters:
   CommonAMI:
     Description: SYSCO-GOLD-ECS
     Type: String
-    Default: ami-008052ade16587590
+    Default: ami-0e38f2a5bea6a80ec
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -212,7 +212,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Update-Sync-EC2-Compute-Environment-
+          - - CP-Update-Sync-EC2-Compute-Environment-1-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
