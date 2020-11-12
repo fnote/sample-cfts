@@ -497,9 +497,9 @@
 						"Field": "path-pattern",
 						"PathPatternConfig": {
 							"Values": [
-								"/product-prices",
-								"/order-prices",
-								"/pci-prices"
+								"/v1/pricing/product-prices",
+								"/v1/pricing/order-prices",
+								"/v1/pricing/pci-prices"
 							]
 						}
 					}
@@ -594,9 +594,9 @@
 						"Field": "path-pattern",
 						"PathPatternConfig": {
 							"Values": [
-								"/product-prices",
-								"/order-prices",
-								"/pci-prices"
+								"/v1/pricing/product-prices",
+								"/v1/pricing/order-prices",
+								"/v1/pricing/pci-prices"
 							]
 						}
 					}
