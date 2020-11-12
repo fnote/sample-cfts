@@ -292,6 +292,7 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+					"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
