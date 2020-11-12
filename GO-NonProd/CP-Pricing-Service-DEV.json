@@ -428,6 +428,13 @@
 								"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 								"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
+								"# For DD APM\n",
+
+								"cat >> /etc/profile.d/javaopts.sh <<EOF\n",
+								"export JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service=cp-pricing-service -Ddd.env=dev\"\n",
+								"EOF\n",
+								"chmod +x /etc/profile.d/javaopts.sh\n",
+
 								"##############################################\n",
 								"# Install Dependencies.\n",
 								"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
@@ -459,6 +466,15 @@
 								"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 								"##############################################\n",
+								"# DD APM - Configuration\n",
+								"##############################################\n",
+
+								"mkdir /etc/dd-java-agent/\n",
+								"cd /etc/dd-java-agent/\n",
+								"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+								"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+								"##############################################\n",
 								"# Datadog - Configuration\n",
 								"##############################################\n",
 								"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
@@ -471,7 +487,7 @@
 								"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 								"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 								"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
-								"env: development\n",
+								"env: dev\n",
 								"logs_enabled: true\n",
 								"EOF\n",
 
