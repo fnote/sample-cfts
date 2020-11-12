@@ -366,7 +366,7 @@
 					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
-					"env: development\n",
+					"env: qa\n",
 					"logs_enabled: true\n",
 					"apm_config:\n",
 					"  enabled: true\n",
@@ -378,7 +378,7 @@
 					"    - type: file\n",
 					"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
 					"      source: cp_metrics\n",
-					"      service: cpwsng\n",
+					"      service: cp-web-service\n",
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
