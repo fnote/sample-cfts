@@ -292,6 +292,7 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+					"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -516,9 +517,9 @@
 						"Field": "path-pattern",
 						"PathPatternConfig": {
 							"Values": [
-								"/product-prices",
-								"/order-prices",
-								"/pci-prices"
+								"/v1/pricing/product-prices",
+								"/v1/pricing/order-prices",
+								"/v1/pricing/pci-prices"
 							]
 						}
 					}
@@ -613,9 +614,9 @@
 						"Field": "path-pattern",
 						"PathPatternConfig": {
 							"Values": [
-								"/product-prices",
-								"/order-prices",
-								"/pci-prices"
+								"/v1/pricing/product-prices",
+								"/v1/pricing/order-prices",
+								"/v1/pricing/pci-prices"
 							]
 						}
 					}

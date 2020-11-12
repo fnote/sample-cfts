@@ -203,7 +203,7 @@ Resources:
           - - CP-Update-Sync-Launch-Template-
             - Ref: 'EnvironmentShort'
 
-  UpdateSyncComputeEnvironment:
+  UpdateSync-Environment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
