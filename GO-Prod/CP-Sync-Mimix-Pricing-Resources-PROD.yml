@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.09.04
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.10.30
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0a0cdd2cc483521d1'
+    Default: 'ami-0e38f2a5bea6a80ec'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -146,15 +146,15 @@ Parameters:
     Type: String
     Default: Application Server
   WorkloadNodesDesiredCapacity:
-    Default: '1'
+    Default: '10'
     Description: The desired capacity for the Workload nodes Auto Scaling group
     Type: String
   WorkloadNodesMaxSize:
-    Default: '1'
+    Default: '11'
     Description: The maximum size of the Auto Scaling group
     Type: String
   WorkloadNodesMinSize:
-    Default: '1'
+    Default: '10'
     Description: The minimum size of the Auto Scaling group
     Type: String
   ExecutionRole:
@@ -286,7 +286,8 @@ Resources:
           Ebs:
             VolumeSize: !Ref 'RootVolumeSize'
             VolumeType: gp2
-      UserData: !Base64
+      UserData:
+        Fn::Base64:
           !Sub |
             #!/bin/bash
             sudo yum install -y ecs-init
