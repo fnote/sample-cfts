@@ -255,34 +255,68 @@ Resources:
       Handler: index.lambda_handler
       Code:
         ZipFile: |
-          import json
           import os
+          import time
           # Import Boto 3 for AWS Glue
           import boto3
-          import time
+          import logging
+          import json
           from urllib.parse import unquote_plus
 
-          def lambda_handler(event, context):
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+
+          def get_values_from_ssm(keys):
+              client_ssm = boto3.client('ssm')
+              logger.info("GetParameter called for ssm key: %s ", keys)
+              response = client_ssm.get_parameters(Names=keys)
+              parameters = response['Parameters']
+              invalid_parameters = response['InvalidParameters']
+
+              if invalid_parameters:
+                  raise KeyError('Found invalid ssm parameter keys:' + ','.join(invalid_parameters))
+
+              parameter_dictionary = {}
+              for parameter in parameters:
+                  parameter_dictionary[parameter['Name']] = parameter['Value']
+
+              return parameter_dictionary
+
+
+          def lambda_handler(event, _):
               step_function_arn = os.environ['stepFunctionArn']
               s3 = event['Records'][0]['s3']
               s3_object_key = unquote_plus(s3['object']['key'])
               etl_timestamp = str(int(time.time()))
               s3_bucket = s3['bucket']['name']
               s3_path = "s3://" + s3_bucket + "/" + s3_object_key
+              env = os.environ['env']
+
+              active_opcos_key = '/CP/DISCOUNT_SERVICE/' + env + '/ACTIVE/BUSINESS/UNITS'
+
+              ssm_keys = [active_opcos_key]
+              ssm_key_values = get_values_from_ssm(ssm_keys)
+              active_opco_list = ssm_key_values[active_opcos_key]
 
               step_function_input_params = {
                   "s3_file_path": s3_path,
                   "s3_bucket": s3_bucket,
                   "s3_object_key": s3_object_key,
-                  "etl_timestamp": etl_timestamp
+                  "etl_timestamp": etl_timestamp,
+                  "active_opcos": active_opco_list
               }
+
               client = boto3.client('stepfunctions')
               response = client.start_execution(stateMachineArn=step_function_arn,
                                                 input=json.dumps(step_function_input_params))
+              logger.info(response)
+
       Timeout: 180
       Environment:
         Variables:
           stepFunctionArn: !Ref DiscountsStateMachine
+          env: !Ref EnvironmentShort
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -430,7 +464,8 @@ Resources:
                   "JobName": "${MasterDiscountTableDataLoadJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -474,7 +509,8 @@ Resources:
                   "JobName": "${CustomerEligibilityPartitionJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -837,6 +873,8 @@ Resources:
                   - ec2:DeleteNetworkInterface
                   - ec2:DescribeInstances
                   - ec2:AttachNetworkInterface
+                  - ssm:GetParameters
+                  - ssm:GetParameter
                 Resource:
                   - '*'
       Path: '/'
