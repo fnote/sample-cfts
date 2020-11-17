@@ -464,7 +464,8 @@ Resources:
                   "JobName": "${MasterDiscountTableDataLoadJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
