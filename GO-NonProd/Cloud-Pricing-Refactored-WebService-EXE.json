@@ -306,6 +306,17 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
+					"# For DD APM\n",
+
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-web-service -Ddd.env=qa\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
+
+
+					"yum install -y tcpdump\n",
+					"mkdir /tcpdump/\n",
+					"cd /tcpdump\n",
+					"tcpdump 'src 10.133.104.2 or dst 10.133.104.2' > test.txt &\n",
+
 					"##############################################\n",
 					"# Install Dependencies.\n",
 					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
@@ -313,6 +324,7 @@
 					"yum -y update\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+					"ls\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
 					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
@@ -339,6 +351,15 @@
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"##############################################\n",
 					"# DD log - Configuration\n",
 					"##############################################\n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
@@ -351,8 +372,10 @@
 					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
-					"env: qa\n",
+					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
