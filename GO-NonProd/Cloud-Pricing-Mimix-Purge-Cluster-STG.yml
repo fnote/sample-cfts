@@ -122,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD -> ami-0a0cdd2cc483521d1
+    Description: SYSCO-GOLD -> ami-0e38f2a5bea6a80ec
     Type: String
-    Default: ami-0a0cdd2cc483521d1
+    Default: ami-0e38f2a5bea6a80ec
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -154,7 +154,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 001"
       Name: "Mimix-Daily-Purge-Sync-STG-001-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(30 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -171,7 +171,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 002"
       Name: "Mimix-Daily-Purge-Sync-STG-002-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -188,7 +188,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 003"
       Name: "Mimix-Daily-Purge-Sync-STG-003-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -205,7 +205,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 004"
       Name: "Mimix-Daily-Purge-Sync-STG-004-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(40 06 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -222,7 +222,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 005"
       Name: "Mimix-Daily-Purge-Sync-STG-005-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(40 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -239,7 +239,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 006"
       Name: "Mimix-Daily-Purge-Sync-STG-006-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(10 05 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -256,7 +256,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 007"
       Name: "Mimix-Daily-Purge-Sync-STG-007-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(50 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -273,7 +273,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 008"
       Name: "Mimix-Daily-Purge-Sync-STG-008-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -290,7 +290,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 009"
       Name: "Mimix-Daily-Purge-Sync-STG-009-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -307,7 +307,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 010"
       Name: "Mimix-Daily-Purge-Sync-STG-010-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(45 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -358,7 +358,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 013"
       Name: "Mimix-Daily-Purge-Sync-STG-013-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(10 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1429,7 +1429,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 450"
       Name: "Mimix-Daily-Purge-Sync-STG-450-Trigger"
-      State: ENABLED
+      State: DISABLED
       ScheduleExpression: 'cron(35 08 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1507,7 +1507,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-1-
+          - - CP-Mimix-Purge-Sync-Compute-Environment-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34

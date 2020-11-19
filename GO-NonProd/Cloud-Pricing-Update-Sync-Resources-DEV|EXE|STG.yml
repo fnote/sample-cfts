@@ -118,9 +118,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD-ECS -> ami-0a0cdd2cc483521d1
+    Description: SYSCO-GOLD-ECS -> ami-0e38f2a5bea6a80ec
     Type: String
-    Default: aami-0a0cdd2cc483521d1
+    Default: ami-0e38f2a5bea6a80ec
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -214,7 +214,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Update-Sync-EC2-Compute-Environment-
+          - - CP-Update-Sync-EC2-Compute-Environment-1-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
