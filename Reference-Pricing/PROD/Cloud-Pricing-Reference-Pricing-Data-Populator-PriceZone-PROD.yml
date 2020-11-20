@@ -64,6 +64,10 @@ Parameters:
     Description: List of prefixes for price zone file partial load prefixes
     Type: String
     Default: ctt,itt
+  ActiveOpcos:
+    Description: Active Opcos
+    Type: String
+    Default: '019'
   TransformJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
@@ -280,6 +284,14 @@ Resources:
       Value: !Ref PriceZoneFilePartialLoadPrefixes
       Tier: Standard
       Description: List of prefixes for price zone file partial load prefixes
+
+  PriceZoneETLActiveOpcos:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/ACTIVE/BUSINESS/UNITS']]
+      Type: String
+      Value: !Ref ActiveOpcos
+      Description: Active opcos available for prize zone
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -703,7 +715,8 @@ Resources:
                   "Arguments": {
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--partitioned_files_path.$": "$.partitioned_files_path",
-                    "--enable-continuous-cloudwatch-log": "true"
+                    "--enable-continuous-cloudwatch-log": "true",
+                    "--active_opcos.$": "$.active_opcos"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
