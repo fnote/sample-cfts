@@ -311,12 +311,6 @@
 					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-web-service -Ddd.env=qa\\\"'\" > /etc/profile.d/javaopts.sh\n",
 					"chmod +x /etc/profile.d/javaopts.sh\n",
 
-
-					"yum install -y tcpdump\n",
-					"mkdir /tcpdump/\n",
-					"cd /tcpdump\n",
-					"tcpdump 'src 10.133.104.2 or dst 10.133.104.2' > test.txt &\n",
-
 					"##############################################\n",
 					"# Install Dependencies.\n",
 					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
@@ -326,10 +320,6 @@
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"ls\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
-
-					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
-					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=",{ "Ref" : "DynatraceApplicationName" },"\n",
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
