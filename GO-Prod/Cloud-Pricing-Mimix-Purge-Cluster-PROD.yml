@@ -122,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.09.04
+    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.10.30
     Type: String
-    Default: ami-0a0cdd2cc483521d1
+    Default: ami-0e38f2a5bea6a80ec
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -1507,7 +1507,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
         - ''
-        - - CP-Mimix-Purge-Sync-Compute-Environment-
+        - - CP-Mimix-Purge-Sync-Compute-Environment-1-
           - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
