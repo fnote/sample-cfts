@@ -201,18 +201,6 @@
 			"Type": "String",
 			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-DEV/8ec356a42e453663"
 		},
-		"DynatraceApplicationName": {
-			"AllowedValues": [
-				"bts-cloudpricing-perf-cpws-ng-refac-DEV",
-				"bts-cloudpricing-perf-cpws-ng-refac-EXE",
-				"bts-cloudpricing-perf-cpws-ng-refac-STG",
-				"bts-cloudpricing-prod-cpws-ng"
-			],
-			"Description": "Dynatrace Application Name",
-			"Type": "String",
-			"Default": "bts-cloudpricing-perf-cpws-ng-refac-EXE"
-		}
-	},
 	"Resources": {
 		"WebServiceGroup" : {
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
