@@ -302,7 +302,7 @@
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
