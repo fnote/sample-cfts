@@ -352,6 +352,8 @@
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
