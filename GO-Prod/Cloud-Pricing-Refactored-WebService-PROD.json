@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
 			"Type": "String",
-			"Default" : "ami-0e31c9d230876347e",
+			"Default" : "ami-0565195ca8aeb0a55",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -293,6 +293,7 @@
 					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
 					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+					"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
 
 					"##############################################\n",
 					"# Increase open file limits\n",
@@ -342,9 +343,7 @@
 					"##############################################\n",
 					"# Datadog - Configuration\n",
 					"##############################################\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/CloudPricing/Datadog/datadog-agent-7.22.1-1.x86_64.rpm . \n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
-					"yum install -y datadog-agent-7.22.1-1.x86_64.rpm\n",
 
 					"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
 					"api_key: $DATADOG_TOKEN\n",
@@ -366,7 +365,8 @@
 					"      source: cp_metrics\n",
 					"      service: cpwsng\n",
 					"EOF\n",
-
+					"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
+					"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
 					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
 					"instances:\n",
 					"    - use_mount: false\n",
@@ -375,7 +375,7 @@
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"start datadog-agent\n",
+					"restart datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Installaion\n",

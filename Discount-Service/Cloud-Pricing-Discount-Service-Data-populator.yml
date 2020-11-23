@@ -252,37 +252,15 @@ Resources:
       FunctionName: !Sub 'CP-DISCOUNTS-etl-trigger-${EnvironmentShort}'
       Runtime: python3.7
       Role: !GetAtt ETLTriggerLambaRole.Arn
-      Handler: index.lambda_handler
+      Handler: TriggerLambda.lambda_handler
       Code:
-        ZipFile: |
-          import json
-          import os
-          # Import Boto 3 for AWS Glue
-          import boto3
-          import time
-          from urllib.parse import unquote_plus
-
-          def lambda_handler(event, context):
-              step_function_arn = os.environ['stepFunctionArn']
-              s3 = event['Records'][0]['s3']
-              s3_object_key = unquote_plus(s3['object']['key'])
-              etl_timestamp = str(int(time.time()))
-              s3_bucket = s3['bucket']['name']
-              s3_path = "s3://" + s3_bucket + "/" + s3_object_key
-
-              step_function_input_params = {
-                  "s3_file_path": s3_path,
-                  "s3_bucket": s3_bucket,
-                  "s3_object_key": s3_object_key,
-                  "etl_timestamp": etl_timestamp
-              }
-              client = boto3.client('stepfunctions')
-              response = client.start_execution(stateMachineArn=step_function_arn,
-                                                input=json.dumps(step_function_input_params))
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/TriggerLambda.py.zip'
       Timeout: 180
       Environment:
         Variables:
           stepFunctionArn: !Ref DiscountsStateMachine
+          env: !Ref EnvironmentShort
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -375,7 +353,7 @@ Resources:
           - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
@@ -430,7 +408,8 @@ Resources:
                   "JobName": "${MasterDiscountTableDataLoadJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -474,7 +453,8 @@ Resources:
                   "JobName": "${CustomerEligibilityPartitionJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -837,6 +817,8 @@ Resources:
                   - ec2:DeleteNetworkInterface
                   - ec2:DescribeInstances
                   - ec2:AttachNetworkInterface
+                  - ssm:GetParameters
+                  - ssm:GetParameter
                 Resource:
                   - '*'
       Path: '/'
