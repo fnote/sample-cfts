@@ -430,9 +430,7 @@
 
 								"# For DD APM\n",
 
-								"cat >> /etc/profile.d/javaopts.sh <<EOF\n",
-								"export JAVA_OPTS=\"-Ddd.profiling.enabled=true -Ddd.logs.injection=true -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.version=1.0.0 -Ddd.service=cp-pricing-service -Ddd.env=dev\"\n",
-								"EOF\n",
+								"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=dev\\\"'\" > /etc/profile.d/javaopts.sh\n",
 								"chmod +x /etc/profile.d/javaopts.sh\n",
 
 								"##############################################\n",
@@ -487,8 +485,10 @@
 								"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
 								"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
 								"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
-								"env: dev\n",
+								"env: development\n",
 								"logs_enabled: true\n",
+								"apm_config:\n",
+								"  enabled: true\n",
 								"EOF\n",
 
 								"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
