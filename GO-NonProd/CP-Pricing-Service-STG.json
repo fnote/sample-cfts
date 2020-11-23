@@ -424,9 +424,7 @@
 
 								"# For DD APM\n",
 
-								"cat >> /etc/profile.d/javaopts.sh <<EOF\n",
-								"export JAVA_OPTS=\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=stag\"\n",
-								"EOF\n",
+								"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=stag\\\"'\" > /etc/profile.d/javaopts.sh\n",
 								"chmod +x /etc/profile.d/javaopts.sh\n",
 
 								"##############################################\n",
