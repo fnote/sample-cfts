@@ -200,17 +200,6 @@
 			"Description": "Target group of the pricing-service",
 			"Type": "String",
 			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-STG/51214eaade738e91"
-		},
-		"DynatraceApplicationName": {
-			"AllowedValues": [
-				"bts-cloudpricing-perf-cpws-ng-refac-DEV",
-				"bts-cloudpricing-perf-cpws-ng-refac-EXE",
-				"bts-cloudpricing-perf-cpws-ng-refac-STG",
-				"bts-cloudpricing-prod-cpws-ng"
-			],
-			"Description": "Dynatrace Application Name",
-			"Type": "String",
-			"Default": "bts-cloudpricing-perf-cpws-ng-refac-EXE"
 		}
 	},
 	"Resources": {
@@ -306,18 +295,19 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
+					"# For DD APM\n",
+
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-web-service -Ddd.env=stag\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
+
 					"##############################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
+					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum -y update\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
-
-					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
-					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=",{ "Ref" : "DynatraceApplicationName" },"\n",
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
@@ -339,7 +329,16 @@
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
-					"# Datadog - Configuration\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"##############################################\n",
+					"# DD log - Configuration\n",
 					"##############################################\n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
 
@@ -353,6 +352,8 @@
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
@@ -361,7 +362,7 @@
 					"    - type: file\n",
 					"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
 					"      source: cp_metrics\n",
-					"      service: cpwsng\n",
+					"      service: cp-web-service\n",
 					"EOF\n",
 					"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
 					"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
