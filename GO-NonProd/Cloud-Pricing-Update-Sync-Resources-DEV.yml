@@ -1,10 +1,10 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: This is the stack for CP Mimix Daily Purge ECS cluster
+Description: This is the stack for CP Update Sync resources
 Parameters:
   Environment:
     Description: Environment for application
     Type: String
-    Default: Development
+    Default: Execution
     AllowedValues:
       - Development
       - Execution
@@ -28,7 +28,7 @@ Parameters:
   Component:
     Description: Component name
     Type: String
-    Default: CP Mimix Purge
+    Default: CP Update Sync
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
@@ -56,7 +56,7 @@ Parameters:
   EnvironmentShort:
     Description: Environment for application
     Type: String
-    Default: DEV
+    Default: EXE
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
@@ -69,22 +69,18 @@ Parameters:
     Description: ARN of triggering role attached to cloud watch Events.
     Type: String
     Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Triggering-Role
-  MimixPurgeServiceRole:
+  BatchServiceRole:
     Description: ARN of triggering role attached to cloud watch Events.
     Type: String
     Default: arn:aws:iam::037295147636:role/Cloud-Pricing-Mimix-Purge-Service-Role
-  PurgeInstanceRole:
-    Description: ARN of role attached to Mimix Purge Sync Servers.
+  InstanceRole:
+    Description: ARN of role attached to Sync Servers.
     Type: String
     Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Purge-Instance-Profile
-  DockerImageArn:
-    Description: Docker image of mimix sync processor
-    Type: String
-    Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync
   JobDefinitionArn:
     Description: Job Definition Arn
     Type: String
-    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Mimix-Purge-Job-Definition-DEV
+    Default: arn:aws:batch:us-east-1:037295147636:job-definition/CP-Update-Sync-Job-Definition-EXE
   PvtSNa:
     Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
     Type: String
@@ -116,13 +112,13 @@ Parameters:
   RootVolumeSize:
     Description: Root Volume Size
     Type: String
-    Default: 80
+    Default: 150
   PemKey:
     Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD -> ami-0e38f2a5bea6a80ec
+    Description: SYSCO-GOLD-ECS -> ami-0e38f2a5bea6a80ec
     Type: String
     Default: ami-0e38f2a5bea6a80ec
   ApplicationRole:
@@ -147,64 +143,40 @@ Parameters:
     Default: '30'
     MinValue: '1'
     MaxValue: '3653'
+  MimixPurgeJobNameSuffix:
+    Description: Suffix of the Mimix purge job Name
+    Type: String
+    Default: Purge-Sync-Job
+  MimixPurgeJobQueue:
+    Description: ARN of Mimix purge job queue
+    Type: String
+    Default: arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-DEV
+    AllowedValues:
+      - arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-DEV
+      - arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-EXE
+      - arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-STG
 
 Resources:
-  MimixDailyPurgeSync001:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: "Mimix Daily Purge Sync for 001"
-      Name: "Mimix-Daily-Purge-Sync-DEV-001-Trigger"
-      State: DISABLED
-      ScheduleExpression: 'cron(30 05 * * ? *)'
-      RoleArn: !Ref 'TriggeringRole'
-      Targets:
-        - Arn: !Ref 'JobQueue'
-          Id: EC2
-          Input: '{"Parameters": {"business_unit": "001"}}'
-          RoleArn: !Ref 'TriggeringRole'
-          BatchParameters:
-            JobDefinition: !Ref 'JobDefinitionArn'
-            JobName: '001-Purge-Sync-Job'
-
-  MimixDailyPurgeSync002:
-    Type: AWS::Events::Rule
-    Properties:
-      Description: "Mimix Daily Purge Sync for 002"
-      Name: "Mimix-Daily-Purge-Sync-DEV-002-Trigger"
-      State: DISABLED
-      ScheduleExpression: 'cron(45 03 * * ? *)'
-      RoleArn: !Ref 'TriggeringRole'
-      Targets:
-        - Arn: !Ref 'JobQueue'
-          Id: EC2
-          Input: '{"Parameters": {"business_unit": "002"}}'
-          RoleArn: !Ref 'TriggeringRole'
-          BatchParameters:
-            JobDefinition: !Ref 'JobDefinitionArn'
-            JobName: '002-Purge-Sync-Job'
-
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Properties:
       LaunchTemplateData:
+        ImageId: !Ref 'CommonAMI'
         BlockDeviceMappings:
           - DeviceName: /dev/xvda
             Ebs:
               VolumeSize: !Ref 'RootVolumeSize'
-              VolumeType: gp2
-        UserData: !Base64
-          |
-          MIME-Version: 1.0
-          Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
-
-          --==MYBOUNDARY==
-          MIME-Version: 1.0
-          Content-Type: text/cloud-boothook; charset="us-ascii"
-
-          #!/bin/bash
-          cloud-init-per once docker_options echo 'DOCKER_STORAGE_OPTIONS="${DOCKER_STORAGE_OPTIONS} --storage-opt dm.basesize=20G"' >> /etc/sysconfig/docker-storage
-
-          --==MYBOUNDARY==
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
+          - DeviceName: /dev/xvdcz
+            Ebs:
+              VolumeSize: !Ref 'RootVolumeSize'
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
+        UserData:
+          TUlNRS1WZXJzaW9uOiAxLjANCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOyBib3VuZGFyeT0iPT1NWUJPVU5EQVJZPT0iDQoNCi0tPT1NWUJPVU5EQVJZPT0NCk1JTUUtVmVyc2lvbjogMS4wIA0KQ29udGVudC1UeXBlOiB0ZXh0L2Nsb3VkLWJvb3Rob29rOyBjaGFyc2V0PSJ1cy1hc2NpaSINCg0KIyEvYmluL2Jhc2gNCmNsb3VkLWluaXQtcGVyIG9uY2UgZG9ja2VyX29wdGlvbnMgZWNobyAnRE9DS0VSX1NUT1JBR0VfT1BUSU9OUz0iJHtET0NLRVJfU1RPUkFHRV9PUFRJT05TfSAtLXN0b3JhZ2Utb3B0IGRtLmJhc2VzaXplPTIwRyInID4+IC9ldGMvc3lzY29uZmlnL2RvY2tlci1zdG9yYWdlDQoNCi0tPT1NWUJPVU5EQVJZPT0tLQ==
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -237,19 +209,19 @@ Resources:
       LaunchTemplateName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Launch-Template-
+          - - CP-Update-Sync-Launch-Template-
             - Ref: 'EnvironmentShort'
 
-  MimixPurgeEC2ComputeEnvironment:
+  UpdateSyncComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
       ServiceRole:
-        Ref: 'MimixPurgeServiceRole'
+        Ref: 'BatchServiceRole'
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-1-
+          - - CP-Update-Sync-EC2-Compute-Environment-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
@@ -263,11 +235,10 @@ Resources:
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
         MinvCpus: 0
-        InstanceRole: !Ref 'PurgeInstanceRole'
+        InstanceRole: !Ref 'InstanceRole'
         InstanceTypes:
           - optimal
         Ec2KeyPair: !Ref 'PemKey'
-        ImageId: !Ref 'CommonAMI'
         DesiredvCpus: 0
         LaunchTemplate:
           LaunchTemplateId: !Ref 'LaunchTemplate'
@@ -308,10 +279,94 @@ Resources:
       JobQueueName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Job-Queue-
+          - - CP-Update-Sync-Job-Queue-
             - Ref: 'EnvironmentShort'
       Priority: 50
       ComputeEnvironmentOrder:
         - Order: 1
           ComputeEnvironment:
-            Ref: 'MimixPurgeEC2ComputeEnvironment'
+            Ref: 'UpdateSyncComputeEnvironment'
+
+  UpdateSyncTrigger001:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'Update Sync trigger for 001'
+      Name: !Sub 'Update-sync-001-Trigger-${EnvironmentShort}'
+      EventPattern: !Sub
+        - |-
+          {
+            "source": [
+              "aws.batch"
+            ],
+            "detail-type": [
+              "Batch Job State Change"
+            ],
+            "detail": {
+              "jobQueue": [
+                "${mimixPurgeJobQueue}"
+              ],
+              "jobName": ["${mimixPurgeJobName}"],
+              "status": [
+                "SUCCEEDED"
+              ]
+            }
+          }
+        - {
+          mimixPurgeJobName: !Sub '001-${MimixPurgeJobNameSuffix}',
+          mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+      State: ENABLED
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          InputTransformer:
+            InputPathsMap:
+              'business_unit' : '$.detail.parameters.business_unit'
+            InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref JobDefinitionArn
+            JobName: '001-Update-Sync-Job'
+
+  UpdateSyncTrigger002:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'Update Sync trigger for 002'
+      Name: !Sub 'Update-sync-002-Trigger-${EnvironmentShort}'
+      EventPattern: !Sub
+        - |-
+          {
+            "source": [
+              "aws.batch"
+            ],
+            "detail-type": [
+              "Batch Job State Change"
+            ],
+            "detail": {
+              "jobQueue": [
+                "${mimixPurgeJobQueue}"
+              ],
+              "jobName": ["${mimixPurgeJobName}"],
+              "status": [
+                "SUCCEEDED"
+              ]
+            }
+          }
+        - {
+          mimixPurgeJobName: !Sub '002-${MimixPurgeJobNameSuffix}',
+          mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+      State: ENABLED
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          InputTransformer:
+            InputPathsMap:
+              'business_unit' : '$.detail.parameters.business_unit'
+            InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref JobDefinitionArn
+            JobName: '002-Update-Sync-Job'
