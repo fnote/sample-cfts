@@ -178,7 +178,7 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
-      Timeout: 60
+      Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName

@@ -170,12 +170,12 @@ Mappings:
       name: Production
 
 Resources:
-  PrizeZoneStorage:
+  PriceZoneStorage:
     Type: AWS::S3::Bucket
     DependsOn: LambdaInvokePermission
     Properties:
       BucketName: !Sub
-        - 'cp-ref-etl-prize-zone-storage-${env}'
+        - 'cp-ref-etl-price-zone-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       NotificationConfiguration:
         LambdaConfigurations:
@@ -301,7 +301,7 @@ Resources:
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
       SourceArn: !Sub
-        - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}'
+        - 'arn:aws:s3:::cp-ref-etl-price-zone-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
 
   PriceZoneInputTrigger:
@@ -716,7 +716,9 @@ Resources:
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--partitioned_files_path.$": "$.partitioned_files_path",
                     "--enable-continuous-cloudwatch-log": "true",
-                    "--active_opcos.$": "$.active_opcos"
+                    "--active_opcos.$": "$.active_opcos",
+                    "--intermediate_s3_name.$": "$.intermediate_s3_name",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
@@ -763,7 +765,8 @@ Resources:
                   "Payload": {
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
-                    "stepFunctionExecutionId.$": "$$.Execution.Id"
+                    "additional_info_file_s3.$": "$.intermediate_s3_name",
+                    "additional_info_file_key.$": "$.intermediate_directory_path"
                   }
                 },
                 "End": true
@@ -905,6 +908,8 @@ Resources:
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Zone Data]",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                    "additional_info_file_s3.$": "$.intermediate_s3_name", // should be backup
+                    "additional_info_file_key.$": "$.intermediate_directory_path",
                     "status": "SUCCEEDED"
                   }
                 },
