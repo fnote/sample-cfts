@@ -170,12 +170,12 @@ Mappings:
       name: Production
 
 Resources:
-  PrizeZoneStorage:
+  PriceZoneStorage:
     Type: AWS::S3::Bucket
     DependsOn: LambdaInvokePermission
     Properties:
       BucketName: !Sub
-        - 'cp-ref-etl-prize-zone-storage-${env}'
+        - 'cp-ref-etl-price-zone-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       NotificationConfiguration:
         LambdaConfigurations:
@@ -301,7 +301,7 @@ Resources:
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
       SourceArn: !Sub
-        - 'arn:aws:s3:::cp-ref-etl-prize-zone-storage-${env}'
+        - 'arn:aws:s3:::cp-ref-etl-price-zone-storage-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
 
   PriceZoneInputTrigger:
