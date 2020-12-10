@@ -252,37 +252,15 @@ Resources:
       FunctionName: !Sub 'CP-DISCOUNTS-etl-trigger-${EnvironmentShort}'
       Runtime: python3.7
       Role: !GetAtt ETLTriggerLambaRole.Arn
-      Handler: index.lambda_handler
+      Handler: TriggerLambda.lambda_handler
       Code:
-        ZipFile: |
-          import json
-          import os
-          # Import Boto 3 for AWS Glue
-          import boto3
-          import time
-          from urllib.parse import unquote_plus
-
-          def lambda_handler(event, context):
-              step_function_arn = os.environ['stepFunctionArn']
-              s3 = event['Records'][0]['s3']
-              s3_object_key = unquote_plus(s3['object']['key'])
-              etl_timestamp = str(int(time.time()))
-              s3_bucket = s3['bucket']['name']
-              s3_path = "s3://" + s3_bucket + "/" + s3_object_key
-
-              step_function_input_params = {
-                  "s3_file_path": s3_path,
-                  "s3_bucket": s3_bucket,
-                  "s3_object_key": s3_object_key,
-                  "etl_timestamp": etl_timestamp
-              }
-              client = boto3.client('stepfunctions')
-              response = client.start_execution(stateMachineArn=step_function_arn,
-                                                input=json.dumps(step_function_input_params))
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/TriggerLambda.py.zip'
       Timeout: 180
       Environment:
         Variables:
           stepFunctionArn: !Ref DiscountsStateMachine
+          env: !Ref EnvironmentShort
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -341,6 +319,8 @@ Resources:
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--ENV": !Ref EnvironmentShort
+        "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
@@ -375,10 +355,11 @@ Resources:
           - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/pyspark-2.4.3-py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/py4j-0.10.7-py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
+        "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
@@ -430,7 +411,8 @@ Resources:
                   "JobName": "${MasterDiscountTableDataLoadJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -474,7 +456,8 @@ Resources:
                   "JobName": "${CustomerEligibilityPartitionJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -496,7 +479,8 @@ Resources:
                   "JobName": "${CustomerEligibilityDataLoadJob}",
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--active_opcos.$": "$.active_opcos"
                   }
                 },
                 "Catch": [
@@ -520,7 +504,8 @@ Resources:
                     "--s3_file_path.$": "$.s3_file_path",
                     "--s3_bucket.$": "$.s3_bucket",
                     "--s3_object_key.$": "$.s3_object_key",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--backup_file_path.$": "$.backup_file_path"
                   }
                 },
                 "Catch": [
@@ -554,6 +539,7 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
+                    "etlTimestamp.$":"$.etl_timestamp",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -623,6 +609,7 @@ Resources:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
         - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
       Policies:
         - PolicyName: CP-REF-ETLGlueJobPolicy
@@ -837,9 +824,26 @@ Resources:
                   - ec2:DeleteNetworkInterface
                   - ec2:DescribeInstances
                   - ec2:AttachNetworkInterface
+                  - ssm:GetParameters
+                  - ssm:GetParameter
                 Resource:
                   - '*'
+        - PolicyName: cp-discounts-etl-s3-read-policy
+          PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:ListBucket
+                    - s3:GetObjectVersion
+                    - s3:DeleteObject
+                    - s3:PutObject
+                  Resource:
+                    - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                    - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
       Path: '/'
+
 
   NotifierLambda:
     Type: AWS::Lambda::Function
@@ -862,6 +866,50 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
+      Timeout: 60
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  MetadataAggregatorLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that collects metadata
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt ETLTriggerLambaRole.Arn
+      Handler: metadata_aggregator.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/metadata_aggregator.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          env: !Ref EnvironmentShort
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -985,6 +1033,9 @@ Resources:
         "--enable-continuous-log-filter": "true"
         "--enable-spark-ui": 'true'
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--ENV": !Ref EnvironmentShort
+        "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 2.0
