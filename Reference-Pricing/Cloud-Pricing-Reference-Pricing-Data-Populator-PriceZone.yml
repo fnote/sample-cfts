@@ -909,6 +909,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Zone Data]",
+                    "backup_bucket.$": "$.backup_bucket",
+                    "backup_file_path.$" : "$.backup_file_path",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
