@@ -282,7 +282,8 @@ Resources:
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
                   }
                 },
                 "Retry": [
@@ -418,6 +419,7 @@ Resources:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxCapacity: 1.0
