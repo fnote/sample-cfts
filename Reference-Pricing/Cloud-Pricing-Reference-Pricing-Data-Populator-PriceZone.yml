@@ -766,6 +766,8 @@ Resources:
                   "Payload": {
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
+                    "backup_bucket.$": "$.backup_bucket",
+                    "backup_file_path.$" : "$.backup_file_path",
                     "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }
                 },
@@ -828,8 +830,10 @@ Resources:
                         "Payload":{
                            "opco_id.$":"$.id",
                            "message.$":"$.error.Cause",
-                            "event": "ETL-PRICE_ZONE",
-                            "stepFunctionExecutionId.$": "$$.Execution.Id"
+                           "event": "ETL-PRICE_ZONE",
+                           "backup_bucket.$": "$.backup_bucket",
+                           "backup_file_path.$" : "$.backup_file_path",
+                           "stepFunctionExecutionId.$": "$$.Execution.Id"
                         }
                       },
                       "End": true
