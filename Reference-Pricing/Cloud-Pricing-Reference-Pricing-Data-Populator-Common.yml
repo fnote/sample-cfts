@@ -178,7 +178,7 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
-      Timeout: 60
+      Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -240,8 +240,10 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
+                  - s3:PutObject
                 Resource:
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
@@ -493,6 +495,50 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}'
       Path: '/'
+
+  MetadataAggregatorLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that collects metadata
+      FunctionName: !Sub 'CP-REF-ETL-metadata-aggregator-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt ETLTriggerLambaRole.Arn
+      Handler: metadata_aggregator.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/metadata_aggregator.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          env: !Ref EnvironmentShort
+      Timeout: 60
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
 
 Outputs:
   CommonDBConnectionName:

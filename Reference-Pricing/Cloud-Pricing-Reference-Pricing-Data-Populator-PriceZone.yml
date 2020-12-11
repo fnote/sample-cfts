@@ -716,7 +716,10 @@ Resources:
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--partitioned_files_path.$": "$.partitioned_files_path",
                     "--enable-continuous-cloudwatch-log": "true",
-                    "--active_opcos.$": "$.active_opcos"
+                    "--active_opcos.$": "$.active_opcos",
+                    "--intermediate_s3_name.$": "$.intermediate_s3_name",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
+                    "--metadata_aggregator": "${metadataAggregator}"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
@@ -763,7 +766,8 @@ Resources:
                   "Payload": {
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
-                    "stepFunctionExecutionId.$": "$$.Execution.Id"
+                    "additional_info_file_s3.$": "$.intermediate_s3_name",
+                    "additional_info_file_key.$": "$.intermediate_directory_path"
                   }
                 },
                 "End": true
@@ -879,7 +883,8 @@ Resources:
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--partitioned_files_key.$": "$.partitioned_files_key",
                     "--decompressed_file_path.$": "$.decompressed_file_path",
-                    "--etl_output_path_key.$": "$.etl_output_path_key"
+                    "--etl_output_path_key.$": "$.etl_output_path_key",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
                   }
                 },
                 "ResultPath": "$.response",
@@ -905,6 +910,9 @@ Resources:
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Zone Data]",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                    "additional_info_file_s3": "${backupS3Name}",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "etl_output_path_key.$": "$.etl_output_path_key",
                     "status": "SUCCEEDED"
                   }
                 },
@@ -920,7 +928,10 @@ Resources:
             opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
             jobStatusAnalyzerLambdaArn: !GetAtt PriceZoneJobStatusAnalyzerLambda.Arn,
             waitStatusAnalyzerLambdaArn: !GetAtt PriceZoneETLWaitStatusAnalyzerLambda.Arn,
-            notifierLambdaArn: !Ref NotifierLambdaArn
+            notifierLambdaArn: !Ref NotifierLambdaArn,
+            metadataAggregator: !Sub 'CP-REF-ETL-metadata-aggregator-${EnvironmentShort}',
+            backupS3Name: !Ref ETLDataBackUpStorage,
+            backupedAdditonalInfoFile: !Ref ETLDataBackUpStorage
         }
       LoggingConfiguration:
         Destinations:
