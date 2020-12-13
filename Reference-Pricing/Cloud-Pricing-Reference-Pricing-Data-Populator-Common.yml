@@ -178,7 +178,7 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
-      Timeout: 60
+      Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -240,8 +240,10 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
+                  - s3:PutObject
                 Resource:
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
