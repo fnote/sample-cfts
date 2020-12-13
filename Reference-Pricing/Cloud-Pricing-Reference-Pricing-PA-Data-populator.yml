@@ -284,7 +284,7 @@ Resources:
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
                   }
                 },
                 "Retry": [
