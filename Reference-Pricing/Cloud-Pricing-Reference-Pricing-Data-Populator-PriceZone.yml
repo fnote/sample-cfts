@@ -719,7 +719,8 @@ Resources:
                     "--partitioned_files_path.$": "$.partitioned_files_path",
                     "--enable-continuous-cloudwatch-log": "true",
                     "--active_opcos.$": "$.active_opcos",
-                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
+                    "--intermediate_s3_name.$": "$.intermediate_s3_name"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
