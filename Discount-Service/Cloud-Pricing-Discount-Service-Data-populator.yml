@@ -355,7 +355,7 @@ Resources:
           - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/DEV/utils/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/DEV/utils/validator.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/pyspark-2.4.3-py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/py4j-0.10.7-py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
@@ -832,20 +832,21 @@ Resources:
                 Resource:
                   - '*'
         - PolicyName: cp-discounts-etl-s3-read-policy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:ListBucket
-                    - s3:GetObjectVersion
-                    - s3:DeleteObject
-                    - s3:PutObject
-                  Resource:
-                    - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
-                    - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                  - s3:DeleteObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
       Path: '/'
+
 
   NotifierLambda:
     Type: AWS::Lambda::Function
@@ -1037,6 +1038,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 2.0
