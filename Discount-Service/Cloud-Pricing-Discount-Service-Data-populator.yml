@@ -355,7 +355,7 @@ Resources:
           - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg"
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
