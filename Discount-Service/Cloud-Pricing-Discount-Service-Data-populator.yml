@@ -527,6 +527,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-Discount Service",
+                    "backup_bucket_name.$": "$.backup_bucket_name",
+                    "backup_file_path.$": "$.backup_file_path",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -540,6 +542,8 @@ Resources:
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
                     "etlTimestamp.$":"$.etl_timestamp",
+                    "backup_bucket_name.$": "$.backup_bucket_name",
+                    "backup_file_path.$": "$.backup_file_path",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
