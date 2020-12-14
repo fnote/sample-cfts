@@ -1,0 +1,233 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description": "Cloud formation template for logs monitoring in outlier data population process",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNa": {
+			"Description": "Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24",
+			"Type": "String",
+			"Default": "subnet-0186b43162a344d9a"
+		},
+		"PvtSNb": {
+			"Description": "Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24",
+			"Type": "String",
+			"Default": "subnet-0ad1216eb31e15186"
+		},
+		"PvtSNc": {
+			"Description": "Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24",
+			"Type": "String",
+			"Default": "subnet-0a5d9eea71b9c97c6"
+		},
+		"VPCID": {
+			"Description": "Name of and existing VPC",
+			"Type": "String",
+			"Default": "vpc-091c7e3e5578d7a4f"
+		},
+		"SGDNS": {
+			"Description": "PRCP-NP-DNS-DNSSG-3J5600OVNNBR",
+			"Type": "String",
+			"Default": "sg-078061ddab53c5c41"
+		},
+		"SGRDSMySQL": {
+			"Description": "SG-RDSMySQL",
+			"Type": "String",
+			"Default": "sg-039f822d40c446322"
+		},
+		"SGWebServices": {
+			"Description": "SG-WebServices",
+			"Type": "String",
+			"Default": "sg-0a56447308e39b902"
+		},
+		"S3CodeBucket" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for the Lambda Code",
+			"Default": "sysco-us-east-1-prcp-nonprod-codedeploy"
+		},
+		"S3CodeKey" : {
+			"Type" : "String",
+			"Description" : "S3 bucket key for the Lambda Code",
+			"Default": "Cloudwatch_LogsMonitor/logs-monitor-1.0.0.zip"
+		},
+		"FunctionName" : {
+			"Type" : "String",
+			"Description" : "Name of the Lambda function for Batch Controller",
+			"Default": "Outlier-Range-Prices-Logs-Monitor"
+		},
+		"IAMRole" : {
+			"Type" : "String",
+			"Description" : "IAM role attached to the Lambda funvtion",
+			"Default": "arn:aws:iam::037295147636:role/OutlierPriceRangeLogMonitorLambdaRole"
+		},
+		"AwsRegionIdentifier" : {
+			"Type" : "String",
+			"Description" : "Name of AWS Region",
+			"Default": "us-east-1"
+		},
+		"SenderEmail" : {
+			"Type" : "String",
+			"Description" : "Email address of Sender",
+			"Default": "CloudPricingAlerts@corp.sysco.com"
+		},
+		"RecipientList" : {
+			"Type" : "String",
+			"Description" : "Email addresses of Recipients",
+			"Default":"amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com"
+		},
+		"EmailSubject" : {
+			"Type" : "String",
+			"Description" : "Email subject",
+			"Default":"Outlier Range Price Alerts - EXE"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Person approving instance funding.  This should be Email address formatted",
+			"Type": "String",
+			"Default": "villanueva.loi@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"SupportEmail": {
+			"Description": "Email distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "000-BT-PricingPlatform@Corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "krishan.senevirathne@sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"2WTAGGER": {
+			"Description": "Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported",
+			"Type": "String",
+			"Default": "team-managed",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedValues": [
+				"team-managed",
+				"adlm-managed",
+				"2w-managed"
+			],
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Execution",
+			"AllowedValues": [
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "EXE",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources" : {
+		"LFunctionCP01": {
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+				"Code": {
+					"S3Bucket": { "Ref": "S3CodeBucket" },
+					"S3Key": { "Ref": "S3CodeKey" }
+				},
+				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
+				"Handler": "app.handler.LogEventsHandler.handle",
+				"Runtime": "python3.7",
+				"Description": "Lambda function for logs monitoring in outlier data population process",
+				"MemorySize": 512,
+				"Timeout": 300,
+				"Role": { "Ref": "IAMRole" },
+				"VpcConfig": {
+					"SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
+					"SubnetIds": [
+						{ "Ref": "PvtSNa" },
+						{ "Ref": "PvtSNb" },
+						{ "Ref": "PvtSNc"}
+					]
+				},
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
+					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				],
+				"Environment": {
+					"Variables": {
+						"AWS_REGION_IDENTIFIER": { "Ref" : "AwsRegionIdentifier" },
+						"SENDER": { "Ref" : "SenderEmail" },
+						"RECIPIENT": { "Ref" : "RecipientList" },
+						"SUBJECT": { "Ref" : "EmailSubject" }
+					}
+				}
+			}
+		}
+	}
+}

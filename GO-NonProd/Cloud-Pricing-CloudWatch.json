@@ -67,14 +67,14 @@
 		"Approver": {
 			"Description": "Person approving instance funding.  This should be Email address formatted",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "Owen.James@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -129,14 +129,14 @@
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
-			"Default": "Non-Production",
+			"Default": "Execution",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"TST",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},

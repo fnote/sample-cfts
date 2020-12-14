@@ -1,0 +1,685 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Stack for Outlier Price Range Resources.
+Parameters:
+  Environment:
+    Description: Environment for application
+    Type: String
+    Default: PROD
+    AllowedValues:
+      - DEV
+      - EXE
+      - QA
+      - STG
+      - PROD
+      - NONPROD
+    ConstraintDescription: Must be a valid environment.
+  CPUForTask:
+    Description: The number of cpu units reserved for the task.
+    Type: Number
+    Default: '2048'
+    MinValue: '256'
+    MaxValue: '4096'
+  MemoryForTask:
+    Description: The soft limit (in MiB) of memory to reserve for the task.
+    Type: Number
+    Default: '4096'
+    MinValue: '256'
+    MaxValue: '8192'
+  PvtSNa:
+    Description: 'Private PRCP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24'
+    Type: String
+    Default: subnet-03f5516cc0d29f5ad
+  PvtSNb:
+    Description: 'Private PRCP Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24'
+    Type: String
+    Default: subnet-094d9ade488a4f20b
+  PvtSNc:
+    Description: 'Private PRCP Confidential Subnet 3 in us-east-1c CIDR: 10.132.89.0/24'
+    Type: String
+    Default: subnet-0f279e0609eb542b2
+  VPCID:
+    Description: Name of and existing VPC
+    Type: String
+    Default: vpc-0f55b12524f7459f9
+  SGECS:
+    Description: Security group with ECS Allowed Ports
+    Type: String
+    Default: sg-0abcdcef90427fcd7
+  RetentionTime:
+    Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
+    Type: Number
+    Default: '60'
+    MinValue: '1'
+    MaxValue: '3653'
+  DbURL:
+    Description: URL of the database that Glue Connection Catalog should use
+    Type: String
+    Default: jdbc:mysql://ecomm01dbcluster.cluster-cvxmi1m5icyf.us-east-1.rds.amazonaws.com:33060/ECOMMDB_Common01
+  DbPassword:
+    Description: Password of the database that Glue Connection Catalog should use
+    Type: String
+    Default: TBA
+  SecurityGroupForGlueConnection:
+    Description: Security group for glue connection
+    Type: String
+    Default: sg-02ed9df769d0b902f
+  SubnetForGlueConnection:
+    Description: Subnet for glue connection
+    Type: String
+    Default: subnet-094d9ade488a4f20b
+  AZForGlueConnection:
+    Description: Availability zone for glue connection
+    Type: String
+    Default: us-east-1b
+  OutlierPriceRangeS3Bucket:
+    Description: Availability zone for glue connection
+    Type: String
+    Default: s3://sysco-us-east-1-prcp-prod-outlier-price-range
+    AllowedValues:
+      - s3://sysco-us-east-1-prcp-dev-outlier-price-range
+      - s3://sysco-us-east-1-prcp-nonprod-outlier-price-range
+      - s3://sysco-us-east-1-prcp-prod-outlier-price-range
+
+Resources:
+
+  ECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: !Join
+        - ''
+        - - 'CP-iOPR-Data-Creation-Cluster-'
+          - !Ref 'Environment'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  iOPRTaskExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub Cloud-Pricing-iOPR-Task-Execution-Role
+      PermissionsBoundary: !Sub "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs-tasks.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::130227353653:policy/CloudPricing-IAM-SSM-Policy
+        - arn:aws:iam::130227353653:policy/OutlierPriceRangeS3Policy
+      Path: "/"
+
+  iOPRECSExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: Cloud-Pricing-iOPR-ECS-Execution-Role
+      PermissionsBoundary: !Sub "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ecs-tasks.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::130227353653:policy/CloudPricing-IAM-ECR-Policy
+      Policies:
+        - PolicyName: CloudwatchCreateAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:CreateLogGroup
+                  - logs:DescribeLogGroups
+                Resource: "*"
+      Path: "/"
+
+  iOPRCloudWatchEventRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: Cloud-Pricing-iOPR-CloudWatch-Event-Role
+      PermissionsBoundary: !Sub "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "events.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+      Path: "/"
+
+  OutlierPriceRangeGlueRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: OutlierPriceRangeGlueRole
+      PermissionsBoundary: !Sub "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "glue.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: OutlierPriceRangeGlueJob
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                  - logs:PutLogEvents
+                  - logs:AssociateKmsKey
+                Resource: "arn:aws:logs:*:*:/aws-glue/*"
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - "arn:aws:s3:::sysco-us-east-1-prcp-prod-codebuild/Outlier-Price-Range/glue-job-scripts/*"
+                  - "arn:aws:s3:::sysco-us-east-1-prcp-prod-codebuild/Outlier-Price-Range/python-libs/*"
+      Path: "/"
+
+  OutlierPriceRangeLambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: OutlierPriceRangeLambdaRole
+      PermissionsBoundary: !Sub "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+      Policies:
+        - PolicyName: GlueSubmitJobPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - glue:CreateJob
+                  - glue:GetJobs
+                  - glue:StartJobRun
+                  - glue:GetJobRun
+                  - glue:GetJobRuns
+                  - glue:GetJob
+                  - glue:TagResource
+                Resource: "*"
+        - PolicyName: OutlierPriceRangeCustomS3VPCPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DescribeVpcs
+                  - ec2:DeleteNetworkInterface
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:GetObjectAcl
+                  - s3:GetObject
+                  - s3:GetBucketVersioning
+                  - s3:GetObjectVersion
+                Resource: "arn:aws:s3:::sysco-us-east-1-prcp-prod-outlier-price-range*"
+      Path: "/"
+
+  ECRiOPRRepo:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: cp-outlier-price-range
+
+  DataCreationTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Cpu: !Ref CPUForTask
+      ExecutionRoleArn: !GetAtt
+        - iOPRECSExecutionRole
+        - Arn
+      TaskRoleArn: !GetAtt
+        - iOPRTaskExecutionRole
+        - Arn
+      Family: !Join
+        - ''
+        - - 'CP-iOPR-Data-Creation-Task-Definition-'
+          - !Ref 'Environment'
+      Memory: !Ref MemoryForTask
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Essential: true
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ECRiOPRRepo}:latest"
+          Name: cp-iopr-data-creation
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/iOPR
+          PortMappings:
+            - {ContainerPort: 80}
+            - {ContainerPort: 5439}
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref Environment
+    DependsOn:
+      - ECSCluster
+      - ECRiOPRRepo
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join
+        - ''
+        - - '/aws/ecs/CP-iOPR-Data-Creation-'
+          - !Ref 'Environment'
+      RetentionInDays: !Ref RetentionTime
+
+  ScheduleRuleCustomOpcos:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for custom opcos"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Custom-Opcos-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(30 1 ? * THU *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "015, 019, 058"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRule66To68:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 066 - 068"
+      Name: !Join
+        - ''
+        - - 'Price-Range-066-068-'
+          - !Ref 'Environment'
+      State: DISABLED
+      ScheduleExpression: 'cron(31 21 ? * TUE *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "066, 067, 068"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly1To10:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 001 - 010"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-001-010-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "001, 002, 003, 004, 005, 006, 007, 008, 009, 010"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly11To22:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 011 - 022"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-011-022-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "011, 012, 013, 014, 015, 016, 017, 018, 019, 022"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly23To36:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 023 - 036"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-023-036-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "023, 024, 025, 026, 027, 029, 031, 032, 035, 036"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly37To49:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 037 - 049"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-037-049-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "037, 038, 039, 040, 043, 045, 046, 047, 048, 049"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly50To60:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 050 - 060"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-050-060-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "050, 051, 052, 054, 055, 056, 057, 058, 059"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly61To102:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 061 - 102"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-061-102-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "061, 064, 066, 067, 068, 073, 075, 076, 078, 101, 102"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  ScheduleRuleWeekly137To450:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Schedule rule for opco 137 - 450"
+      Name: !Join
+        - ''
+        - - 'Price-Range-Weekly-137-450-'
+          - !Ref 'Environment'
+      State: ENABLED
+      ScheduleExpression: 'cron(30 1 ? * FRI *)'
+      RoleArn: !GetAtt
+        - iOPRCloudWatchEventRole
+        - Arn
+      Targets:
+        - Arn: !GetAtt
+            - ECSCluster
+            - Arn
+          Id: ScheduledTask
+          RoleArn: !GetAtt
+            - iOPRCloudWatchEventRole
+            - Arn
+          Input: !Sub '{ "containerOverrides": [{"name": "cp-iopr-data-creation", "environment": [{"name": "BUSINESS_UNITS","value": "137, 163, 164, 194, 195, 288, 293, 306, 320, 332, 429, 450"},
+          {"name": "BUCKET_NAME","value": "${OutlierPriceRangeS3Bucket}"}]}]}'
+          EcsParameters:
+            TaskDefinitionArn: !Ref 'DataCreationTaskDefinition'
+            LaunchType: FARGATE
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: DISABLED
+                SecurityGroups:
+                  - !Ref 'SGECS'
+                Subnets:
+                  - !Ref 'PvtSNa'
+                  - !Ref 'PvtSNb'
+                  - !Ref 'PvtSNc'
+
+  EcommDbConnection:
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        Name: "ecomm-common-connection"
+        Description: "Ecomm database connection to Common DB"
+        ConnectionType: "JDBC"
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Ref DbURL,
+          "USERNAME": !Sub '{{resolve:ssm:/CP/${Environment}/DATABASE/ECOMM/USERNAME:1}}',
+#          SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DbPassword
+        }
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref 'AZForGlueConnection'
+          SecurityGroupIdList:
+            - !Ref 'SecurityGroupForGlueConnection'
+          SubnetId: !Ref 'SubnetForGlueConnection'
+
+  DataPopulationGlueJob:
+    Type: "AWS::Glue::Job"
+    Properties:
+      Description: "Glue job to populate data"
+      Name: !Join
+        - ''
+        - - 'iOPR-Data-Population-'
+          - !Ref 'Environment'
+      Command:
+        Name: pythonshell
+        ScriptLocation: "s3://sysco-us-east-1-prcp-prod-codebuild/Outlier-Price-Range/glue-job-scripts/loaddata.py"
+        PythonVersion: "3"
+      MaxCapacity: 0.0625
+      Connections:
+        Connections:
+          - !Ref EcommDbConnection
+      DefaultArguments:
+        "--extra-py-files": "s3://sysco-us-east-1-prcp-prod-codebuild/Outlier-Price-Range/python-libs/PyMySQL-0.9.3-py2.py3-none-any.whl"
+      ExecutionProperty:
+        MaxConcurrentRuns: 85
+      MaxRetries: 0
+      NotificationProperty:
+        NotifyDelayAfter: 15
+      Role: !GetAtt
+        - OutlierPriceRangeGlueRole
+        - Arn
+      Timeout: 30
+
+
+Outputs:
+  DataCreationTaskDefinition:
+    Description: The Cp Data Creation Task Definition ARN
+    Value: !Ref DataCreationTaskDefinition
+  ClusterARN:
+    Description: The ECS Cluster ARN
+    Value: !GetAtt ECSCluster.Arn

@@ -1,0 +1,305 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Description": "Cloud formation template for Cloud Pricing Batch Controller Lambda for EXE environment",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNa": {
+			"Description": "Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24",
+			"Type": "String",
+			"Default": "subnet-0186b43162a344d9a"
+		},
+		"PvtSNb": {
+			"Description": "Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24",
+			"Type": "String",
+			"Default": "subnet-0ad1216eb31e15186"
+		},
+		"PvtSNc": {
+			"Description": "Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24",
+			"Type": "String",
+			"Default": "subnet-0a5d9eea71b9c97c6"
+		},
+		"VPCID": {
+			"Description": "Name of and existing VPC",
+			"Type": "String",
+			"Default": "vpc-091c7e3e5578d7a4f"
+		},
+		"SGDNS": {
+			"Description": "PRCP-NP-DNS-DNSSG-3J5600OVNNBR",
+			"Type": "String",
+			"Default": "sg-078061ddab53c5c41"
+		},
+		"SGRDSMySQL": {
+			"Description": "SG-RDSMySQL",
+			"Type": "String",
+			"Default": "sg-039f822d40c446322"
+		},
+		"SGWebServices": {
+			"Description": "SG-WebServices",
+			"Type": "String",
+			"Default": "sg-0a56447308e39b902"
+		},
+		"S3BucketIn" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Input",
+			"Default": "sysco-us-east-1-prcp-nonprod-batch-input"
+		},
+		"S3BucketOut" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for Batch Pricing Output",
+			"Default": "sysco-us-east-1-prcp-nonprod-batch-output"
+		},
+		"S3CodeBucket" : {
+			"Type" : "String",
+			"Description" : "S3 bucket for the Lambda Code",
+			"Default": "sysco-us-east-1-prcp-nonprod-codedeploy"
+		},
+		"S3CodeKey" : {
+			"Type" : "String",
+			"Description" : "S3 bucket key for the Lambda Code",
+			"Default": "BatchPricing/BatchController/EXE/cp-batch-controller-1.0.0.zip"
+		},
+		"FunctionName" : {
+			"Type" : "String",
+			"Description" : "Name of the Lambda function for Batch Controller",
+			"Default": "Cloud-Pricing-Batch-Controller-"
+		},
+		"IAMRole" : {
+			"Type" : "String",
+			"Description" : "IAM role attached to the Lambda funvtion",
+			"Default": "arn:aws:iam::037295147636:role/CloudPricing-IAM-Lambda-Role"
+		},
+		"AwsRegionIdentifier" : {
+			"Type" : "String",
+			"Description" : "Name of AWS Region",
+			"Default": "us-east-1"
+		},
+		"CommonDBName" : {
+			"Type" : "String",
+			"Description" : "Name of the Common DB",
+			"Default": "CPPDB_Common01e"
+		},
+		"CommonDBUserName" : {
+			"Type" : "String",
+			"Description" : "User name of the Common DB",
+			"Default": "svccp000"
+		},
+		"CommonDBPassword" : {
+			"Type" : "String",
+			"Description" : "User password of the Common DB",
+			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="
+		},
+		"CommonDBURL" : {
+			"Type" : "String",
+			"Description" : "URL for Common DB",
+			"Default": "cpp01dbcluster.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com"
+		},
+		"SnsTopicArn" : {
+			"Type" : "String",
+			"Description" : "SNS Topic ARN",
+			"Default": "arn:aws:sns:us-east-1:037295147636:CP-Notification-Service-Topic-STG"
+		},
+		"SplunkHECToken" : {
+			"Type" : "String",
+			"Description" : "Splunk token used for publish Splunk logs",
+			"Default": "Splunk FC4A9D4D-026C-4E01-853E-83B9BA430CF0"
+		},
+		"SplunkIndex" : {
+			"Type" : "String",
+			"Description" : "Splunk index used to publish Splunk logs",
+			"Default": "cp_metrics_nonprod"
+		},
+		"SplunkSourceType" : {
+			"Type" : "String",
+			"Description" : "Source type of the Splunk Logs",
+			"Default": "cp_batch_controller_exe"
+		},
+		"SplunkSource" : {
+			"Type" : "String",
+			"Description" : "Source of the Splunk logs",
+			"Default": "cp_np_HEC"
+		},
+		"SplunkHECURL" : {
+			"Type" : "String",
+			"Description" : "URL of Splunk indexer",
+			"Default": "http://internal-elb-splunkservice-dev-1567888010.us-east-1.elb.amazonaws.com/api/SplunkHEC"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Person approving instance funding.  This should be Email address formatted",
+			"Type": "String",
+			"Default": "villanueva.loi@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"SupportEmail": {
+			"Description": "Email distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "000-BT-PricingPlatform@Corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "krishan.senevirathne@sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"2WTAGGER": {
+			"Description": "Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported",
+			"Type": "String",
+			"Default": "team-managed",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedValues": [
+				"team-managed",
+				"adlm-managed",
+				"2w-managed"
+			],
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Platform": {
+			"Description": "Platform",
+			"Type": "String",
+			"Default": "Cloud Pricing V4"
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Execution",
+			"AllowedValues": [
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "EXE",
+			"AllowedValues": [
+				"DEV",
+				"QA",
+				"STG",
+				"EXE",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources" : {
+		"LFunctionCP01": {
+			"Type": "AWS::Lambda::Function",
+			"Properties": {
+				"Code": {
+					"S3Bucket": { "Ref": "S3CodeBucket" },
+					"S3Key": { "Ref": "S3CodeKey" }
+				},
+				"FunctionName": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]},
+				"Handler": "com.sysco.cpbatch.handler.BatchControllerHandler::handleS3Event",
+				"Runtime": "java8",
+				"Description": "Controller function for Cloud Pricing Batch process",
+				"MemorySize": 512,
+				"Timeout": 900,
+				"Role": { "Ref": "IAMRole" },
+				"VpcConfig": {
+					"SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
+					"SubnetIds": [
+						{ "Ref": "PvtSNa" },
+						{ "Ref": "PvtSNb" },
+						{ "Ref": "PvtSNc"}
+					]
+				},
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
+					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
+					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+				],
+				"Environment": {
+					"Variables": {
+						"AWS_REGION_IDENTIFIER": { "Ref" : "AwsRegionIdentifier" },
+						"COMMONDB_NAME": { "Ref" : "CommonDBName" },
+						"COMMONDB_USERNAME": { "Ref" : "CommonDBUserName" },
+						"COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
+						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
+						"ENVIRONMENT": { "Ref" : "Environment" },
+						"EnvironmentShort": { "Ref" : "EnvironmentShort" },
+						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
+						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
+						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
+						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
+						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
+						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
+						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
+					}
+				}
+			}
+		},
+		"BucketIn" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketIn" }
+			}
+		},
+		"BucketPermission": {
+			"Type": "AWS::Lambda::Permission",
+			"Properties" : {
+				"Action": "lambda:InvokeFunction",
+				"FunctionName": {"Ref": "LFunctionCP01"},
+				"Principal": "s3.amazonaws.com",
+				"SourceAccount": {"Ref": "AWS::AccountId"},
+				"SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "BucketIn"}]]}
+			},
+			"DependsOn": ["LFunctionCP01", "BucketIn"]
+		}
+	}
+}

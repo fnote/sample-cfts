@@ -1,0 +1,216 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description": "CloudPricing batch File-Forwarder-Lambda",
+  "Parameters": {
+    "PONumber": {
+      "Description": "PO Number for billing",
+      "Type": "String",
+      "Default": "7000002358",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "PvtSNa": {
+      "Description": "Private PRCP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24",
+      "Type": "String",
+      "Default": "subnet-03f5516cc0d29f5ad"
+    },
+    "PvtSNb": {
+      "Description": "Private PRCP Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24",
+      "Type": "String",
+      "Default": "subnet-094d9ade488a4f20b"
+    },
+    "PvtSNc": {
+      "Description": "Private PRCP Confidential Subnet 3 in us-east-1c CIDR: 10.132.90.0/24",
+      "Type": "String",
+      "Default": "subnet-0f279e0609eb542b2"
+    },
+    "VPCID": {
+      "Description": "Name of and existing VPC",
+      "Type": "String",
+      "Default": "vpc-0f55b12524f7459f9"
+    },
+    "SGDNS": {
+      "Description": "PRCP-DNS-DNSSG-1LVAMR19KIKFS",
+      "Type": "String",
+      "Default": "sg-086420a2869e44e81"
+    },
+    "SGRDSMySQL": {
+      "Description": "SG-RDSMySQL",
+      "Type": "String",
+      "Default": "sg-0914feb8b95bd48c7"
+    },
+    "SGWebServices": {
+      "Description": "SG-WebServices",
+      "Type": "String",
+      "Default": "sg-0abcdcef90427fcd7"
+    },
+    "S3BucketOut" : {
+      "Type" : "String",
+      "Description" : "S3 bucket for Batch Pricing Output",
+      "Default": "sysco-us-east-1-prcp-prod-batch-output"
+    },
+    "S3CodeBucket" : {
+      "Type" : "String",
+      "Description" : "S3 bucket for the Lambda Code",
+      "Default": "sysco-us-east-1-prcp-prod-codedeploy"
+    },
+    "S3CodeKey" : {
+      "Type" : "String",
+      "Description" : "S3 bucket key for the Lambda Code",
+      "Default": "BatchPricing/BatchForwarder/cp-s3-file-forwarder-1.0.0.zip"
+    },
+    "FunctionName" : {
+      "Type" : "String",
+      "Description" : "Name of the Lambda function for Batch forwarder",
+      "Default": "CP-BatchService-S3-file-forwarder"
+    },
+    "IAMRole" : {
+      "Type" : "String",
+      "Description" : "IAM role attached to the Lambda funvtion",
+      "Default": "arn:aws:iam::130227353653:role/CloudPricing-IAM-Lambda-Role"
+    },
+    "CommonDBName" : {
+      "Type" : "String",
+      "Description" : "Name of the Common DB",
+      "Default": "CPPDB_Common01"
+    },
+    "CommonDBUserName" : {
+      "Type" : "String",
+      "Description" : "User name of the Common DB",
+      "Default": "svccp000"
+    },
+    "CommonDBPassword" : {
+      "Type" : "String",
+      "Description" : "User password of the Common DB",
+      "Default": "TBD"
+    },
+    "CommonDBURL" : {
+      "Type" : "String",
+      "Description" : "URL for Common DB",
+      "Default": "cloud-pricing-auroradb-prod-01-cpdbclusterprod-1v1hqt4g1f8eg.cluster-cssuntoy2gcy.us-east-1.rds.amazonaws.com"
+    },
+    "ApplicationName": {
+      "Description": "File forwarder",
+      "Type": "String",
+      "Default": "Cloud Pricing",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "ApplicationId": {
+      "Description": "Application ID",
+      "Type": "String",
+      "Default": "APP-001151",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "Approver": {
+      "Description": "Name of application approver",
+      "Type": "String",
+      "Default": "villanueva.loi@corp.sysco.com",
+      "MinLength": "1",
+      "MaxLength": "255"
+    },
+    "Owner": {
+      "Description": "Name of application owner",
+      "Type": "String",
+      "Default": "krishan.senevirathne@sysco.com",
+      "MinLength": "1",
+      "MaxLength": "255"
+    },
+    "ProjectId": {
+      "Description": "Project ID",
+      "Type": "String",
+      "Default": "BT.001176",
+      "MinLength": "1",
+      "MaxLength": "255",
+      "AllowedPattern": "[\\x20-\\x7E]*",
+      "ConstraintDescription": "Must contain only ASCII characters."
+    },
+    "Platform": {
+      "Description": "Platform",
+      "Type": "String",
+      "Default": "Cloud Pricing V4"
+    },
+    "Environment": {
+      "Description": "Environment for application",
+      "Type": "String",
+      "Default": "Production",
+      "AllowedValues": [
+        "Development",
+        "Quality",
+        "Staging",
+        "Tuning",
+        "Execution",
+        "Production"
+      ],
+      "ConstraintDescription": "Must be a valid environment."
+    }
+  },
+  "Resources" : {
+    "LFunctionCP01": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": { "Ref": "S3CodeBucket" },
+          "S3Key": { "Ref": "S3CodeKey" }
+        },
+        "FunctionName": { "Ref": "FunctionName" },
+        "Handler": "com.sysco.cps3.handler.S3ObjectForwarderHandler::handleS3Event",
+        "Runtime": "java8",
+        "Description": "Controller function for Cloud Pricing Batch process",
+        "MemorySize": 512,
+        "Timeout": 300,
+        "Role": { "Ref": "IAMRole" },
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
+          "SubnetIds": [
+            { "Ref": "PvtSNa" },
+            { "Ref": "PvtSNb" },
+            { "Ref": "PvtSNc"}
+          ]
+        },
+        "Tags" : [
+          { "Key" : "Name", "Value" : "cp-lambda-file-forwarder" },
+          { "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+          { "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationId" } },
+          { "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+          { "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+          { "Key" : "Technical:ApplicationSubName", "Value": "Lambda File forwarder" },
+          { "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+          { "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+          { "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+          { "Key" : "2WTAGGER", "Value" : "team_managed" },
+          { "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+          { "Key" : "Component", "Value": "Lambda File forwarder" }
+        ],
+        "Environment": {
+          "Variables": {
+            "COMMONDB_NAME": { "Ref" : "CommonDBName" },
+            "COMMONDB_USERNAME": { "Ref" : "CommonDBUserName" },
+            "COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
+            "ENVIRONMENT": { "Ref" : "Environment" },
+            "COMMONDB_URL": { "Ref" : "CommonDBURL" }
+
+          }
+        }
+      }
+    },
+    "BucketPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties" : {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {"Ref": "LFunctionCP01"},
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {"Ref": "AWS::AccountId"},
+        "SourceArn": { "Fn::Join": [":", ["arn", "aws", "s3", "" , "", {"Ref" : "S3BucketOut"}]]}
+      },
+      "DependsOn": ["LFunctionCP01"]
+    }
+  }
+}

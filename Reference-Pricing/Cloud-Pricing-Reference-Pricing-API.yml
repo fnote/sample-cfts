@@ -89,14 +89,14 @@ Resources:
                 - Name: !Join [ "-", [!Ref namingPrefix, api]]
                   Image: !Ref ecrImageUri
                   PortMappings:
-                    - ContainerPort: !Ref containerPort
-                      Protocol: tcp
+                      - ContainerPort: !Ref containerPort
+                        Protocol: tcp
                   LogConfiguration:
-                    LogDriver: awslogs
-                    Options:
-                        awslogs-region: !Ref "AWS::Region"
-                        awslogs-group: !Ref LogGroup
-                        awslogs-stream-prefix: !Ref namingPrefix
+                      LogDriver: awslogs
+                      Options:
+                          awslogs-region: !Ref "AWS::Region"
+                          awslogs-group: !Ref LogGroup
+                          awslogs-stream-prefix: !Ref namingPrefix
                   Environment:
                       - Name: spring_profiles_active
                         Value: !Ref environment

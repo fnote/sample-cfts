@@ -123,8 +123,6 @@
 			"Properties" : {
 				"DatabaseName" : "DPM_01",
 				"Engine" : "aurora",
-				"MasterUsername" : "svcdpm000",
-				"MasterUserPassword" : "Sysco0124",
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" }

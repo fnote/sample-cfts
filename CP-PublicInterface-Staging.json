@@ -350,8 +350,10 @@
 					"useradd -m -g aix -c \"Mike Rowland, Enterprise Architect\" mrow7849\n",
 					"useradd -m -g aix -c \"Fernando Nieto, App Dev\" fnie6886\n",
 
+					"CP_USER_PSWD=$(aws --region=us-east-1 ssm get-parameters --names \"/CP/USER/GROUP/PASSWORD\"  --output text --query \"Parameters[*].Value\")\n",
+
 					"#Create Linux users and groups\n",
-					"useradd svccp000 -p Cpaws000\n",
+					"useradd svccp000 -p $CP_USER_PSWD\n",
 					"groupadd cloudpricing\n",
 					"usermod svccp000 -a -G cloudpricing\n",
 					"usermod svccp000 -a -G root\n",

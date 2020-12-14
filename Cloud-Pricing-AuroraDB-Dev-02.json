@@ -64,7 +64,7 @@
 		"Approver": {
 			"Description": "Name of application approver",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -124,8 +124,30 @@
 			"Properties" : {
 				"DatabaseName" : "CPEDB_Common01d",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "sgDB" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },

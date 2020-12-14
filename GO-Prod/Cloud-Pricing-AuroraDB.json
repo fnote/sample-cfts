@@ -77,14 +77,14 @@
 		"Approver": {
 			"Description": "Person approving instance funding.  This should be Email address formatted",
 			"Type": "String",
-			"Default": "Thibodeaux.Paula@corp.sysco.com",
+			"Default": "villanueva.loi@corp.sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
 		"Owner": {
 			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
 			"Type": "String",
-			"Default": "Owen.James@corp.sysco.com",
+			"Default": "krishan.senevirathne@sysco.com",
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
@@ -141,12 +141,12 @@
 			"Type": "String",
 			"Default": "Production",
 			"AllowedValues": [
-				"DEV",
-				"QA",
-				"STG",
-				"TST",
-				"Production",
-				"Non-Production"
+				"Development",
+				"Quality",
+				"Staging",
+				"Tuning",
+				"Execution",
+				"Production"
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
@@ -173,19 +173,42 @@
 				"DatabaseName" : "CPPDB_Common01",
 				"DBClusterIdentifier" : "cpp01dbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PLATFORM/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PLATFORM/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -202,17 +225,19 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPP01DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -230,16 +255,18 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPP01DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPP01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -254,19 +281,42 @@
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe01dbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -283,17 +333,20 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE01DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -311,16 +364,19 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE01DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -335,19 +391,42 @@
 				"DatabaseName" : "CPEDB_Common01",
 				"DBClusterIdentifier" : "cpe02dbcluster",
 				"Engine" : "aurora",
-				"MasterUsername" : "svccp000",
-				"MasterUserPassword" : "Cpaws000",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
 				"Port" : "3306",
 				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE02-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -364,17 +443,20 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE02DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE02-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -392,16 +474,239 @@
 				"CopyTagsToSnapshot" : "true",
 				"DBClusterIdentifier" : { "Ref" : "CPE02DBCluster" },
 				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
 				"Engine" : "aurora",
 				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE02-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"CPE03DBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01",
+				"DBClusterIdentifier" : "cpe03dbcluster",
+				"Engine" : "aurora",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE03-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB3Primary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE03Prod01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE03DBCluster" },
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"Engine" : "aurora",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE03-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB3Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB3Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE03Prod02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE03DBCluster" },
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE03-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"CPE04DBCluster" : {
+			"Type" : "AWS::RDS::DBCluster",
+			"DeletionPolicy" : "Snapshot",
+			"Properties" : {
+				"DatabaseName" : "CPEDB_Common01",
+				"DBClusterIdentifier" : "cpe04dbcluster",
+				"Engine" : "aurora",
+				"MasterUsername": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/USERNAME:1}}"
+						]
+					]
+				},
+				"MasterUserPassword": {
+					"Fn::Join": [
+						"",
+						[
+							"{{resolve:ssm-secure:/CP/",
+							{
+								"Ref": "EnvironmentShort"
+							},
+							"/DATABASE/PRICING/PASSWORD:1}}"
+						]
+					]
+				},
+				"Port" : "3306",
+				"VpcSecurityGroupIds" : [ { "Ref" : "SGRDSMySQL" }],
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE04-Cluster-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB4Primary01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE04Prod01",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE04DBCluster" },
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE04-Database-01-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Name", "Value" : "Cloud Pricing Common Database Primary" },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB4Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB4Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : "CPE04Prod02",
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "CPE04DBCluster" },
+				"DBInstanceClass" : "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : { "Ref" : "snDB" },
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE04-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
@@ -417,12 +722,13 @@
 				"SubnetIds" : [ {"Ref" : "PvtSNa"},{"Ref" : "PvtSNb"},{"Ref" : "PvtSNc"} ],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["SN-CP-Database-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Application_ID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } }
 				]
 			}
@@ -434,20 +740,36 @@
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPP01DBCluster", "Endpoint.Address" ]}]] }
 		},
 		"dbUrl01" : {
-			"Description" : "Endpoint for Common DB",
+			"Description" : "Endpoint for Cluster 01",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE01DBCluster", "Endpoint.Address" ]}]] }
 		},
 		"dbUrl02" : {
-			"Description" : "Endpoint for Common DB",
+			"Description" : "Endpoint for Cluster 02",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE02DBCluster", "Endpoint.Address" ]}]] }
 		},
+		"dbUrl03" : {
+			"Description" : "Endpoint for Cluster 03",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE03DBCluster", "Endpoint.Address" ]}]] }
+		},
+		"dbUrl04" : {
+			"Description" : "Endpoint for Cluster 04",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE04DBCluster", "Endpoint.Address" ]}]] }
+		},
 		"dbUrl01ReadOnly" : {
-			"Description" : "Endpoint for Common DB Read-Only",
+			"Description" : "Endpoint for Cluster 01 Read-Only",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE01DBCluster", "ReadEndpoint.Address" ]}]] }
 		},
 		"dbUrl02ReadOnly" : {
-			"Description" : "Endpoint for Common DB Read-Only",
+			"Description" : "Endpoint for Cluster 02 Read-Only",
 			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE02DBCluster", "ReadEndpoint.Address" ]}]] }
+		},
+		"dbUrl03ReadOnly" : {
+			"Description" : "Endpoint for Cluster 03 Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE03DBCluster", "ReadEndpoint.Address" ]}]] }
+		},
+		"dbUrl04ReadOnly" : {
+			"Description" : "Endpoint for Cluster 04 Read-Only",
+			"Value" : { "Fn::Join" : ["", [{ "Fn::GetAtt" : [ "CPE04DBCluster", "ReadEndpoint.Address" ]}]] }
 		}
 	}
 }
