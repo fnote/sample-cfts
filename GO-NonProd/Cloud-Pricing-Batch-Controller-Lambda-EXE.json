@@ -197,6 +197,11 @@
 			"Type": "String",
 			"Default": "Cloud Pricing V4"
 		},
+		"ServiceName": {
+			"Description": "Service Name",
+			"Type": "String",
+			"Default": "Batch service"
+		},
 		"Environment": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -262,7 +267,8 @@
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "ServiceName", "Value" : { "Ref" : "ServiceName" } }
 				],
 				"Environment": {
 					"Variables": {

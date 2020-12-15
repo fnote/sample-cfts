@@ -53,6 +53,10 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  ServiceName:
+    Description: Service Name
+    Type: String
+    Default: Pricing service
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -234,6 +238,8 @@ Resources:
                 Value: !Ref 'Platform'
               - Key: Name
                 Value: !Ref 'Component'
+              - Key: ServiceName
+                Value: !Ref 'ServiceName'
       LaunchTemplateName:
         Fn::Join:
           - ''
@@ -299,6 +305,8 @@ Resources:
             Ref: 'Platform'
           Name:
             Ref: 'Component'
+          ServiceName:
+            Ref: 'ServiceName'
       State: ENABLED
 
   JobQueue:

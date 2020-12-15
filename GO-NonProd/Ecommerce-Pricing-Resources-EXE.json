@@ -159,6 +159,11 @@
 			"Type": "String",
 			"Default": "RevMan MarketPricing V1"
 		},
+		"ServiceName": {
+			"Description": "Service Name",
+			"Type": "String",
+			"Default": "Ecomm Margin service"
+		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
@@ -215,7 +220,8 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
+					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -439,7 +445,8 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service ALB" }
+					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service ALB" },
+					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
 				]
 			}
 		},
@@ -504,7 +511,8 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service Target" }
+					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service Target" },
+					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
 				]
 			}
 		},
@@ -532,7 +540,8 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } }
+					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
+					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
 				]
 			},
 			"Metadata" : {

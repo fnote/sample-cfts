@@ -53,6 +53,10 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  ServiceName:
+    Description: Service Name
+    Type: String
+    Default: Pricing service
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -270,6 +274,8 @@ Resources:
             Ref: 'Platform'
           Name:
             Ref: 'Component'
+          ServiceName:
+            Ref: 'ServiceName'
       State: ENABLED
 
   JobQueue:

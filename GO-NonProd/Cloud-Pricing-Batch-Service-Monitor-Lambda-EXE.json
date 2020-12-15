@@ -145,6 +145,11 @@
       "Type": "String",
       "Default": "Cloud Pricing V4"
     },
+    "ServiceName": {
+      "Description": "Service Name",
+      "Type": "String",
+      "Default": "Batch service"
+    },
     "Environment": {
       "Description": "Environment for application",
       "Type": "String",
@@ -222,7 +227,8 @@
           { "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
           { "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
           { "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-          { "Key" : "Component", "Value": "Lambda Batch Service Monitor" }
+          { "Key" : "Component", "Value": "Lambda Batch Service Monitor" },
+          { "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" } }
         ],
         "Environment": {
           "Variables": {

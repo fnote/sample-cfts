@@ -154,6 +154,11 @@
       "Type": "String",
       "Default": "Cloud Pricing V4"
     },
+    "ServiceName": {
+      "Description": "Service Name",
+      "Type": "String",
+      "Default": "Pricing service"
+    },
     "Environment": {
       "Description": "Name of logical build environment designated for service.",
       "Type": "String",
@@ -345,6 +350,13 @@
           {
             "Key": "Component",
             "Value": "Pricing Refactored Web Service",
+            "PropagateAtLaunch": "true"
+          },
+          {
+            "Key": "ServiceName",
+            "Value": {
+              "Ref": "ServiceName"
+            },
             "PropagateAtLaunch": "true"
           }
         ]
@@ -778,6 +790,12 @@
           {
             "Key": "Component",
             "Value": "Cloud Pricing Refactored WS ALB"
+          },
+          {
+            "Key": "ServiceName",
+            "Value": {
+              "Ref": "ServiceName"
+            }
           }
         ]
       }
@@ -1117,6 +1135,12 @@
           {
             "Key": "Component",
             "Value": "Cloud Pricing Refactored WS Target"
+          },
+          {
+            "Key": "ServiceName",
+            "Value": {
+              "Ref": "ServiceName"
+            }
           }
         ]
       }

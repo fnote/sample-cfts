@@ -52,6 +52,10 @@ Parameters:
     Description: Component name
     Type: String
     Default: CP-Sync-Mimix-Pricing
+  ServiceName:
+    Description: Service Name
+    Type: String
+    Default: Pricing service
   SupportEmail:
     Description: Email distribution list for technical product/platform team contact
     Type: String
@@ -266,6 +270,9 @@ Resources:
           PropagateAtLaunch: 'true'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+          PropagateAtLaunch: 'true'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
           PropagateAtLaunch: 'true'
     DependsOn: ECSCluster
 
@@ -725,6 +732,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerTwoEcsService:
     Type: AWS::ECS::Service
@@ -765,6 +774,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerThreeEcsService:
     Type: AWS::ECS::Service
@@ -805,6 +816,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerFourEcsService:
     Type: AWS::ECS::Service
@@ -845,6 +858,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerFiveEcsService:
     Type: AWS::ECS::Service
@@ -885,6 +900,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerSixEcsService:
     Type: AWS::ECS::Service
@@ -925,6 +942,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerSevenEcsService:
     Type: AWS::ECS::Service
@@ -965,6 +984,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerEightEcsService:
     Type: AWS::ECS::Service
@@ -1005,6 +1026,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerNineEcsService:
     Type: AWS::ECS::Service
@@ -1045,6 +1068,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
   ServerTenEcsService:
     Type: AWS::ECS::Service
@@ -1085,6 +1110,8 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
+        - Key: ServiceName
+          Value: !Ref 'ServiceName'
 
 
 Outputs:
