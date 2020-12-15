@@ -835,6 +835,8 @@ Resources:
                            "opco_id.$":"$.id",
                            "message.$":"$.error.Cause",
                            "event": "ETL-PRICE_ZONE",
+                           "additional_info_file_s3.$": "$.intermediate_s3_name",
+                           "etl_output_path_key.$": "$.etl_output_path_key",
                            "backup_bucket.$": "$.backup_bucket",
                            "backup_file_path.$" : "$.backup_file_path",
                            "stepFunctionExecutionId.$": "$$.Execution.Id"
