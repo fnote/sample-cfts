@@ -342,7 +342,10 @@ Resources:
                   "Payload": {
                     "event": "ETL-PA",
                     "backup_bucket.$": "$.backup_bucket",
+                    "additional_info_file_s3": "${intermediateS3Name}",
                     "backup_file_path.$" : "$.backup_file_path",
+                    "etl_timestamp.$" : "$.etl_timestamp",
+                    "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -357,6 +360,9 @@ Resources:
                     "event": "[ETL] - [Ref Price] [Price Data]",
                     "backup_bucket.$": "$.backup_bucket",
                     "backup_file_path.$" : "$.backup_file_path",
+                    "additional_info_file_s3": "${backupS3Name}",
+                    "etl_timestamp.$" : "$.etl_timestamp",
+                    "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -368,7 +374,9 @@ Resources:
         - {
             PADataETLJobName: !Ref PAETLGlueJob,
             notifierLambdaArn: !Ref NotifierLambdaArn,
-            paDataBackupJobName: !Ref PADataBackupJob
+            paDataBackupJobName: !Ref PADataBackupJob,
+            backupS3Name: !Ref ETLDataBackUpStorage,
+            intermediateS3Name: !Ref IntermediateStorage
         }
       LoggingConfiguration:
         Destinations:
