@@ -150,7 +150,12 @@
             "MinValue": "1",
             "MaxValue": "10000",
             "ConstraintDescription": "must be between 1 and 10000"
-        }
+        },
+        "ServiceName": {
+			"Description": "Service Name",
+			"Type": "String",
+			"Default": "Notification service"
+		},
     },
     "Resources": {
         "CpNotificationServiceTopic": {
@@ -263,6 +268,13 @@
                     {
                         "Key": "Component",
                         "Value": "Notification Service"
+                    },
+                    {
+                        "Key": "ServiceName",
+                        "Value": {
+                            "Ref": "ServiceName"
+                        },
+                        "PropagateAtLaunch" : "true"
                     }
                 ]
             }
@@ -455,6 +467,13 @@
                     {
                         "Key": "Component",
                         "Value": "Notification Service"
+                    },
+                    {
+                        "Key": "ServiceName",
+                        "Value": {
+                            "Ref": "ServiceName"
+                        },
+                        "PropagateAtLaunch" : "true"
                     }
                 ]
             }
