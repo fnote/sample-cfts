@@ -155,7 +155,7 @@
 			"Description": "Service Name",
 			"Type": "String",
 			"Default": "Notification service"
-		},
+		}
     },
     "Resources": {
         "CpNotificationServiceTopic": {
