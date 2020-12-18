@@ -152,10 +152,10 @@
     "Platform": {
       "Description": "Platform",
       "Type": "String",
-      "Default": "Cloud Pricing V4"
+      "Default": "CP Pricing Service"
     },
-    "ServiceName": {
-      "Description": "Service Name",
+    "Component": {
+      "Description": "Component name",
       "Type": "String",
       "Default": "Pricing service"
     },
@@ -349,13 +349,8 @@
           },
           {
             "Key": "Component",
-            "Value": "Pricing Refactored Web Service",
-            "PropagateAtLaunch": "true"
-          },
-          {
-            "Key": "ServiceName",
             "Value": {
-              "Ref": "ServiceName"
+              "Ref": "Component"
             },
             "PropagateAtLaunch": "true"
           }
@@ -789,12 +784,8 @@
           },
           {
             "Key": "Component",
-            "Value": "Cloud Pricing Refactored WS ALB"
-          },
-          {
-            "Key": "ServiceName",
             "Value": {
-              "Ref": "ServiceName"
+              "Ref": "Component"
             }
           }
         ]
@@ -1134,12 +1125,8 @@
           },
           {
             "Key": "Component",
-            "Value": "Cloud Pricing Refactored WS Target"
-          },
-          {
-            "Key": "ServiceName",
             "Value": {
-              "Ref": "ServiceName"
+              "Ref": "Component"
             }
           }
         ]
