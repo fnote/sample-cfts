@@ -157,7 +157,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "RevMan MarketPricing V1"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Ecomm Margin Service"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
@@ -215,8 +220,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -439,8 +443,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service ALB" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -505,8 +508,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service Target" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -533,9 +535,9 @@
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			},
 			"Metadata" : {
@@ -606,7 +608,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -635,7 +637,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		}

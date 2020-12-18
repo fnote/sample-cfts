@@ -32,7 +32,7 @@
         "Component": {
             "Description": "Component name",
             "Type": "String",
-            "Default": "CP Batch",
+            "Default": "Batch service",
             "MinLength": "1",
             "MaxLength": "255",
             "AllowedPattern": "[\\x20-\\x7E]*",
@@ -84,7 +84,7 @@
         "Platform": {
             "Description": "Platform",
             "Type": "String",
-            "Default": "Cloud Pricing V4"
+            "Default": "CP Pricing Service"
         },
         "ServiceName": {
             "Description": "Service Name",
@@ -302,7 +302,11 @@
                                 },
                                 {
                                     "Key": "Platform",
-                                    "Value": "Cloud Pricing V4"
+                                    "Value": "CP Pricing Service"
+                                },
+                                {
+                                    "Key": "Component",
+                                    "Value": "Batch service"
                                 },
                                 {
                                     "Key": "Technical:ApplicationSubName",
@@ -311,12 +315,6 @@
                                 {
                                     "Key": "Automation:CloudCustodian:LaunchedBy",
                                     "Value": "AutoScaling"
-                                },
-                                {
-                                    "Key": "ServiceName",
-                                    "Value": {
-                                        "Ref": "ServiceName"
-                                    }
                                 }
                             ]
                         }
@@ -448,10 +446,13 @@
 
                         "Platform": {
                             "Ref": "Platform"
-                        },
-                        "ServiceName": {
-                            "Ref": "ServiceName"
                         }
+                    ,
+                    
+                        "Component": {
+                            "Ref": "Component"
+                        }                   
+
                     }
                 },
                 "State": "ENABLED"

@@ -152,10 +152,10 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
 		},
-		"ServiceName": {
-			"Description": "Service Name",
+		"Component": {
+			"Description": "Component",
 			"Type": "String",
 			"Default": "Batch service"
 		},
@@ -248,8 +248,7 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Batch Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Batch Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -477,8 +476,7 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Cloud Pricing Refactored WS ALB" },
-					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS ALB" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" } }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -543,8 +541,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Cloud Pricing Refactored WS Target" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName"}}
+					{ "Key" : "Component", "Value": { "Ref" : "Component" }  }
 				]
 			}
 		}
