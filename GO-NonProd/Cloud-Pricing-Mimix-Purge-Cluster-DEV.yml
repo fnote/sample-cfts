@@ -25,6 +25,10 @@ Parameters:
     Description: Application_Name - Common, user-friendly name
     Type: String
     Default: Cloud Pricing
+  ApplicationSubName:
+    Description: Application_Sub_Name - Common, user-friendly name
+    Type: String
+    Default: CP Mimix Purge
   Component:
     Description: Component name
     Type: String
@@ -52,11 +56,7 @@ Parameters:
   Platform:
     Description: Platform
     Type: String
-    Default: Cloud Pricing V4
-  ServiceName:
-    Description: Service Name
-    Type: String
-    Default: Pricing service
+    Default: CP Pricing Service
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -221,7 +221,7 @@ Resources:
               - Key: Technical:Environment
                 Value: !Ref 'Environment'
               - Key: Technical:ApplicationSubName
-                Value: !Ref 'Component'
+                Value: !Ref 'ApplicationSubName'
               - Key: Technical:ApplicationRole
                 Value: !Ref 'ApplicationRole'
               - Key: Approver
@@ -237,9 +237,9 @@ Resources:
               - Key: Platform
                 Value: !Ref 'Platform'
               - Key: Name
+                Value: !Ref 'ApplicationSubName'
+              - Key: Component
                 Value: !Ref 'Component'
-              - Key: ServiceName
-                Value: !Ref 'ServiceName'
       LaunchTemplateName:
         Fn::Join:
           - ''
@@ -288,7 +288,7 @@ Resources:
           Technical:Environment:
             Ref: 'Environment'
           Technical:ApplicationSubName:
-            Ref: 'Component'
+            Ref: 'ApplicationSubName'
           Technical:ApplicationRole:
             Ref: 'ApplicationRole'
           Approver:
@@ -304,9 +304,9 @@ Resources:
           Platform:
             Ref: 'Platform'
           Name:
+            Ref: 'ApplicationSubName'
+          Component:
             Ref: 'Component'
-          ServiceName:
-            Ref: 'ServiceName'
       State: ENABLED
 
   JobQueue:
