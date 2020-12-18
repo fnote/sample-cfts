@@ -48,12 +48,12 @@ Parameters:
     Default: villanueva.loi@corp.sysco.com
     MinLength: '1'
     MaxLength: '255'
-  Component:
-    Description: Component name
+  ApplicationSubName:
+    Description: Application_Sub_Name - Common, user-friendly name
     Type: String
     Default: CP-Mimix-Sync
-  ServiceName:
-    Description: Service Name
+  Component:
+    Description: Component Name
     Type: String
     Default: Pricing service
   SupportEmail:
@@ -64,6 +64,10 @@ Parameters:
     Description: Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported
     Type: String
     Default: team_managed
+  Platform:
+    Description: Platform
+    Type: String
+    Default: CP Pricing Service
   Owner:
     Description: Name of application owner
     Type: String
@@ -249,7 +253,7 @@ Resources:
           Value: !Ref 'Environment'
           PropagateAtLaunch: 'true'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
           PropagateAtLaunch: 'true'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
@@ -263,8 +267,11 @@ Resources:
         - Key: Project_ID
           Value: !Ref 'ProjectId'
           PropagateAtLaunch: 'true'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName',
+        - Key: Component
+          Value: !Ref 'Component'
+          PropagateAtLaunch: 'true'
+        - Key: Platform
+          Value: !Ref 'Platform'
           PropagateAtLaunch: 'true'
     DependsOn: ECSCluster
 
@@ -426,13 +433,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
@@ -466,13 +477,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
@@ -506,13 +521,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
@@ -636,13 +655,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
@@ -676,13 +699,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
@@ -716,13 +743,17 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
           Value: !Ref 'SupportEmail'
         - Key: 2WTAGGER
           Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
         - Key: Approver
           Value: !Ref 'Approver'
         - Key: PO_Number
