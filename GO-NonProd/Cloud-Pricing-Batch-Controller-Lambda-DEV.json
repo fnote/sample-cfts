@@ -195,10 +195,10 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
 		},
-		"ServiceName": {
-			"Description": "Service Name",
+		"Component": {
+			"Description": "Component Name",
 			"Type": "String",
 			"Default": "Batch service"
 		},
@@ -262,13 +262,12 @@
 					{ "Key" : "Technical:ApplicationSubName", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
 					{ "Key" : "Technical:ApplicationRole", "Value": "Lambda Function" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]} },
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "ServiceName", "Value" : { "Ref" : "ServiceName" } }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				],
 				"Environment": {
 					"Variables": {
