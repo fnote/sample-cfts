@@ -480,7 +480,8 @@ Resources:
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--active_opcos.$": "$.active_opcos"
+                    "--active_opcos.$": "$.active_opcos",
+                    "--workflow_file_dir.$": "$.workflow_file_dir"
                   }
                 },
                 "Catch": [
@@ -505,7 +506,7 @@ Resources:
                     "--s3_bucket.$": "$.s3_bucket",
                     "--s3_object_key.$": "$.s3_object_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--backup_file_path.$": "$.backup_file_path"
+                    "--backup_file_path.$": "$.workflow_file_dir"
                   }
                 },
                 "Catch": [
@@ -527,8 +528,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-Discount Service",
-                    "backup_bucket_name.$": "$.backup_bucket_name",
-                    "backup_file_path.$": "$.backup_file_path",
+                    "additional_info_bucket_name": "${IntermediateBucketName}",
+                    "additional_info_file_dir.$": "$.workflow_file_dir",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -541,8 +542,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
-                    "backup_bucket_name.$": "$.backup_bucket_name",
-                    "backup_file_path.$": "$.backup_file_path",
+                    "additional_info_bucket_name": "${ETLDataBackUpStorage}",
+                    "additional_info_file_dir.$": "$.workflow_file_dir",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -557,7 +558,9 @@ Resources:
           CustomerEligibilityDataLoadJob: !Ref CustomerEligibilityDataLoadJob,
           DiscountDataBackupJob: !Ref DiscountDataBackupJob,
           CustomerEligibilityDecompressionJob: !Ref CustomerEligibilityDecompressionJob,
-          CustomerEligibilityPartitionJob: !Ref CustomerEligibilityPartitionJob
+          CustomerEligibilityPartitionJob: !Ref CustomerEligibilityPartitionJob,
+          IntermediateBucketName: !Ref IntermediateStorage,
+          ETLDataBackUpStorage: !Ref ETLDataBackUpStorage
         }
       LoggingConfiguration:
         Destinations:
