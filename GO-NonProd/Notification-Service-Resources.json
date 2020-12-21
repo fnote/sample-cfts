@@ -160,7 +160,7 @@
             "Description": "Component Name",
             "Type": "String",
             "Default": "Notification Service"
-        },
+        }},
     "Resources": {
         "CpNotificationServiceTopic": {
             "Type": "AWS::SNS::Topic",
@@ -275,7 +275,7 @@
                             "Ref": "Component"
                         }
                     },
-                                        {
+                    {
                         "Key": "Platform",
                         "Value": {
                             "Ref": "Platform"
