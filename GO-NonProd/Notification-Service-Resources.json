@@ -151,12 +151,16 @@
             "MaxValue": "10000",
             "ConstraintDescription": "must be between 1 and 10000"
         },
-        "ServiceName": {
-			"Description": "Service Name",
-			"Type": "String",
-			"Default": "Notification service"
-		}
-    },
+        "Platform": {
+            "Description": "Platform",
+            "Type": "String",
+            "Default": "CP Pricing Service"
+        },
+        "Component": {
+            "Description": "Component Name",
+            "Type": "String",
+            "Default": "Notification Service"
+        },
     "Resources": {
         "CpNotificationServiceTopic": {
             "Type": "AWS::SNS::Topic",
@@ -267,14 +271,15 @@
                     },
                     {
                         "Key": "Component",
-                        "Value": "Notification Service"
-                    },
-                    {
-                        "Key": "ServiceName",
                         "Value": {
-                            "Ref": "ServiceName"
-                        },
-                        "PropagateAtLaunch" : "true"
+                            "Ref": "Component"
+                        }
+                    },
+                                        {
+                        "Key": "Platform",
+                        "Value": {
+                            "Ref": "Platform"
+                        }
                     }
                 ]
             }
@@ -466,14 +471,15 @@
                     },
                     {
                         "Key": "Component",
-                        "Value": "Notification Service"
+                        "Value": {
+                            "Ref": "Component"
+                        }
                     },
                     {
-                        "Key": "ServiceName",
+                        "Key": "Platform",
                         "Value": {
-                            "Ref": "ServiceName"
-                        },
-                        "PropagateAtLaunch" : "true"
+                            "Ref": "Platform"
+                        }
                     }
                 ]
             }
