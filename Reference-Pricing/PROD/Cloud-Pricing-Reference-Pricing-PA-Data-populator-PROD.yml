@@ -205,6 +205,7 @@ Resources:
       Environment:
         Variables:
           stepFunctionArn: !Ref PAStateMachine
+          env: !Ref EnvironmentShort
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -282,7 +283,8 @@ Resources:
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
-                    "--etl_timestamp.$": "$.etl_timestamp"
+                    "--etl_timestamp.$": "$.etl_timestamp",
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
                   }
                 },
                 "Retry": [
@@ -339,6 +341,11 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "ETL-PA",
+                    "backup_bucket.$": "$.backup_bucket",
+            	    "additional_info_file_s3": "${intermediateS3Name}",
+            	    "backup_file_path.$" : "$.backup_file_path",
+            	    "etl_timestamp.$" : "$.etl_timestamp",
+            	    "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -351,6 +358,11 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Data]",
+                    "backup_bucket.$": "$.backup_bucket",
+          	        "backup_file_path.$" : "$.backup_file_path",
+          	        "additional_info_file_s3": "${backupS3Name}",
+          	        "etl_timestamp.$" : "$.etl_timestamp",
+          	        "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -362,7 +374,9 @@ Resources:
         - {
             PADataETLJobName: !Ref PAETLGlueJob,
             notifierLambdaArn: !Ref NotifierLambdaArn,
-            paDataBackupJobName: !Ref PADataBackupJob
+            paDataBackupJobName: !Ref PADataBackupJob,
+            backupS3Name: !Ref ETLDataBackUpStorage,
+            intermediateS3Name: !Ref IntermediateStorage
         }
       LoggingConfiguration:
         Destinations:
@@ -418,6 +432,7 @@ Resources:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
+        "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxCapacity: 1.0

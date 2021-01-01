@@ -392,6 +392,7 @@ Resources:
         "--enable-spark-ui": 'true'
         "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
         "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
+        "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
@@ -571,6 +572,7 @@ Resources:
       DefaultArguments:
         "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
+        "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: !Ref LoadJobMaximumConcurrency
       GlueVersion: 1.0
@@ -767,7 +769,11 @@ Resources:
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
                     "additional_info_file_s3.$": "$.intermediate_s3_name",
-                    "additional_info_file_key.$": "$.intermediate_directory_path"
+                    "additional_info_file_key.$": "$.intermediate_directory_path",
+                    "backup_bucket.$": "$.backup_bucket",
+                    "backup_file_path.$" : "$.backup_file_path",
+                    "etl_output_path_key.$": "$.etl_output_path_key",
+                    "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }
                 },
                 "End": true
@@ -780,6 +786,7 @@ Resources:
                   "id.$": "$$.Map.Item.Value",
                   "partitioned_files_key.$": "$.partitioned_files_key",
                   "intermediate_s3_name.$": "$.intermediate_s3_name",
+                  "intermediate_directory_path.$": "$.intermediate_directory_path",
                   "etl_timestamp.$": "$.etl_timestamp"
                 },
                 "Iterator": {
@@ -794,6 +801,7 @@ Resources:
                           "--opco_id.$": "$.id",
                           "--partitioned_files_key.$": "$.partitioned_files_key",
                           "--intermediate_s3_name.$": "$.intermediate_s3_name",
+                          "--intermediate_directory_path.$": "$.intermediate_directory_path",
                           "--etl_timestamp.$": "$.etl_timestamp"
                         }
                       },
@@ -827,8 +835,12 @@ Resources:
                         "Payload":{
                            "opco_id.$":"$.id",
                            "message.$":"$.error.Cause",
-                            "event": "ETL-PRICE_ZONE",
-                            "stepFunctionExecutionId.$": "$$.Execution.Id"
+                           "event": "ETL-PRICE_ZONE",
+                           "additional_info_file_s3.$": "$.intermediate_s3_name",
+                           "etl_output_path_key.$": "$.etl_output_path_key",
+                           "backup_bucket.$": "$.backup_bucket",
+                           "backup_file_path.$" : "$.backup_file_path",
+                           "stepFunctionExecutionId.$": "$$.Execution.Id"
                         }
                       },
                       "End": true
@@ -884,6 +896,7 @@ Resources:
                     "--partitioned_files_key.$": "$.partitioned_files_key",
                     "--decompressed_file_path.$": "$.decompressed_file_path",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
+                    "--backup_file_path.$": "$.backup_file_path",
                     "--intermediate_directory_path.$": "$.intermediate_directory_path"
                   }
                 },
@@ -909,6 +922,8 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Zone Data]",
+                    "backup_bucket.$": "$.backup_bucket",
+                    "backup_file_path.$" : "$.backup_file_path",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "additional_info_file_s3": "${backupS3Name}",
                     "etl_timestamp.$": "$.etl_timestamp",
@@ -929,7 +944,7 @@ Resources:
             jobStatusAnalyzerLambdaArn: !GetAtt PriceZoneJobStatusAnalyzerLambda.Arn,
             waitStatusAnalyzerLambdaArn: !GetAtt PriceZoneETLWaitStatusAnalyzerLambda.Arn,
             notifierLambdaArn: !Ref NotifierLambdaArn,
-            metadataAggregator: !Sub 'CP-REF-ETL-metadata-aggregator-${EnvironmentShort}',
+            metadataAggregator: !Sub 'CP-REF-PRICE-ETL-metadata-aggregator-${EnvironmentShort}',
             backupS3Name: !Ref ETLDataBackUpStorage,
             backupedAdditonalInfoFile: !Ref ETLDataBackUpStorage
         }
