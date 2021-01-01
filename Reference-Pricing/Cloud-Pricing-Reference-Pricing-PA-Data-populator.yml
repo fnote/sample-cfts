@@ -319,6 +319,7 @@ Resources:
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
+                    "--backup_file_path.$": "$.backup_file_path",
                     "--etl_output_path_key.$": "$.etl_output_path_key"
                   }
                 },
