@@ -128,11 +128,6 @@
 				"PROD"
 			],
 			"ConstraintDescription": "Must be a valid environment."
-		},
-		"ServiceName": {
-			"Description": "Service Name",
-			"Type": "String",
-			"Default": "Pricing service"
 		}
 	},
 	"Resources": {
@@ -158,8 +153,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
 				]
 			},
 			"Metadata" : {
@@ -183,8 +177,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }}
 				]
 			}
 		},
@@ -205,8 +198,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" }
 				]
 			}
 		},
@@ -227,8 +219,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" }
 				]
 			}
 		},

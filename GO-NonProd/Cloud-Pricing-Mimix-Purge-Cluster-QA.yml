@@ -57,10 +57,6 @@ Parameters:
     Description: Platform
     Type: String
     Default: CP Pricing Service
-  ServiceName:
-    Description: Service Name
-    Type: String
-    Default: Pricing service
   EnvironmentShort:
     Description: Environment for application
     Type: String
