@@ -32,7 +32,7 @@ Parameters:
   Component:
     Description: Component name
     Type: String
-    Default: CP Mimix Purge
+    Default: Pricing service
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
@@ -255,7 +255,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-1-
+          - - CP-Mimix-Purge-Sync-Compute-Environment-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34

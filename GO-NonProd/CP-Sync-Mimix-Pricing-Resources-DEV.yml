@@ -48,12 +48,12 @@ Parameters:
     Default: villanueva.loi@corp.sysco.com
     MinLength: '1'
     MaxLength: '255'
-  Component:
-    Description: Component name
+  ApplicationSubName:
+    Description: Application_Sub_Name - Common, user-friendly name
     Type: String
     Default: CP-Sync-Mimix-Pricing
-  ServiceName:
-    Description: Service Name
+  Component:
+    Description: Component Name
     Type: String
     Default: Pricing service
   SupportEmail:
@@ -64,6 +64,10 @@ Parameters:
     Description: Used by 2nd Watch Managed Services in shared accounts to determine if a resource is supported
     Type: String
     Default: team_managed
+  Platform:
+    Description: Platform
+    Type: String
+    Default: CP Pricing Service
   Owner:
     Description: Name of application owner
     Type: String
@@ -257,7 +261,7 @@ Resources:
           Value: !Ref 'Environment'
           PropagateAtLaunch: 'true'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
           PropagateAtLaunch: 'true'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
@@ -271,8 +275,11 @@ Resources:
         - Key: Project_ID
           Value: !Ref 'ProjectId'
           PropagateAtLaunch: 'true'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+          PropagateAtLaunch: 'true'
+        - Key: Platform
+          Value: !Ref 'Platform'
           PropagateAtLaunch: 'true'
     DependsOn: ECSCluster
 
@@ -719,7 +726,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -732,8 +739,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerTwoEcsService:
     Type: AWS::ECS::Service
@@ -761,7 +770,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -774,8 +783,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerThreeEcsService:
     Type: AWS::ECS::Service
@@ -803,7 +814,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -816,8 +827,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerFourEcsService:
     Type: AWS::ECS::Service
@@ -845,7 +858,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -858,8 +871,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerFiveEcsService:
     Type: AWS::ECS::Service
@@ -887,7 +902,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -900,8 +915,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerSixEcsService:
     Type: AWS::ECS::Service
@@ -929,7 +946,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -942,8 +959,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerSevenEcsService:
     Type: AWS::ECS::Service
@@ -971,7 +990,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -984,8 +1003,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerEightEcsService:
     Type: AWS::ECS::Service
@@ -1013,7 +1034,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -1026,8 +1047,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerNineEcsService:
     Type: AWS::ECS::Service
@@ -1055,7 +1078,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -1068,8 +1091,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
   ServerTenEcsService:
     Type: AWS::ECS::Service
@@ -1097,7 +1122,7 @@ Resources:
         - Key: Technical:Environment
           Value: !Ref 'Environment'
         - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
+          Value: !Ref 'ApplicationSubName'
         - Key: Technical:ApplicationRole
           Value: !Ref 'ApplicationRole'
         - Key: Support_Email
@@ -1110,8 +1135,10 @@ Resources:
           Value: !Ref 'PONumber'
         - Key: Project_ID
           Value: !Ref 'ProjectId'
-        - Key: ServiceName
-          Value: !Ref 'ServiceName'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Platform
+          Value: !Ref 'Platform'
 
 
 Outputs:
