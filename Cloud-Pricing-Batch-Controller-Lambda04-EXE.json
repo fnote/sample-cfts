@@ -76,6 +76,11 @@
 			"Description" : "*** TBD ****",
 			"Default": "cloud-pricing-auroradb-exe-04-cpedbclusterexe-1wi01rtvrq3qb.cluster-ro-crkqmj3qk07x.us-east-1.rds.amazonaws.com"
 		},
+		"CommonDBPassword" : {
+			"Type" : "String",
+			"Description" : "User password of the Common DB",
+			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="
+		},
 		"SplunkHECToken" : {
 			"Type" : "String",
 			"Description" : "*** TBD ****",
@@ -145,7 +150,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Batch service"
 		},
 		"Environment": {
 			"Description": "Environment for application",
@@ -212,7 +222,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Lambda Batch Controller" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				],
 				"Environment": {
 					"Variables": {
@@ -229,18 +239,7 @@
 								]
 							]
 						},
-						"COMMONDB_PASSWORD": {
-							"Fn::Join": [
-								"",
-								[
-									"{{resolve:ssm-secure:/CP/",
-									{
-										"Ref": "EnvironmentShort"
-									},
-									"/DATABASE/PLATFORM/PASSWORD:1}}"
-								]
-							]
-						},
+						"COMMONDB_PASSWORD": { "Ref" : "CommonDBPassword" },
 						"ENVIRONMENT": { "Ref" : "Environment" },
 						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
 						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },

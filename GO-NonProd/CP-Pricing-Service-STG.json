@@ -154,6 +154,11 @@
 			"Type": "String",
 			"Default": "Cloud Pricing V4"
 		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Pricing service"
+		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
@@ -337,7 +342,9 @@
 					},
 					{
 						"Key": "Component",
-						"Value": "CP-Pricing-Service",
+						"Value": {
+							"Ref": "Component"
+						},
 						"PropagateAtLaunch": "true"
 					}
 				]
@@ -741,7 +748,9 @@
 					},
 					{
 						"Key": "Component",
-						"Value": "CP-Pricing-Service Target Group"
+						"Value": {
+							"Ref": "Component"
+						}
 					}
 				]
 			}

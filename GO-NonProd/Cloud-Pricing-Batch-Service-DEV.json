@@ -29,10 +29,19 @@
             "AllowedPattern": "[\\x20-\\x7E]*",
             "ConstraintDescription": "Must contain only ASCII characters."
         },
+        "ApplicationSubName": {
+            "Description": "Application_Sub_Name",
+            "Type": "String",
+            "Default": "CP Batch",
+            "MinLength": "1",
+            "MaxLength": "255",
+            "AllowedPattern": "[\\x20-\\x7E]*",
+            "ConstraintDescription": "Must contain only ASCII characters."
+        },
         "Component": {
             "Description": "Component name",
             "Type": "String",
-            "Default": "CP Batch",
+            "Default": "Batch service",
             "MinLength": "1",
             "MaxLength": "255",
             "AllowedPattern": "[\\x20-\\x7E]*",
@@ -84,7 +93,7 @@
         "Platform": {
             "Description": "Platform",
             "Type": "String",
-            "Default": "Cloud Pricing V4"
+            "Default": "CP Pricing Service"
         },
         "ApplicationRole": {
             "Description": "The type of application stack",
@@ -297,11 +306,21 @@
                                 },
                                 {
                                     "Key": "Platform",
-                                    "Value": "Cloud Pricing V4"
+                                    "Value": {
+                                        "Ref": "Platform"
+                                    }
+                                },
+                                {
+                                    "Key": "Component",
+                                    "Value": {
+                                        "Ref": "Component"
+                                    }
                                 },
                                 {
                                     "Key": "Technical:ApplicationSubName",
-                                    "Value": "CP Batch"
+                                    "Value": {
+                                        "Ref": "ApplicationSubName"
+                                    }
                                 },
                                 {
                                     "Key": "Automation:CloudCustodian:LaunchedBy",
@@ -335,7 +354,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-1-",
+                            "CP-Batch-Compute-Env-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -399,7 +418,7 @@
                     ,
 
                         "Technical:ApplicationSubName": {
-                            "Ref": "Component"
+                            "Ref": "ApplicationSubName"
                         }
                     ,
                         "Technical:ApplicationRole": {
@@ -407,7 +426,7 @@
                         }
                     ,
                         "Name": {
-                            "Ref": "Component"
+                            "Ref": "ApplicationSubName"
                         }
                     ,
                         "Approver": {
@@ -438,6 +457,12 @@
                         "Platform": {
                             "Ref": "Platform"
                         }
+                    ,
+                    
+                        "Component": {
+                            "Ref": "Component"
+                        }                   
+
                     }
                 },
                 "State": "ENABLED"

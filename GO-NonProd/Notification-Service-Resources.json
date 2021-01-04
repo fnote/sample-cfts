@@ -150,8 +150,17 @@
             "MinValue": "1",
             "MaxValue": "10000",
             "ConstraintDescription": "must be between 1 and 10000"
-        }
-    },
+        },
+        "Platform": {
+            "Description": "Platform",
+            "Type": "String",
+            "Default": "CP Pricing Service"
+        },
+        "Component": {
+            "Description": "Component Name",
+            "Type": "String",
+            "Default": "Notification Service"
+        }},
     "Resources": {
         "CpNotificationServiceTopic": {
             "Type": "AWS::SNS::Topic",
@@ -262,7 +271,15 @@
                     },
                     {
                         "Key": "Component",
-                        "Value": "Notification Service"
+                        "Value": {
+                            "Ref": "Component"
+                        }
+                    },
+                    {
+                        "Key": "Platform",
+                        "Value": {
+                            "Ref": "Platform"
+                        }
                     }
                 ]
             }
@@ -454,7 +471,15 @@
                     },
                     {
                         "Key": "Component",
-                        "Value": "Notification Service"
+                        "Value": {
+                            "Ref": "Component"
+                        }
+                    },
+                    {
+                        "Key": "Platform",
+                        "Value": {
+                            "Ref": "Platform"
+                        }
                     }
                 ]
             }

@@ -177,7 +177,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Support_Email", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }}
 				]
 			}
 		},

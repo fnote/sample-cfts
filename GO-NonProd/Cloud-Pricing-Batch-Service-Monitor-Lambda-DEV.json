@@ -143,7 +143,12 @@
     "Platform": {
       "Description": "Platform",
       "Type": "String",
-      "Default": "Cloud Pricing V4"
+      "Default": "CP Pricing Service"
+    },
+    "Component": {
+      "Description": "Component Name",
+      "Type": "String",
+      "Default": "Batch service"
     },
     "SupportEmail": {
       "Description": "Email distribution list for technical product/platform team contact",
@@ -222,7 +227,7 @@
           { "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
           { "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
           { "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-          { "Key" : "Component", "Value": "Lambda Batch Service Monitor" }
+          { "Key" : "Component", "Value": { "Ref" : "Component" } }
         ],
         "Environment": {
           "Variables": {
