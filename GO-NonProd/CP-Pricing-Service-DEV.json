@@ -346,13 +346,6 @@
 							"Ref": "Component"
 						},
 						"PropagateAtLaunch": "true"
-					},
-					{
-						"Key": "ServiceName",
-						"Value": {
-							"Ref": "ServiceName"
-						},
-						"PropagateAtLaunch": "true"
 					}
 				]
 			},
@@ -757,12 +750,6 @@
 						"Key": "Component",
 						"Value": {
 							"Ref": "Component"
-						}
-					},
-					{
-						"Key": "ServiceName",
-						"Value": {
-							"Ref": "ServiceName"
 						}
 					}
 				]
