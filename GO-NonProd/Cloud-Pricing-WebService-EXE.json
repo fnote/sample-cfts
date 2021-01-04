@@ -175,11 +175,6 @@
 			"Description": "Dynatrace Application Name",
 			"Type": "String",
 			"Default": "cpws-ng-"
-		},
-		"ServiceName": {
-			"Description": "Service Name",
-			"Type": "String",
-			"Default": "Pricing service"
 		}
 	},
 	"Resources": {
@@ -209,8 +204,7 @@
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Pricing Web Service", "PropagateAtLaunch" : "true" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": "Pricing Web Service", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -429,8 +423,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Pricing Web Service" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": "Pricing Web Service" }
 				]
 			}
 		},
