@@ -310,6 +310,7 @@
 					"# JavaJDK, code delpoy agent, cloud watch agent\n",
 					"##############################################\n",
 					"yum -y update\n",
+					"yum install -y ruby\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
@@ -379,7 +380,7 @@
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"restart datadog-agent\n",
+					"systemctl restart datadog-agent\n",
 
 
 					"##############################################\n",
