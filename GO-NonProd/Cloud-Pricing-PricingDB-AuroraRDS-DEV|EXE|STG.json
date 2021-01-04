@@ -112,8 +112,8 @@
 			"Type": "String",
 			"Default": "Cloud Pricing V4"
 		},
-		"ServiceName": {
-			"Description": "Service Name",
+		"Component": {
+			"Description": "Component Name",
 			"Type": "String",
 			"Default": "Pricing service"
 		},
@@ -208,8 +208,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora Pricing DB" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -239,8 +238,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora Pricing DB" },
-					{ "Key" : "ServiceName", "Value": { "Ref" : "ServiceName" }}
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		}
