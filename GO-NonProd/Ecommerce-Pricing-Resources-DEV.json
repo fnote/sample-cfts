@@ -282,10 +282,10 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-					"##############################################\n",
+					"#####################################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
-					"##############################################\n",
+					"# Ruby, JavaJDK, code delpoy agent, cloud watch agent\n",
+					"#####################################################\n",
 					"yum -y update\n",
 					"yum install -y ruby\n",
 					"cd /tmp\n",
