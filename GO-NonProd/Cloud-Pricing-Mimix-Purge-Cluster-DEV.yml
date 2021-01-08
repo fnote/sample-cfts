@@ -129,6 +129,10 @@ Parameters:
     Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
     Type: String
     Default: ami-0f9979854ae60d5b4
+  ComputeEnvironmentNamePrefix:
+    Description: Compute environment name prefix
+    Type: String
+    Default: CP-Mimix-Purge-Sync-Compute-Environment-3-
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -251,7 +255,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Mimix-Purge-Sync-Compute-Environment-3-
+          - - Ref: 'ComputeEnvironmentNamePrefix'
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
