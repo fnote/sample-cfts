@@ -179,7 +179,7 @@ Resources:
               VolumeType: io1
               Iops: 2000
               DeleteOnTermination: true
-         TagSpecifications:
+        TagSpecifications:
           - ResourceType: volume
             Tags:
               - Key: Technical:ApplicationName
