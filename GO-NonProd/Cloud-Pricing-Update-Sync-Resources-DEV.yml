@@ -122,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-NonProd
   CommonAMI:
-    Description: SYSCO-GOLD-ECS -> ami-0e38f2a5bea6a80ec
+    Description: SYSCOGOLD-TEAMMANAGED-AMZL2_ECS_OPTIMIZED-2021.01.01 -> ami-0f9979854ae60d5b4
     Type: String
-    Default: ami-0e38f2a5bea6a80ec
+    Default: ami-0f9979854ae60d5b4
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -179,8 +179,6 @@ Resources:
               VolumeType: io1
               Iops: 2000
               DeleteOnTermination: true
-        UserData:
-          TUlNRS1WZXJzaW9uOiAxLjANCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOyBib3VuZGFyeT0iPT1NWUJPVU5EQVJZPT0iDQoNCi0tPT1NWUJPVU5EQVJZPT0NCk1JTUUtVmVyc2lvbjogMS4wIA0KQ29udGVudC1UeXBlOiB0ZXh0L2Nsb3VkLWJvb3Rob29rOyBjaGFyc2V0PSJ1cy1hc2NpaSINCg0KIyEvYmluL2Jhc2gNCmNsb3VkLWluaXQtcGVyIG9uY2UgZG9ja2VyX29wdGlvbnMgZWNobyAnRE9DS0VSX1NUT1JBR0VfT1BUSU9OUz0iJHtET0NLRVJfU1RPUkFHRV9PUFRJT05TfSAtLXN0b3JhZ2Utb3B0IGRtLmJhc2VzaXplPTIwRyInID4+IC9ldGMvc3lzY29uZmlnL2RvY2tlci1zdG9yYWdlDQoNCi0tPT1NWUJPVU5EQVJZPT0tLQ==
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -227,7 +225,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Update-Sync-EC2-Compute-Environment-1-
+          - - CP-Update-Sync-EC2-Compute-Environment-2-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
