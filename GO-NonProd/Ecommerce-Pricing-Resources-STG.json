@@ -62,9 +62,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL-2020.10.30 -> ami-0565195ca8aeb0a55",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-09e47fa0523aa1c14",
 			"Type": "String",
-			"Default" : "ami-0565195ca8aeb0a55",
+			"Default" : "ami-09e47fa0523aa1c14",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -286,11 +286,12 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-					"##############################################\n",
+					"#####################################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, code delpoy agent, cloud watch agent\n",
-					"##############################################\n",
+					"# Ruby, JavaJDK, code delpoy agent, cloud watch agent\n",
+					"#####################################################\n",
 					"yum -y update\n",
+					"yum install -y ruby\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
@@ -351,7 +352,7 @@
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"restart datadog-agent\n",
+					"systemctl restart datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
