@@ -62,9 +62,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-09e47fa0523aa1c14",
 			"Type": "String",
-			"Default" : "ami-0565195ca8aeb0a55",
+			"Default" : "ami-09e47fa0523aa1c14",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -157,7 +157,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "RevMan MarketPricing V1"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Ecomm Margin Service"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
@@ -220,7 +225,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component","Value" : { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -288,11 +293,12 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-					"##############################################\n",
+					"#####################################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
-					"##############################################\n",
+					"# Ruby, JavaJDK, code delpoy agent, cloud watch agent\n",
+					"#####################################################\n",
 					"yum -y update\n",
+					"yum install -y ruby\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
@@ -358,7 +364,7 @@
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"restart datadog-agent\n",
+					"systemctl restart datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
@@ -451,7 +457,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service ALB" }
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -497,7 +503,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service Target" }
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -525,6 +531,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } }
 				]
 			},
@@ -586,7 +593,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -615,7 +622,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -646,7 +653,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
