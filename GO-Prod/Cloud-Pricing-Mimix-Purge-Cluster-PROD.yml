@@ -1453,7 +1453,15 @@ Resources:
           - DeviceName: /dev/xvda
             Ebs:
               VolumeSize: !Ref 'RootVolumeSize'
-              VolumeType: gp2
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
+          - DeviceName: /dev/xvdcz
+            Ebs:
+              VolumeSize: !Ref 'RootVolumeSize'
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
         TagSpecifications:
           - ResourceType: volume
             Tags:
