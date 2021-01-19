@@ -319,6 +319,7 @@ Resources:
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_timestamp.$": "$.etl_timestamp",
+                    "--backup_file_path.$": "$.backup_file_path",
                     "--etl_output_path_key.$": "$.etl_output_path_key"
                   }
                 },
@@ -342,10 +343,10 @@ Resources:
                   "Payload": {
                     "event": "ETL-PA",
                     "backup_bucket.$": "$.backup_bucket",
-            	    "additional_info_file_s3": "${intermediateS3Name}",
-            	    "backup_file_path.$" : "$.backup_file_path",
-            	    "etl_timestamp.$" : "$.etl_timestamp",
-            	    "etl_output_path_key.$" : "$.etl_output_path_key",
+              	    "additional_info_file_s3": "${intermediateS3Name}",
+              	    "backup_file_path.$" : "$.backup_file_path",
+              	    "etl_timestamp.$" : "$.etl_timestamp",
+              	    "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
