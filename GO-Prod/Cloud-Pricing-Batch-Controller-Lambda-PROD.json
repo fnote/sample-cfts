@@ -94,7 +94,7 @@
 		"CommonDBPassword" : {
 			"Type" : "String",
 			"Description" : "User password of the Common DB",
-			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="
+			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="			
 		},
 		"CommonDBURL" : {
 			"Type" : "String",
