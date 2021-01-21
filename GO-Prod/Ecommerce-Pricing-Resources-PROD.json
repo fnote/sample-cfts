@@ -710,6 +710,10 @@
 					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
+		},
+		"CPWebCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "Ecomm_Service" }
 		}
 	}
 }
