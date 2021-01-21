@@ -285,6 +285,11 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+					
+					"# For DD APM\n",
+
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-javaagent:/etc/dd-java-agent/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=stg\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
 
 					"#####################################################\n",
 					"# Install Dependencies.\n",
@@ -317,6 +322,15 @@
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"##############################################\n",
 					"# Datadog - Configuration\n",
 					"##############################################\n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
@@ -332,6 +346,8 @@
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",

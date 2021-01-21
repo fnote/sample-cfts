@@ -62,9 +62,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "CP-Linux-Base-20190531 -> ami-0321a6ac5fe506c98",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-09e47fa0523aa1c14",
 			"Type": "String",
-			"Default" : "ami-0565195ca8aeb0a55",
+			"Default" : "ami-09e47fa0523aa1c14",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -157,7 +157,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "RevMan MarketPricing V1"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Ecomm Margin Service"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
@@ -187,10 +192,19 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
-		"DynatraceApplicationName": {
-			"Description": "Dynatrace Application Name",
-			"Type": "String",
-			"Default": "cp-ecomm-service"
+		"EnvironmentChar": {
+			"AllowedValues": [
+				"d",
+				"q",
+				"s",
+				"e",
+				"t",
+				""
+			],
+			"ConstraintDescription": "Must be a valid environment.",
+			"Default": "",
+			"Description": "Environment for application in single char",
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -208,19 +222,19 @@
 				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNa" }, { "Ref" : "PvtSNb" }, { "Ref" : "PvtSNc" } ],
 				"Tags" : [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Ecomm Pricing WebService AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true"  },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" }
+						{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
+						{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true"  },
+						{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true"  },
+						{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
+						{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
@@ -248,21 +262,27 @@
 				],
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
 					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
 					"date > /home/ec2-user/starttime\n",
 
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\"\n",
+					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",
+					{
+						"Ref": "EnvironmentChar"
+					},
+					".na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
+					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",
+					{
+						"Ref": "EnvironmentChar"
+					},
+					".na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
-					"############################################Ecomm_Service##\n",
+					"##############################################\n",
 					"# Add Users to server\n",
 					"##############################################\n",
 					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
@@ -288,18 +308,20 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-					"##############################################\n",
+					"# For DD APM\n",
+
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-javaagent:/etc/dd-java-agent/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=prod\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
+
+					"#####################################################\n",
 					"# Install Dependencies.\n",
-					"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
-					"##############################################\n",
+					"# Ruby, JavaJDK, code delpoy agent, cloud watch agent\n",
+					"#####################################################\n",
 					"yum -y update\n",
+					"yum install -y ruby\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
-
-					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.169.172.sh \"https://cww56350.live.dynatrace.com/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=iKxGGC4HRFKlYGbgsYt_g&amp;arch=x86&amp;flavor=default\"\n",
-					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.169.172.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.169.172.sh  APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=bts-cloudpricing-prod-", { "Ref" : "DynatraceApplicationName" }, "\n",
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
@@ -322,6 +344,15 @@
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
 					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
+					"##############################################\n",
 					"# Datadog - Configuration\n",
 					"##############################################\n",
 					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
@@ -337,6 +368,8 @@
 					"   - environment:",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: production\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
@@ -358,7 +391,7 @@
 					"EOF\n",
 
 					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"restart datadog-agent\n",
+					"systemctl restart datadog-agent\n",
 
 					"##############################################\n",
 					"# CloudWatch Configuration\n",
@@ -370,7 +403,6 @@
 					"cd /tmp\n",
 
 					"date > /home/ec2-user/stoptime"
-
 				]]}}
 			}
 		},
@@ -442,16 +474,16 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Ecommerce Pricing Web Service ALB" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Ecommerce Pricing Web Service ALB" },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Load Balancer" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service ALB" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -461,6 +493,25 @@
 				"LoadBalancerArn":  { "Ref": "WebServiceALB" },
 				"Port": "80",
 				"Protocol": "HTTP",
+				"DefaultActions": [
+					{
+						"Type": "forward",
+						"TargetGroupArn": { "Ref": "TargetGroup" }
+					}
+				]
+			}
+		},
+		"LoadBalancerListenerHTTPS": {
+			"Type": "AWS::ElasticLoadBalancingV2::Listener",
+			"Properties": {
+				"LoadBalancerArn":  { "Ref": "WebServiceALB" },
+				"Certificates": [
+					{
+						"CertificateArn": { "Ref" : "SSLCertificate" }
+					}
+				],
+				"Port": "443",
+				"Protocol": "HTTPS",
 				"DefaultActions": [
 					{
 						"Type": "forward",
@@ -496,8 +547,8 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Ecommerce Pricing Web Service Target" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -517,9 +568,9 @@
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Ecommerce Pricing Web Service S3 bucket" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "S3 bucket" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Ecommerce Pricing Web Service Target" },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "S3 bucket" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -530,6 +581,16 @@
 			},
 			"Metadata" : {
 				"Comment" : "S3 Bucket for Ecomm Data storing"
+			}
+		},
+		"CPCodeDeployGroup": {
+			"Type" : "AWS::CodeDeploy::DeploymentGroup",
+			"Properties" : {
+				"ApplicationName" : "Ecomm_Service",
+				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
+				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
+				"DeploymentGroupName" : { "Fn::Join" : ["", ["Ecomm_Service_", { "Ref" : "EnvironmentShort" }]]},
+				"ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
 			}
 		},
 		"ECOMMDBCluster" : {
@@ -585,8 +646,8 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -614,54 +675,9 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
+					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
 				]
-			}
-		},
-		"DB0Primary02" : {
-			"Type" : "AWS::RDS::DBInstance",
-			"DependsOn": "DB0Primary01",
-			"Properties" :  {
-				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "02" ]]},
-				"AllowMajorVersionUpgrade" : "true",
-				"AutoMinorVersionUpgrade" : "true",
-				"CopyTagsToSnapshot" : "true",
-				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
-				"DBInstanceClass" : "db.r5.xlarge",
-				"Engine" : "aurora",
-				"DBSubnetGroupName" : "rds-subnet-group",
-				"DBParameterGroupName":"ecomm-ro-param-group",
-				"Tags" : [
-					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
-					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
-					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
-					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
-					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
-					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
-					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
-					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
-					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
-					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
-					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
-				]
-			}
-		},
-		"CPWebCodeDeployApp": {
-			"Type" : "AWS::CodeDeploy::Application",
-			"Properties" : { "ApplicationName" : "Ecomm_Service" }
-		},
-		"CPCodeDeployGroup": {
-			"Type" : "AWS::CodeDeploy::DeploymentGroup",
-			"Properties" : {
-				"ApplicationName" : "Ecomm_Service",
-				"AutoScalingGroups" : [ { "Ref" : "WebServiceGroup" } ],
-				"DeploymentConfigName" : "CodeDeployDefault.OneAtATime",
-				"DeploymentGroupName" : { "Fn::Join" : ["", ["Ecomm_Service_", { "Ref" : "EnvironmentShort" }]]},
-				"ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
 			}
 		}
 	}
