@@ -407,6 +407,36 @@ Resources:
             - Name: APPLICATION_MODE
               Value: MIMIX_NORMAL_MODE
 
+  CpMimixSyncSalesInvoiceTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-SalesInvoice-Task-Definition-'
+          - !Ref 'EnvironmentShort'
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
+      ContainerDefinitions:
+        - Name: cp-mimix-sync-sales-invoice-container
+          Essential: 'true'
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/SALES_INVOICE
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref 'EnvironmentShort'
+            - Name: SYNC_TYPE
+              Value: SALES_INVOICE
+            - Name: APPLICATION_MODE
+              Value: MIMIX_NORMAL_MODE
+
   ProductInfoService:
     Type: AWS::ECS::Service
     Properties:
@@ -539,6 +569,50 @@ Resources:
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
+  SalesInvoiceService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: 'CP-Mimix-Sync-SalesInvoice-Ecs-Service'
+      Cluster: !Ref 'ECSCluster'
+      LaunchType: EC2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'CpMimixSyncSalesInvoiceTaskDefinition'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - 'cp-mimix-sync-sales-invoice-ecs-service-'
+              - !Ref 'EnvironmentShort'
+        - Key: Technical:ApplicationName
+          Value: !Ref 'ApplicationName'
+        - Key: Technical:ApplicationID
+          Value: !Ref 'ApplicationId'
+        - Key: Technical:PlatformOwner
+          Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'ApplicationSubName'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Approver
+          Value: !Ref 'Approver'
+        - Key: PO_Number
+          Value: !Ref 'PONumber'
+        - Key: Project_ID
+          Value: !Ref 'ProjectId'
+
   CpMimixSyncCrashHandlingCustomerPricingTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
@@ -626,6 +700,36 @@ Resources:
               Value: !Ref 'EnvironmentShort'
             - Name: SYNC_TYPE
               Value: PRODUCT_INFO
+            - Name: APPLICATION_MODE
+              Value: CRASH_HANDLING_MODE
+
+  CpMimixSyncCrashHandlingSalesInvoiceTaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Family: !Join
+        - ''
+        - - 'CP-Mimix-Sync-Crash-Handling-SalesInvoice-Task-Definition-'
+          - !Ref 'EnvironmentShort'
+      ExecutionRoleArn: !Ref 'ExecutionRole'
+      TaskRoleArn: !Ref 'TaskRole'
+      ContainerDefinitions:
+        - Name: cp-mimix-sync-crash-handling-sales-invoice-container
+          Essential: 'true'
+          Image: !Ref 'DockerImageArn'
+          Cpu: !Ref 'CPUReserved'
+          MemoryReservation: !Ref 'MemoryReserved'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'LogGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: ecs/CRASH_HANDLING_SALES_INVOICE
+              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
+          Environment:
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: !Ref 'EnvironmentShort'
+            - Name: SYNC_TYPE
+              Value: SALES_INVOICE
             - Name: APPLICATION_MODE
               Value: CRASH_HANDLING_MODE
 
@@ -761,6 +865,50 @@ Resources:
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
+  CrashHandlingSaleInvoiceService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-SaleInvoice-Ecs-Service'
+      Cluster: !Ref 'ECSCluster'
+      LaunchType: EC2
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: !Ref 'DesiredCount'
+      TaskDefinition: !Ref 'CpMimixSyncCrashHandlingSalesInvoiceTaskDefinition'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - ''
+            - - 'cp-mimix-sync-crash-handling-sales-invoice-ecs-service-'
+              - !Ref 'EnvironmentShort'
+        - Key: Technical:ApplicationName
+          Value: !Ref 'ApplicationName'
+        - Key: Technical:ApplicationID
+          Value: !Ref 'ApplicationId'
+        - Key: Technical:PlatformOwner
+          Value: !Ref 'Owner'
+        - Key: Technical:Environment
+          Value: !Ref 'Environment'
+        - Key: Technical:ApplicationSubName
+          Value: !Ref 'ApplicationSubName'
+        - Key: Technical:ApplicationRole
+          Value: !Ref 'ApplicationRole'
+        - Key: Support_Email
+          Value: !Ref 'SupportEmail'
+        - Key: 2WTAGGER
+          Value: !Ref '2WTAGGER'
+        - Key: Platform
+          Value: !Ref 'Platform'
+        - Key: Component
+          Value: !Ref 'Component'
+        - Key: Approver
+          Value: !Ref 'Approver'
+        - Key: PO_Number
+          Value: !Ref 'PONumber'
+        - Key: Project_ID
+          Value: !Ref 'ProjectId'
+
 Outputs:
   CustomerPricingTaskDefinition:
     Description: The Cp MimixSync CustomerPricing task definition ARN
@@ -771,6 +919,9 @@ Outputs:
   ProductInfoTaskDefinition:
     Description: The Cp MimixSync ProductInfo task definition ARN
     Value: !Ref CpMimixSyncProductInfoTaskDefinition
+  SalesInvoiceTaskDefinition:
+    Description: The Cp MimixSync SalesInvoice task definition ARN
+    Value: !Ref CpMimixSyncSalesInvoiceTaskDefinition
   ClusterARN:
     Description: The ECS Cluster ARN
     Value: !GetAtt ECSCluster.Arn
