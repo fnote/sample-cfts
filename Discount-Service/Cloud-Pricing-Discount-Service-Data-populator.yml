@@ -801,7 +801,7 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  ETLTriggerLambaRole:
+  ETLTriggerLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub 'CP-DISCOUNTS-ETLTriggerLambdaRole-${EnvironmentShort}'
@@ -840,10 +840,26 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:*
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                  - s3:DeleteObject
+                  - s3:PutObject
                 Resource:
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+        - PolicyName: cp-discounts-etl-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}'
+                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}/*'
       Path: '/'
 
 
