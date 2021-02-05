@@ -870,7 +870,7 @@ Resources:
   CrashHandlingSaleInvoiceService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Crash-Handling-SaleInvoice-Ecs-Service'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-SalesInvoice-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:

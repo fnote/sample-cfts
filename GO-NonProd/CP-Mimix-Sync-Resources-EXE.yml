@@ -722,7 +722,7 @@ Resources:
           MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
-            Options:
+            Options:CP-Mimix-Sync-Crash-Handling-SalesInvoice-Ecs-Service
               awslogs-group: !Ref 'LogGroup'
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/CRASH_HANDLING_SALES_INVOICE
@@ -870,7 +870,7 @@ Resources:
   CrashHandlingSaleInvoiceService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Crash-Handling-SaleInvoice-Ecs-Service'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-SalesInvoice-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: EC2
       DeploymentConfiguration:
