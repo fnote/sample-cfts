@@ -310,7 +310,7 @@
 
 					"# For DD APM\n",
 
-					"sh -c \"echo 'export JAVA_OPTS=\\\" -Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=prod\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=prod\\\"'\" > /etc/profile.d/javaopts.sh\n",
 					"chmod +x /etc/profile.d/javaopts.sh\n",
 
 					"#####################################################\n",
@@ -319,6 +319,7 @@
 					"#####################################################\n",
 					"yum -y update\n",
 					"yum install -y ruby\n",
+					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
 
@@ -645,8 +646,8 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
-					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
 		},
@@ -674,10 +675,45 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
-					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }},
-					{ "Key" : "Component", "Value": { "Ref" : "Component" } }
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
 				]
 			}
+		},
+		"DB0Primary02" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"DependsOn": "DB0Primary01",
+			"Properties" :  {
+				"DBInstanceIdentifier" : { "Fn::Join" : [ "" ,[ "ECOMM01" , { "Ref" : "EnvironmentShort" }, "02" ]]},
+				"AllowMajorVersionUpgrade" : "true",
+				"AutoMinorVersionUpgrade" : "true",
+				"CopyTagsToSnapshot" : "true",
+				"DBClusterIdentifier" : { "Ref" : "ECOMMDBCluster" },
+				"DBInstanceClass" : "db.r5.xlarge",
+				"Engine" : "aurora",
+				"DBSubnetGroupName" : "rds-subnet-group",
+				"DBParameterGroupName":"ecomm-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["ECOMM01-Database-02-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Aurora DB" },
+					{ "Key" : "Technical:ApplicationRole", "Value" : "Database" },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : {"Ref" : "2WTAGGER"} },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } }
+				]
+			}
+		},
+		"CPWebCodeDeployApp": {
+			"Type" : "AWS::CodeDeploy::Application",
+			"Properties" : { "ApplicationName" : "Ecomm_Service" }
 		}
 	}
 }
