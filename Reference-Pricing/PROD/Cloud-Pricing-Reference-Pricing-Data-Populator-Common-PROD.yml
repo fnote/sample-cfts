@@ -13,6 +13,14 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
+  Environment:
+    Description: Type of Environment in order to parameterize code deploy S3 bucket
+    Type: String
+    Default: nonprod
+    AllowedValues:
+      - nonprod
+      - prod
+    ConstraintDescription: Must be a valid environment
   NotifierLambdaSecutyGroup:
     Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
     Type: List<AWS::EC2::SecurityGroup::Id>
@@ -166,7 +174,7 @@ Resources:
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-prod-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-${Environment}-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
@@ -338,7 +346,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/*'
+                  - 'arn:aws:s3:::sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -435,7 +443,7 @@ Resources:
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: metadata_aggregator.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-${Environment}-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/metadata_aggregator.py.zip'
       VpcConfig:
         SecurityGroupIds:
@@ -470,7 +478,6 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-
   ETLDataBackUpGlueRole:
     Type: AWS::IAM::Role
     Properties:
@@ -503,7 +510,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/*'
+                  - 'arn:aws:s3:::sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
