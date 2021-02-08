@@ -40,6 +40,14 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
+  Environment:
+    Description: Type of Environment in order to parameterize code deploy S3 bucket
+    Type: String
+    Default: nonprod
+    AllowedValues:
+      - nonprod
+      - prod
+    ConstraintDescription: Must be a valid environment
   NotifierLambdaArn:
     Description: Arn of the notifier Lambda
     Type: String
@@ -200,7 +208,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-prod-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-${Environment}-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/s3_trigger_lambda.zip'
       Environment:
         Variables:
@@ -237,11 +245,11 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/data_backup_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/data_backup_job.py'
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
         MaxConcurrentRuns: 1
       GlueVersion: 1.0
@@ -424,13 +432,13 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
       Connections:
         Connections:
           - !Ref DatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-prod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
