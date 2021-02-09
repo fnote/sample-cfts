@@ -36,14 +36,14 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
-  Environment:
-    Description: Type of Environment in order to parameterize code deploy S3 bucket
+  Account:
+    Description: Type of AWS account under which the code deploy S3 bucket is available
     Type: String
     Default: nonprod
     AllowedValues:
       - nonprod
       - prod
-    ConstraintDescription: Must be a valid environment
+    ConstraintDescription: Must be a valid account name
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
@@ -321,7 +321,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-${Environment}-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-${Account}-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/s3_trigger_lambda.zip'
       Environment:
         Variables:
@@ -359,10 +359,10 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/decompress_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/decompress_job.py'
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/smart_open-2.1.0-py3.6.egg"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/smart_open-2.1.0-py3.6.egg"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
@@ -391,9 +391,9 @@ Resources:
       Command:
         Name: glueetl
         PythonVersion: 3
-        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
+        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
       DefaultArguments:
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
         "--enable-metrics": ""
         "--enable-continuous-cloudwatch-log": "true"
         "--enable-continuous-log-filter": "true"
@@ -539,7 +539,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: analyze_etl_wait_status.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-${Environment}-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-${Account}-codedeploy
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/analyze_etl_wait_status.zip'
       Environment:
         Variables:
@@ -576,9 +576,9 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
       DefaultArguments:
-        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
+        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
@@ -611,11 +611,11 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/data_backup_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/data_backup_job.py'
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Environment}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
@@ -728,8 +728,8 @@ Resources:
                     "--enable-continuous-cloudwatch-log": "true",
                     "--active_opcos.$": "$.active_opcos",
                     "--intermediate_s3_name.$": "$.intermediate_s3_name",
-          	        "--intermediate_directory_path.$": "$.intermediate_directory_path",
-          	        "--metadata_aggregator": "${metadataAggregator}"
+                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
+                    "--metadata_aggregator": "${metadataAggregator}"
                   },
                   "NumberOfWorkers.$": "$.worker_count",
                   "WorkerType.$": "$.worker_type"
@@ -777,9 +777,9 @@ Resources:
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
                     "event": "ETL-PRICE_ZONE",
                     "additional_info_file_s3.$": "$.intermediate_s3_name",
-          	        "additional_info_file_key.$": "$.intermediate_directory_path",
-          	        "backup_bucket.$": "$.backup_bucket",
-          	        "backup_file_path.$" : "$.backup_file_path",
+                    "additional_info_file_key.$": "$.intermediate_directory_path",
+                    "backup_bucket.$": "$.backup_bucket",
+                    "backup_file_path.$" : "$.backup_file_path",
                     "etl_output_path_key.$": "$.etl_output_path_key",
                     "stepFunctionExecutionId.$": "$$.Execution.Id"
                   }
@@ -845,9 +845,9 @@ Resources:
                            "message.$":"$.error.Cause",
                            "event": "ETL-PRICE_ZONE",
                            "additional_info_file_s3.$": "$.intermediate_s3_name",
-          	               "etl_output_path_key.$": "$.etl_output_path_key",
-          	               "backup_bucket.$": "$.backup_bucket",
-          	               "backup_file_path.$" : "$.backup_file_path",
+                           "etl_output_path_key.$": "$.etl_output_path_key",
+                           "backup_bucket.$": "$.backup_bucket",
+                           "backup_file_path.$" : "$.backup_file_path",
                            "stepFunctionExecutionId.$": "$$.Execution.Id"
                         }
                       },
@@ -931,7 +931,7 @@ Resources:
                   "Payload": {
                     "event": "[ETL] - [Ref Price] [Price Zone Data]",
                     "backup_bucket.$": "$.backup_bucket",
-          	        "backup_file_path.$" : "$.backup_file_path",
+                    "backup_file_path.$" : "$.backup_file_path",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "additional_info_file_s3": "${backupS3Name}",
                     "etl_timestamp.$": "$.etl_timestamp",
