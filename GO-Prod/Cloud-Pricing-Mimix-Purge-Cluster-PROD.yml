@@ -25,10 +25,14 @@ Parameters:
     Description: Application_Name - Common, user-friendly name
     Type: String
     Default: Cloud Pricing
+  ApplicationSubName:
+    Description: Application_Sub_Name - Common, user-friendly name
+    Type: String
+    Default: CP Mimix Purge
   Component:
     Description: Component name
     Type: String
-    Default: CP Mimix Purge
+    Default: Pricing service
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
@@ -52,7 +56,7 @@ Parameters:
   Platform:
     Description: Platform
     Type: String
-    Default: Cloud Pricing V4
+    Default: CP Pricing Service
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -122,9 +126,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.10.30
+    Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
     Type: String
-    Default: ami-0e38f2a5bea6a80ec
+    Default: ami-0f9979854ae60d5b4
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -1449,20 +1453,15 @@ Resources:
           - DeviceName: /dev/xvda
             Ebs:
               VolumeSize: !Ref 'RootVolumeSize'
-              VolumeType: gp2
-        UserData: !Base64
-          |
-          MIME-Version: 1.0
-          Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
-
-          --==MYBOUNDARY==
-          MIME-Version: 1.0
-          Content-Type: text/cloud-boothook; charset="us-ascii"
-
-          #!/bin/bash
-          cloud-init-per once docker_options echo 'DOCKER_STORAGE_OPTIONS="${DOCKER_STORAGE_OPTIONS} --storage-opt dm.basesize=20G"' >> /etc/sysconfig/docker-storage
-
-          --==MYBOUNDARY==
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
+          - DeviceName: /dev/xvdcz
+            Ebs:
+              VolumeSize: !Ref 'RootVolumeSize'
+              VolumeType: io1
+              Iops: 2000
+              DeleteOnTermination: true
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -1475,7 +1474,7 @@ Resources:
             - Key: Technical:Environment
               Value: !Ref 'Environment'
             - Key: Technical:ApplicationSubName
-              Value: !Ref 'Component'
+              Value: !Ref 'ApplicationSubName'
             - Key: Technical:ApplicationRole
               Value: !Ref 'ApplicationRole'
             - Key: Approver
@@ -1490,8 +1489,10 @@ Resources:
               Value: !Ref '2WTAGGER'
             - Key: Platform
               Value: !Ref 'Platform'
+            - Key: Component
+              Value: !Ref 'Component'              
             - Key: Name
-              Value: !Ref 'Component'
+              Value: !Ref 'ApplicationSubName'
       LaunchTemplateName:
         Fn::Join:
           - ''
@@ -1540,7 +1541,7 @@ Resources:
             Technical:Environment:
               Ref: 'Environment'
             Technical:ApplicationSubName:
-              Ref: 'Component'
+              Ref: 'ApplicationSubName'
             Technical:ApplicationRole:
               Ref: 'ApplicationRole'
             Approver:
@@ -1555,8 +1556,10 @@ Resources:
               Ref: '2WTAGGER'
             Platform:
               Ref: 'Platform'
+            Component:
+              Ref: 'Component'              
             Name:
-              Ref: 'Component'
+              Ref: 'ApplicationSubName'
       State: ENABLED
 
   JobQueue:

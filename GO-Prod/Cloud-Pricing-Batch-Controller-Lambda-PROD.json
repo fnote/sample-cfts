@@ -94,7 +94,7 @@
 		"CommonDBPassword" : {
 			"Type" : "String",
 			"Description" : "User password of the Common DB",
-			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="
+			"Default": "V7N5Ryf5siAz5SXlPHHp7ACc3xR4jjI6QHlQ3m+qMaPJwo67GP6u1Q=="			
 		},
 		"CommonDBURL" : {
 			"Type" : "String",
@@ -200,7 +200,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Batch service"
 		},
 		"Environment": {
 			"Description": "Environment for application",
@@ -267,7 +272,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": { "Fn::Join" : ["", [{"Ref" : "FunctionName"}, { "Ref" : "EnvironmentShort" }]]}}
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" }}
 				],
 				"Environment": {
 					"Variables": {
