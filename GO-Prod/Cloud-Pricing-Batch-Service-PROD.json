@@ -330,6 +330,32 @@
                 ]
             }
         },
+        "JobQueuePCI": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-PCI-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 10,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
         "LaunchTemplate": {
             "Type" : "AWS::EC2::LaunchTemplate",
             "Properties" : {
