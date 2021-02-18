@@ -138,6 +138,10 @@ Parameters:
     Description: Validation type soft or hard validation for each attribute in MDT flow
     Type: String
     Default: '{"DISCOUNT_ID":"False", "DISCOUNT_NAME" :"False","DISCOUNT_TYPE":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","QUALIFICATION_MAGNITUDE":"False"}'
+  ListOfDiscounts:
+    Description: discount name list
+    Type: StringList
+    Default: 'NEW_CUSTOMER_DISCOUNT, CASE_VOLUME_DISCOUNT, CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
 
 Mappings:
   EnvMap:
@@ -248,6 +252,15 @@ Resources:
       Value: !Ref ValidationTypeMDT
       Tier: Standard
       Description: validation type for each attribute in MDT flow
+
+  DiscountNameList:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT_NAME_LIST' ] ]
+      Type: StringList
+      Value: !Ref ListOfDiscounts
+      Tier: Standard
+      Description: discount names allowed
 
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
