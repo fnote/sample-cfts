@@ -313,6 +313,15 @@
 					"sh -c \"echo 'export JAVA_OPTS=\\\"-javaagent:/etc/dd-java-agent/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
 					"chmod +x /etc/profile.d/javaopts.sh\n",
 
+					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+
 					"#####################################################\n",
 					"# Install Dependencies.\n",
 					"# Ruby, JavaJDK, code delpoy agent, cloud watch agent\n",
@@ -342,15 +351,6 @@
 
 					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
-					
-					"##############################################\n",
-					"# DD APM - Configuration\n",
-					"##############################################\n",
-
-					"mkdir /etc/dd-java-agent/\n",
-					"cd /etc/dd-java-agent/\n",
-					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
-					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
 
 					"##############################################\n",
 					"# Datadog - Configuration\n",
