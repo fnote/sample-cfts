@@ -141,7 +141,7 @@ Parameters:
   ListOfDiscounts:
     Description: discount name list
     Type: StringList
-    Default: 'NEW_CUSTOMER_DISCOUNT, CASE_VOLUME_DISCOUNT, CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
+    Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
 
 Mappings:
   EnvMap:
@@ -890,7 +890,7 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
-        - PolicyName: cp-discounts-etl-s3-read-policy-${EnvironmentShort}'
+        - PolicyName: !Sub 'cp-discounts-etl-s3-read-policy-${EnvironmentShort}'
           PolicyDocument:
             Version: '2012-10-17'
             Statement:

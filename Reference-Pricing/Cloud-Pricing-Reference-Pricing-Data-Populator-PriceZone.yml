@@ -321,7 +321,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-${Account}-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/s3_trigger_lambda.zip'
       Environment:
         Variables:
@@ -391,7 +391,7 @@ Resources:
       Command:
         Name: glueetl
         PythonVersion: 3
-        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py'
       DefaultArguments:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
         "--enable-metrics": ""
@@ -539,7 +539,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: analyze_etl_wait_status.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-${Account}-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/analyze_etl_wait_status.zip'
       Environment:
         Variables:
@@ -578,7 +578,7 @@ Resources:
         PythonVersion: 3
         ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
       DefaultArguments:
-        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
+        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
         "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
