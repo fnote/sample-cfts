@@ -346,7 +346,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
+                  - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -510,7 +510,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
+                  - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
