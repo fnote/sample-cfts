@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description": "SYSCOGOLD-TEAMMANAGED-AMZL-2020.10.30",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI",
 			"Type": "String",
-			"Default": "ami-0565195ca8aeb0a55",
+			"Default" : "ami-09e47fa0523aa1c14",
 			"AllowedPattern": "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription": "Must be a valid AMI."
 		},
@@ -152,7 +152,12 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
+		},
+		"Component": {
+			"Description": "Component Name",
+			"Type": "String",
+			"Default": "Pricing service"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
@@ -339,7 +344,9 @@
 					},
 					{
 						"Key": "Component",
-						"Value": "CP-Pricing-Service",
+						"Value": {
+							"Ref": "Component"
+						},
 						"PropagateAtLaunch": "true"
 					}
 				]
@@ -448,11 +455,12 @@
 								"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=prod\\\"'\" > /etc/profile.d/javaopts.sh\n",
 								"chmod +x /etc/profile.d/javaopts.sh\n",
 
-								"##############################################\n",
+								"#####################################################\n",
 								"# Install Dependencies.\n",
-								"# JavaJDK, code delpoy agent, cloud watch agent\n",
-								"##############################################\n",
+								"# JavaJDK, ruby, code delpoy agent, cloud watch agent\n",
+								"#####################################################\n",
 								"yum -y update\n",
+								"yum install -y ruby\n",
 								"cd /tmp\n",
 								"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 								"yum install -y jdk-8u131-linux-x64.rpm\n",
@@ -523,7 +531,7 @@
 								"EOF\n",
 
 								"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-								"restart datadog-agent\n",
+								"systemctl restart datadog-agent\n",
 
 								"##############################################\n",
 								"# CloudWatch Configuration\n",
@@ -755,7 +763,9 @@
 					},
 					{
 						"Key": "Component",
-						"Value": "CP-Pricing-Service Target Group"
+						"Value": {
+							"Ref": "Component"
+						}
 					}
 				]
 			}

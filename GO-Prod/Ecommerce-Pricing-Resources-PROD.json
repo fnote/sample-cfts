@@ -307,7 +307,7 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					
+
 					"##############################################\n",
 					"# DD APM - Configuration\n",
 					"##############################################\n",
@@ -574,6 +574,7 @@
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value" : { "Ref" : "Component" } },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" } }
 				]
 			},
