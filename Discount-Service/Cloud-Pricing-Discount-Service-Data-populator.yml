@@ -133,7 +133,7 @@ Parameters:
   ValidationTypeCE:
     Description: Validation type soft or hard validation in CE flow
     Type: String
-    Default: '{"CUSTOMER_ID":"False", "ITEM_ID" :"False","DISCOUNT_ID":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","TEMPLATE_DISCOUNT":"False" , "DATE_GAP":"False", "DATE_GAP_PERIOD_IN_WEEKS":"6"}'
+    Default: '{"CUSTOMER_ID":"False", "ITEM_ID" :"False","DISCOUNT_ID":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","TEMPLATE_DISCOUNT":"False"}'
   ValidationTypeMDT:
     Description: Validation type soft or hard validation for each attribute in MDT flow
     Type: String
