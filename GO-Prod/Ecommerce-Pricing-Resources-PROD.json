@@ -499,25 +499,6 @@
 				]
 			}
 		},
-		"LoadBalancerListenerHTTPS": {
-			"Type": "AWS::ElasticLoadBalancingV2::Listener",
-			"Properties": {
-				"LoadBalancerArn":  { "Ref": "WebServiceALB" },
-				"Certificates": [
-					{
-						"CertificateArn": { "Ref" : "SSLCertificate" }
-					}
-				],
-				"Port": "443",
-				"Protocol": "HTTPS",
-				"DefaultActions": [
-					{
-						"Type": "forward",
-						"TargetGroupArn": { "Ref": "TargetGroup" }
-					}
-				]
-			}
-		},
 		"TargetGroup": {
 			"Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
 			"Properties": {
