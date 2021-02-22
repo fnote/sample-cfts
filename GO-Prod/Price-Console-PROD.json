@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL-2020.10.30 -> ami-0565195ca8aeb0a55",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-09e47fa0523aa1c14",
 			"Type": "String",
-			"Default" : "ami-0565195ca8aeb0a55",
+			"Default" : "ami-09e47fa0523aa1c14",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -254,8 +254,10 @@
 					"EOF\n",
 
 					"##############################################\n",
-					"# Install Java/Tomcat/CodeDeploy\n",
+					"# Install Ruby/Java/Tomcat/CodeDeploy\n",
 					"##############################################\n",
+					"yum -y update\n",
+					"yum install -y ruby\n",
 					"cd /tmp\n",
 					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
