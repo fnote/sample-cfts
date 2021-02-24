@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI
+    Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0e38f2a5bea6a80ec'
+    Default: 'ami-0f9979854ae60d5b4'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -213,8 +213,8 @@ Resources:
       AutoScalingRollingUpdate:
         MaxBatchSize: '1'
         MinInstancesInService: '1'
-        PauseTime: PT10M
-        WaitOnResourceSignals: 'true'
+        PauseTime: PT5M
+        WaitOnResourceSignals: 'false'
     Properties:
       AutoScalingGroupName: !Join
         - ''
@@ -299,7 +299,6 @@ Resources:
           sudo yum install -y ecs-init;
           echo ECS_CLUSTER=CP-Mimix-Sync-Ecs-Cluster-${EnvironmentShort} >> /etc/ecs/ecs.config;
           sudo service docker start;
-          sudo start ecs;
           sh -c "echo \"*   soft   nofile   50000\" >> /etc/security/limits.conf";
           sh -c "echo \"*   hard   nofile   102400\" >> /etc/security/limits.conf";
           wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
