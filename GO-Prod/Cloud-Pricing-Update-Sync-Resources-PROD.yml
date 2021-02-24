@@ -25,10 +25,14 @@ Parameters:
     Description: Application_Name - Common, user-friendly name
     Type: String
     Default: Cloud Pricing
+  ApplicationSubName:
+    Description: Application_Sub_Name - Common, user-friendly name
+    Type: String
+    Default: CP Update Sync    
   Component:
     Description: Component name
     Type: String
-    Default: CP Update Sync
+    Default: Pricing service
   Owner:
     Description: Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact
     Type: String
@@ -52,7 +56,7 @@ Parameters:
   Platform:
     Description: Platform
     Type: String
-    Default: Cloud Pricing V4
+    Default: CP Pricing Service
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -118,9 +122,9 @@ Parameters:
     Type: String
     Default: KeyPair-Sysco-CloudPricing-Prod
   CommonAMI:
-    Description: SYSCO-GOLD-ECS
+    Description: SYSCOGOLD-TEAMMANAGED-AMZL2_ECS_OPTIMIZED-2021.01.01 -> ami-0f9979854ae60d5b4
     Type: String
-    Default: ami-0e38f2a5bea6a80ec
+    Default: ami-0f9979854ae60d5b4
   ApplicationRole:
     Description: Application Role Tag
     Type: String
@@ -166,8 +170,6 @@ Resources:
               VolumeType: io1
               Iops: 2000
               DeleteOnTermination: true
-        UserData:
-          TUlNRS1WZXJzaW9uOiAxLjANCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOyBib3VuZGFyeT0iPT1NWUJPVU5EQVJZPT0iDQoNCi0tPT1NWUJPVU5EQVJZPT0NCk1JTUUtVmVyc2lvbjogMS4wIA0KQ29udGVudC1UeXBlOiB0ZXh0L2Nsb3VkLWJvb3Rob29rOyBjaGFyc2V0PSJ1cy1hc2NpaSINCg0KIyEvYmluL2Jhc2gNCmNsb3VkLWluaXQtcGVyIG9uY2UgZG9ja2VyX29wdGlvbnMgZWNobyAnRE9DS0VSX1NUT1JBR0VfT1BUSU9OUz0iJHtET0NLRVJfU1RPUkFHRV9PUFRJT05TfSAtLXN0b3JhZ2Utb3B0IGRtLmJhc2VzaXplPTIwRyInID4+IC9ldGMvc3lzY29uZmlnL2RvY2tlci1zdG9yYWdlDQoNCi0tPT1NWUJPVU5EQVJZPT0tLQ==
         TagSpecifications:
           - ResourceType: volume
             Tags:
@@ -195,8 +197,10 @@ Resources:
                 Value: !Ref '2WTAGGER'
               - Key: Platform
                 Value: !Ref 'Platform'
+              - Key: Component
+                Value: !Ref 'Component'              
               - Key: Name
-                Value: !Ref 'Component'
+                Value: !Ref 'ApplicationSubName'
       LaunchTemplateName:
         Fn::Join:
           - ''
@@ -212,7 +216,7 @@ Resources:
       ComputeEnvironmentName:
         Fn::Join:
           - ''
-          - - CP-Update-Sync-EC2-Compute-Environment-1-
+          - - CP-Update-Sync-EC2-Compute-Environment-
             - Ref: 'EnvironmentShort'
       ComputeResources:
         MaxvCpus: 34
@@ -245,7 +249,7 @@ Resources:
           Technical:Environment:
             Ref: 'Environment'
           Technical:ApplicationSubName:
-            Ref: 'Component'
+            Ref: 'ApplicationSubName'
           Technical:ApplicationRole:
             Ref: 'ApplicationRole'
           Approver:
@@ -260,8 +264,10 @@ Resources:
             Ref: '2WTAGGER'
           Platform:
             Ref: 'Platform'
-          Name:
+          Component:
             Ref: 'Component'
+          Name:
+            Ref: 'ApplicationSubName'
       State: ENABLED
 
   JobQueue:
