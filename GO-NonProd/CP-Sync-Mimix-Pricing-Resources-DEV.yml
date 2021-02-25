@@ -15,9 +15,9 @@ Parameters:
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
   ImageId:
-    Description: Amazon AMI -> SYSCOGOLD-TEAMMANAGED-AMZL-ECS-OPTIMIZED-2020.10.30
+    Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
     Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0e38f2a5bea6a80ec'
+    Default: 'ami-0f9979854ae60d5b4'
   ApplicationName:
     Description: Name of application
     Type: String
