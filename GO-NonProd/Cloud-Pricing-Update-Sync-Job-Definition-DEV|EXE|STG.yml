@@ -18,7 +18,7 @@ Parameters:
       - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
       - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-stg:latest'
   TaskRole:
-    Description: ARN of task role attached to ECS task.
+    Description: ARN of task role attached to Fargate host.
     Type: String
     Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
 
@@ -57,5 +57,5 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,amoda.dissanayake@sysco.com,piyumi.rameshka@syscolabs.com'
+            Value: 'chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,amoda.dissanayake@sysco.com,piyumi.rameshka@sysco.com'
 
