@@ -98,11 +98,11 @@ Parameters:
     Type: String
     Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
   CPUReserved:
-    Description: The number of cpu units reserved for the task.
+    Description: The number of cpu units reserved for the task. Add valid CPU, Memory combination for fargate.
     Type: Number
     Default: '2048'
   MemoryReserved:
-    Description: The memory limit (in MiB) to reserve for the task.
+    Description: The memory limit (in MiB) to reserve for the task. Add valid CPU, Memory combination for fargate.
     Type: Number
     Default: '4096'
   RetentionTime:
