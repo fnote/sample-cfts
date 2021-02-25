@@ -5,7 +5,6 @@ Parameters:
     Description: Environment for application
     Type: String
     Default: Development
-    ConstraintDescription: Must be a valid environment
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -82,10 +81,6 @@ Parameters:
     Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
     Type: String
     Default: subnet-0a5d9eea71b9c97c6
-  VPCID:
-    Description: Name of and existing VPC
-    Type: String
-    Default: vpc-091c7e3e5578d7a4f
   SGDNS:
     Description: PRCP-NP-DNS-DNSSG-3J5600OVNNBR
     Type: String
