@@ -77,5 +77,7 @@ Resources:
           - Name: 'SUBJECT'
             Value: !Ref 'EmailSubject'
           - Name: 'TO_ADDRESSES'
-            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
+            muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+            osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
