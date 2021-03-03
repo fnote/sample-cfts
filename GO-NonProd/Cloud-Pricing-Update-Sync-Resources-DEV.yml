@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Update Sync resources
 Parameters:
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Development
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -77,10 +73,6 @@ Parameters:
     Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
     Type: String
     Default: subnet-0a5d9eea71b9c97c6
-  VPCID:
-    Description: Name of and existing VPC
-    Type: String
-    Default: vpc-091c7e3e5578d7a4f
   SGDNS:
     Description: PRCP-NP-DNS-DNSSG-3J5600OVNNBR
     Type: String
@@ -120,6 +112,12 @@ Parameters:
       - arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-EXE
       - arn:aws:batch:us-east-1:037295147636:job-queue/CP-Mimix-Purge-Job-Queue-STG
 
+Mappings:
+  EnvMap:
+    DEV:
+      val: dev
+      name: Development
+
 Resources:
   UpdateSyncComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
@@ -150,8 +148,9 @@ Resources:
           Ref: 'ApplicationID'
         Technical:PlatformOwner:
           Ref: 'Owner'
-        Technical:Environment:
-          Ref: 'Environment'
+        Technical:Environment: !Sub
+          - '${env}'
+          - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         Technical:ApplicationSubName:
           Ref: 'ApplicationSubName'
         Technical:ApplicationRole:

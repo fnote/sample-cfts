@@ -154,10 +154,9 @@ Resources:
           Ref: 'ApplicationID'
         Technical:PlatformOwner:
           Ref: 'Owner'
-        Technical:Environment:
-          Ref: !Sub
-            - '${env}'
-            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
+        Technical:Environment: !Sub
+        - '${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         Technical:ApplicationSubName:
           Ref: 'ApplicationSubName'
         Technical:ApplicationRole:

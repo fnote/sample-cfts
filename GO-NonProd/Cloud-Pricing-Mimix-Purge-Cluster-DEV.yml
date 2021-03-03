@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Daily Purge ECS cluster
 Parameters:
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Development
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -112,6 +108,12 @@ Parameters:
     MinValue: '1'
     MaxValue: '3653'
 
+Mappings:
+  EnvMap:
+    DEV:
+      val: dev
+      name: Development
+
 Resources:
   MimixDailyPurgeSync001:
     Type: AWS::Events::Rule
@@ -176,8 +178,9 @@ Resources:
           Ref: 'ApplicationID'
         Technical:PlatformOwner:
           Ref: 'Owner'
-        Technical:Environment:
-          Ref: 'Environment'
+        Technical:Environment: !Sub
+        - '${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         Technical:ApplicationSubName:
           Ref: 'ApplicationSubName'
         Technical:ApplicationRole:
