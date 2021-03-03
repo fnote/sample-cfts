@@ -1,35 +1,38 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Daily Purge Sync Job Definition
 Parameters:
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Development
-    AllowedValues:
-      - Development
-      - Quality
-      - Tuning
-    ConstraintDescription: Must be a valid environment
   EnvironmentShort:
     Description: Environment for application
     Type: String
     Default: DEV
     AllowedValues:
       - DEV
+      - EXE
       - QA
       - STG
-  EmailSubject:
-      Description: Subject for alert emails
-      Type: String
-      Default: MIMIX-Purging-Alerts-DEV
-      AllowedValues:
-        - MIMIX-Purging-Alerts-DEV
-        - MIMIX-Purging-Alerts-QA
-        - MIMIX-Purging-Alerts-STG
+  EmailSubjectPrefix:
+    Description: Prefix of alert email subject
+    Type: String
+    Default: MIMIX-Purging-Alerts
   TaskRole:
-    Description: ARN of task role attached to ECS task.
+    Description: ARN of task role attached to Fargate.
     Type: String
     Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
+
+Mappings:
+  EnvMap:
+    DEV:
+      val: dev
+      name: Development
+    QA:
+      val: qa
+      name: Quality
+    EXE:
+      val: exe
+      name: Execution
+    STG:
+      val: stg
+      name: Staging
 
 Resources:
   JobDefinition:
@@ -45,10 +48,16 @@ Resources:
         Attempts: 1
       Timeout:
         AttemptDurationSeconds: 10800
+      PlatformCapabilities:
+        - FARGATE
       ContainerProperties:
         Image: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest'
-        Vcpus: 4
-        Memory: 6144
+        ResourceRequirements:
+          - Type: VCPU
+            Value: 4
+          - Type: MEMORY
+            Value: 8192
+        ExecutionRoleArn: !Ref TaskRole
         Command:
           - java
           - "-Xmx6144M"
@@ -62,7 +71,12 @@ Resources:
           - Name: 'SENDER'
             Value: 'CloudPricingAlerts@corp.sysco.com'
           - Name: 'SUBJECT'
-            Value: !Ref 'EmailSubject'
+            Value: !Sub
+              - '${emailSubjectPrefix}-${env}'
+              - emailSubjectPrefix: !Ref 'EmailSubjectPrefix'
+                env: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
+            muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+            osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
