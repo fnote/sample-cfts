@@ -10,14 +10,10 @@ Parameters:
       - EXE
       - QA
       - STG
-  EmailSubject:
-    Description: Subject for alert emails
+  EmailSubjectPrefix:
+    Description: Prefix of alert email subject
     Type: String
-    Default: MIMIX-Purging-Alerts-DEV
-    AllowedValues:
-      - MIMIX-Purging-Alerts-DEV
-      - MIMIX-Purging-Alerts-QA
-      - MIMIX-Purging-Alerts-STG
+    Default: MIMIX-Purging-Alerts
   TaskRole:
     Description: ARN of task role attached to Fargate.
     Type: String
@@ -75,7 +71,10 @@ Resources:
           - Name: 'SENDER'
             Value: 'CloudPricingAlerts@corp.sysco.com'
           - Name: 'SUBJECT'
-            Value: !Ref 'EmailSubject'
+            Value: !Sub
+              - '${emailSubjectPrefix}-${env}'
+              - emailSubjectPrefix: !Ref 'EmailSubjectPrefix'
+                env: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
             Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
             muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,

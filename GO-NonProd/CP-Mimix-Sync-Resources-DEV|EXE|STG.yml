@@ -263,7 +263,7 @@ Resources:
   ProductInfoService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-ProductInfo-Service'
+      ServiceName: 'CP-Mimix-Sync-ProductInfo-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -314,7 +314,7 @@ Resources:
   CustomerPricingService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-CustomerPricing-Service'
+      ServiceName: 'CP-Mimix-Sync-CustomerPricing-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -365,7 +365,7 @@ Resources:
   FulfillmentService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Fulfillment-Service'
+      ServiceName: 'CP-Mimix-Sync-Fulfillment-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -512,7 +512,7 @@ Resources:
   CrashHandlingProductInfoService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Crash-Handling-ProductInfo-Service'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-ProductInfo-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -563,7 +563,7 @@ Resources:
   CrashHandlingCustomerPricingService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Crash-Handling-CustomerPricing-Service'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-CustomerPricing-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -614,7 +614,7 @@ Resources:
   CrashHandlingFulfillmentService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Mimix-Sync-Crash-Handling-Fulfillment-Service'
+      ServiceName: 'CP-Mimix-Sync-Crash-Handling-Fulfillment-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
