@@ -1,23 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Sync ECS cluster
 Parameters:
-  VPCID:
-    Description: Name of the VPC for CP-NP
-    Type: 'AWS::EC2::VPC::Id'
-    Default: vpc-0f55b12524f7459f9
-    ConstraintDescription: Must be a valid VPC.
-  PemKey:
-    Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
-    Type: 'AWS::EC2::KeyPair::KeyName'
-    Default: KeyPair-Sysco-CloudPricing-Prod
-    MinLength: '1'
-    MaxLength: '255'
-    AllowedPattern: '[\x20-\x7E]*'
-    ConstraintDescription: Must contain only ASCII characters.
-  ImageId:
-    Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
-    Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-0f9979854ae60d5b4'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -66,30 +49,12 @@ Parameters:
     Default: krishan.senevirathne@sysco.com
     MinLength: '1'
     MaxLength: '255'
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Production
-    AllowedValues:
-      - Development
-      - Execution
-      - Quality
-      - Tuning
-      - Production
-      - Non Production
-    ConstraintDescription: Must be a valid environment.
   EnvironmentShort:
     Description: Environment for application
     Type: String
     Default: PROD
     AllowedValues:
-      - DEV
-      - EXE
-      - QA
-      - STG
       - PROD
-      - NONPROD
-    ConstraintDescription: Must be a valid environment.
   ProjectId:
     Description: Project ID
     Type: String
@@ -98,43 +63,14 @@ Parameters:
     MaxLength: '255'
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
-  CPConfidentialSubnetA:
-    Description: 'Private PRCP-PROD Confidential Subnet 1 in us-east-1a CIDR: 10.133.103.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-03f5516cc0d29f5ad
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  CPConfidentialSubnetB:
-    Description: 'Private PRCP-PROD Confidential Subnet 2 in us-east-1b CIDR: 10.133.105.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-094d9ade488a4f20b
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  CPConfidentialSubnetC:
-    Description: 'Private PRCP-PROD Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-0f279e0609eb542b2
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  SGWebServices:
-    Description: Security group for webServices
-    Type: String
-    Default: sg-0abcdcef90427fcd7
-  SGDNS:
-    Description: PRCP-DNS-DNSSG-1LVAMR19KIKFS
-    Type: String
-    Default: sg-086420a2869e44e81
-  SGRDSMySQL:
-    Description: SG-RDSMySQL
-    Type: String
-    Default: sg-0914feb8b95bd48c7
-  InstanceType:
-    Description: Application EC2 instance type
-    Type: String
-    Default: t3.medium
+  Subnets:
+    Description: 'Private PRCP-PROD Confidential Subnets'
+    Type: CommaDelimitedList
+    Default: "subnet-03f5516cc0d29f5ad,subnet-094d9ade488a4f20b,subnet-0f279e0609eb542b2"
+  SecurityGroups:
+    Description: 'Security groups'
+    Type: CommaDelimitedList
+    Default: "sg-0abcdcef90427fcd7,sg-086420a2869e44e81,sg-0914feb8b95bd48c7"
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
@@ -145,18 +81,6 @@ Parameters:
     Description: Application Role Tag
     Type: String
     Default: Application Server
-  WorkloadNodesDesiredCapacity:
-    Default: '10'
-    Description: The desired capacity for the Workload nodes Auto Scaling group
-    Type: String
-  WorkloadNodesMaxSize:
-    Default: '11'
-    Description: The maximum size of the Auto Scaling group
-    Type: String
-  WorkloadNodesMinSize:
-    Default: '10'
-    Description: The minimum size of the Auto Scaling group
-    Type: String
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
@@ -165,26 +89,18 @@ Parameters:
     Description: ARN of task role attached to ECS task.
     Type: String
     Default: arn:aws:iam::130227353653:role/CLoud-Pricing-Pricing-Sync-Job-Role
-  MimixInstanceRole:
-    Description: ARN of role attached to Mimix Purge Sync Servers.
-    Type: String
-    Default: arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
     Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-sync
   CPUReserved:
-    Description: The number of cpu units reserved for the container.
+    Description: The number of cpu units reserved for the container. Add valid CPU, Memory combination for fargate
     Type: Number
     Default: '2048'
-    MinValue: '256'
-    MaxValue: '4096'
   MemoryReserved:
-    Description: The soft limit (in MiB) of memory to reserve for the container.
+    Description: The soft limit (in MiB) of memory to reserve for the container. Add valid CPU, Memory combination for fargate
     Type: Number
-    Default: '3800'
-    MinValue: '256'
-    MaxValue: '8192'
+    Default: '4096'
   RetentionTime:
     Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
     Type: Number
@@ -193,8 +109,14 @@ Parameters:
     MaxValue: '3653'
   DesiredCount:
     Default: '1'
-    Description: The minimum size of the Auto Scaling group
+    Description: The task count of the ECS services
     Type: String
+
+Mappings:
+  EnvMap:
+    PROD:
+      val: prod
+      name: Production
 
 Resources:
   ECSCluster:
@@ -204,98 +126,9 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-Ecs-Cluster-'
           - !Ref 'EnvironmentShort'
-
-  ECSAutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    Metadata:
-      Description: "Meta info for cfn signaling"
-    UpdatePolicy:
-      AutoScalingRollingUpdate:
-        MaxBatchSize: '1'
-        MinInstancesInService: '1'
-        PauseTime: PT10M
-        WaitOnResourceSignals: 'true'
-    Properties:
-      AutoScalingGroupName: !Join
-        - ''
-        - - 'CP-Sync-Mimix-Pricing-Auto-Scaling-Group-'
-          - !Ref 'EnvironmentShort'
-      AvailabilityZones:
-        - us-east-1a
-        - us-east-1b
-        - us-east-1c
-      VPCZoneIdentifier:
-        - !Ref 'CPConfidentialSubnetA'
-        - !Ref 'CPConfidentialSubnetB'
-        - !Ref 'CPConfidentialSubnetC'
-      LaunchConfigurationName: !Ref 'LaunchConfig'
-      DesiredCapacity: !Ref 'WorkloadNodesDesiredCapacity'
-      MaxSize: !Ref 'WorkloadNodesMaxSize'
-      MinSize: !Ref 'WorkloadNodesMinSize'
-      HealthCheckType: EC2
-      Tags:
-        - Key: Name
-          Value: !Join
-            - ''
-            - - 'CP-Sync-Mimix-Pricing-Auto-Scaling-Server-'
-              - !Ref 'EnvironmentShort'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:ApplicationName
-          Value: !Ref 'ApplicationName'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:ApplicationID
-          Value: !Ref 'ApplicationId'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:PlatformOwner
-          Value: !Ref 'Owner'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:Environment
-          Value: !Ref 'Environment'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:ApplicationSubName
-          Value: !Ref 'Component'
-          PropagateAtLaunch: 'true'
-        - Key: Technical:ApplicationRole
-          Value: !Ref 'ApplicationRole'
-          PropagateAtLaunch: 'true'
-        - Key: Approver
-          Value: !Ref 'Approver'
-          PropagateAtLaunch: 'true'
-        - Key: PO_Number
-          Value: !Ref 'PONumber'
-          PropagateAtLaunch: 'true'
-        - Key: Project_ID
-          Value: !Ref 'ProjectId'
-          PropagateAtLaunch: 'true'
-    DependsOn: ECSCluster
-
-  LaunchConfig:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: !Ref 'ImageId'
-      AssociatePublicIpAddress: false
-      InstanceType: !Ref 'InstanceType'
-      KeyName: !Ref 'PemKey'
-      SecurityGroups:
-        - !Ref 'SGWebServices'
-        - !Ref 'SGRDSMySQL'
-        - !Ref 'SGDNS'
-      IamInstanceProfile: !Ref 'MimixInstanceRole'
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: !Ref 'RootVolumeSize'
-            VolumeType: gp2
-      UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash
-            sudo yum install -y ecs-init
-            echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
-            sudo service docker start
-            sudo start ecs
-            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
-            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource ECSAutoScalingGroup --region ${AWS::Region}
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
   LogGroup:
     Type: AWS::Logs::LogGroup
@@ -313,14 +146,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S1-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -342,7 +178,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerTwoTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -351,14 +190,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S2-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -380,7 +222,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerThreeTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -389,14 +234,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S3-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -418,7 +266,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerFourTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -427,13 +278,16 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S4-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
-          Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
           MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
@@ -456,7 +310,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerFiveTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -465,13 +322,16 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S5-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
-          Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
           MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
@@ -494,7 +354,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerSixTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -503,14 +366,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S6-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -532,7 +398,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerSevenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -541,14 +410,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S7-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -570,7 +442,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerEightTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -579,14 +454,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S8-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -608,7 +486,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerNineTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -617,14 +498,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S9-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -646,7 +530,10 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerTenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -655,14 +542,17 @@ Resources:
         - ''
         - - 'CP-Sync-Mimix-Pricing-S10-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
           Image: !Ref 'DockerImageArn'
-          Cpu: !Ref 'CPUReserved'
-          MemoryReservation: !Ref 'MemoryReserved'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -684,18 +574,26 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
+              piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
   ServerOneEcsService:
     Type: AWS::ECS::Service
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S1-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerOneTaskDefinition'
       Tags:
         - Key: Name
@@ -710,7 +608,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -731,11 +631,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S2-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerTwoTaskDefinition'
       Tags:
         - Key: Name
@@ -750,7 +655,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -771,11 +678,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S3-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerThreeTaskDefinition'
       Tags:
         - Key: Name
@@ -790,7 +702,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -811,11 +725,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S4-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerFourTaskDefinition'
       Tags:
         - Key: Name
@@ -830,7 +749,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -851,11 +772,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S5-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerFiveTaskDefinition'
       Tags:
         - Key: Name
@@ -870,7 +796,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -891,11 +819,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S6-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerSixTaskDefinition'
       Tags:
         - Key: Name
@@ -910,7 +843,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -931,11 +866,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S7-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerSevenTaskDefinition'
       Tags:
         - Key: Name
@@ -950,7 +890,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -971,11 +913,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S8-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerEightTaskDefinition'
       Tags:
         - Key: Name
@@ -990,7 +937,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -1011,11 +960,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S9-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerNineTaskDefinition'
       Tags:
         - Key: Name
@@ -1030,7 +984,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole
@@ -1051,11 +1007,16 @@ Resources:
     Properties:
       ServiceName: 'CP-Sync-Mimix-Pricing-S10-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 100
         MinimumHealthyPercent: 0
       DesiredCount: !Ref 'DesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'ServerTenTaskDefinition'
       Tags:
         - Key: Name
@@ -1070,7 +1031,9 @@ Resources:
         - Key: Technical:PlatformOwner
           Value: !Ref 'Owner'
         - Key: Technical:Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Technical:ApplicationSubName
           Value: !Ref 'Component'
         - Key: Technical:ApplicationRole

@@ -32,10 +32,16 @@ Resources:
         Attempts: 1
       Timeout:
         AttemptDurationSeconds: 10800
+      PlatformCapabilities:
+        - FARGATE
       ContainerProperties:
         Image: !Ref 'EcrImage'
-        Vcpus: 4
-        Memory: 8000
+        ResourceRequirements:
+          - Type: VCPU
+            Value: 4
+          - Type: MEMORY
+            Value: 8192
+        ExecutionRoleArn: !Ref TaskRole
         Command:
           - java
           - "-Xmx6000M"
