@@ -271,3 +271,45 @@ Resources:
           BatchParameters:
             JobDefinition: !Ref JobDefinitionArn
             JobName: '002-Update-Sync-Job'
+
+  UpdateSyncTrigger056:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: 'Update Sync trigger for 056'
+      Name: !Sub 'Update-sync-056-Trigger-${EnvironmentShort}'
+      EventPattern: !Sub
+        - |-
+          {
+            "source": [
+              "aws.batch"
+            ],
+            "detail-type": [
+              "Batch Job State Change"
+            ],
+            "detail": {
+              "jobQueue": [
+                "${mimixPurgeJobQueue}"
+              ],
+              "jobName": ["${mimixPurgeJobName}"],
+              "status": [
+                "SUCCEEDED"
+              ]
+            }
+          }
+        - {
+          mimixPurgeJobName: !Sub '056-${MimixPurgeJobNameSuffix}',
+          mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
+          }
+      State: ENABLED
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          InputTransformer:
+            InputPathsMap:
+              'business_unit' : '$.detail.parameters.business_unit'
+            InputTemplate: '{"Parameters" : {"business_unit": <business_unit>}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref JobDefinitionArn
+            JobName: '056-Update-Sync-Job'
