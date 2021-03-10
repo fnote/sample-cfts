@@ -140,8 +140,12 @@ Parameters:
     Default: '{"DISCOUNT_ID":"False", "DISCOUNT_NAME" :"False","DISCOUNT_TYPE":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","QUALIFICATION_MAGNITUDE":"False"}'
   ListOfDiscounts:
     Description: discount name list
-    Type: StringList
+    Type: String
     Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
+  AllowedColumnsMDT:
+    Description: Allowed column names in mdt file
+    Type: String
+    Default: 'DISCOUNT_ID,DISCOUNT_NAME,DISCOUNT_TYPE,QUALIFICATION_MAGNITUDE,EFFECTIVE_DATE,EXPIRATION_DATE,ACTION,SOURCE,SEQUENCE_ID,EXPORT_DATE'
 
 Mappings:
   EnvMap:
@@ -257,10 +261,19 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT_NAME_LIST' ] ]
-      Type: StringList
+      Type: String
       Value: !Ref ListOfDiscounts
       Tier: Standard
       Description: discount names allowed
+
+  MDTAllowedColumnNameList:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/MDT/ALLOWED_COLUMN_NAMES_IN_ORDER' ] ]
+      Type: String
+      Value: !Ref AllowedColumnsMDT
+      Tier: Standard
+      Description: mdt column names allowed in the right order
 
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -454,6 +467,7 @@ Resources:
                     "--active_opcos.$": "$.active_opcos",
                     "--validation_type.$": "$.validation_type",
                     "--discount_names.$": "$.discount_names",
+                    "--mdt_column_names_in_order.$": "$.mdt_column_names_in_order"
                   }
                 },
                 "Catch": [
@@ -499,7 +513,7 @@ Resources:
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
-                    "--validation_type_ce.$": "$.validation_type_ce",
+                    "--validation_type_ce.$": "$.validation_type_ce"
                   }
                 },
                 "Catch": [
@@ -843,7 +857,7 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  ETLTriggerLambdaRole:
+  ETLTriggerLambaRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub 'CP-DISCOUNTS-ETLTriggerLambdaRole-${EnvironmentShort}'
