@@ -1,0 +1,446 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is used to implement resources for the log archive mechanism
+Parameters:
+  PONumber:
+    Description: PO Number for billing
+    Type: String
+    Default: '7000002358'
+    MinLength: '1'
+    MaxLength: '255'
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters.
+  FunctionName:
+    Type: String
+    Description: Name of the Lambda function for log archive controller
+    Default: log-archive-
+  ApplicationName:
+    Description: Name of application
+    Type: String
+    Default: Cloud Pricing
+    MinLength: '1'
+    MaxLength: '255'
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters.
+  ApplicationId:
+    Description: Application ID
+    Type: String
+    Default: APP-001151
+    MinLength: '1'
+    MaxLength: '255'
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters.
+  Approver:
+    Description: Person approving instance funding.  This should be Email address
+      formatted
+    Type: String
+    Default: villanueva.loi@corp.sysco.com
+    MinLength: '1'
+    MaxLength: '255'
+  Owner:
+    Description: Email address usually Product/ Platform Owner, though team distribution
+      list for technical product/platform team contact
+    Type: String
+    Default: krishan.senevirathne@sysco.com
+    MinLength: '1'
+    MaxLength: '255'
+  SupportEmail:
+    Description: Email distribution list for technical product/platform team contact
+    Type: String
+    Default: 000-BT-PricingPlatform@Corp.sysco.com
+    MinLength: '1'
+    MaxLength: '255'
+  ProjectId:
+    Description: Project ID
+    Type: String
+    Default: BT.001176
+    MinLength: '1'
+    MaxLength: '255'
+    AllowedPattern: "[\\x20-\\x7E]*"
+    ConstraintDescription: Must contain only ASCII characters.
+  2WTAGGER:
+    Description: Used by 2nd Watch Managed Services in shared accounts to determine
+      if a resource is supported
+    Type: String
+    Default: team-managed
+    MinLength: '1'
+    MaxLength: '255'
+    AllowedValues:
+      - team-managed
+      - adlm-managed
+      - 2w-managed
+    ConstraintDescription: Must contain only ASCII characters.
+  Platform:
+    Description: Platform
+    Type: String
+    Default: cloud-pricing
+  Environment:
+    Description: Environment for application
+    Type: String
+    Default: Production
+    AllowedValues:
+      - Non-Production
+      - Production
+    ConstraintDescription: Must be a valid environment.
+  EnvironmentShort:
+    Description: Environment for application
+    Type: String
+    Default: PROD
+    AllowedValues:
+      - NON-PROD
+      - PROD
+    ConstraintDescription: Must be a valid environment.
+  AWSRegionIdentifier:
+    Type: String
+    Description: Name of AWS region
+    Default: us-east-1
+  LogArchiveScheduleRuleName:
+    Type: String
+    Description: rule name for the  log archive mechanism
+    Default: log-archive-schedule-rule-
+  LogArchiveLogBucketName:
+    Type: String
+    Description: s3 bucket for the  log archive mechanism
+    Default: cp-log-archive-bucket-prod
+    AllowedValues:
+      - cp-log-archive-bucket-non-prod
+      - cp-log-archive-bucket-prod
+  LastWeeklyExportingGroupNumber:
+    Description: The last log group which is exported weekly
+    Type: String
+    Default: 15
+Resources:
+  LogArchiveLogBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName:
+        Ref: LogArchiveLogBucketName
+      LifecycleConfiguration:
+        Rules:
+          - Id: LongTermArchival
+            Prefix: long-term
+            Status: Enabled
+            ExpirationInDays: '375'
+            Transitions:
+              - TransitionInDays: '365'
+                StorageClass: GLACIER
+          - Id: ShortTermArchival
+            Prefix: short-term
+            Status: Enabled
+            ExpirationInDays: '100'
+            Transitions:
+              - TransitionInDays: '90'
+                StorageClass: GLACIER
+  LogArchiveLogBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket:
+        Ref: LogArchiveLogBucketName
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: logs.us-east-1.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - Ref: LogArchiveLogBucketName
+          - Effect: Allow
+            Principal:
+              Service: logs.us-east-1.amazonaws.com
+            Action: s3:PutObject
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - Ref: LogArchiveLogBucketName
+                  - /*
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
+  LogArchiveScheduleRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Description: Schedule rule to archive cloudwatch logs
+      Name:
+        Fn::Join:
+          - ''
+          - - Ref: LogArchiveScheduleRuleName
+            - Ref: EnvironmentShort
+      State: ENABLED
+      ScheduleExpression: 'cron(0 2-11 ? * SAT,SUN *)'
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - LogArchiveLambdaFunction
+              - Arn
+          Id: LogArchiveLambdaFunctionV1
+  LogArchives3Policy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: Log-Archive-s3-Policy
+      Path: /
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: writetbucket
+            Effect: Allow
+            Action:
+              - s3:List*
+              - s3:Put*
+              - s3:Get*
+              - s3:Describe*
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - Ref: LogArchiveLogBucketName
+                  - /*
+  LogArchiveEventsPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: Log-Archive-Events-Policy
+      Path: /
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: cloudwatcheventrule
+            Effect: Allow
+            Action:
+              - events:DescribeRule
+              - events:ListRules
+              - events:ListRuleNamesByTarget
+              - events:EnableRule
+              - events:DisableRule
+              - events:TagResource
+              - IAM:PassRole
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:events:::rule/'
+                  - Ref: LogArchiveScheduleRuleName
+                  - Ref: EnvironmentShort
+                  - /*
+
+  LogArchiveLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      PermissionsBoundary:
+        Fn::Sub: "arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps"
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMFullAccess
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+        - Ref: LogArchives3Policy
+        - Ref: LogArchiveEventsPolicy
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+  PermissionForEventsToInvokeLambda:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName:
+        Ref: LogArchiveLambdaFunction
+      Action: 'lambda:InvokeFunction'
+      Principal: events.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+          - LogArchiveScheduleRule
+          - Arn
+  LogArchiveLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName:
+        Fn::Join:
+          - ''
+          - - Ref: FunctionName
+            - Ref: EnvironmentShort
+      Runtime: python3.6
+      Role:
+        Fn::GetAtt:
+          - LogArchiveLambdaRole
+          - Arn
+      Timeout: 900
+      Handler: index.lambda_handler
+      Description: Invoke a function during stack creation.
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join:
+              - ''
+              - - Ref: FunctionName
+                - Ref: EnvironmentShort
+        - Key: Technical:ApplicationName
+          Value:
+            Ref: ApplicationName
+        - Key: Technical:ApplicationID
+          Value:
+            Ref: ApplicationId
+        - Key: Technical:PlatformOwner
+          Value:
+            Ref: Owner
+        - Key: Technical:Environment
+          Value:
+            Ref: Environment
+        - Key: Technical:ApplicationSubName
+          Value:
+            Fn::Join:
+              - ''
+              - - Ref: FunctionName
+                - Ref: EnvironmentShort
+        - Key: Technical:ApplicationRole
+          Value: Lambda Function
+        - Key: Approver
+          Value:
+            Ref: Approver
+        - Key: Component
+          Value:
+            Fn::Join:
+              - ''
+              - - Ref: FunctionName
+                - Ref: EnvironmentShort
+        - Key: Support_Email
+          Value:
+            Ref: SupportEmail
+        - Key: PO_Number
+          Value:
+            Ref: PONumber
+        - Key: Project_ID
+          Value:
+            Ref: ProjectId
+        - Key: 2WTAGGER
+          Value:
+            Ref: 2WTAGGER
+        - Key: Platform
+          Value:
+            Ref: Platform
+      Environment:
+        Variables:
+          LastWeeklyExportingGroupNumber:
+            Ref: LastWeeklyExportingGroupNumber
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+          import datetime
+          import json
+          from dateutil import relativedelta
+
+          def export_task(log_client, group_name, from_date, to_date, destination_bucket, bucket_prefix):
+            response = log_client.create_export_task(
+            logGroupName=group_name,
+            fromTime=from_date,
+            to=to_date,
+            destination=destination_bucket,
+            destinationPrefix=bucket_prefix
+            )
+            return response
+
+          def lambda_handler(event, context):
+
+            ssm_client = boto3.client('ssm')
+            log_client = boto3.client('logs')
+            current_group_number = ssm_client.get_parameter(Name='/CP/LOG-ARCHIVAL/GROUP-NUMBER', WithDecryption=False)["Parameter"]["Value"]
+            current_group_number= int(current_group_number)
+            parameters = ssm_client.get_parameter(Name='/CP/CLOUDWATCH/LOG-GROUPS', WithDecryption=False)["Parameter"]["Value"]
+            parameters = json.loads(parameters)
+            lastWeeklyExportingGroupNumber = os.environ['LastWeeklyExportingGroupNumber']
+            lastWeeklyExportingGroupNumber = int(lastWeeklyExportingGroupNumber)
+
+            for index in range(len(parameters)):
+              group_number = parameters[index]['group_number']
+              if current_group_number == int(group_number):
+                parameter_set = parameters[index]
+                next_group_retention_basis = parameters[index+1]['retention_basis']
+                break
+
+            group_name = parameter_set['group_name']
+            destination_bucket = parameter_set['destination_bucket']
+            prefix = parameter_set['prefix']
+            retention_basis= parameter_set['retention_basis']
+            n_days = parameter_set['n_days']
+            n_days = int(n_days)
+
+            current_date = datetime.date.today()
+            current_date = datetime.datetime.combine(current_date, datetime.datetime.min.time())
+
+            if retention_basis == "daily":
+              for day in range(7, 0, -1):
+                start_date = current_date - datetime.timedelta(days= n_days+day)
+                end_date = current_date - datetime.timedelta(days= n_days + day - 1)
+                from_date = int(start_date.timestamp() * 1000)
+                to_date = int(end_date.timestamp() * 1000)
+
+                bucket_prefix = os.path.join(prefix,
+                start_date.strftime('%Y{0}%m{0}%d').format(os.path.sep))
+
+                response = export_task(log_client, group_name, from_date, to_date, destination_bucket, bucket_prefix)
+                taskId = (response['taskId'])
+                status = 'RUNNING'
+                while status in ['RUNNING','PENDING']:
+                  response_desc = log_client.describe_export_tasks(taskId=taskId)
+                  status = response_desc['exportTasks'][0]['status']['code']
+
+
+            elif retention_basis == "weekly":
+
+              start_date = current_date - datetime.timedelta(days= n_days + 7)
+              end_date = current_date - datetime.timedelta(days= n_days )
+              from_date = int(start_date.timestamp() * 1000)
+              to_date = int(end_date.timestamp() * 1000)
+
+              bucket_prefix = os.path.join(prefix,
+              start_date.strftime('%Y{0}%m{0}%d').format(os.path.sep))
+              response = export_task(log_client, log_group_name, from_date, to_date, destination_bucket, bucket_prefix)
+
+            last_day_of_year = datetime.datetime.now().date().replace(month=12, day=31)
+            last_week_of_year = last_day_of_year - datetime.timedelta((last_day_of_year.weekday() + 1) % 7)
+            last_sunday_of_year = last_week_of_year + relativedelta.relativedelta(weekday=relativedelta.SU(-1))
+            last_sunday_of_year = datetime.datetime.combine(last_sunday_of_year, datetime.datetime.min.time())
+
+
+            if (current_date == last_sunday_of_year and next_group_retention_basis == "annually"):
+              for group_num in range(current_group_number, len(parameters)):
+                for index in range(len(parameters)):
+                  group_number = parameters[index]['group_number']
+                  if group_num == int(group_number):
+                    parameter_set = parameters[index]
+                    break
+
+                group_name = parameter_set['group_name']
+                destination_bucket = parameter_set['destination_bucket']
+                prefix = parameter_set['prefix']
+                retention_basis= parameter_set['retention_basis']
+                n_days = parameter_set['n_days']
+                n_days = int(n_days)
+
+                start_date = current_date - datetime.timedelta(days= n_days + 365)
+                end_date = current_date - datetime.timedelta(days= n_days )
+                from_date = int(start_date.timestamp() * 1000)
+                to_date = int(end_date.timestamp() * 1000)
+
+                bucket_prefix = os.path.join(prefix,
+                start_date.strftime('%Y{0}%m{0}%d').format(os.path.sep))
+
+                response = export_task(log_client, group_name, from_date, to_date, destination_bucket, bucket_prefix)
+                taskId = (response['taskId'])
+                status = 'RUNNING'
+                while status in ['RUNNING','PENDING']:
+                  response_desc = log_client.describe_export_tasks(taskId=taskId)
+                  status = response_desc['exportTasks'][0]['status']['code']
+
+              current_group_number = 1
+            elif (current_group_number != lastWeeklyExportingGroupNumber):
+              current_group_number = current_group_number+1
+            else:
+              current_group_number = 1
+
+            ssm_client.put_parameter(Name='/CP/LOG-ARCHIVAL/GROUP-NUMBER', Value=str(current_group_number), Type='String', Overwrite=True)
+
