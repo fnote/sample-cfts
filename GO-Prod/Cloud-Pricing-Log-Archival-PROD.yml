@@ -120,14 +120,12 @@ Resources:
           - Id: LongTermArchival
             Prefix: long-term
             Status: Enabled
-            ExpirationInDays: '375'
             Transitions:
               - TransitionInDays: '365'
                 StorageClass: GLACIER
           - Id: ShortTermArchival
             Prefix: short-term
             Status: Enabled
-            ExpirationInDays: '100'
             Transitions:
               - TransitionInDays: '90'
                 StorageClass: GLACIER
