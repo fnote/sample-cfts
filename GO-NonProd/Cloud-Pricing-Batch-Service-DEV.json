@@ -169,9 +169,9 @@
             "Default": "KeyPair-Sysco-CloudPricing-NonProd"
         },
         "CommonAMI": {
-            "Description": "Sysco Gold Team managed AMI",
+            "Description": "Sysco Gold Team managed AMI -> ami-0eef3bc301d4aacd3",
             "Type": "String",
-            "Default": "ami-0f9979854ae60d5b4",
+            "Default": "ami-0eef3bc301d4aacd3",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -354,7 +354,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-1-",
+                            "CP-Batch-Compute-Env-2-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
