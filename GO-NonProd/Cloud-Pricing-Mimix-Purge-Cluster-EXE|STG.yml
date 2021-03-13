@@ -1,18 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Daily Purge ECS cluster
 Parameters:
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Execution
-    AllowedValues:
-      - Development
-      - Execution
-      - Quality
-      - Staging
-      - Tuning
-      - Production
-    ConstraintDescription: Must be a valid environment
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -65,14 +53,6 @@ Parameters:
       - EXE
       - STG
     ConstraintDescription: Must be a valid environment.
-  ExecutionRole:
-    Description: ARN of execution role attached to ECS task.
-    Type: String
-    Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
-  TaskRole:
-    Description: ARN of task role attached to ECS task.
-    Type: String
-    Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
   TriggeringRole:
     Description: ARN of triggering role attached to cloud watch Events.
     Type: String
@@ -81,14 +61,6 @@ Parameters:
     Description: ARN of triggering role attached to cloud watch Events.
     Type: String
     Default: arn:aws:iam::037295147636:role/Cloud-Pricing-Mimix-Purge-Service-Role
-  PurgeInstanceRole:
-    Description: ARN of role attached to Mimix Purge Sync Servers.
-    Type: String
-    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Purge-Instance-Profile
-  DockerImageArn:
-    Description: Docker image of mimix sync processor
-    Type: String
-    Default: 037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync
   JobDefinitionArn:
     Description: Job Definition Arn
     Type: String
@@ -105,10 +77,6 @@ Parameters:
     Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.133.106.0/24'
     Type: String
     Default: subnet-0a5d9eea71b9c97c6
-  VPCID:
-    Description: Name of and existing VPC
-    Type: String
-    Default: vpc-091c7e3e5578d7a4f
   SGDNS:
     Description: PRCP-NP-DNS-DNSSG-3J5600OVNNBR
     Type: String
@@ -125,40 +93,29 @@ Parameters:
     Description: Root Volume Size
     Type: String
     Default: 80
-  PemKey:
-    Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
-    Type: String
-    Default: KeyPair-Sysco-CloudPricing-NonProd
-  CommonAMI:
-    Description: SYSCO-GOLD -> ami-0f9979854ae60d5b4
-    Type: String
-    Default: ami-0f9979854ae60d5b4
   ComputeEnvironmentNamePrefix:
     Description: Compute environment name prefix
     Type: String
-    Default: CP-Mimix-Purge-Sync-Compute-Environment-2-
+    Default: CP-Mimix-Purge-Sync-Compute-Environment-
   ApplicationRole:
     Description: Application Role Tag
     Type: String
     Default: Application Server
-  CPUReserved:
-    Description: The number of cpu units reserved for the container.
-    Type: Number
-    Default: '4096'
-    MinValue: '256'
-    MaxValue: '4096'
-  MemoryReserved:
-    Description: The soft limit (in MiB) of memory to reserve for the container.
-    Type: Number
-    Default: '8192'
-    MinValue: '256'
-    MaxValue: '8192'
   RetentionTime:
     Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
     Type: Number
     Default: '30'
     MinValue: '1'
     MaxValue: '3653'
+
+Mappings:
+  EnvMap:
+    EXE:
+      val: exe
+      name: Execution
+    STG:
+      val: stg
+      name: Staging
 
 Resources:
   MimixDailyPurgeSync001:
@@ -1453,62 +1410,7 @@ Resources:
             JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '450-Purge-Sync-Job'
 
-  LaunchTemplate:
-    Type: AWS::EC2::LaunchTemplate
-    Properties:
-      LaunchTemplateData:
-        ImageId: !Ref 'CommonAMI'
-        BlockDeviceMappings:
-          - DeviceName: /dev/xvda
-            Ebs:
-              VolumeSize: !Ref 'RootVolumeSize'
-              VolumeType: io1
-              Iops: 2000
-              DeleteOnTermination: true
-          - DeviceName: /dev/xvdcz
-            Ebs:
-              VolumeSize: !Ref 'RootVolumeSize'
-              VolumeType: io1
-              Iops: 2000
-              DeleteOnTermination: true
-        TagSpecifications:
-          - ResourceType: volume
-            Tags:
-              - Key: Technical:ApplicationName
-                Value: !Ref 'ApplicationName'
-              - Key: Technical:ApplicationID
-                Value: !Ref 'ApplicationID'
-              - Key: Technical:PlatformOwner
-                Value: !Ref 'Owner'
-              - Key: Technical:Environment
-                Value: !Ref 'Environment'
-              - Key: Technical:ApplicationSubName
-                Value: !Ref 'ApplicationSubName'
-              - Key: Technical:ApplicationRole
-                Value: !Ref 'ApplicationRole'
-              - Key: Approver
-                Value: !Ref 'Approver'
-              - Key: PO_Number
-                Value: !Ref 'PONumber'
-              - Key: Project_ID
-                Value: !Ref 'ProjectID'
-              - Key: Support_Email
-                Value: !Ref 'SupportEmail'
-              - Key: 2WTAGGER
-                Value: !Ref '2WTAGGER'
-              - Key: Platform
-                Value: !Ref 'Platform'
-              - Key: Name
-                Value: !Ref 'ApplicationSubName'
-              - Key: Component
-                Value: !Ref 'Component'
-      LaunchTemplateName:
-        Fn::Join:
-          - ''
-          - - CP-Mimix-Purge-Sync-Launch-Template-
-            - Ref: 'EnvironmentShort'
-
-  MimixPurgeEC2ComputeEnvironment:
+  MimixPurgeComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
@@ -1525,49 +1427,41 @@ Resources:
           - !Ref 'SGDNS'
           - !Ref 'SGWebServices'
           - !Ref 'SGRDSMySQL'
-        Type: EC2
+        Type: FARGATE
         Subnets:
           - !Ref 'PvtSNa'
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
-        MinvCpus: 0
-        InstanceRole: !Ref 'PurgeInstanceRole'
-        InstanceTypes:
-          - optimal
-        Ec2KeyPair: !Ref 'PemKey'
-        DesiredvCpus: 0
-        LaunchTemplate:
-          LaunchTemplateId: !Ref 'LaunchTemplate'
-          Version: $Latest
-        Tags:
-          Technical:ApplicationName:
-            Ref: 'ApplicationName'
-          Technical:ApplicationID:
-            Ref: 'ApplicationID'
-          Technical:PlatformOwner:
-            Ref: 'Owner'
-          Technical:Environment:
-            Ref: 'Environment'
-          Technical:ApplicationSubName:
-            Ref: 'ApplicationSubName'
-          Technical:ApplicationRole:
-            Ref: 'ApplicationRole'
-          Approver:
-            Ref: 'Approver'
-          PO_Number:
-            Ref: 'PONumber'
-          Project_ID:
-            Ref: 'ProjectID'
-          Support_Email:
-            Ref: 'SupportEmail'
-          2WTAGGER:
-            Ref: '2WTAGGER'
-          Platform:
-            Ref: 'Platform'
-          Name:
-            Ref: 'ApplicationSubName'
-          Component:
-            Ref: 'Component'
+    Tags:
+      Technical:ApplicationName:
+        Ref: 'ApplicationName'
+      Technical:ApplicationID:
+        Ref: 'ApplicationID'
+      Technical:PlatformOwner:
+        Ref: 'Owner'
+      Technical:Environment: !Sub
+          - '${env}'
+          - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
+      Technical:ApplicationSubName:
+        Ref: 'ApplicationSubName'
+      Technical:ApplicationRole:
+        Ref: 'ApplicationRole'
+      Approver:
+        Ref: 'Approver'
+      PO_Number:
+        Ref: 'PONumber'
+      Project_ID:
+        Ref: 'ProjectID'
+      Support_Email:
+        Ref: 'SupportEmail'
+      2WTAGGER:
+        Ref: '2WTAGGER'
+      Platform:
+        Ref: 'Platform'
+      Name:
+        Ref: 'ApplicationSubName'
+      Component:
+        Ref: 'Component'
       State: ENABLED
 
   JobQueue:
@@ -1583,4 +1477,4 @@ Resources:
       ComputeEnvironmentOrder:
         - Order: 1
           ComputeEnvironment:
-            Ref: 'MimixPurgeEC2ComputeEnvironment'
+            Ref: 'MimixPurgeComputeEnvironment'

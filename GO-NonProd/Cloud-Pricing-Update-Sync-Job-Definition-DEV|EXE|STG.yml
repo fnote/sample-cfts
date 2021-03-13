@@ -18,7 +18,7 @@ Parameters:
       - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
       - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-stg:latest'
   TaskRole:
-    Description: ARN of task role attached to ECS task.
+    Description: ARN of task role attached to Fargate host.
     Type: String
     Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
 
@@ -36,10 +36,16 @@ Resources:
         Attempts: 1
       Timeout:
         AttemptDurationSeconds: 10800
+      PlatformCapabilities:
+        - FARGATE
       ContainerProperties:
         Image: !Ref 'EcrImage'
-        Vcpus: 4
-        Memory: 8000
+        ResourceRequirements:
+          - Type: VCPU
+            Value: 4
+          - Type: MEMORY
+            Value: 8192
+        ExecutionRoleArn: !Ref TaskRole
         Command:
           - java
           - "-Xmx6000M"
@@ -51,5 +57,7 @@ Resources:
           - Name: 'SERVER_ENVIRONMENT_VARIABLE'
             Value: !Ref 'EnvironmentShort'
           - Name: 'TO_ADDRESSES'
-            Value: 'chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,amoda.dissanayake@sysco.com,piyumi.rameshka@syscolabs.com'
+            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
+            muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+            osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
 
