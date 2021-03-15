@@ -1419,44 +1419,44 @@ Resources:
       ComputeResources:
         MaxvCpus: 34
         SecurityGroupIds:
-        - !Ref 'SGDNS'
-        - !Ref 'SGWebServices'
-        - !Ref 'SGMIMIX'
+          - !Ref 'SGDNS'
+          - !Ref 'SGWebServices'
+          - !Ref 'SGMIMIX'
         Type: FARGATE
         Subnets:
-        - !Ref 'PvtSNa'
-        - !Ref 'PvtSNb'
-        - !Ref 'PvtSNc'
-        Tags:
-            Technical:ApplicationName:
-              Ref: 'ApplicationName'
-            Technical:ApplicationID:
-              Ref: 'ApplicationID'
-            Technical:PlatformOwner:
-              Ref: 'Owner'
-            Technical:Environment: !Sub
-            - '${env}'
-            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
-            Technical:ApplicationSubName:
-              Ref: 'ApplicationSubName'
-            Technical:ApplicationRole:
-              Ref: 'ApplicationRole'
-            Approver:
-              Ref: 'Approver'
-            PO_Number:
-              Ref: 'PONumber'
-            Project_ID:
-              Ref: 'ProjectID'
-            Support_Email:
-              Ref: 'SupportEmail'
-            2WTAGGER:
-              Ref: '2WTAGGER'
-            Platform:
-              Ref: 'Platform'
-            Component:
-              Ref: 'Component'              
-            Name:
-              Ref: 'ApplicationSubName'
+          - !Ref 'PvtSNa'
+          - !Ref 'PvtSNb'
+          - !Ref 'PvtSNc'
+      Tags:
+        Technical:ApplicationName:
+          Ref: 'ApplicationName'
+        Technical:ApplicationID:
+          Ref: 'ApplicationID'
+        Technical:PlatformOwner:
+          Ref: 'Owner'
+        Technical:Environment: !Sub
+        - '${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
+        Technical:ApplicationSubName:
+          Ref: 'ApplicationSubName'
+        Technical:ApplicationRole:
+          Ref: 'ApplicationRole'
+        Approver:
+          Ref: 'Approver'
+        PO_Number:
+          Ref: 'PONumber'
+        Project_ID:
+          Ref: 'ProjectID'
+        Support_Email:
+          Ref: 'SupportEmail'
+        2WTAGGER:
+          Ref: '2WTAGGER'
+        Platform:
+          Ref: 'Platform'
+        Component:
+          Ref: 'Component'
+        Name:
+          Ref: 'ApplicationSubName'
       State: ENABLED
 
   JobQueue:

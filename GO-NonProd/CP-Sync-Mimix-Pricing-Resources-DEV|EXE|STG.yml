@@ -435,7 +435,7 @@ Resources:
       Memory: !Ref 'MemoryReserved'
       NetworkMode: awsvpc
       RequiresCompatibilities:
-        - FARGATE            
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
