@@ -1780,6 +1780,7 @@ Resources:
                   - ssm:GetParameters
                 Resource:
                   - '*'
+      Path: '/'
 
   FetchFileListLambda:
     Type: AWS::Lambda::Function
