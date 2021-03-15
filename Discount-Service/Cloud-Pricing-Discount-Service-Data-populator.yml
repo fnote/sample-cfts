@@ -1221,3 +1221,130 @@ Resources:
         'Platform': !Ref Platform,
         'Component': !Ref Component
       }
+
+  StepFunctionHelperLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'CP-DISCOUNTS-StepFunctionHelperLambdaRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: cp-discounts-etl-s3-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                  - s3:DeleteObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+        - PolicyName: cp-discounts-etl-step-function-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - states:ListExecutions
+                  - states:StartExecution
+                Resource:
+                  - !Ref DiscountsStateMachine
+        - PolicyName: cp-discounts-etl-ssm-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource:
+                  - '*'
+
+  FetchFileListLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for identifying OpCos contained in CE file and separte them into clusters
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-fetch-file-list-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref StepFunctionHelperLambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/FetchFileListLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          INTERMEDIATE_S3_BUCKET: !Ref IntermediateStorage
+      Timeout: 180
+
+  AnalyzeWaitLoadOrTerminateLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for deciding wait, load or teminate status of the load job for a cluster
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-load-or-terminate-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref StepFunctionHelperLambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/AnalyzeWaitOrLoadClusterLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 180
+
+  TakeBackpDecisionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for taking bacup decision based on the load job statues
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-take-backup-decision-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref StepFunctionHelperLambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/TakeBackupDecisionLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 180
+
+  AnalyzeWaitExecutionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for deciding step function execution
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-execution-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref StepFunctionHelperLambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/AnalyzeWaitExecutionLambda.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 60
