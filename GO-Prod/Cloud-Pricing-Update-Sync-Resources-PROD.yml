@@ -119,7 +119,7 @@ Mappings:
       name: Production
 
 Resources:
-  UpdateSync-Environment:
+  UpdateSyncComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
