@@ -199,7 +199,7 @@ Resources:
               - LogArchiveLambdaFunction
               - Arn
           Id: LogArchiveLambdaFunctionV1
-  LogArchives3Policy:
+  LogArchiveS3Policy:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
       ManagedPolicyName: Log-Archive-s3-Policy
@@ -207,7 +207,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: writetbucket
+          - Sid: writetBucket
             Effect: Allow
             Action:
               - s3:List*
@@ -228,7 +228,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: cloudwatcheventrule
+          - Sid: cloudwatchEventRule
             Effect: Allow
             Action:
               - events:DescribeRule
@@ -253,7 +253,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: ssmparameter
+          - Sid: ssmParameter
             Effect: Allow
             Action:
               - ssm:describeParameters
@@ -284,7 +284,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: cloudwatchlogs
+          - Sid: cloudwatchLogs
             Effect: Allow
             Action:
               - logs:cancelExportTask
@@ -293,15 +293,6 @@ Resources:
               - logs:describeDestinations
               - logs:describeLogGroups
               - logs:describeLogStreams
-              - logs:filterLogEvents
-              - logs:getLogEvents
-              - logs:createLogDelivery
-              - logs:putDestination
-              - logs:putDestinationPolicy
-              - logs:putLogEvents
-              - logs:updateLogDelivery
-              - iam:GetPolicy
-              - iam:GetPolicyVersion
               - iam:GetRole
             Resource: "arn:aws:logs:us-east-1:037295147636:log-group:*"
   LogArchiveLambdaRole:
@@ -313,7 +304,7 @@ Resources:
       ManagedPolicyArns:
         - Ref: LogArchiveSSMPolicy
         - Ref: LogArchiveCloudWatchPolicy
-        - Ref: LogArchives3Policy
+        - Ref: LogArchiveS3Policy
         - Ref: LogArchiveEventsPolicy
       AssumeRolePolicyDocument:
         Version: 2012-10-17
