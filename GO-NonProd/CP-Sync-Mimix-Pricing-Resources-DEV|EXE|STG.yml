@@ -95,10 +95,6 @@ Parameters:
     Description: ARN of task role attached to ECS task.
     Type: String
     Default: arn:aws:iam::037295147636:role/CloudPricing-PricingSync-JobRole
-  MimixInstanceRole:
-    Description: ARN of role attached to Mimix Purge Sync Servers.
-    Type: String
-    Default: arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Mimix-Instance-Profile
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String

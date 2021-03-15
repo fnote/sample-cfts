@@ -1432,36 +1432,36 @@ Resources:
           - !Ref 'PvtSNa'
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
-      Tags:
-        Technical:ApplicationName:
-          Ref: 'ApplicationName'
-        Technical:ApplicationID:
-          Ref: 'ApplicationID'
-        Technical:PlatformOwner:
-          Ref: 'Owner'
-        Technical:Environment: !Sub
-            - '${env}'
-            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
-        Technical:ApplicationSubName:
-          Ref: 'ApplicationSubName'
-        Technical:ApplicationRole:
-          Ref: 'ApplicationRole'
-        Approver:
-          Ref: 'Approver'
-        PO_Number:
-          Ref: 'PONumber'
-        Project_ID:
-          Ref: 'ProjectID'
-        Support_Email:
-          Ref: 'SupportEmail'
-        2WTAGGER:
-          Ref: '2WTAGGER'
-        Platform:
-          Ref: 'Platform'
-        Name:
-          Ref: 'ApplicationSubName'
-        Component:
-          Ref: 'Component'
+    Tags:
+      Technical:ApplicationName:
+        Ref: 'ApplicationName'
+      Technical:ApplicationID:
+        Ref: 'ApplicationID'
+      Technical:PlatformOwner:
+        Ref: 'Owner'
+      Technical:Environment: !Sub
+          - '${env}'
+          - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
+      Technical:ApplicationSubName:
+        Ref: 'ApplicationSubName'
+      Technical:ApplicationRole:
+        Ref: 'ApplicationRole'
+      Approver:
+        Ref: 'Approver'
+      PO_Number:
+        Ref: 'PONumber'
+      Project_ID:
+        Ref: 'ProjectID'
+      Support_Email:
+        Ref: 'SupportEmail'
+      2WTAGGER:
+        Ref: '2WTAGGER'
+      Platform:
+        Ref: 'Platform'
+      Name:
+        Ref: 'ApplicationSubName'
+      Component:
+        Ref: 'Component'
       State: ENABLED
 
   JobQueue:

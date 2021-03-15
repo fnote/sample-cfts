@@ -1,23 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Sync ECS cluster
 Parameters:
-  VPCID:
-    Description: Name of the VPC for CP-NP
-    Type: 'AWS::EC2::VPC::Id'
-    Default: vpc-0f55b12524f7459f9
-    ConstraintDescription: Must be a valid VPC.
-  PemKey:
-    Description: Name of and existing EC2 KeyPair to enable SSH access to the instance
-    Type: 'AWS::EC2::KeyPair::KeyName'
-    Default: KeyPair-Sysco-CloudPricing-Prod
-    MinLength: '1'
-    MaxLength: '255'
-    AllowedPattern: '[\x20-\x7E]*'
-    ConstraintDescription: Must contain only ASCII characters.
-  ImageId:
-    Description: Amazon AMI
-    Type: 'AWS::EC2::Image::Id'
-    Default: 'ami-00e06e7775c26730e'
   ApplicationName:
     Description: Name of application
     Type: String
@@ -54,22 +37,12 @@ Parameters:
     Default: villanueva.loi@corp.sysco.com
     MinLength: '1'
     MaxLength: '255'
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Production
-    AllowedValues:
-      - Development
-      - Execution
-      - Quality
-      - Staging
-      - Tuning
-      - Production
-    ConstraintDescription: Must be a valid environment.
   EnvironmentShort:
     Description: Environment for application
     Type: String
     Default: PROD
+    AllowedValues:
+      - PROD
   ProjectId:
     Description: Project ID
     Type: String
@@ -78,57 +51,20 @@ Parameters:
     MaxLength: '255'
     AllowedPattern: '[\x20-\x7E]*'
     ConstraintDescription: Must contain only ASCII characters.
-  CPConfidentialSubnetA:
-    Description: 'Private PRCP-NP Confidential Subnet 1 in us-east-1a CIDR: 10.132.88.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-03f5516cc0d29f5ad
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  CPConfidentialSubnetB:
-    Description: 'Private PRCP-NP Confidential Subnet 2 in us-east-1b CIDR: 10.132.89.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-094d9ade488a4f20b
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  CPConfidentialSubnetC:
-    Description: 'Private PRCP-NP Confidential Subnet 3 in us-east-1c CIDR: 10.132.89.0/24'
-    Type: 'AWS::EC2::Subnet::Id'
-    Default: subnet-0f279e0609eb542b2
-    MinLength: '1'
-    MaxLength: '255'
-    ConstraintDescription: Must be a valid Private Subnet.
-  SGWebServices:
-    Description: Security group for webServices
-    Type: String
-    Default: sg-0abcdcef90427fcd7
-  InstanceProfile:
-    Description: Instance Profile Name
-    Type: String
-    Default: CloudPricing-IAM-InstanceProfile
-  InstanceType:
-    Description: Application EC2 instance type
-    Type: String
-    Default: c5.2xlarge
+  Subnets:
+    Description: 'Private PRCP-PROD Confidential Subnets'
+    Type: CommaDelimitedList
+    Default: "subnet-03f5516cc0d29f5ad,subnet-094d9ade488a4f20b,subnet-0f279e0609eb542b2"
+  SecurityGroups:
+    Description: 'Security groups'
+    Type: CommaDelimitedList
+    Default: "sg-0abcdcef90427fcd7"
   RootVolumeSize:
     Description: Size (GB) of root EBS volume for application instance
     Type: Number
     Default: '40'
     MinValue: '10'
     MaxValue: '1024'
-  WorkloadNodesDesiredCapacity:
-    Default: '1'
-    Description: The desired capacity for the Workload nodes Auto Scaling group
-    Type: String
-  WorkloadNodesMaxSize:
-    Default: '3'
-    Description: The maximum size of the Auto Scaling group
-    Type: String
-  WorkloadNodesMinSize:
-    Default: '1'
-    Description: The minimum size of the Auto Scaling group
-    Type: String
   ExecutionRole:
     Description: ARN of execution role attached to ECS task.
     Type: String
@@ -137,36 +73,46 @@ Parameters:
     Description: ARN of task role attached to ECS task.
     Type: String
     Default: CloudPricing-ECS-Task-Role
-  ECSServiceAutoScalingRole:
-    Description: The name or full Amazon Resource Name (ARN) of the IAM role that allows Amazon ECS to make calls to your load balancer.
-    Type: String
-    Default: 'arn:aws:iam::037295147636:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
   DockerImageArn:
     Description: Docker image of mimix sync processor
     Type: String
     Default: 130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-mimix-sync
   CPUReserved:
-    Description: The number of cpu units reserved for the container.
+    Description: The number of cpu units reserved for the container.Add valid CPU, Memory combination for fargate.
     Type: Number
     Default: '2048'
-    MinValue: '256'
-    MaxValue: '4096'
   MemoryReserved:
-    Description: The soft limit (in MiB) of memory to reserve for the container.
+    Description: The soft limit (in MiB) of memory to reserve for the container.Add valid CPU, Memory combination for fargate.
     Type: Number
     Default: '4096'
-    MinValue: '256'
-    MaxValue: '8192'
   RetentionTime:
     Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
     Type: Number
     Default: '30'
     MinValue: '1'
     MaxValue: '3653'
-  DesiredCount:
-    Default: '1'
-    Description: The minimum size of the Auto Scaling group
-    Type: String
+  ProductInfoServiceDesiredCount:
+    Default: '0'
+    Description: The Desired count of tasks for ProductInfo serivce
+    Type: Number
+  CustomerPricingServiceDesiredCount:
+    Default: '0'
+    Description: The Desired count of tasks for CustomerPricing serivce
+    Type: Number
+  FulfillmentServiceDesiredCount:
+    Default: '0'
+    Description: The Desired count of tasks for Fulfillement serivce
+    Type: Number
+  CrashHandlingServiceDesiredCount:
+    Default: '0'
+    Description: The Desired count of tasks for CrashHandling serivces
+    Type: Number
+
+Mappings:
+  EnvMap:
+    PROD:
+      val: prod
+      name: Production
 
 Resources:
   ECSCluster:
@@ -176,88 +122,10 @@ Resources:
         - ''
         - - 'CP-Mimix-Sync-Ecs-Cluster-'
           - !Ref 'EnvironmentShort'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
-  ECSAutoScalingGroup:
-    Type: AWS::AutoScaling::AutoScalingGroup
-    UpdatePolicy:
-      AutoScalingRollingUpdate:
-        MaxBatchSize: '1'
-        MinInstancesInService: '1'
-        PauseTime: PT5M
-        WaitOnResourceSignals: 'true'
-    Properties:
-      AutoScalingGroupName: !Join
-        - ''
-        - - 'cp-mimix-sync-auto-scaling-group-'
-          - !Ref 'EnvironmentShort'
-      AvailabilityZones:
-        - us-east-1a
-        - us-east-1b
-        - us-east-1c
-      VPCZoneIdentifier:
-        - !Ref 'CPConfidentialSubnetA'
-        - !Ref 'CPConfidentialSubnetB'
-        - !Ref 'CPConfidentialSubnetC'
-      LaunchConfigurationName: !Ref 'LaunchConfig'
-      DesiredCapacity: !Ref 'WorkloadNodesDesiredCapacity'
-      MaxSize: !Ref 'WorkloadNodesMaxSize'
-      MinSize: !Ref 'WorkloadNodesMinSize'
-      HealthCheckType: EC2
-      Tags:
-        - Key: Name
-          Value: !Join
-            - ''
-            - - 'cp-mimix-sync-auto-scaling-group-'
-              - !Ref 'EnvironmentShort'
-          PropagateAtLaunch: 'true'
-        - Key: Application_Name
-          Value: !Ref 'ApplicationName'
-          PropagateAtLaunch: 'true'
-        - Key: Application_Id
-          Value: !Ref 'ApplicationId'
-          PropagateAtLaunch: 'true'
-        - Key: Owner
-          Value: !Ref 'Owner'
-          PropagateAtLaunch: 'true'
-        - Key: Approver
-          Value: !Ref 'Approver'
-          PropagateAtLaunch: 'true'
-        - Key: PO_Number
-          Value: !Ref 'PONumber'
-          PropagateAtLaunch: 'true'
-        - Key: Environment
-          Value: !Ref 'Environment'
-          PropagateAtLaunch: 'true'
-        - Key: Project_ID
-          Value: !Ref 'ProjectId'
-          PropagateAtLaunch: 'true'
-    DependsOn: ECSCluster
-
-  LaunchConfig:
-    Type: AWS::AutoScaling::LaunchConfiguration
-    Properties:
-      ImageId: !Ref 'ImageId'
-      AssociatePublicIpAddress: false
-      InstanceType: !Ref 'InstanceType'
-      KeyName: !Ref 'PemKey'
-      SecurityGroups:
-        - !Ref 'SGWebServices'
-      IamInstanceProfile: !Ref 'InstanceProfile'
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeSize: !Ref 'RootVolumeSize'
-            VolumeType: gp2
-      UserData: !Base64
-        Fn::Join:
-          - ''
-          - - "#!/bin/bash\n"
-            - "sudo yum install -y ecs-init\n"
-            - "echo ECS_CLUSTER="
-            - !Ref 'ECSCluster'
-            - " >> /etc/ecs/ecs.config\n"
-            - "sudo service docker start\n"
-            - "sudo start ecs"
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -274,21 +142,23 @@ Resources:
         - ''
         - - 'CP-MimixSync-Customer-Pricing-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref ExecutionRole
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: cp-mimix-sync-customer-pricing-container
           Essential: 'true'
           Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/CUSTOMER_PRICING
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref EnvironmentShort
@@ -302,21 +172,23 @@ Resources:
         - ''
         - - 'CP-MimixSync-Fulfillment-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref ExecutionRole
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: cp-mimix-sync-fulfillment-container
           Essential: 'true'
           Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/FULFILLMENT
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref EnvironmentShort
@@ -330,21 +202,23 @@ Resources:
         - ''
         - - 'CP-MimixSync-ProductInfo-Task-Definition-'
           - !Ref 'EnvironmentShort'
+      Cpu: !Ref 'CPUReserved'
+      Memory: !Ref 'MemoryReserved'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
       ExecutionRoleArn: !Ref ExecutionRole
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: cp-mimix-sync-product-info-container
           Essential: 'true'
           Image: !Ref DockerImageArn
-          Cpu: !Ref CPUReserved
-          MemoryReservation: !Ref MemoryReserved
           LogConfiguration:
             LogDriver: awslogs
             Options:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/PRODUCT_INFO
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref EnvironmentShort
@@ -356,11 +230,16 @@ Resources:
     Properties:
       ServiceName: 'CP-MimixSync-ProductInfo-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: !Ref 'DesiredCount'
+      DesiredCount: !Ref 'ProductInfoServiceDesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'CpMimixSyncProductInfoTaskDefinition'
       Tags:
         - Key: Name
@@ -379,7 +258,9 @@ Resources:
         - Key: PO_Number
           Value: !Ref 'PONumber'
         - Key: Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
@@ -388,11 +269,16 @@ Resources:
     Properties:
       ServiceName: 'CP-MimixSync-CustomerPricing-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: !Ref 'DesiredCount'
+      DesiredCount: !Ref 'CustomerPricingServiceDesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'CpMimixSyncCustomerPricingTaskDefinition'
       Tags:
         - Key: Name
@@ -411,7 +297,9 @@ Resources:
         - Key: PO_Number
           Value: !Ref 'PONumber'
         - Key: Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
@@ -420,11 +308,16 @@ Resources:
     Properties:
       ServiceName: 'CP-MimixSync-Fulfillment-Ecs-Service'
       Cluster: !Ref 'ECSCluster'
-      LaunchType: EC2
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: !Ref 'DesiredCount'
+      DesiredCount: !Ref 'FulfillmentServiceDesiredCount'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups: !Ref SecurityGroups
+          Subnets: !Ref Subnets
       TaskDefinition: !Ref 'CpMimixSyncCustomerPricingTaskDefinition'
       Tags:
         - Key: Name
@@ -443,7 +336,9 @@ Resources:
         - Key: PO_Number
           Value: !Ref 'PONumber'
         - Key: Environment
-          Value: !Ref 'Environment'
+          Value: !Sub
+            - '${env}'
+            - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name]}
         - Key: Project_ID
           Value: !Ref 'ProjectId'
 
@@ -472,58 +367,6 @@ Resources:
       Statistic: Average
       Threshold: "60.0"
       Unit: Percent
-
-  ECSClusterScaleUpAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: 'true'
-      ComparisonOperator: GreaterThanOrEqualToThreshold
-      EvaluationPeriods: '1'
-      MetricName: MemoryReservation
-      Namespace: AWS/ECS
-      Period: '300'
-      Statistic: Average
-      Threshold: '70.0'
-      AlarmActions:
-        - !Ref 'ECSClusterScaleUpPolicy'
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref 'ECSCluster'
-
-  ECSClusterScaleDownAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      ActionsEnabled: 'true'
-      ComparisonOperator: LessThanOrEqualToThreshold
-      EvaluationPeriods: '1'
-      MetricName: MemoryReservation
-      Namespace: AWS/ECS
-      Period: '300'
-      Statistic: Average
-      Threshold: '50.0'
-      AlarmActions:
-        - !Ref 'ECSClusterScaleDownPolicy'
-      Dimensions:
-        - Name: ClusterName
-          Value: !Ref 'ECSCluster'
-
-  ECSClusterScaleUpPolicy:
-    Type: AWS::AutoScaling::ScalingPolicy
-    Properties:
-      AdjustmentType: ChangeInCapacity
-      Cooldown: '60'
-      PolicyType: SimpleScaling
-      ScalingAdjustment: 1
-      AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
-
-  ECSClusterScaleDownPolicy:
-    Type: AWS::AutoScaling::ScalingPolicy
-    Properties:
-      AdjustmentType: ChangeInCapacity
-      Cooldown: '60'
-      PolicyType: SimpleScaling
-      ScalingAdjustment: -1
-      AutoScalingGroupName: !Ref 'ECSAutoScalingGroup'
 
 Outputs:
   CustomerPricingTaskDefinition:
