@@ -140,7 +140,7 @@ Parameters:
     Default: '{"DISCOUNT_ID":"False", "DISCOUNT_NAME" :"False","DISCOUNT_TYPE":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","QUALIFICATION_MAGNITUDE":"False"}'
   ListOfDiscounts:
     Description: discount name list
-    Type: StringList
+    Type: String
     Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
 
 Mappings:
