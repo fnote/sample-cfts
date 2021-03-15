@@ -453,7 +453,7 @@ Resources:
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
                     "--validation_type.$": "$.validation_type",
-                    "--discount_names.$": "$.discount_names",
+                    "--discount_names.$": "$.discount_names"
                   }
                 },
                 "Catch": [
@@ -499,7 +499,7 @@ Resources:
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
-                    "--validation_type_ce.$": "$.validation_type_ce",
+                    "--validation_type_ce.$": "$.validation_type_ce"
                   }
                 },
                 "Catch": [
