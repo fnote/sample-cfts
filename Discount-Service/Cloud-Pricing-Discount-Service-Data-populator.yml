@@ -142,6 +142,51 @@ Parameters:
     Description: discount name list
     Type: String
     Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
+  CommonDBEndpointName:
+    Description: Common DB Endpoint of discount service
+    Type: String
+    Default: cp-discounts-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com
+  ActiveDBClusters:
+    Description: Active database clusters of discount service
+    Type: String
+    Default: '1,2'
+  EnableTwoClusters:
+    Description: If this is set to true, two glue connections will be created. Do it only in Production
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  GlueConnectionNamePlaceholder:
+    Description: Placeholder name for the AWS Glue Connection
+    Type: String
+    Default: 'cp-DISCOUNTS-etl-connection-{}-cluster-{}'
+  ETLMaximumConcurrency:
+    Description: Maximum Concurrency Allowed for Discount ETL Step Functions
+    Type: String
+    Default: 5
+  CELoadJobMaximumConcurrency:
+    Description: Maximum Concurrency Allowed for CE load jobs
+    Type: String
+    Default: 4
+  PartitionJobWorkerType:
+    Description: AWS Glue worker type for Spark job
+    Type: String
+    Default: Standard
+    AllowedValues:
+      - Standard
+      - G.1X
+      - G.2X
+  PartitionJobWorkerCount:
+    Description: Partition Job Worker count
+    Type: String
+    Default: 50
+
+
+Conditions:
+  twoClustersEnabled: !Equals
+    - !Ref EnableTwoClusters
+    - 'true'
 
 Mappings:
   EnvMap:
@@ -262,6 +307,51 @@ Resources:
       Tier: Standard
       Description: discount names allowed
 
+  CommonDBEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/COMMON/DB/ENDPOINT']]
+      Type: String
+      Value: !Ref CommonDBEndpointName
+      Tier: Standard
+      Description: Common db endpoint of discount service
+
+  ActiveClusters:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ACTIVE/CLUSTERS']]
+      Type: String
+      Value: !Ref ActiveDBClusters
+      Tier: Standard
+      Description: Active clusters of discount service
+
+  DiscountETLMaximumConcurrency:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/MAX_CONCURRENCY']]
+      Type: String
+      Value: !Ref ETLMaximumConcurrency
+      Tier: Standard
+      Description: Maximum Concurrency allowed for Discount ETL
+
+  PartitionGlueJobWorkerType:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_TYPE']]
+      Type: String
+      Value: !Ref PartitionJobWorkerType
+      Tier: Standard
+      Description: Worker type for the ETL Partition Job
+
+  PartitionGlueJobWorkerCount:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT' ] ]
+      Type: String
+      Value: !Ref PartitionJobWorkerCount
+      Tier: Standard
+      Description: Worker count for the ETL Partition Job
+
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -324,20 +414,40 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  CommonDatabaseConnection:
+  DatabaseConnectionCluster01:
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/ENDPOINT/WRITER:1}}"]],
+          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER01/DISCOUNT/DB/ENDPOINT/WRITER:1}}"]],
           "USERNAME": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-1'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
+
+  DatabaseConnectionCluster02:
+    Condition: twoClustersEnabled
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Join [ '', [ "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER02/DISCOUNT/DB/ENDPOINT/WRITER:1}}" ] ],
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}" ] ],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-2'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -350,18 +460,15 @@ Resources:
         Name: pythonshell
         PythonVersion: 3
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/customer_eligibility.py"
-      Connections:
-        Connections:
-          - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref GlueConnectionNamePlaceholder
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref CELoadJobMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -389,18 +496,15 @@ Resources:
         Name: pythonshell
         PythonVersion: 3
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/mdt.py"
-      Connections:
-        Connections:
-          - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/pyspark-2.4.3-py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/py4j-0.10.7-py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref GlueConnectionNamePlaceholder
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -719,7 +823,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 2
+        MaxConcurrentRuns: 10
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1059,7 +1163,7 @@ Resources:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg"
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1097,8 +1201,10 @@ Resources:
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py"
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
+      WorkerType: !Ref PartitionJobWorkerType
+      NumberOfWorkers: !Ref PartitionJobWorkerCount
       MaxRetries: 0
       Name: !Sub 'CP-DISCOUNTS-etl-customer-eligibility-partition-job-${EnvironmentShort}'
       Role: !Ref ETLGlueRole
