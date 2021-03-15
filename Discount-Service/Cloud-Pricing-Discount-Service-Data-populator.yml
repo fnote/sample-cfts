@@ -843,7 +843,7 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  ETLTriggerLambdaRole:
+  ETLTriggerLambaRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub 'CP-DISCOUNTS-ETLTriggerLambdaRole-${EnvironmentShort}'
