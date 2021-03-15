@@ -16,7 +16,7 @@ Parameters:
   ApplicationSubName:
     Description: Application_Sub_Name - Common, user-friendly name
     Type: String
-    Default: CP Update Sync    
+    Default: CP Update Sync
   Component:
     Description: Component name
     Type: String
@@ -216,7 +216,7 @@ Resources:
           mimixPurgeJobName: !Sub '001-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -258,7 +258,7 @@ Resources:
           mimixPurgeJobName: !Sub '002-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -300,7 +300,7 @@ Resources:
           mimixPurgeJobName: !Sub '003-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -342,7 +342,7 @@ Resources:
           mimixPurgeJobName: !Sub '004-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -384,7 +384,7 @@ Resources:
           mimixPurgeJobName: !Sub '005-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -426,7 +426,7 @@ Resources:
           mimixPurgeJobName: !Sub '006-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -468,7 +468,7 @@ Resources:
           mimixPurgeJobName: !Sub '007-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -510,7 +510,7 @@ Resources:
           mimixPurgeJobName: !Sub '008-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -552,7 +552,7 @@ Resources:
           mimixPurgeJobName: !Sub '009-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -594,7 +594,7 @@ Resources:
           mimixPurgeJobName: !Sub '010-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -636,7 +636,7 @@ Resources:
           mimixPurgeJobName: !Sub '011-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -678,7 +678,7 @@ Resources:
           mimixPurgeJobName: !Sub '012-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -720,7 +720,7 @@ Resources:
           mimixPurgeJobName: !Sub '013-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -762,7 +762,7 @@ Resources:
           mimixPurgeJobName: !Sub '014-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -804,7 +804,7 @@ Resources:
           mimixPurgeJobName: !Sub '015-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -846,7 +846,7 @@ Resources:
           mimixPurgeJobName: !Sub '016-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -888,7 +888,7 @@ Resources:
           mimixPurgeJobName: !Sub '017-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -930,7 +930,7 @@ Resources:
           mimixPurgeJobName: !Sub '018-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -972,7 +972,7 @@ Resources:
           mimixPurgeJobName: !Sub '019-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1014,7 +1014,7 @@ Resources:
           mimixPurgeJobName: !Sub '022-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1056,7 +1056,7 @@ Resources:
           mimixPurgeJobName: !Sub '023-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1098,7 +1098,7 @@ Resources:
           mimixPurgeJobName: !Sub '024-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1140,7 +1140,7 @@ Resources:
           mimixPurgeJobName: !Sub '025-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1182,7 +1182,7 @@ Resources:
           mimixPurgeJobName: !Sub '026-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1224,7 +1224,7 @@ Resources:
           mimixPurgeJobName: !Sub '027-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1266,7 +1266,7 @@ Resources:
           mimixPurgeJobName: !Sub '031-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1308,7 +1308,7 @@ Resources:
           mimixPurgeJobName: !Sub '029-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1350,7 +1350,7 @@ Resources:
           mimixPurgeJobName: !Sub '032-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1392,7 +1392,7 @@ Resources:
           mimixPurgeJobName: !Sub '035-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1434,7 +1434,7 @@ Resources:
           mimixPurgeJobName: !Sub '036-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1476,7 +1476,7 @@ Resources:
           mimixPurgeJobName: !Sub '037-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1518,7 +1518,7 @@ Resources:
           mimixPurgeJobName: !Sub '038-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1560,7 +1560,7 @@ Resources:
           mimixPurgeJobName: !Sub '039-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1602,7 +1602,7 @@ Resources:
           mimixPurgeJobName: !Sub '040-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1644,7 +1644,7 @@ Resources:
           mimixPurgeJobName: !Sub '043-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1686,7 +1686,7 @@ Resources:
           mimixPurgeJobName: !Sub '045-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1729,7 +1729,7 @@ Resources:
           mimixPurgeJobName: !Sub '046-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1771,7 +1771,7 @@ Resources:
           mimixPurgeJobName: !Sub '047-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1813,7 +1813,7 @@ Resources:
           mimixPurgeJobName: !Sub '048-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1855,7 +1855,7 @@ Resources:
           mimixPurgeJobName: !Sub '049-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1897,7 +1897,7 @@ Resources:
           mimixPurgeJobName: !Sub '050-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1939,7 +1939,7 @@ Resources:
           mimixPurgeJobName: !Sub '051-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -1981,7 +1981,7 @@ Resources:
           mimixPurgeJobName: !Sub '052-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2023,7 +2023,7 @@ Resources:
           mimixPurgeJobName: !Sub '054-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2065,7 +2065,7 @@ Resources:
           mimixPurgeJobName: !Sub '056-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2107,7 +2107,7 @@ Resources:
           mimixPurgeJobName: !Sub '055-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2149,7 +2149,7 @@ Resources:
           mimixPurgeJobName: !Sub '057-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2191,7 +2191,7 @@ Resources:
           mimixPurgeJobName: !Sub '058-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2233,7 +2233,7 @@ Resources:
           mimixPurgeJobName: !Sub '059-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2275,7 +2275,7 @@ Resources:
           mimixPurgeJobName: !Sub '060-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2317,7 +2317,7 @@ Resources:
           mimixPurgeJobName: !Sub '061-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2359,7 +2359,7 @@ Resources:
           mimixPurgeJobName: !Sub '064-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2401,7 +2401,7 @@ Resources:
           mimixPurgeJobName: !Sub '066-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2443,7 +2443,7 @@ Resources:
           mimixPurgeJobName: !Sub '067-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2485,7 +2485,7 @@ Resources:
           mimixPurgeJobName: !Sub '068-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2527,7 +2527,7 @@ Resources:
           mimixPurgeJobName: !Sub '073-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2569,7 +2569,7 @@ Resources:
           mimixPurgeJobName: !Sub '075-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2611,7 +2611,7 @@ Resources:
           mimixPurgeJobName: !Sub '076-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2653,7 +2653,7 @@ Resources:
           mimixPurgeJobName: !Sub '078-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2695,7 +2695,7 @@ Resources:
           mimixPurgeJobName: !Sub '101-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2737,7 +2737,7 @@ Resources:
           mimixPurgeJobName: !Sub '102-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2779,7 +2779,7 @@ Resources:
           mimixPurgeJobName: !Sub '134-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2821,7 +2821,7 @@ Resources:
           mimixPurgeJobName: !Sub '137-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2863,7 +2863,7 @@ Resources:
           mimixPurgeJobName: !Sub '163-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2905,7 +2905,7 @@ Resources:
           mimixPurgeJobName: !Sub '164-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2947,7 +2947,7 @@ Resources:
           mimixPurgeJobName: !Sub '194-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -2989,7 +2989,7 @@ Resources:
           mimixPurgeJobName: !Sub '195-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3031,7 +3031,7 @@ Resources:
           mimixPurgeJobName: !Sub '288-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3073,7 +3073,7 @@ Resources:
           mimixPurgeJobName: !Sub '293-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3115,7 +3115,7 @@ Resources:
           mimixPurgeJobName: !Sub '306-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3157,7 +3157,7 @@ Resources:
           mimixPurgeJobName: !Sub '320-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3199,7 +3199,7 @@ Resources:
           mimixPurgeJobName: !Sub '332-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3241,7 +3241,7 @@ Resources:
           mimixPurgeJobName: !Sub '335-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3283,7 +3283,7 @@ Resources:
           mimixPurgeJobName: !Sub '344-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3325,7 +3325,7 @@ Resources:
           mimixPurgeJobName: !Sub '429-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
@@ -3367,7 +3367,7 @@ Resources:
           mimixPurgeJobName: !Sub '450-${MimixPurgeJobNameSuffix}',
           mimixPurgeJobQueue: !Ref MimixPurgeJobQueue,
         }
-      State: DISABLED
+      State: ENABLED
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
