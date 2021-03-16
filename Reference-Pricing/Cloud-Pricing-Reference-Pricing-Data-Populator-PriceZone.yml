@@ -193,7 +193,7 @@ Resources:
               S3Key:
                 Rules:
                   - Name: suffix
-                    Value: gz
+                    Value: gz,bz2
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -329,6 +329,52 @@ Resources:
           intermediateStorageS3: !Ref IntermediateStorage
           env: !Ref EnvironmentShort
       Timeout: 60
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  AnalyseWaitLoadLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that analyses waits or loads
+      FunctionName: !Sub 'CP-REF-etl-price-zone-Analyse-Load-or-wait-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt ETLTriggerLambaRole.Arn
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/AnalyzeWaitOrLoadClusterLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          env: !Ref EnvironmentShort
+          cp_notification_url: !Ref NotificationURL
+          cp_notification_host: !Ref NotificationHost
+      Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName

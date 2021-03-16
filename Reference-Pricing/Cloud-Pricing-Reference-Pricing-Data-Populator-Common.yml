@@ -142,6 +142,22 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  commonDBName:
+    Description: discount name list
+    Type: String
+    Default: 'COMMON_DB'
+  commonDBPassword:
+    Description: discount name list
+    Type: String
+    Default: '123'
+  commonDBUsername:
+    Description: discount name list
+    Type: String
+    Default: 'cpuser'
+  commonDBURL:
+    Description: discount name list
+    Type: String
+    Default: 'jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/COMMON_DB'
 
 Mappings:
   EnvMap:
@@ -210,6 +226,42 @@ Resources:
           Value: !Ref Platform
         - Key: Component
           Value: !Ref Component
+
+  CommonDBUsername:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/USERNAME' ] ]
+      Type: String
+      Value: !Ref commonDBUsername
+      Tier: Standard
+      Description: common db username
+
+  CommonDBPassword:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/PASSWORD' ] ]
+      Type: String
+      Value: !Ref commonDBPassword
+      Tier: Standard
+      Description: common db password
+
+  CommonDBURL:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DB_URL' ] ]
+      Type: String
+      Value: !Ref commonDBURL
+      Tier: Standard
+      Description: common db url
+
+  CommonDBName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DB_NAME' ] ]
+      Type: String
+      Value: !Ref commonDBName
+      Tier: Standard
+      Description: common db name
 
   ETLTriggerLambaRole:
     Type: AWS::IAM::Role
@@ -392,6 +444,44 @@ Resources:
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
         Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
+
+  CommonDatabaseConnection1:
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-1'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
+
+  CommonDatabaseConnection2:
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-2'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
