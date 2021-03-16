@@ -1790,7 +1790,7 @@ Resources:
       Description: Lambda function for identifying OpCos contained in CE file and separte them into clusters
       FunctionName: !Sub 'CP-DISCOUNTS-etl-fetch-file-list-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !Ref StepFunctionHelperLambdaRole
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
@@ -1834,7 +1834,7 @@ Resources:
       Description: Lambda function for deciding wait, load or teminate status of the load job for a cluster
       FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-load-or-terminate-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !Ref StepFunctionHelperLambdaRole
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
@@ -1875,7 +1875,7 @@ Resources:
       Description: Lambda function for taking bacup decision based on the load job statues
       FunctionName: !Sub 'CP-DISCOUNTS-etl-take-backup-decision-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !Ref StepFunctionHelperLambdaRole
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
@@ -1916,7 +1916,7 @@ Resources:
       Description: Lambda function for deciding step function execution
       FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-execution-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !Ref StepFunctionHelperLambdaRole
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
