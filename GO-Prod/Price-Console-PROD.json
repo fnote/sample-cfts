@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-09e47fa0523aa1c14",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.01.01 -> ami-0b898c01f17927381",
 			"Type": "String",
-			"Default" : "ami-09e47fa0523aa1c14",
+			"Default" : "ami-0b898c01f17927381",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
