@@ -96,11 +96,11 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the container. Add valid CPU, Memory combination for fargate
     Type: Number
-    Default: '2048'
+    Default: '4096'
   MemoryReserved:
     Description: The soft limit (in MiB) of memory to reserve for the container. Add valid CPU, Memory combination for fargate
     Type: Number
-    Default: '4096'
+    Default: '8192'
   RetentionTime:
     Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
     Type: Number
@@ -178,7 +178,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -222,7 +222,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -266,7 +266,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -310,7 +310,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -354,7 +354,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -398,7 +398,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -442,7 +442,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -486,7 +486,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -530,7 +530,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -574,7 +574,7 @@ Resources:
             - Name: 'SUBJECT'
               Value: 'Pricing-Alerts-PROD'
             - Name: 'TO_ADDRESSES'
-              Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
+              Value: 'sama5625@sysco.com,vijayindu.gamage@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,
               chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,
               piyumi.rameshka@sysco.com,muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
               osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
@@ -582,7 +582,7 @@ Resources:
   ServerOneEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S1-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S1-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -629,7 +629,7 @@ Resources:
   ServerTwoEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S2-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S2-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -676,7 +676,7 @@ Resources:
   ServerThreeEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S3-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S3-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -723,7 +723,7 @@ Resources:
   ServerFourEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S4-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S4-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -770,7 +770,7 @@ Resources:
   ServerFiveEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S5-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S5-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -817,7 +817,7 @@ Resources:
   ServerSixEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S6-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S6-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -864,7 +864,7 @@ Resources:
   ServerSevenEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S7-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S7-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -911,7 +911,7 @@ Resources:
   ServerEightEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S8-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S8-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -958,7 +958,7 @@ Resources:
   ServerNineEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S9-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S9-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
@@ -1005,7 +1005,7 @@ Resources:
   ServerTenEcsService:
     Type: AWS::ECS::Service
     Properties:
-      ServiceName: 'CP-Sync-Mimix-Pricing-S10-Ecs-Service'
+      ServiceName: 'CP-Sync-Mimix-Pricing-S10-Service'
       Cluster: !Ref 'ECSCluster'
       LaunchType: FARGATE
       DeploymentConfiguration:
