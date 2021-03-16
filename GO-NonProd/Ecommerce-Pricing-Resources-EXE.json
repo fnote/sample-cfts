@@ -191,6 +191,20 @@
 				"PROD"
 			],
 			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentChar": {
+			"AllowedValues": [
+				"d",
+				"q",
+				"s",
+				"e",
+				"t",
+				""
+			],
+			"ConstraintDescription": "Must be a valid environment.",
+			"Default": "",
+			"Description": "Environment for application in single char",
+			"Type": "String"
 		}
 	},
 	"Resources": {
@@ -253,10 +267,18 @@
 					"##############################################\n",
 					"# Change Name of server to match new hostname\n",
 					"##############################################\n",
-					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\"\n",
+					"sh -c \"hostname rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",
+					{
+						"Ref": "EnvironmentChar"
+					},
+					".na.sysco.net\"\n",
 					"tee /etc/sysconfig/network <<-EOF\n",
 					"NETWORKING=yes\n",
-					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)e.na.sysco.net\n",
+					"HOSTNAME=rmwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",
+					{
+						"Ref": "EnvironmentChar"
+					},
+					".na.sysco.net\n",
 					"NOZEROCONF=yes\n",
 					"EOF\n",
 
@@ -285,6 +307,20 @@
 					"##############################################\n",
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/cpsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+
+					"# For DD APM\n",
+
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-javaagent:/etc/dd-java-agent/dd-java-agent.jar -Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-ecomm-mysql-db -Ddd.service=cp-ecomm-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
+
+					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
 
 					"#####################################################\n",
 					"# Install Dependencies.\n",
@@ -332,6 +368,8 @@
 					"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
 					"env: development\n",
 					"logs_enabled: true\n",
+					"apm_config:\n",
+					"  enabled: true\n",
 					"EOF\n",
 
 					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
@@ -542,7 +580,7 @@
 				]
 			},
 			"Metadata" : {
-				"Comment" : "S3 Bucket for Code Deploy"
+				"Comment" : "S3 Bucket for Ecomm Data storing"
 			}
 		},
 		"CPCodeDeployGroup": {

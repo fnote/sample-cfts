@@ -1,15 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is the stack for CP Mimix Daily Purge Sync Job Definition
 Parameters:
-  Environment:
-    Description: Environment for application
-    Type: String
-    Default: Production
-    ConstraintDescription: Must be a valid environment
   EnvironmentShort:
     Description: Environment for application
     Type: String
     Default: PROD
+    AllowedValues:
+      - PROD
   EmailSubject:
     Description: Subject for alert emails
     Type: String
@@ -33,10 +30,16 @@ Resources:
         Attempts: 1
       Timeout:
         AttemptDurationSeconds: 10800
+      PlatformCapabilities:
+        - FARGATE
       ContainerProperties:
         Image: '130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-query-sync:latest'
-        Vcpus: 4
-        Memory: 6144
+        ResourceRequirements:
+          - Type: VCPU
+            Value: 4
+          - Type: MEMORY
+            Value: 8192
+        ExecutionRoleArn: !Ref TaskRole
         Command:
           - java
           - "-Xmx6144M"
@@ -52,4 +55,7 @@ Resources:
           - Name: 'SUBJECT'
             Value: !Ref 'EmailSubject'
           - Name: 'TO_ADDRESSES'
-            Value: 'krishan.senevirathne@sysco.com,lohitha.chiranjeewa@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com'
+            Value: 'sanjaya.amarasinghe@syscolabs.com,shetty.vidyasagar@corp.sysco.com,villanueva.loi@corp.sysco.com,amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,
+            gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
+            muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,
+            sahan.jayawardena@syscolabs.com,osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
