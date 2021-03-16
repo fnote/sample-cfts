@@ -1917,7 +1917,7 @@ Resources:
       FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-execution-${EnvironmentShort}'
       Runtime: python3.8
       Role: !GetAtt StepFunctionHelperLambdaRole.Arn
-      Handler: index.lambda_handler
+      Handler: AnalyzeWaitExecutionLambda.lambda_handler
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
         S3Key: !Sub 'DiscountService/${EnvironmentShort}/AnalyzeWaitExecutionLambda.py.zip'
