@@ -427,7 +427,7 @@ Resources:
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-1'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-temp-cluster-1'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -447,7 +447,7 @@ Resources:
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-2'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-temp-cluster-2'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -644,7 +644,9 @@ Resources:
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
                     "--validation_type_ce.$": "$.validation_type_ce"
-                  }
+                  },
+                  "NumberOfWorkers.$": "$.worker_count",
+                  "WorkerType.$": "$.worker_type"
                 },
                 "Catch": [
                   {
@@ -1769,7 +1771,7 @@ Resources:
                   - states:ListExecutions
                   - states:StartExecution
                 Resource:
-                  - !Ref DiscountsStateMachine
+                  - '*'
         - PolicyName: cp-discounts-etl-ssm-access-policy
           PolicyDocument:
             Version: '2012-10-17'
