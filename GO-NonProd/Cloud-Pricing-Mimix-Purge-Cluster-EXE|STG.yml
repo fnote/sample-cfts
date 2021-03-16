@@ -293,7 +293,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 011"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-011-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(45 02 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -429,7 +429,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 019"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-019-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(20 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -446,7 +446,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 022"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-022-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(30 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -650,7 +650,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 038"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-038-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(05 03 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -871,7 +871,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 056"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-056-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(55 07 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -922,7 +922,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 058"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-058-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(00 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1041,7 +1041,7 @@ Resources:
     Properties:
       Description: "Mimix Daily Purge Sync for 068"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-068-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(20 04 * * ? *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
@@ -1432,36 +1432,36 @@ Resources:
           - !Ref 'PvtSNa'
           - !Ref 'PvtSNb'
           - !Ref 'PvtSNc'
-    Tags:
-      Technical:ApplicationName:
-        Ref: 'ApplicationName'
-      Technical:ApplicationID:
-        Ref: 'ApplicationID'
-      Technical:PlatformOwner:
-        Ref: 'Owner'
-      Technical:Environment: !Sub
+      Tags:
+        Technical:ApplicationName:
+          Ref: 'ApplicationName'
+        Technical:ApplicationID:
+          Ref: 'ApplicationID'
+        Technical:PlatformOwner:
+          Ref: 'Owner'
+        Technical:Environment: !Sub
           - '${env}'
           - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ] }
-      Technical:ApplicationSubName:
-        Ref: 'ApplicationSubName'
-      Technical:ApplicationRole:
-        Ref: 'ApplicationRole'
-      Approver:
-        Ref: 'Approver'
-      PO_Number:
-        Ref: 'PONumber'
-      Project_ID:
-        Ref: 'ProjectID'
-      Support_Email:
-        Ref: 'SupportEmail'
-      2WTAGGER:
-        Ref: '2WTAGGER'
-      Platform:
-        Ref: 'Platform'
-      Name:
-        Ref: 'ApplicationSubName'
-      Component:
-        Ref: 'Component'
+        Technical:ApplicationSubName:
+          Ref: 'ApplicationSubName'
+        Technical:ApplicationRole:
+          Ref: 'ApplicationRole'
+        Approver:
+          Ref: 'Approver'
+        PO_Number:
+          Ref: 'PONumber'
+        Project_ID:
+          Ref: 'ProjectID'
+        Support_Email:
+          Ref: 'SupportEmail'
+        2WTAGGER:
+          Ref: '2WTAGGER'
+        Platform:
+          Ref: 'Platform'
+        Name:
+          Ref: 'ApplicationSubName'
+        Component:
+          Ref: 'Component'
       State: ENABLED
 
   JobQueue:

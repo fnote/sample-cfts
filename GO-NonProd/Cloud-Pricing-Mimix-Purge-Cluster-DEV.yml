@@ -149,18 +149,69 @@ Resources:
             JobDefinition: !Ref 'JobDefinitionArn'
             JobName: '002-Purge-Sync-Job'
 
+  MimixDailyPurgeSync019:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 019"
+      Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-019-Trigger"
+      State: ENABLED
+      ScheduleExpression: 'cron(07 10 ? * MON-SAT *)'
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "019"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinitionArn'
+            JobName: '056-Purge-Sync-Job'
+
+  MimixDailyPurgeSync022:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 022"
+      Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-022-Trigger"
+      State: ENABLED
+      ScheduleExpression: 'cron(08 30 ? * MON-SAT *)'
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "022"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinitionArn'
+            JobName: '056-Purge-Sync-Job'
+
   MimixDailyPurgeSync056:
     Type: AWS::Events::Rule
     Properties:
       Description: "Mimix Daily Purge Sync for 056"
       Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-056-Trigger"
-      State: DISABLED
+      State: ENABLED
       ScheduleExpression: 'cron(08 10 ? * MON-SAT *)'
       RoleArn: !Ref 'TriggeringRole'
       Targets:
         - Arn: !Ref 'JobQueue'
           Id: EC2
           Input: '{"Parameters": {"business_unit": "056"}}'
+          RoleArn: !Ref 'TriggeringRole'
+          BatchParameters:
+            JobDefinition: !Ref 'JobDefinitionArn'
+            JobName: '056-Purge-Sync-Job'
+
+  MimixDailyPurgeSync067:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Mimix Daily Purge Sync for 067"
+      Name: !Sub "Mimix-Daily-Purge-Sync-${EnvironmentShort}-067-Trigger"
+      State: ENABLED
+      ScheduleExpression: 'cron(05 50 ? * MON-SAT *)'
+      RoleArn: !Ref 'TriggeringRole'
+      Targets:
+        - Arn: !Ref 'JobQueue'
+          Id: EC2
+          Input: '{"Parameters": {"business_unit": "067"}}'
           RoleArn: !Ref 'TriggeringRole'
           BatchParameters:
             JobDefinition: !Ref 'JobDefinitionArn'

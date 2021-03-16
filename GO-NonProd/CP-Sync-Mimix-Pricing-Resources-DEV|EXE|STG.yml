@@ -191,7 +191,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -234,7 +236,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -277,7 +281,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -320,7 +326,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -363,7 +371,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -406,7 +416,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -423,7 +435,7 @@ Resources:
       Memory: !Ref 'MemoryReserved'
       NetworkMode: awsvpc
       RequiresCompatibilities:
-        - FARGATE            
+        - FARGATE
       ExecutionRoleArn: !Ref 'ExecutionRole'
       TaskRoleArn: !Ref 'TaskRole'
       ContainerDefinitions:
@@ -449,7 +461,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -492,7 +506,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -535,7 +551,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
@@ -578,7 +596,9 @@ Resources:
             - Name: 'SENDER'
               Value: 'CloudPricingAlerts@corp.sysco.com'
             - Name: 'SUBJECT'
-              Value: 'Pricing-Alerts-DEV'
+              Value: !Sub
+                - 'Pricing-Alerts-${env}'
+                - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
               Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
               muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
