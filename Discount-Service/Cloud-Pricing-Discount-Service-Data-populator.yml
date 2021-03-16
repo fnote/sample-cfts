@@ -1762,6 +1762,11 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
         - PolicyName: cp-discounts-etl-step-function-access-policy
           PolicyDocument:
             Version: '2012-10-17'
