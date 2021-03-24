@@ -17,10 +17,14 @@ Parameters:
     Description: ARN of the iam role for the glue job to backup data
     Type: String
     Default: arn:aws:iam::037295147636:role/CP-REF-ETLDataBackupGlueRole-DEV
-  DatabaseConnection:
-    Description: Name of the databse connection
+  DatabaseConnectionCluster1:
+    Description: Name of the database connection cluster 1
     Type: String
-    Default: cp-ref-etl-output-bucket-dev
+    Default: cp-ref-etl-common-connection-DEV-cluster-1
+  DatabaseConnectionCluster2:
+    Description: Name of the database connection cluster 2
+    Type: String
+    Default: cp-ref-etl-common-connection-DEV-cluster-2
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
@@ -258,21 +262,15 @@ Resources:
       Description: Lambda function that analyses waits or loads for pa
       FunctionName: !Sub 'CP-REF-etl-pa-Analyse-Load-or-wait-${EnvironmentShort}'
       Runtime: python3.8
-      Role: !GetAtt ETLTriggerLambaRole.Arn
-      Handler: index.lambda_handler
+      Role: !Ref LambdaRole
+      Handler: analyse_load_wait.lambda_handler
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
-        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/.zip'
-      VpcConfig:
-        SecurityGroupIds:
-          !Ref NotifierLambdaSecutyGroup
-        SubnetIds:
-          !Ref NotifierLambdaSubnets
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/analyse_load_wait.py.zip'
       Environment:
         Variables:
+          stepFunctionArn: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${EnvironmentShort}'
           env: !Ref EnvironmentShort
-          cp_notification_url: !Ref NotificationURL
-          cp_notification_host: !Ref NotificationHost
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
@@ -339,14 +337,54 @@ Resources:
         - |-
           {
             "Comment": "Transform and Loads PA data from S3 to DB",
-            "StartAt": "PA ETL Job",
+            "StartAt": "Analyze wait or load status",
             "States": {
+              "Analyze wait or load status":{
+              	         "Type":"Task",
+              	         "Next":"WaitOrLoadOrTerminate",
+              	         "Resource":"arn:aws:states:::lambda:invoke",
+              	         "Parameters":{
+              	            "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
+              	            "Payload":{
+              	               "ENV.$":"$.env",
+              	               "stepFunctionExecutionId.$":"$$.Execution.Id",
+              	               "stepFunctionArn.$":"$$.StateMachine.Id"
+              	            }
+              	         },
+              	         "ResultPath":"$.nextStep"
+              	      },
+              	      "WaitOrLoadOrTerminate":{
+              	         "Comment":"Check on wait status load or terminate",
+              	         "Type":"Choice",
+              	         "Choices":[
+              	            {
+              	               "Variable":"$.nextStep.Payload.shouldWait",
+              	               "BooleanEquals":true,
+              	               "Next":"Wait"
+              	            },
+              	            {
+              	               "Variable":"$.nextStep.Payload.shouldWait",
+              	               "BooleanEquals":false,
+              	               "Next":"PA ETL Job"
+              	            }
+              	         ],
+              	         "Default":"Terminate"
+              	      },
+              	      "Terminate":{
+              	         "Type":"Succeed"
+              	      },
+              	      "Wait":{
+              	         "Type":"Wait",
+              	         "Seconds":300,
+              	         "Next":"Analyze wait or load status"
+              },
               "PA ETL Job": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::glue:startJobRun.sync",
                 "Parameters": {
                   "JobName": "${PADataETLJobName}",
                   "Arguments": {
+                    "--ENV.$": "$.env",
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
@@ -442,6 +480,7 @@ Resources:
         - {
             PADataETLJobName: !Ref PAETLGlueJob,
             notifierLambdaArn: !Ref NotifierLambdaArn,
+            AnalyseLoadOrWaitLambdaArn: !GetAtt AnalyseWaitLoadLambda.Arn,
             paDataBackupJobName: !Ref PADataBackupJob,
             backupS3Name: !Ref ETLDataBackUpStorage,
             intermediateS3Name: !Ref IntermediateStorage
@@ -494,11 +533,11 @@ Resources:
         ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
       Connections:
         Connections:
-          - !Ref DatabaseConnection
+          - !Ref DatabaseConnectionCluster1
+          - !Ref DatabaseConnectionCluster2
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:

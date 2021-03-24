@@ -33,6 +33,10 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  InputStorage:
+    Description: S3 bucket name to receive input files
+    Type: String
+    Default: cp-ref-etl-price-zone-storage-dev
   SubnetIdForGlueConnection:
     Type: String
     Description: The subnetId to be referred
@@ -51,7 +55,15 @@ Parameters:
   DatabaseJDBCUrl:
     Type: String
     Description: JDBC url of the database used to persist Reference pricing data
-    Default: "jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+  DatabaseJDBCUrlCluster1:
+    Type: String
+    Description: JDBC url of the database used to persist Reference pricing data
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+  DatabaseJDBCUrlCluster2:
+    Type: String
+    Description: JDBC url of the database used to persist Reference pricing data
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-02-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
   DatabasePassword:
     Type: String
     Description: Password of the database used for glue connection
@@ -157,7 +169,7 @@ Parameters:
   commonDBURL:
     Description: discount name list
     Type: String
-    Default: 'jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/COMMON_DB'
+    Default: 'cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com'
 
 Mappings:
   EnvMap:
@@ -230,7 +242,7 @@ Resources:
   CommonDBUsername:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/USERNAME' ] ]
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/USERNAME' ] ]
       Type: String
       Value: !Ref commonDBUsername
       Tier: Standard
@@ -239,7 +251,7 @@ Resources:
   CommonDBPassword:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/PASSWORD' ] ]
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/PASSWORD' ] ]
       Type: String
       Value: !Ref commonDBPassword
       Tier: Standard
@@ -248,7 +260,7 @@ Resources:
   CommonDBURL:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DB_URL' ] ]
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/DB_URL' ] ]
       Type: String
       Value: !Ref commonDBURL
       Tier: Standard
@@ -257,7 +269,7 @@ Resources:
   CommonDBName:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/DB_NAME' ] ]
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/DB_NAME' ] ]
       Type: String
       Value: !Ref commonDBName
       Tier: Standard
@@ -305,6 +317,7 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                  - !Sub 'arn:aws:s3:::${InputStorage}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
@@ -430,32 +443,13 @@ Resources:
                   - 'arn:aws:s3:::cp-ref-etl-price-zone-spark-temp-dir-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
-  CommonDatabaseConnection:
-    Type: AWS::Glue::Connection
-    Properties:
-      CatalogId: !Ref AWS::AccountId
-      ConnectionInput:
-        ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
-          "USERNAME": !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]],
-          # SSM Secure reference is not supported in: [AWS::glue::Connection]
-          "PASSWORD": !Ref DatabasePassword
-        }
-        Description: Glue Connection to Referrence pricing database
-        ConnectionType: JDBC
-        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}'
-        PhysicalConnectionRequirements:
-          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
-          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
-          SubnetId: !Ref SubnetIdForGlueConnection
-
   CommonDatabaseConnection1:
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrlCluster1,
           "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
@@ -474,7 +468,7 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrlCluster2,
           "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
@@ -640,9 +634,12 @@ Resources:
       Path: '/'
 
 Outputs:
-  CommonDBConnectionName:
-    Description: Reference price common glue database connection
-    Value: !Ref CommonDatabaseConnection
+  CommonDBConnectionName1:
+    Description: Reference price common glue database connection for cluster 1
+    Value: !Ref CommonDatabaseConnection1
+  CommonDBConnectionName2:
+    Description: Reference price common glue database connection for cluster 2
+    Value: !Ref CommonDatabaseConnection2
   ETLGlueRoleArn:
     Description: ETL glue role arn
     Value: !GetAtt ETLGlueRole.Arn
