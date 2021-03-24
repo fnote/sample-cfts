@@ -843,6 +843,9 @@ Outputs:
   ProductInfoTaskDefinition:
     Description: The Cp MimixSync ProductInfo task definition ARN
     Value: !Ref CpMimixSyncProductInfoTaskDefinition
+  SalesInvoiceTaskDefinition:
+    Description: The Cp MimixSync SalesInvoice task definition ARN
+    Value: !Ref CpMimixSyncSalesInvoiceTaskDefinition
   ClusterARN:
     Description: The ECS Cluster ARN
     Value: !GetAtt ECSCluster.Arn
