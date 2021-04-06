@@ -144,6 +144,18 @@ Parameters:
     Description: Maximum permission boundary
     Type: String
     Default: PermissionBoundary-DevOps
+  EnableTwoClusters:
+    Description: If this is set to true, two clusters will be created. Do it only in Production
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+Conditions:
+  createTwoClusters: !Equals
+    - !Ref EnableTwoClusters
+    - 'true'
 
 Resources:
   S3Bucket:
@@ -190,8 +202,8 @@ Resources:
               - s3:ListBucket
               - s3:GetObjectVersion
             Resource: [
-                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]],
-                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
+            !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]],
+            !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
             ]
 
   DiscountsETLS3ReadAccessRole:
@@ -295,7 +307,7 @@ Resources:
   DB01Primary01:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-discounts-01-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-discounts-C01-01-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -333,7 +345,7 @@ Resources:
   DB01Primary02:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-discounts-02-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-discounts-C01-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -369,6 +381,133 @@ Resources:
         - Key: Component
           Value: Aurora DB
 
+  DiscountsDBCluster02:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBCluster
+    DependsOn: DiscountsLoadFromS3ParameterGroup
+    DeletionPolicy: Snapshot
+    Properties:
+      AssociatedRoles:
+        - RoleArn: !GetAtt DiscountsETLS3ReadAccessRole.Arn
+      AvailabilityZones:
+        - us-east-1a
+        - us-east-1c
+        - us-east-1b
+      DBClusterIdentifier: !Join ['-', ['cp-discounts-db-cluster-02', !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]
+      DBClusterParameterGroupName: !Ref DiscountsLoadFromS3ParameterGroup
+      Engine: aurora-mysql
+      EngineMode: provisioned
+      EngineVersion: 5.7.mysql_aurora.2.08.1
+      MasterUsername: !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]]
+      MasterUserPassword: !Join ['', ["{{resolve:ssm-secure:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/PASSWORD:1}}"]]
+      Port: '3306'
+      VpcSecurityGroupIds: [!Ref SGRDSMySQL]
+      DBSubnetGroupName: !Ref snDB
+      Tags:
+        - Key: Name
+          Value: !Join ['', ['cp-discounts-db-cluster-02', !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  DB02Primary01:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub 'cp-discounts-c02-01-${EnvironmentShort}'
+      AllowMajorVersionUpgrade: 'true'
+      AutoMinorVersionUpgrade: 'true'
+      CopyTagsToSnapshot: 'true'
+      DBClusterIdentifier: !Ref DiscountsDBCluster02
+      DBInstanceClass: !Ref DBInstanceType
+      CACertificateIdentifier: rds-ca-2019
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref snDB
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: !Join ['', [!Ref ClusterName, !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  DB02Primary02:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub 'cp-discounts-c02-02-${EnvironmentShort}'
+      AllowMajorVersionUpgrade: 'true'
+      AutoMinorVersionUpgrade: 'true'
+      CopyTagsToSnapshot: 'true'
+      DBClusterIdentifier: !Ref DiscountsDBCluster02
+      DBInstanceClass: !Ref DBInstanceType
+      CACertificateIdentifier: rds-ca-2019
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref snDB
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: !Join ['', [!Ref ClusterName, !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
   AutoScalerTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
@@ -395,31 +534,81 @@ Resources:
         ScaleInCooldown: 300
         DisableScaleIn: false
 
-  DBCLusterReaderEndpointParameter:
+  AutoScalerTarget02:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 15
+      ResourceId: !Sub 'cluster:${DiscountsDBCluster02}'
+      ScalableDimension: rds:cluster:ReadReplicaCount
+      ServiceNamespace: rds
+      RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/rds.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_RDSCluster'
+
+  AutoScaler02:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      ScalingTargetId: !Ref AutoScalerTarget02
+      ServiceNamespace: rds
+      PolicyName: CPU Auto scale policy
+      PolicyType: TargetTrackingScaling
+      ScalableDimension: rds:cluster:ReadReplicaCount
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: RDSReaderAverageCPUUtilization
+        TargetValue: 40
+        ScaleOutCooldown: 300
+        ScaleInCooldown: 300
+        DisableScaleIn: false
+
+  DBCluster01ReaderEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT/DB/ENDPOINT/READER']]
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER01/DISCOUNT/DB/ENDPOINT/READER']]
       Type: String
       Value: !Join ['', [!GetAtt DiscountsDBCluster.ReadEndpoint.Address]]
       Tier: Standard
-      Description: Ref Price DB Cluster Reader Endpoint
-  
-  DBCLusterWriterEndpointParameter:
+      Description: Discounts DB Cluster 01 Reader Endpoint
+
+  DBCluster01WriterEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT/DB/ENDPOINT/WRITER']]
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER01/DISCOUNT/DB/ENDPOINT/WRITER']]
       Type: String
       Value: !Join ['', [!GetAtt DiscountsDBCluster.Endpoint.Address]]
       Tier: Standard
-      Description: Ref Price DB Cluster Writer Endpoint
+      Description: Discounts DB Cluster 01 Writer Endpoint
+
+  DBCluster02ReaderEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER02/DISCOUNT/DB/ENDPOINT/READER']]
+      Type: String
+      Value: !Join ['', [!GetAtt DiscountsDBCluster02.ReadEndpoint.Address]]
+      Tier: Standard
+      Description: Discounts DB Cluster 02 Reader Endpoint
+
+  DBCluster02WriterEndpointParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER02/DISCOUNT/DB/ENDPOINT/WRITER']]
+      Type: String
+      Value: !Join ['', [!GetAtt DiscountsDBCluster02.Endpoint.Address]]
+      Tier: Standard
+      Description: Discounts DB Cluster 02 Writer Endpoint
 
 Outputs:
   dbUrl00:
-    Description: Endpoint for Cluster
+    Description: Endpoint for Cluster 01
     Value: !Join ['', [!GetAtt DiscountsDBCluster.Endpoint.Address]]
   dbUrl01:
-    Description: Read Endpoint Cluster
+    Description: Read Endpoint Cluster 01
     Value: !Join ['', [!GetAtt DiscountsDBCluster.ReadEndpoint.Address]]
+  dbUrl10:
+    Description: Endpoint for Cluster 02
+    Value: !Join ['', [!GetAtt DiscountsDBCluster02.Endpoint.Address]]
+  dbUrl11:
+    Description: Read Endpoint Cluster 02
+    Value: !Join ['', [!GetAtt DiscountsDBCluster02.ReadEndpoint.Address]]
   etlOutputBucket:
     Description: ETL Output Bucket Name
     Value: !Join ['-', [!Ref PartitionedPZS3, !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]
