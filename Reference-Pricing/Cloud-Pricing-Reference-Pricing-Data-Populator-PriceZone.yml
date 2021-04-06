@@ -92,6 +92,14 @@ Parameters:
     Description: Active Opcos
     Type: String
     Default: '019'
+  LoadJobMaxConcurrencyCluster1:
+    Description: cluster 1 load job max concurrency
+    Type: String
+    Default: '5'
+  LoadJobMaxConcurrencyCluster2:
+    Description: cluster 2 load job max concurrency
+    Type: String
+    Default: '5'
   PartialLoadMaxSize:
     Description: Max size of the file carrying partial load in GBs beyond this it will be considered a full load
     Type: String
@@ -336,6 +344,22 @@ Resources:
       Type: String
       Value: !Ref ActiveOpcos
       Description: Active opcos available for price zone
+
+  PriceZoneLoadJobMaxConcurrencyCluster1:
+    Type: AWS::SSM::Parameter
+    Properties:
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_1/MAX_CONCURRENCY' ] ]
+        Type: String
+        Value: !Ref LoadJobMaxConcurrencyCluster1
+        Description: cluster 1 max load job count
+
+  PriceZoneLoadJobMaxConcurrencyCluster2:
+    Type: AWS::SSM::Parameter
+    Properties:
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_2/MAX_CONCURRENCY' ] ]
+        Type: String
+        Value: !Ref LoadJobMaxConcurrencyCluster2
+        Description: cluster 2 max load job count
 
   PriceZoneInputFileSizePartialLoadUpperBound:
     Type: AWS::SSM::Parameter
@@ -835,7 +859,9 @@ Resources:
                          "etl_timestamp.$":"$.etl_timestamp",
                          "active_opcos.$":"$.active_opcos",
                          "intermediate_s3_name.$":"$.intermediate_s3_name",
-                         "partitioned_files_key.$":"$.partitioned_files_key"
+                         "partitioned_files_key.$":"$.partitioned_files_key",
+                         "file_type.$":"$.file_prefix",
+                         "partial_load.$":"$.partial_load"
                       }
                    },
                    "ResultPath":"$.opcoList",
@@ -920,7 +946,7 @@ Resources:
                             "Load All":{
                                "Type":"Map",
                                "ItemsPath":"$.opcoList.Payload.cluster_a",
-                               "MaxConcurrency":2,
+                               "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
                                   "partitioned_files_key.$":"$.partitioned_files_key",
@@ -928,6 +954,9 @@ Resources:
                                   "intermediate_directory_path.$":"$.intermediate_directory_path",
                                   "etl_timestamp.$":"$.etl_timestamp",
                                   "partial_load.$":"$.partial_load",
+                                  "etl_output_path_key.$":"$.etl_output_path_key",
+                                  "backup_bucket.$":"$.backup_bucket",
+                                  "backup_file_path.$":"$.backup_file_path",
                                   "ENV.$":"$.ENV",
                                   "cluster":"1"
                                },
@@ -1048,7 +1077,8 @@ Resources:
                                      "--decompressed_file_path.$":"$.decompressed_file_path",
                                      "--etl_output_path_key.$":"$.etl_output_path_key",
                                      "--backup_file_path.$":"$.backup_file_path",
-                                     "--intermediate_directory_path.$":"$.intermediate_directory_path"
+                                     "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                     "--file_type.$" : "$.file_type"
                                   }
                                },
                                "ResultPath":"$.response",
@@ -1078,6 +1108,7 @@ Resources:
                                      "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                                      "additional_info_file_s3":"${backupS3Name}",
                                      "etl_timestamp.$":"$.etl_timestamp",
+                                     "file_name.$":"$.s3_input_file_key",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "status":"SUCCEEDED"
                                   }
@@ -1151,7 +1182,7 @@ Resources:
                             "Load AllC2":{
                                "Type":"Map",
                                "ItemsPath":"$.opcoList.Payload.cluster_b",
-                               "MaxConcurrency":2,
+                               "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
                                   "partitioned_files_key.$":"$.partitioned_files_key",
@@ -1159,6 +1190,9 @@ Resources:
                                   "intermediate_directory_path.$":"$.intermediate_directory_path",
                                   "etl_timestamp.$":"$.etl_timestamp",
                                   "partial_load.$":"$.partial_load",
+                                  "etl_output_path_key.$":"$.etl_output_path_key",
+                                  "backup_bucket.$":"$.backup_bucket",
+                                  "backup_file_path.$":"$.backup_file_path",
                                   "ENV.$":"$.ENV",
                                   "cluster":"2"
                                },
@@ -1279,7 +1313,8 @@ Resources:
                                      "--decompressed_file_path.$":"$.decompressed_file_path",
                                      "--etl_output_path_key.$":"$.etl_output_path_key",
                                      "--backup_file_path.$":"$.backup_file_path",
-                                     "--intermediate_directory_path.$":"$.intermediate_directory_path"
+                                     "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                     "--file_type.$" : "$.file_type"
                                   }
                                },
                                "ResultPath":"$.response",
@@ -1309,6 +1344,7 @@ Resources:
                                      "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                                      "additional_info_file_s3":"${backupS3Name}",
                                      "etl_timestamp.$":"$.etl_timestamp",
+                                     "file_name.$":"$.s3_input_file_key",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "status":"SUCCEEDED"
                                   }
@@ -1332,7 +1368,9 @@ Resources:
                          "backup_bucket.$":"$.backup_bucket",
                          "backup_file_path.$":"$.backup_file_path",
                          "etl_output_path_key.$":"$.etl_output_path_key",
-                         "stepFunctionExecutionId.$":"$$.Execution.Id"
+                         "stepFunctionExecutionId.$":"$$.Execution.Id",
+                         "etl_timestamp.$":"$.etl_timestamp",
+                         "file_name.$":"$.s3_input_file_key"
                       }
                    },
                    "End":true
