@@ -75,11 +75,11 @@ Parameters:
   TransformJobMaxDPUCount:
     Description: Maximum DPU count allocated for Transform spark job
     Type: String
-    Default: 100
+    Default: 149
   TransformJobMinDPUCount:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
-    Default: 5
+    Default: 10
   PriceZoneFilePartialLoadPrefixes:
     Description: List of prefixes for price zone file partial load prefixes
     Type: String
@@ -95,21 +95,26 @@ Parameters:
   LoadJobMaxConcurrencyCluster1:
     Description: cluster 1 load job max concurrency
     Type: String
-    Default: '5'
+    Default: '4'
   LoadJobMaxConcurrencyCluster2:
     Description: cluster 2 load job max concurrency
     Type: String
-    Default: '5'
+    Default: '4'
   PartialLoadMaxSize:
     Description: Max size of the file carrying partial load in GBs beyond this it will be considered a full load
     Type: String
     Default: '5'
+  LoadJobSoftValidation:
+    Description: if this value is 0 let it pass , if 1 throw error , if 2 load future table , if anything else throw error
+    Type: String
+    Default: '0'
   TransformJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
-    Default: Standard
+    Default: G.2X
     AllowedValues:
       - Standard
+      - G.2X
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -368,6 +373,14 @@ Resources:
       Type: String
       Value: !Ref PartialLoadMaxSize
       Description: min file size of the input file to be considered a full load
+
+  PriceZoneLoadJobSoftValidation:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/FULL_EXPORT_LOADING/SOFT_VALIDATION' ] ]
+      Type: String
+      Value: !Ref LoadJobSoftValidation
+      Description: future table is not empty when full export is received and we load looking at the value set here if 0 throw error
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
