@@ -67,7 +67,7 @@ Parameters:
   ETLMaximumConcurrency:
     Description: Maximum Concurrency Allowed for Price Zone Glue jobs
     Type: String
-    Default: 5
+    Default: 20
   LoadJobMaximumConcurrency:
     Description: Maximum Concurrency Allowed for Price Zone load jobs
     Type: String
