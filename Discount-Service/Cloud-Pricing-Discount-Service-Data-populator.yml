@@ -149,7 +149,7 @@ Parameters:
   ActiveDBClusters:
     Description: Active database clusters of discount service
     Type: String
-    Default: '1,2'
+    Default: '01,02'
   EnableTwoClusters:
     Description: If this is set to true, two glue connections will be created. Do it only in Production
     Type: String
@@ -169,6 +169,14 @@ Parameters:
     Description: Maximum Concurrency Allowed for CE load jobs
     Type: String
     Default: 4
+  CELoadJobMaximumConcurrencyForCluster01:
+    Description: Maximum allowed load job count for cluster 01
+    Type: String
+    Default: 2
+  CELoadJobMaximumConcurrencyForCluster02:
+    Description: Maximum allowed load job count for cluster 02
+    Type: String
+    Default: 2
   PartitionJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
@@ -177,11 +185,18 @@ Parameters:
       - Standard
       - G.1X
       - G.2X
-  PartitionJobWorkerCount:
-    Description: Partition Job Worker count
+  PartitionJobWorkerCountMin:
+    Description: Minimum Worker Count for the Partition Job
+    Type: String
+    Default: 5
+  PartitionJobWorkerCountMax:
+    Description: Maximum Worker Count for the Partition Job
     Type: String
     Default: 50
-
+  PartialLoadFileSizeUpperBound:
+    Description: Upper bound value of customer eligibility partial load file size in GB
+    Type: String
+    Default: 0.5
 
 Conditions:
   twoClustersEnabled: !Equals
@@ -334,6 +349,33 @@ Resources:
       Tier: Standard
       Description: Maximum Concurrency allowed for Discount ETL
 
+  DiscountETLMaximumConcurrencyForCluster01:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CE/LOAD_JOB/CLUSTER_01/MAX_CONCURRENCY' ] ]
+      Type: String
+      Value: !Ref CELoadJobMaximumConcurrencyForCluster01
+      Tier: Standard
+      Description: Maximum number of load job count allowed for cluster 01
+
+  DiscountETLMaximumConcurrencyForCluster02:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CE/LOAD_JOB/CLUSTER_02/MAX_CONCURRENCY' ] ]
+      Type: String
+      Value: !Ref CELoadJobMaximumConcurrencyForCluster02
+      Tier: Standard
+      Description: Maximum number of load job count allowed for cluster 02
+
+  CEPartialLoadFileSizeUpperBound:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/CE/PARTIAL_LOAD_FILE_SIZE_UPPER_BOUND' ] ]
+      Type: String
+      Value: !Ref PartialLoadFileSizeUpperBound
+      Tier: Standard
+      Description: Upper bound value of customer eligibility partial load file size in GB
+
   PartitionGlueJobWorkerType:
     Type: AWS::SSM::Parameter
     Properties:
@@ -343,14 +385,23 @@ Resources:
       Tier: Standard
       Description: Worker type for the ETL Partition Job
 
-  PartitionGlueJobWorkerCount:
+  PartitionGlueJobWorkerCountMin:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT' ] ]
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT/MIN' ] ]
       Type: String
-      Value: !Ref PartitionJobWorkerCount
+      Value: !Ref PartitionJobWorkerCountMin
       Tier: Standard
-      Description: Worker count for the ETL Partition Job
+      Description: Minimum worker count for the ETL Partition Job
+
+  PartitionGlueJobWorkerCountMax:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT/MAX' ] ]
+      Type: String
+      Value: !Ref PartitionJobWorkerCountMax
+      Tier: Standard
+      Description: Maximum worker count for the ETL Partition Job
 
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -420,34 +471,33 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER01/DISCOUNT/DB/ENDPOINT/WRITER:1}}"]],
+          "JDBC_CONNECTION_URL": !Join ['', ["jdbc:mysql://", "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER01/DISCOUNT/DB/ENDPOINT/WRITER:1}}", ":3306/mysql"]],
           "USERNAME": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-temp-cluster-1'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-01'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
           SubnetId: !Ref SubnetIdForGlueConnection
 
   DatabaseConnectionCluster02:
-    Condition: twoClustersEnabled
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Join [ '', [ "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER02/DISCOUNT/DB/ENDPOINT/WRITER:1}}" ] ],
+          "JDBC_CONNECTION_URL": !Join ['', ["jdbc:mysql://", "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER0", !If [twoClustersEnabled, "2", "1"], "/DISCOUNT/DB/ENDPOINT/WRITER:1}}", ":3306/mysql"]],
           "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}" ] ],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-temp-cluster-2'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-02'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -460,6 +510,10 @@ Resources:
         Name: pythonshell
         PythonVersion: 3
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/customer_eligibility.py"
+      Connections:
+        Connections:
+          - !Ref DatabaseConnectionCluster01
+          - !Ref DatabaseConnectionCluster02
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
@@ -496,6 +550,10 @@ Resources:
         Name: pythonshell
         PythonVersion: 3
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/mdt.py"
+      Connections:
+        Connections:
+          - !Ref DatabaseConnectionCluster01
+          - !Ref DatabaseConnectionCluster02
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/pyspark-2.4.3-py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/py4j-0.10.7-py3-none-any.whl"
@@ -596,8 +654,11 @@ Resources:
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
-                      "--active_clusters": "$.active_clusters",
-                      "--cluster_n_opcos_key.$": "$.cluster_n_opcos_key"
+                    "--validation_type.$": "$.validation_type",
+                    "--discount_names.$": "$.discount_names",
+                    "--mdt_column_names_in_order.$": "$.mdt_column_names_in_order",
+                    "--active_clusters.$": "$.active_clusters",
+                    "--cluster_n_opcos_key.$": "$.cluster_n_opcos_key"
                   }
                 },
                 "Catch": [
@@ -668,8 +729,8 @@ Resources:
                   "Payload": {
                     "etl_timestamp.$": "$.etl_timestamp",
                     "s3_object_key.$": "$.s3_object_key",
-                      "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
-                      "active_clusters.$": "$.active_clusters",
+                    "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                    "active_clusters.$": "$.active_clusters",
                     "ENV.$": "$.ENV"
                   }
                 },
@@ -698,9 +759,10 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
                           "Payload": {
-                            "event": "test",
-                            "cluster": 1,
-                            "opcos_cluster_1.$": "$.opcoList.Payload.opcos_cluster_1",
+                            "event": "[ETL] - [Discount Service]",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "cluster": "01",
+                            "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
                             "ENV.$": "$.ENV"
                           }
                         },
@@ -742,8 +804,8 @@ Resources:
                       },
                       "LoadAllC1": {
                         "Type": "Map",
-                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_1",
-                        "MaxConcurrency": 2,
+                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_01",
+                        "MaxConcurrency": ${LoadJobMaximumConcurrencyCluster01},
                         "Parameters": {
                           "id.$": "$$.Map.Item.Value",
                           "s3_file_path.$": "$.s3_file_path",
@@ -760,7 +822,7 @@ Resources:
                               "Parameters": {
                                 "JobName": "${CustomerEligibilityDataLoadJob}",
                                 "Arguments": {
-                                  "--cluster": "1",
+                                  "--cluster": "01",
                                   "--opco_id.$": "$.id",
                                   "--s3_file_path.$": "$.s3_file_path",
                                   "--etl_timestamp.$": "$.etl_timestamp",
@@ -796,7 +858,7 @@ Resources:
                               "Parameters": {
                                 "FunctionName": "${notifierLambdaArn}",
                                 "Payload": {
-                                  "event": "ETL-Discount Service",
+                                  "event": "[ETL] - [Discount Service]",
                                   "additional_info_bucket_name": "${IntermediateBucketName}",
                                   "additional_info_file_dir.$": "$.workflow_file_dir",
                                   "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
@@ -815,14 +877,17 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${TakeBackpDecisionLambdaArn}",
                           "Payload": {
-                            "event": "ETL-Discount Service",
+                            "event": "[ETL] - [Discount Service]",
                             "ENV.$": "$.ENV",
                             "s3_object_key.$": "$.s3_object_key",
                             "etl_timestamp.$": "$.etl_timestamp",
-                            "opcos_cluster_1.$": "$.opcoList.Payload.opcos_cluster_1",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
                             "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
                             "load_job_statuses.$": "$.clusterloadJobResult",
-                            "cluster": 1
+                            "additional_info_bucket_name": "${IntermediateBucketName}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "cluster": "01"
                           }
                         },
                         "Retry": [
@@ -892,7 +957,7 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
-                            "event": "ETL-Discount Service",
+                            "event": "[ETL] - [Discount Service]",
                             "additional_info_bucket_name": "${IntermediateBucketName}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
@@ -926,9 +991,10 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
                           "Payload": {
-                            "event": "test",
-                            "cluster": 2,
-                            "opcos_cluster_2.$": "$.opcoList.Payload.opcos_cluster_2",
+                            "event": "[ETL] - [Discount Service]",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "cluster": "02",
+                            "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
                             "ENV.$": "$.ENV"
                           }
                         },
@@ -970,8 +1036,8 @@ Resources:
                       },
                       "LoadAllC2": {
                         "Type": "Map",
-                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_2",
-                        "MaxConcurrency": 2,
+                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_02",
+                        "MaxConcurrency": ${LoadJobMaximumConcurrencyCluster02},
                         "Parameters": {
                           "id.$": "$$.Map.Item.Value",
                           "s3_file_path.$": "$.s3_file_path",
@@ -988,7 +1054,7 @@ Resources:
                               "Parameters": {
                                 "JobName": "${CustomerEligibilityDataLoadJob}",
                                 "Arguments": {
-                                  "--cluster": "2",
+                                  "--cluster": "02",
                                   "--opco_id.$": "$.id",
                                   "--s3_file_path.$": "$.s3_file_path",
                                   "--etl_timestamp.$": "$.etl_timestamp",
@@ -1024,7 +1090,7 @@ Resources:
                               "Parameters": {
                                 "FunctionName": "${notifierLambdaArn}",
                                 "Payload": {
-                                  "event": "ETL-Discount Service",
+                                  "event": "[ETL] - [Discount Service]",
                                   "additional_info_bucket_name": "${IntermediateBucketName}",
                                   "additional_info_file_dir.$": "$.workflow_file_dir",
                                   "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
@@ -1043,14 +1109,17 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${TakeBackpDecisionLambdaArn}",
                           "Payload": {
-                            "event": "ETL-Discount Service",
+                            "event": "[ETL] - [Discount Service]",
                             "ENV.$": "$.ENV",
                             "s3_object_key.$": "$.s3_object_key",
                             "etl_timestamp.$": "$.etl_timestamp",
-                            "opcos_cluster_2.$": "$.opcoList.Payload.opcos_cluster_2",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
                             "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
                             "load_job_statuses.$": "$.clusterloadJobResult",
-                            "cluster": 2
+                            "additional_info_bucket_name": "${IntermediateBucketName}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "cluster": "02"
                           }
                         },
                         "Retry": [
@@ -1120,7 +1189,7 @@ Resources:
                         "Parameters": {
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
-                            "event": "ETL-Discount Service",
+                            "event": "[ETL] - [Discount Service]",
                             "additional_info_bucket_name": "${IntermediateBucketName}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
@@ -1178,7 +1247,7 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                    "event": "ETL-Discount Service",
+                    "event": "[ETL] - [Discount Service]",
                     "additional_info_bucket_name": "${IntermediateBucketName}",
                     "additional_info_file_dir.$": "$.workflow_file_dir",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
@@ -1215,7 +1284,9 @@ Resources:
           CustomerEligibilityDecompressionJob: !Ref CustomerEligibilityDecompressionJob,
           CustomerEligibilityPartitionJob: !Ref CustomerEligibilityPartitionJob,
           IntermediateBucketName: !Ref IntermediateStorage,
-          ETLDataBackUpStorage: !Ref ETLDataBackUpStorage
+          ETLDataBackUpStorage: !Ref ETLDataBackUpStorage,
+          LoadJobMaximumConcurrencyCluster01: !Ref CELoadJobMaximumConcurrencyForCluster01,
+          LoadJobMaximumConcurrencyCluster02: !Ref CELoadJobMaximumConcurrencyForCluster02
         }
       LoggingConfiguration:
         Destinations:
@@ -1713,7 +1784,7 @@ Resources:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 2.0
       WorkerType: !Ref PartitionJobWorkerType
-      NumberOfWorkers: !Ref PartitionJobWorkerCount
+      NumberOfWorkers: !Ref PartitionJobWorkerCountMin
       MaxRetries: 0
       Name: !Sub 'CP-DISCOUNTS-etl-customer-eligibility-partition-job-${EnvironmentShort}'
       Role: !Ref ETLGlueRole
