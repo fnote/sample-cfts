@@ -436,6 +436,11 @@ Resources:
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
         S3Key: !Sub 'DiscountService/${EnvironmentShort}/TriggerLambda.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 180
       Environment:
         Variables:
@@ -601,6 +606,9 @@ Resources:
                   "FunctionName": "${AnalyzeWaitExecutionLambdaArn}",
                   "Payload": {
                     "env.$": "$.ENV",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
+                    "file_type.$": "$.file_type",
                     "stepFunctionExecutionId.$": "$$.Execution.Id",
                     "stepFunctionArn.$": "$$.StateMachine.Id"
                   }
@@ -760,6 +768,8 @@ Resources:
                           "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
                             "cluster": "01",
                             "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
@@ -859,8 +869,11 @@ Resources:
                                 "FunctionName": "${notifierLambdaArn}",
                                 "Payload": {
                                   "event": "[ETL] - [Discount Service]",
+                                  "etl_timestamp.$": "$.etl_timestamp",
+                                  "s3_object_key.$": "$.s3_object_key",
                                   "additional_info_bucket_name": "${IntermediateBucketName}",
                                   "additional_info_file_dir.$": "$.workflow_file_dir",
+                                  "file_type.$": "$.file_type",
                                   "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                                 }
                               },
@@ -885,8 +898,6 @@ Resources:
                             "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
                             "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
                             "load_job_statuses.$": "$.clusterloadJobResult",
-                            "additional_info_bucket_name": "${IntermediateBucketName}",
-                            "additional_info_file_dir.$": "$.workflow_file_dir",
                             "cluster": "01"
                           }
                         },
@@ -958,8 +969,11 @@ Resources:
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "additional_info_bucket_name": "${IntermediateBucketName}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                           }
                         },
@@ -972,8 +986,11 @@ Resources:
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "additional_info_bucket_name": "${ETLDataBackUpStorage}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                             "status": "SUCCEEDED"
                           }
@@ -992,6 +1009,8 @@ Resources:
                           "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
                             "cluster": "02",
                             "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
@@ -1091,8 +1110,11 @@ Resources:
                                 "FunctionName": "${notifierLambdaArn}",
                                 "Payload": {
                                   "event": "[ETL] - [Discount Service]",
+                                  "etl_timestamp.$": "$.etl_timestamp",
+                                  "s3_object_key.$": "$.s3_object_key",
                                   "additional_info_bucket_name": "${IntermediateBucketName}",
                                   "additional_info_file_dir.$": "$.workflow_file_dir",
+                                  "file_type.$": "$.file_type",
                                   "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                                 }
                               },
@@ -1117,8 +1139,6 @@ Resources:
                             "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
                             "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
                             "load_job_statuses.$": "$.clusterloadJobResult",
-                            "additional_info_bucket_name": "${IntermediateBucketName}",
-                            "additional_info_file_dir.$": "$.workflow_file_dir",
                             "cluster": "02"
                           }
                         },
@@ -1190,8 +1210,11 @@ Resources:
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "additional_info_bucket_name": "${IntermediateBucketName}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                           }
                         },
@@ -1204,8 +1227,11 @@ Resources:
                           "FunctionName": "${notifierLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
                             "additional_info_bucket_name": "${ETLDataBackUpStorage}",
                             "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
                             "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                             "status": "SUCCEEDED"
                           }
@@ -1248,8 +1274,11 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
                     "additional_info_bucket_name": "${IntermediateBucketName}",
                     "additional_info_file_dir.$": "$.workflow_file_dir",
+                    "file_type.$": "$.file_type",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -1262,8 +1291,11 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
                     "additional_info_bucket_name": "${ETLDataBackUpStorage}",
                     "additional_info_file_dir.$": "$.workflow_file_dir",
+                    "file_type.$": "$.file_type",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -2002,7 +2034,7 @@ Resources:
           !Ref NotifierLambdaSecutyGroup
         SubnetIds:
           !Ref NotifierLambdaSubnets
-      Timeout: 60
+      Timeout: 180
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
