@@ -585,6 +585,7 @@ Resources:
             Value: !Ref Platform
           - Key: Component
             Value: !Ref Component
+
   PriceZoneJobStatusAnalyzerLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -633,14 +634,19 @@ Resources:
       FunctionName: !Sub 'CP-REF-etl-price-zone-wait-status-analyzer-${EnvironmentShort}'
       Runtime: python3.8
       Role: !Ref LambdaRole
-      Handler: analyze_etl_wait_status.lambda_handler
+      Handler: index.lambda_handler
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
-        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/analyze_etl_wait_status.zip'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/AnalyzeEtlWaitStatusLambda.zip'
       Environment:
         Variables:
           intermediateStorageS3: !Ref IntermediateStorage
           env: !Ref EnvironmentShort
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -756,6 +762,10 @@ Resources:
                    "Parameters":{
                       "FunctionName":"${waitStatusAnalyzerLambdaArn}",
                       "Payload":{
+                         "s3_input_file_key.$":"$.s3_input_file_key",
+                         "etl_timestamp.$":"$.etl_timestamp",
+                         "file_type.$":"$.file_prefix",
+                         "partial_load.$":"$.partial_load",
                          "stepFunctionExecutionId.$":"$$.Execution.Id",
                          "stepFunctionArn.$":"$$.StateMachine.Id"
                       }
@@ -904,7 +914,7 @@ Resources:
                                "Parameters":{
                                   "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
                                   "Payload":{
-                                     "Input.$":"$.opcoList.Payload.cluster_a",
+                                     "Input.$":"$.opcoList.Payload.cluster_01",
                                      "cluster":"1",
                                      "ENV.$":"$.ENV",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id",
@@ -958,7 +968,7 @@ Resources:
                             },
                             "Load All":{
                                "Type":"Map",
-                               "ItemsPath":"$.opcoList.Payload.cluster_a",
+                               "ItemsPath":"$.opcoList.Payload.cluster_01",
                                "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
@@ -1047,7 +1057,7 @@ Resources:
                                      "loadJobStatuses.$":"$.loadJobsResult",
                                      "s3_object_key.$":"$.s3_input_file_key",
                                      "etl_timestamp.$":"$.etl_timestamp",
-                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_a",
+                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_01",
                                      "cluster":1,
                                      "ENV.$":"$.ENV"
                                   }
@@ -1140,7 +1150,7 @@ Resources:
                                "Parameters":{
                                   "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
                                   "Payload":{
-                                     "Input.$":"$.opcoList.Payload.cluster_b",
+                                     "Input.$":"$.opcoList.Payload.cluster_02",
                                      "cluster":"2",
                                      "ENV.$":"$.ENV",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id",
@@ -1194,7 +1204,7 @@ Resources:
                             },
                             "Load AllC2":{
                                "Type":"Map",
-                               "ItemsPath":"$.opcoList.Payload.cluster_b",
+                               "ItemsPath":"$.opcoList.Payload.cluster_02",
                                "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
@@ -1283,7 +1293,7 @@ Resources:
                                      "loadJobStatuses.$":"$.loadJobsResult",
                                      "s3_object_key.$":"$.s3_input_file_key",
                                      "etl_timestamp.$":"$.etl_timestamp",
-                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_b",
+                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_02",
                                      "cluster":2,
                                      "ENV.$":"$.ENV"
                                   }
