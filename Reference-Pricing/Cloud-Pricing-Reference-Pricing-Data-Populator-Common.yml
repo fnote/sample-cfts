@@ -157,7 +157,7 @@ Parameters:
   commonDBName:
     Description: discount name list
     Type: String
-    Default: 'COMMON_DB'
+    Default: 'METADATA'
   commonDBPassword:
     Description: discount name list
     Type: String

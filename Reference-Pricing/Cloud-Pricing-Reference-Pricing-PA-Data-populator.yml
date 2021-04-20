@@ -308,7 +308,7 @@ Resources:
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: 5
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -541,7 +541,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: 5
       MaxCapacity: 1.0
       MaxRetries: 0
       Timeout: 2880
