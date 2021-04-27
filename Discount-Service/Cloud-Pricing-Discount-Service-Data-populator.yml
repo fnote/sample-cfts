@@ -197,6 +197,10 @@ Parameters:
     Description: Upper bound value of customer eligibility partial load file size in GB
     Type: String
     Default: 0.5
+  TeamsWebhookURL:
+    Description: Microsoft teams webhook url for sending error notifications
+    Type: String
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/8e0849f59e584d1ab5c37194ed5a7f4c/b8228f9c-e316-4869-a733-e7af23d9f1e3'
 
 Conditions:
   twoClustersEnabled: !Equals
@@ -1642,6 +1646,7 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
+          teams_webhook_url: !Ref TeamsWebhookURL
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
