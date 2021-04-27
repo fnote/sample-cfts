@@ -20,11 +20,11 @@ Parameters:
   DatabaseConnectionCluster1:
     Description: Name of the database connection cluster 1
     Type: String
-    Default: cp-ref-etl-common-connection-DEV-cluster-1
+    Default: cp-ref-etl-common-connection-DEV-cluster-01
   DatabaseConnectionCluster2:
     Description: Name of the database connection cluster 2
     Type: String
-    Default: cp-ref-etl-common-connection-DEV-cluster-2
+    Default: cp-ref-etl-common-connection-DEV-cluster-02
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String

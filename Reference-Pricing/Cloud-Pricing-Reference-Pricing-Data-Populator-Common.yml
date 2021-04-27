@@ -456,7 +456,7 @@ Resources:
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-1'
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-01'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -475,7 +475,7 @@ Resources:
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-2'
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-02'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
