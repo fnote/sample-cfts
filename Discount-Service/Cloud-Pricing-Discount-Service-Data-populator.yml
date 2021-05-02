@@ -825,7 +825,9 @@ Resources:
                           "s3_file_path.$": "$.s3_file_path",
                           "etl_timestamp.$": "$.etl_timestamp",
                           "active_opcos.$": "$.active_opcos",
-                          "workflow_file_dir.$": "$.workflow_file_dir"
+                          "workflow_file_dir.$": "$.workflow_file_dir",
+                          "file_type.$": "$.file_type",
+                          "s3_object_key.$": "$.s3_object_key"
                         },
                         "Iterator": {
                           "StartAt": "LoadJobC1",
@@ -1066,7 +1068,9 @@ Resources:
                           "s3_file_path.$": "$.s3_file_path",
                           "etl_timestamp.$": "$.etl_timestamp",
                           "active_opcos.$": "$.active_opcos",
-                          "workflow_file_dir.$": "$.workflow_file_dir"
+                          "workflow_file_dir.$": "$.workflow_file_dir",
+                          "file_type.$": "$.file_type",
+                          "s3_object_key.$": "$.s3_object_key"
                         },
                         "Iterator": {
                           "StartAt": "LoadJobC2",
