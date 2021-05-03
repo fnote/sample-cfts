@@ -20,6 +20,10 @@ Parameters:
   paramStoreDBUser:
     Type: String
     Default: cpuser
+  commonDBURL:
+    Description: Common db endpoint
+    Type: String
+    Default: cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com
 Resources:
   ConfigMaxLifeLowerLimit:
     Type: AWS::SSM::Parameter
@@ -98,6 +102,13 @@ Resources:
       Type: String
       Description: DB host
       Value: !Ref paramStoreDBHost
+  ConfigCommonDBHost:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, COMMON/DB/ENDPOINT ] ]
+      Type: String
+      Description: DB host where the METADATA database resides in
+      Value: !Ref commonDBURL
   ConfigDBUsername:
     Type: AWS::SSM::Parameter
     Properties:
