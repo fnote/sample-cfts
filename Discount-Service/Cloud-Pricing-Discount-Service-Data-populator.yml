@@ -142,6 +142,10 @@ Parameters:
     Description: discount name list
     Type: String
     Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
+  AllowedColumnsMDT:
+    Description: Allowed column names in mdt file
+    Type: String
+    Default: 'DISCOUNT_ID,DISCOUNT_NAME,DISCOUNT_TYPE,QUALIFICATION_MAGNITUDE,EFFECTIVE_DATE,EXPIRATION_DATE,SEQUENCE_ID,EXPORT_DATE'
   CommonDBEndpointName:
     Description: Common DB Endpoint of discount service
     Type: String
@@ -321,10 +325,19 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT_NAME_LIST' ] ]
-      Type: StringList
+      Type: String
       Value: !Ref ListOfDiscounts
       Tier: Standard
       Description: discount names allowed
+
+  MDTAllowedColumnNameList:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/MDT/ALLOWED_COLUMN_NAMES_IN_ORDER' ] ]
+      Type: String
+      Value: !Ref AllowedColumnsMDT
+      Tier: Standard
+      Description: mdt column names allowed in the right order
 
   CommonDBEndpoint:
     Type: AWS::SSM::Parameter
