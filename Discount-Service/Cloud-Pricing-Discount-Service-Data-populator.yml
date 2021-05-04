@@ -909,7 +909,7 @@ Resources:
                         "Type": "Task",
                         "Resource": "arn:aws:states:::lambda:invoke",
                         "Parameters": {
-                          "FunctionName": "${TakeBackpDecisionLambdaArn}",
+                          "FunctionName": "${TakeBackupDecisionLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
                             "ENV.$": "$.ENV",
@@ -1152,7 +1152,7 @@ Resources:
                         "Type": "Task",
                         "Resource": "arn:aws:states:::lambda:invoke",
                         "Parameters": {
-                          "FunctionName": "${TakeBackpDecisionLambdaArn}",
+                          "FunctionName": "${TakeBackupDecisionLambdaArn}",
                           "Payload": {
                             "event": "[ETL] - [Discount Service]",
                             "ENV.$": "$.ENV",
@@ -1332,7 +1332,7 @@ Resources:
           notifierLambdaArn: !GetAtt NotifierLambda.Arn,
           AnalyzeWaitExecutionLambdaArn: !GetAtt AnalyzeWaitExecutionLambda.Arn,
           FetchFileListLambdaArn: !GetAtt FetchFileListLambda.Arn,
-          TakeBackpDecisionLambdaArn: !GetAtt TakeBackpDecisionLambda.Arn,
+          TakeBackupDecisionLambdaArn: !GetAtt TakeBackupDecisionLambda.Arn,
           AnalyzeWaitLoadOrTerminateLambdaArn: !GetAtt AnalyzeWaitLoadOrTerminateLambda.Arn,
           CustomerEligibilityDataLoadJob: !Ref CustomerEligibilityDataLoadJob,
           DiscountDataBackupJob: !Ref DiscountDataBackupJob,
@@ -2001,7 +2001,7 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  TakeBackpDecisionLambda:
+  TakeBackupDecisionLambda:
     Type: AWS::Lambda::Function
     Properties:
       Description: Lambda function for taking bacup decision based on the load job statues
