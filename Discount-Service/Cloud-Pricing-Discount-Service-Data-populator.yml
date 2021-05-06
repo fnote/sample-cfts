@@ -1456,7 +1456,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 10
+        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
