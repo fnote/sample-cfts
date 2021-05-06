@@ -155,7 +155,7 @@ Parameters:
     Type: String
     Default: '01,02'
   EnableTwoClusters:
-    Description: If two DB Clusters are there, set this to true
+    Description: If this is set to true, two glue connections will be created. Do it only in Production
     Type: String
     Default: 'false'
     AllowedValues:
@@ -209,8 +209,6 @@ Parameters:
 Conditions:
   twoClustersEnabled: !Equals
     - !Ref EnableTwoClusters
-    -
-      -
     - 'true'
 
 Mappings:
