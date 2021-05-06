@@ -168,7 +168,11 @@ Parameters:
   ETLMaximumConcurrency:
     Description: Maximum Concurrency Allowed for Discount ETL Step Functions
     Type: String
-    Default: 5
+    Default: 10
+  ETLGlueJobsMaximumConcurrency:
+    Description: Maximum concurreny for decompress, partition, backup and mdt load jobs. Add larger value than ETLMaximumConcurrency
+    Type: String
+    Default: 20
   CELoadJobMaximumConcurrency:
     Description: Maximum Concurrency Allowed for CE load jobs
     Type: String
@@ -584,7 +588,7 @@ Resources:
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1456,7 +1460,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
       ExecutionProperty:
-        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1797,7 +1801,7 @@ Resources:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg"
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
       ExecutionProperty:
-        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1835,7 +1839,7 @@ Resources:
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py"
       ExecutionProperty:
-        MaxConcurrentRuns: !Ref ETLMaximumConcurrency
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 2.0
       WorkerType: !Ref PartitionJobWorkerType
       NumberOfWorkers: !Ref PartitionJobWorkerCountMin
