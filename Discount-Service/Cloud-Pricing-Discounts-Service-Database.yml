@@ -535,6 +535,7 @@ Resources:
         DisableScaleIn: false
 
   AutoScalerTarget02:
+    Condition: createTwoClusters
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -545,6 +546,7 @@ Resources:
       RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/rds.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_RDSCluster'
 
   AutoScaler02:
+    Condition: createTwoClusters
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
       ScalingTargetId: !Ref AutoScalerTarget02
@@ -579,6 +581,7 @@ Resources:
       Description: Discounts DB Cluster 01 Writer Endpoint
 
   DBCluster02ReaderEndpointParameter:
+    Condition: createTwoClusters
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER02/DISCOUNT/DB/ENDPOINT/READER']]
@@ -588,6 +591,7 @@ Resources:
       Description: Discounts DB Cluster 02 Reader Endpoint
 
   DBCluster02WriterEndpointParameter:
+    Condition: createTwoClusters
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CLUSTER02/DISCOUNT/DB/ENDPOINT/WRITER']]
@@ -604,9 +608,11 @@ Outputs:
     Description: Read Endpoint Cluster 01
     Value: !Join ['', [!GetAtt DiscountsDBCluster.ReadEndpoint.Address]]
   dbUrl10:
+    Condition: createTwoClusters
     Description: Endpoint for Cluster 02
     Value: !Join ['', [!GetAtt DiscountsDBCluster02.Endpoint.Address]]
   dbUrl11:
+    Condition: createTwoClusters
     Description: Read Endpoint Cluster 02
     Value: !Join ['', [!GetAtt DiscountsDBCluster02.ReadEndpoint.Address]]
   etlOutputBucket:
