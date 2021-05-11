@@ -1,6 +1,18 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 Description: This is used to implement resources for the log archive mechanism
+Mappings:
+  ParametersMap:
+    Non-Production:
+      LogArchiveLogBucketName: cp-log-archive-bucket-non-prod
+      CodeDeployBucket: sysco-us-east-1-prcp-nonprod-codedeploy
+      LogArchiveScheduleRuleName: log-archive-schedule-rule-NON-PROD
+      FunctionName: log-archive-NON-PROD
+    Production:
+      LogArchiveLogBucketName: cp-log-archive-bucket-prod
+      CodeDeployBucket: sysco-us-east-1-prcp-prod-codedeploy
+      LogArchiveScheduleRuleName: log-archive-schedule-rule-PROD
+      FunctionName: log-archive-PROD
 Parameters:
   PONumber:
     Description: PO Number for billing
@@ -10,10 +22,6 @@ Parameters:
     MaxLength: '255'
     AllowedPattern: "[\\x20-\\x7E]*"
     ConstraintDescription: Must contain only ASCII characters.
-  FunctionName:
-    Type: String
-    Description: Name of the Lambda function for log archive controller
-    Default: log-archive-
   ApplicationName:
     Description: Name of application
     Type: String
@@ -82,40 +90,18 @@ Parameters:
       - Non-Production
       - Production
     ConstraintDescription: Must be a valid environment.
-  EnvironmentShort:
-    Description: Environment for application
-    Type: String
-    Default: PROD
-    AllowedValues:
-      - NON-PROD
-      - PROD
-    ConstraintDescription: Must be a valid environment.
   AWSRegionIdentifier:
     Type: String
     Description: Name of AWS region
     Default: us-east-1
-  LogArchiveScheduleRuleName:
-    Type: String
-    Description: rule name for the  log archive mechanism
-    Default: log-archive-schedule-rule-
-  LogArchiveLogBucketName:
-    Type: String
-    Description: s3 bucket for the  log archive mechanism
-    Default: cp-log-archive-bucket-prod
-    AllowedValues:
-      - cp-log-archive-bucket-non-prod
-      - cp-log-archive-bucket-prod
   LastWeeklyExportingGroupNumber:
     Description: The last log group which is exported weekly
     Type: String
-    Default: 15
-  CodeDeployBucket:
-      Type: String
-      Description: S3 bucket to pull the code
-      Default: sysco-us-east-1-prcp-prod-codedeploy
-      AllowedValues:
-        - sysco-us-east-1-prcp-nonprod-codedeploy
-        - sysco-us-east-1-prcp-prod-codedeploy
+    Default: 20
+  LogGroupsFile:
+    Type: String
+    Description: log groups file name
+    Default: logGroups.json
   CodeDeployDirectory:
     Type: String
     Description: Directory in S3 bucket
@@ -136,8 +122,7 @@ Resources:
   LogArchiveLogBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName:
-        Ref: LogArchiveLogBucketName
+      BucketName: !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
       LifecycleConfiguration:
         Rules:
           - Id: LongTermArchival
@@ -155,8 +140,7 @@ Resources:
   LogArchiveLogBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket:
-        Ref: LogArchiveLogBucketName
+      Bucket: !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -168,7 +152,7 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'arn:aws:s3:::'
-                  - Ref: LogArchiveLogBucketName
+                  - !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
           - Effect: Allow
             Principal:
               Service: logs.us-east-1.amazonaws.com
@@ -177,7 +161,7 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'arn:aws:s3:::'
-                  - Ref: LogArchiveLogBucketName
+                  - !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
                   - /*
             Condition:
               StringEquals:
@@ -186,11 +170,7 @@ Resources:
     Type: 'AWS::Events::Rule'
     Properties:
       Description: Schedule rule to archive cloudwatch logs
-      Name:
-        Fn::Join:
-          - ''
-          - - Ref: LogArchiveScheduleRuleName
-            - Ref: EnvironmentShort
+      Name: !FindInMap [ParametersMap, !Ref Environment, LogArchiveScheduleRuleName]
       State: ENABLED
       ScheduleExpression: 'cron(0 2-11 ? * SAT,SUN *)'
       Targets:
@@ -218,7 +198,19 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'arn:aws:s3:::'
-                  - Ref: LogArchiveLogBucketName
+                  - !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
+                  - /*
+          - Sid: getBucket
+            Effect: Allow
+            Action:
+              - s3:List*
+              - s3:Get*
+              - s3:Describe*
+            Resource:
+              Fn::Join:
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !FindInMap [ParametersMap, !Ref Environment, LogArchiveLogBucketName]
                   - /*
   LogArchiveEventsPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
@@ -242,8 +234,7 @@ Resources:
               Fn::Join:
                 - ''
                 - - 'arn:aws:events:::rule/'
-                  - Ref: LogArchiveScheduleRuleName
-                  - Ref: EnvironmentShort
+                  - !FindInMap [ParametersMap, !Ref Environment, LogArchiveScheduleRuleName]
                   - /*
   LogArchiveSSMPolicy:
     Type: 'AWS::IAM::ManagedPolicy'
@@ -266,13 +257,13 @@ Resources:
             Resource:
               - Fn::Join:
                 - ''
-                - - 'arn:aws:ssm:us-east-1:037295147636:parameter'
+                - - 'arn:aws:ssm:*:*:parameter'
                   - Fn::Join: 
                     - ''
                     - - !Ref LogGroups
               - Fn::Join:
                 - ''
-                - - 'arn:aws:ssm:us-east-1:037295147636:parameter'
+                - - 'arn:aws:ssm:*:*:parameter'
                   - Fn::Join:
                     - ''
                     - - !Ref GroupNumber
@@ -294,7 +285,7 @@ Resources:
               - logs:describeLogGroups
               - logs:describeLogStreams
               - iam:GetRole
-            Resource: "arn:aws:logs:us-east-1:037295147636:log-group:*"
+            Resource: "arn:aws:logs:*:*:log-group:*"
   LogArchiveLambdaRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -327,11 +318,7 @@ Resources:
   LogArchiveLambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
-      FunctionName:
-        Fn::Join:
-          - ''
-          - - Ref: FunctionName
-            - Ref: EnvironmentShort
+      FunctionName: !FindInMap [ParametersMap, !Ref Environment, FunctionName]
       Runtime: python3.6
       Role:
         Fn::GetAtt:
@@ -342,11 +329,7 @@ Resources:
       Description: Invoke a function during stack creation.
       Tags:
         - Key: Name
-          Value:
-            Fn::Join:
-              - ''
-              - - Ref: FunctionName
-                - Ref: EnvironmentShort
+          Value: !FindInMap [ParametersMap, !Ref Environment, FunctionName]
         - Key: Technical:ApplicationName
           Value:
             Ref: ApplicationName
@@ -360,22 +343,14 @@ Resources:
           Value:
             Ref: Environment
         - Key: Technical:ApplicationSubName
-          Value:
-            Fn::Join:
-              - ''
-              - - Ref: FunctionName
-                - Ref: EnvironmentShort
+          Value: !FindInMap [ParametersMap, !Ref Environment, FunctionName]
         - Key: Technical:ApplicationRole
           Value: Lambda Function
         - Key: Approver
           Value:
             Ref: Approver
         - Key: Component
-          Value:
-            Fn::Join:
-              - ''
-              - - Ref: FunctionName
-                - Ref: EnvironmentShort
+          Value: !FindInMap [ParametersMap, !Ref Environment, FunctionName]
         - Key: Support_Email
           Value:
             Ref: SupportEmail
@@ -395,8 +370,11 @@ Resources:
         Variables:
           LastWeeklyExportingGroupNumber:
             Ref: LastWeeklyExportingGroupNumber
+          LogGroupsFile:
+            Ref: LogGroupsFile  
+          CodeDeployBucket: !FindInMap [ParametersMap, !Ref Environment, CodeDeployBucket]
+          CodeDeployDirectory:
+            Ref: CodeDeployDirectory        
       Code:
-        S3Bucket:
-          Ref: CodeDeployBucket
+        S3Bucket: !FindInMap [ParametersMap, !Ref Environment, CodeDeployBucket]
         S3Key: !Sub '${CodeDeployDirectory}/${CodeDeployFileName}'
-      
