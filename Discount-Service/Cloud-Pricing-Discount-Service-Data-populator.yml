@@ -1641,8 +1641,28 @@ Resources:
                   - s3:ListBucket
                   - s3:GetObjectVersion
                 Resource:
-                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}'
-                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}/*'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+        - PolicyName: !Sub 'cp-discounts-etl-ce-input-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-discounts-etl-customer-eligibility-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+        - PolicyName: !Sub 'cp-discounts-etl-mdt-input-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-discounts-etl-mdt-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
       Path: '/'
 
 
