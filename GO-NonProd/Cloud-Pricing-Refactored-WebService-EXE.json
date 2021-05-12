@@ -300,10 +300,6 @@
 					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-					"# For DD APM\n",
-
-					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-web-service -Ddd.env=qa\\\"'\" > /etc/profile.d/javaopts.sh\n",
-					"chmod +x /etc/profile.d/javaopts.sh\n",
 
 					"##############################################\n",
 					"# Install Dependencies.\n",
@@ -315,6 +311,19 @@
 					"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 					"ls\n",
 					"yum install -y jdk-8u131-linux-x64.rpm\n",
+
+					"##############################################\n",
+					"# DD APM - Configuration\n",
+					"##############################################\n",
+					"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-web-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
+					"chmod +x /etc/profile.d/javaopts.sh\n",
+
+					"mkdir /etc/dd-java-agent/\n",
+					"cd /etc/dd-java-agent/\n",
+					"cp /tmp/dd-java-agent.jar /etc/dd-java-agent/\n",
+					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+					"cd /tmp\n",
+
 
 					"count=1\n",
 					"currentStatus=$(service codedeploy-agent status)\n",
@@ -335,14 +344,6 @@
 					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
-					"##############################################\n",
-					"# DD APM - Configuration\n",
-					"##############################################\n",
-
-					"mkdir /etc/dd-java-agent/\n",
-					"cd /etc/dd-java-agent/\n",
-					"wget -O dd-java-agent.jar 'https://dtdg.co/latest-java-tracer'\n",
-					"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
 
 					"##############################################\n",
 					"# DD log - Configuration\n",
