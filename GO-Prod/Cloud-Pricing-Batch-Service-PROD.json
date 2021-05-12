@@ -186,7 +186,7 @@
         "CommonAMI": {
             "Description": "Sysco Gold Team managed AMI",
             "Type": "String",
-            "Default": "ami-0eef3bc301d4aacd3",
+            "Default": "ami-070a2dffc6f576a7e",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -472,7 +472,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-1-",
+                            "CP-Batch-Compute-Env-2-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
