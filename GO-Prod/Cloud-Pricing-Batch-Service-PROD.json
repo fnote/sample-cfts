@@ -472,7 +472,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-1-",
+                            "CP-Batch-Compute-Env-2-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
