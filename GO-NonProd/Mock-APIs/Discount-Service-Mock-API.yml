@@ -26,10 +26,6 @@ Parameters:
         Description: ALB Listener port number
         Type: Number
         Default: 80
-    albListenerPortHttps:
-        Description: ALB HTTPS Listener port number
-        Type: Number
-        Default: 443
     vpcId:
         Type: String
         Default: "vpc-091c7e3e5578d7a4f"
@@ -169,10 +165,6 @@ Resources:
                   IpProtocol: tcp
                   FromPort: !Ref albListenerPortHttp
                   ToPort: !Ref albListenerPortHttp
-                - CidrIp: "10.0.0.0/8"
-                  IpProtocol: tcp
-                  FromPort: !Ref albListenerPortHttps
-                  ToPort: !Ref albListenerPortHttps
 Outputs:
     LoadBalancerDNS:
         Description: Loadbalancer DNS
