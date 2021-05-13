@@ -68,12 +68,6 @@
         "Type" : "String",
         "Default" : "Cloud-Pricing-Web-Service-Instance-Profile"
       },
-      "SSLCertificate": {
-        "Description": "The SSL acertificate ARN",
-        "Type": "String",
-        "ConstraintDescription": "must be a valid SSL ARN",
-        "Default": "arn:aws:acm:us-east-1:130227353653:certificate/2b157cc2-8c39-48f7-9737-ca1130fa9584"
-      },
 		"CodeDeployBucket": {
 			"Description": "S3 bucket name which include dependencies",
 			"Type": "String",
@@ -492,25 +486,6 @@
 				"LoadBalancerArn":  { "Ref": "WebServiceALB" },
 				"Port": "80",
 				"Protocol": "HTTP",
-				"DefaultActions": [
-					{
-						"Type": "forward",
-						"TargetGroupArn": { "Ref": "TargetGroup" }
-					}
-				]
-			}
-		},
-		"LoadBalancerListenerHTTPS": {
-			"Type": "AWS::ElasticLoadBalancingV2::Listener",
-			"Properties": {
-				"LoadBalancerArn":  { "Ref": "WebServiceALB" },
-				"Certificates": [
-					{
-						"CertificateArn": { "Ref" : "SSLCertificate" }
-					}
-				],
-				"Port": "443",
-				"Protocol": "HTTPS",
 				"DefaultActions": [
 					{
 						"Type": "forward",
