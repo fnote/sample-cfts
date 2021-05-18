@@ -14,9 +14,6 @@ Parameters:
   paramStoreConfigPrefix:
     Type: String
     Default: "/CP/REF_PRICE_SERVICE"
-  paramStoreDBHost:
-    Type: String
-    Default: cp-ref-price-db-cluster-01-dev.cluster-ro-c6xai0tt38eb.us-east-1.rds.amazonaws.com
   paramStoreDBUser:
     Type: String
     Default: cpuser
@@ -95,13 +92,6 @@ Resources:
       Type: String
       Description: Default SUPCs per Query
       Value: 5
-  ConfigDBHost:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/HOST]]
-      Type: String
-      Description: DB host
-      Value: !Ref paramStoreDBHost
   ConfigCommonDBHost:
     Type: AWS::SSM::Parameter
     Properties:
