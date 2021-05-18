@@ -32,6 +32,14 @@ Parameters:
   ETLDataBackUpStorage:
     Description: S3 bucket to archive files
     Type: String
+  NotifierLambdaSecutyGroup:
+    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Default: sg-014f39d2fd8370bf6
+  NotifierLambdaSubnets:
+      Type: List<AWS::EC2::Subnet::Id>
+      Description: The list of Subnets to use the Cloud Pricing Notification Service Api
+      Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -263,14 +271,19 @@ Resources:
       FunctionName: !Sub 'CP-REF-etl-pa-Analyse-Load-or-wait-${EnvironmentShort}'
       Runtime: python3.8
       Role: !Ref LambdaRole
-      Handler: analyse_load_wait.lambda_handler
+      Handler: index.lambda_handler
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
-        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/analyse_load_wait.py.zip'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/PAAnalyzeWaitOrLoadClusterLambda.zip'
       Environment:
         Variables:
           stepFunctionArn: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${EnvironmentShort}'
           env: !Ref EnvironmentShort
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
@@ -347,6 +360,8 @@ Resources:
               	            "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
               	            "Payload":{
               	               "ENV.$":"$.env",
+                               "s3_input_file_key.$":"$.s3_input_file_key",
+                               "etl_timestamp.$":"$.etl_timestamp",
               	               "stepFunctionExecutionId.$":"$$.Execution.Id",
               	               "stepFunctionArn.$":"$$.StateMachine.Id"
               	            }
@@ -451,6 +466,7 @@ Resources:
                     "additional_info_file_s3": "${intermediateS3Name}",
                     "backup_file_path.$" : "$.backup_file_path",
                     "etl_timestamp.$" : "$.etl_timestamp",
+                    "file_name.$": "$.s3_input_file_key",
                     "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
@@ -468,6 +484,7 @@ Resources:
                     "backup_file_path.$" : "$.backup_file_path",
                     "additional_info_file_s3": "${backupS3Name}",
                     "etl_timestamp.$" : "$.etl_timestamp",
+                    "file_name.$": "$.s3_input_file_key",
                     "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"

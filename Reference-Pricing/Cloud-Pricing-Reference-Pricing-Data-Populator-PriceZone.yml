@@ -764,7 +764,7 @@ Resources:
                       "Payload":{
                          "s3_input_file_key.$":"$.s3_input_file_key",
                          "etl_timestamp.$":"$.etl_timestamp",
-                         "file_type.$":"$.file_prefix",
+                         "file_prefix.$":"$.file_prefix",
                          "partial_load.$":"$.partial_load",
                          "stepFunctionExecutionId.$":"$$.Execution.Id",
                          "stepFunctionArn.$":"$$.StateMachine.Id"
