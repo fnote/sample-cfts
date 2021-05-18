@@ -764,7 +764,7 @@ Resources:
                       "Payload":{
                          "s3_input_file_key.$":"$.s3_input_file_key",
                          "etl_timestamp.$":"$.etl_timestamp",
-                         "file_type.$":"$.file_prefix",
+                         "file_prefix.$":"$.file_prefix",
                          "partial_load.$":"$.partial_load",
                          "stepFunctionExecutionId.$":"$$.Execution.Id",
                          "stepFunctionArn.$":"$$.StateMachine.Id"
@@ -1385,7 +1385,7 @@ Resources:
                       "FunctionName":"${notifierLambdaArn}",
                       "Payload":{
                          "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
-                         "event":"ETL-PRICE_ZONE",
+                         "event":"ETL-PRICE_ZONE-OUTSIDE-FAILURE",
                          "additional_info_file_s3.$":"$.intermediate_s3_name",
                          "additional_info_file_key.$":"$.intermediate_directory_path",
                          "backup_bucket.$":"$.backup_bucket",

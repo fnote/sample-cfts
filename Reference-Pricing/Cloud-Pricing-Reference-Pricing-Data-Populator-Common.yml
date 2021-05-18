@@ -81,6 +81,14 @@ Parameters:
     Type: String
     Description: Cloud Pricing Notification service host
     Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
+  TeamsUrlProd:
+    Type: String
+    Description: Cloud Pricing ref teams url prod alerts
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/1f484c9fcbe7469d88caf88effbcd40f/8feac8da-972c-4405-8a3a-96bd633d14e0'
+  TeamsUrlNonProd:
+    Type: String
+    Description: Cloud Pricing ref teams url non prod alerts
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/a21120594854442cad98ea00a41885f9/8feac8da-972c-4405-8a3a-96bd633d14e0'
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -214,6 +222,10 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
+          teams_webhook_url_PROD: !Ref TeamsUrlProd
+          teams_webhook_url_DEV: !Ref TeamsUrlNonProd
+          teams_webhook_url_EXE: !Ref TeamsUrlNonProd
+          teams_webhook_url_STG: !Ref TeamsUrlNonProd
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
