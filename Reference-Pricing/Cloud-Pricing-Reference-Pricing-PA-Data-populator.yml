@@ -367,6 +367,15 @@ Resources:
               	            }
               	         },
               	         "ResultPath":"$.nextStep"
+                         "Catch":[
+                            {
+                                 "ErrorEquals":[
+                                    "States.TaskFailed"
+                                 ],
+                                 "ResultPath":"$.error",
+                                 "Next":"Notify ETL Failure"
+                            }
+                         ]
               	      },
               	      "WaitOrLoadOrTerminate":{
               	         "Comment":"Check on wait status load or terminate",
