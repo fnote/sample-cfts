@@ -353,7 +353,7 @@ Resources:
   PriceZoneLoadJobMaxConcurrencyCluster1:
     Type: AWS::SSM::Parameter
     Properties:
-        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_1/MAX_CONCURRENCY' ] ]
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_01/MAX_CONCURRENCY' ] ]
         Type: String
         Value: !Ref LoadJobMaxConcurrencyCluster1
         Description: cluster 1 max load job count
@@ -361,7 +361,7 @@ Resources:
   PriceZoneLoadJobMaxConcurrencyCluster2:
     Type: AWS::SSM::Parameter
     Properties:
-        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_2/MAX_CONCURRENCY' ] ]
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_02/MAX_CONCURRENCY' ] ]
         Type: String
         Value: !Ref LoadJobMaxConcurrencyCluster2
         Description: cluster 2 max load job count
