@@ -366,7 +366,7 @@ Resources:
               	               "stepFunctionArn.$":"$$.StateMachine.Id"
               	            }
               	         },
-              	         "ResultPath":"$.nextStep"
+              	         "ResultPath":"$.nextStep",
                          "Catch":[
                             {
                                  "ErrorEquals":[
