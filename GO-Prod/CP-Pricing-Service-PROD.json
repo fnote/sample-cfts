@@ -230,8 +230,8 @@
 						"Ref": "TargetGroup"
 					}
 				],
-				"MinSize": "2",
-				"DesiredCapacity": "2",
+				"MinSize": "4",
+				"DesiredCapacity": "4",
 				"MaxSize": "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
