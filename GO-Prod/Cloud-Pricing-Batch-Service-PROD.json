@@ -356,6 +356,58 @@
                 ]
             }
         },
+        "JobQueuePeakHigh": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-Peak-High-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 75,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalPeakComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
+        "JobQueuePeakLow": {
+            "Type": "AWS::Batch::JobQueue",
+            "Properties": {
+                "State": "ENABLED",
+                "JobQueueName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-Peak-Low-Priority-Queue-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "Priority": 25,
+                "ComputeEnvironmentOrder": [
+                    {
+                        "Order": 1,
+                        "ComputeEnvironment": {
+                            "Ref": "CPBatchSpotOptimalPeakComputeEnvironment"
+                        }
+                    }
+                ]
+            }
+        },
         "LaunchTemplate": {
             "Type" : "AWS::EC2::LaunchTemplate",
             "Properties" : {
@@ -472,7 +524,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-2-",
+                            "CP-Batch-Compute-Env-1-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -576,6 +628,128 @@
                         }
                     ,
 
+                        "Component": {
+                            "Ref": "Component"
+                        }
+                    }
+                },
+                "State": "ENABLED"
+            }
+        },
+        "CPBatchSpotOptimalPeakComputeEnvironment": {
+            "Type": "AWS::Batch::ComputeEnvironment",
+            "Properties": {
+                "Type": "MANAGED",
+                "ServiceRole": {
+                    "Ref": "BatchServiceRole"
+                },
+                "ComputeEnvironmentName": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "CP-Batch-Compute-Peak-Env-1-",
+                            {
+                                "Ref": "EnvironmentShort"
+                            }
+                        ]
+                    ]
+                },
+                "ComputeResources": {
+                    "Type": "EC2",
+                    "MinvCpus": 0,
+                    "DesiredvCpus": 4,
+                    "MaxvCpus": 8,
+                    "InstanceTypes": [
+                        "optimal"
+                    ],
+                    "Ec2KeyPair": {
+                        "Ref": "PemKey"
+                    },
+                    "LaunchTemplate": {
+                        "LaunchTemplateId": { "Ref": "LaunchTemplate" },
+                        "Version": "$Latest"
+                    },
+                    "InstanceRole": {
+                        "Ref": "IamInstanceProfile"
+                    },
+                    "SpotIamFleetRole": {
+                        "Ref": "AmazonEC2SpotFleetRole"
+                    },
+                    "Subnets": [
+                        {
+                            "Ref": "PvtSNa"
+                        }
+                    ],
+                    "SecurityGroupIds": [
+                        {
+                            "Ref": "SGDNS"
+                        },
+                        {
+                            "Ref": "SGWebServices"
+                        }
+                    ],
+                    "Tags":
+                    {
+                        "Technical:ApplicationName": {
+                            "Ref": "ApplicationName"
+                        }
+                    ,
+        
+                        "Technical:ApplicationID": {
+                            "Ref": "ApplicationID"
+                        }
+                    ,
+        
+                        "Technical:PlatformOwner": {
+                            "Ref": "Owner"
+                        }
+                    ,
+        
+                        "Technical:Environment": {
+                            "Ref": "Environment"
+                        }
+                    ,
+        
+                        "Technical:ApplicationSubName": {
+                            "Ref": "ApplicationSubName"
+                        }
+                    ,
+                        "Technical:ApplicationRole": {
+                            "Ref": "ApplicationRole"
+                        }
+                    ,
+                        "Approver": {
+                            "Ref": "Approver"
+                        }
+                    ,
+                        "Name": {
+                            "Ref": "ApplicationSubName"
+                        }
+                    ,
+                        "PO_Number": {
+                            "Ref": "PONumber"
+                        }
+                    ,
+        
+                        "Project_ID": {
+                            "Ref": "ProjectID"
+                        }
+                    ,
+        
+                        "Support_Email": {
+                            "Ref": "SupportEmail"
+                        }
+                    ,
+        
+                        "2WTAGGER": {
+                            "Ref": "2WTAGGER"
+                        }
+                    ,
+        
+                        "Platform": {
+                            "Ref": "Platform"
+                        },
+        
                         "Component": {
                             "Ref": "Component"
                         }
