@@ -1,6 +1,6 @@
 {
 	"AWSTemplateFormatVersion": "2010-09-09",
-	"Description": "Deployed via Cloud-Pricing-Batch-Refactored-WebService-DEV|EXE.json",
+	"Description": "Deployed via Cloud-Pricing-Batch-Refactored-WebService-DEV|EXE|STG.json",
 	"Parameters": {
 		"PONumber": {
 			"Description": "PO Number for billing",
