@@ -195,9 +195,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerTwoTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -240,9 +238,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerThreeTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -285,9 +281,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerFourTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -330,9 +324,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerFiveTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -375,9 +367,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerSixTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -420,9 +410,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerSevenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -465,9 +453,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerEightTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -510,9 +496,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerNineTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -555,9 +539,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerTenTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -600,9 +582,7 @@ Resources:
                 - 'Pricing-Alerts-${env}'
                 - env: !Ref 'EnvironmentShort'
             - Name: 'TO_ADDRESSES'
-              Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
-              muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
-              osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+              Value: 'chamin.wickramarathna@syscolabs.com,asanka.indunil@syscolabs.com,amoda.dissanayake@sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,osanda.hemachandra@syscolabs.com,jayani.gajanayake@syscolabs.com,muqshid.mohamed@syscolabs.com,sahan.jayawardena@syscolabs.com'
 
   ServerOneEcsService:
     Type: AWS::ECS::Service
