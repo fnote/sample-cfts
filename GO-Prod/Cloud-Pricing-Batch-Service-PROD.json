@@ -513,7 +513,7 @@
                 }
             }
         },
-        "CPBatchSpotOptimalComputeEnvironment": {
+        "CPBatchOffpeakComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
                 "Type": "MANAGED",
@@ -636,7 +636,7 @@
                 "State": "ENABLED"
             }
         },
-        "CPBatchSpotOptimalPeakComputeEnvironment": {
+        "CPBatchPeakComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
                 "Type": "MANAGED",
