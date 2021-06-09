@@ -33,7 +33,18 @@ Resources:
           - - CP-Update-Sync-Job-Definition-
             - Ref: 'EnvironmentShort'
       RetryStrategy:
-        Attempts: 1
+        Attempts: 3
+        EvaluateOnExit:
+          - OnStatusReason: 'Timeout waiting for network interface provisioning to complete'
+            Action: RETRY
+          - OnStatusReason: 'ResourceInitializationError: unable to pull secrets or registry auth: pull command failed: : signal: killed'
+            Action: RETRY
+          - OnStatusReason: 'Job attempt duration exceeded timeout'
+            OnExitCode : 143
+            Action: RETRY
+          - OnStatusReason: 'Essential container in task exited'
+            OnExitCode : 1
+            Action: RETRY
       Timeout:
         AttemptDurationSeconds: 10800
       PlatformCapabilities:
