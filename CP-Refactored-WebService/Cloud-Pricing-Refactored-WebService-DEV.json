@@ -400,12 +400,12 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["CP-Refactored-WebService-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 60% for 1 minutes or 1x1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 1 minutes or 1x1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "60",
+				"Threshold" : "50",
 				"Period" : "60",
 				"EvaluationPeriods" : "1",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -435,7 +435,7 @@
 				"AdjustmentType" : "ChangeInCapacity",
 				"AutoScalingGroupName" : { "Ref" : "WebServiceGroup" },
 				"PolicyType" : "SimpleScaling",
-				"Cooldown" : "300",
+				"Cooldown" : "60",
 				"ScalingAdjustment" : "2"
 			}
 		},
@@ -678,6 +678,9 @@
 				"HealthCheckTimeoutSeconds": "15",
 				"HealthyThresholdCount": "3",
 				"TargetType": "instance",
+				"TargetGroupAttributes": [
+					{ "Key": "load_balancing.algorithm.type", "Value": "least_outstanding_requests"}
+				],
 				"Tags": [
 					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Cloud-Pricing-Refactored-WS-Target-Group", { "Ref" : "EnvironmentShort" }]]}},
 					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
