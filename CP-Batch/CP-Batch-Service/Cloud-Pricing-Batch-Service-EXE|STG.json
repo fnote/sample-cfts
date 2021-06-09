@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Template to create EC2 based Compute environment, Job queue and Job Definition for EXE|STG environment",
+    "Description": "AWS CloudFormation Template to create EC2 based Compute environmnet, Job queue and Job Definition for EXE|STG environment",
     "Parameters": {
         "PONumber": {
             "Description": "PO Number for billing",
@@ -498,7 +498,7 @@
                 }
             }
         },
-        "CPBatchSpotOptimalComputeEnvironment": {
+        "CPBatchOffpeakComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
                 "Type": "MANAGED",
@@ -620,7 +620,7 @@
                 "State": "ENABLED"
             }
         },
-        "CPBatchSpotOptimalPeakComputeEnvironment": {
+        "CPBatchPeakComputeEnvironment": {
             "Type": "AWS::Batch::ComputeEnvironment",
             "Properties": {
                 "Type": "MANAGED",
