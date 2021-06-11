@@ -348,6 +348,11 @@
 							"Ref": "Component"
 						},
 						"PropagateAtLaunch": "true"
+					},
+					{
+						"Key" : "Automation:SnapshotMgmt",
+						"Value": "Disabled",
+						"PropagateAtLaunch" : "true"
 					}
 				]
 			},

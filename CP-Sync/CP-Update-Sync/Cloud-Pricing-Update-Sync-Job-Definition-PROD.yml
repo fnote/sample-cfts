@@ -29,7 +29,7 @@ Resources:
           - - CP-Update-Sync-Job-Definition-
             - Ref: 'EnvironmentShort'
       RetryStrategy:
-        Attempts: 3
+        Attempts: 2
         EvaluateOnExit:
           - OnStatusReason: 'Timeout waiting for network interface provisioning to complete'
             Action: RETRY
