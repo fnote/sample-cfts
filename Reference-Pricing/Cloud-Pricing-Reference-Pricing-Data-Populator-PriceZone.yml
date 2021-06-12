@@ -921,7 +921,16 @@ Resources:
                                      "stepFunctionArn.$":"$$.StateMachine.Id"
                                   }
                                },
-                               "ResultPath":"$.nextStep"
+                               "ResultPath":"$.nextStep",
+                               "Catch":[
+                                    {
+                                       "ErrorEquals":[
+                                          "States.TaskFailed"
+                                       ],
+                                       "ResultPath":"$.error",
+                                       "Next":"Notify Failure"
+                                    }
+                               ]
                             },
                             "WaitOrLoadOrTerminate":{
                                "Comment":"Check on wait status load or terminate",
@@ -1162,7 +1171,16 @@ Resources:
                                      "stepFunctionArn.$":"$$.StateMachine.Id"
                                   }
                                },
-                               "ResultPath":"$.nextStep"
+                               "ResultPath":"$.nextStep",
+                               "Catch":[
+                                    {
+                                       "ErrorEquals":[
+                                          "States.TaskFailed"
+                                       ],
+                                       "ResultPath":"$.error",
+                                       "Next":"Notify FailureC2"
+                                    }
+                               ]
                             },
                             "WaitOrLoadOrTerminateC2":{
                                "Comment":"Check on wait status load or terminate",
