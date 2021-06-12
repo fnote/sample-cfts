@@ -960,6 +960,8 @@ Resources:
                                      "additional_info_file_key.$":"$.intermediate_directory_path",
                                      "backup_bucket.$":"$.backup_bucket",
                                      "backup_file_path.$":"$.backup_file_path",
+                                     "file_name.$":"$.s3_input_file_key",
+                                     "file_prefix.$":"$.file_prefix",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id"
                                   }
@@ -1035,6 +1037,8 @@ Resources:
                                               "event":"ETL-PRICE_ZONE",
                                               "additional_info_file_s3.$":"$.intermediate_s3_name",
                                               "etl_output_path_key.$":"$.etl_output_path_key",
+                                              "file_name.$":"$.s3_input_file_key",
+                                              "file_prefix.$":"$.file_prefix",
                                               "backup_bucket.$":"$.backup_bucket",
                                               "backup_file_path.$":"$.backup_file_path",
                                               "stepFunctionExecutionId.$":"$$.Execution.Id"
@@ -1132,6 +1136,7 @@ Resources:
                                      "additional_info_file_s3":"${backupS3Name}",
                                      "etl_timestamp.$":"$.etl_timestamp",
                                      "file_name.$":"$.s3_input_file_key",
+                                     "file_prefix.$":"$.file_prefix",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "status":"SUCCEEDED"
                                   }
@@ -1197,6 +1202,8 @@ Resources:
                                      "backup_bucket.$":"$.backup_bucket",
                                      "backup_file_path.$":"$.backup_file_path",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
+                                     "file_name.$":"$.s3_input_file_key",
+                                     "file_prefix.$":"$.file_prefix",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id"
                                   }
                                },
@@ -1273,6 +1280,8 @@ Resources:
                                               "etl_output_path_key.$":"$.etl_output_path_key",
                                               "backup_bucket.$":"$.backup_bucket",
                                               "backup_file_path.$":"$.backup_file_path",
+                                              "file_name.$":"$.s3_input_file_key",
+                                              "file_prefix.$":"$.file_prefix",
                                               "stepFunctionExecutionId.$":"$$.Execution.Id"
                                            }
                                         },
@@ -1368,6 +1377,7 @@ Resources:
                                      "additional_info_file_s3":"${backupS3Name}",
                                      "etl_timestamp.$":"$.etl_timestamp",
                                      "file_name.$":"$.s3_input_file_key",
+                                     "file_prefix.$":"$.file_prefix",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "status":"SUCCEEDED"
                                   }
@@ -1393,6 +1403,7 @@ Resources:
                          "etl_output_path_key.$":"$.etl_output_path_key",
                          "stepFunctionExecutionId.$":"$$.Execution.Id",
                          "etl_timestamp.$":"$.etl_timestamp",
+                         "file_prefix.$":"$.file_prefix",
                          "file_name.$":"$.s3_input_file_key"
                       }
                    },
