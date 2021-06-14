@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "SSM Parameters for CIPZ"
+Parameters:
+  environment:
+    Description: Name of the environment
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - QE
+      - EXE
+      - STG
+      - PROD
+  paramStoreConfigPrefix:
+    Type: String
+    Default: "/CP/CIPZ_SERVICE"
+  DBMasterUsernameValue:
+    Type: String
+    Description: DB Master username
+    Default: "cpuser"
+  ConfigMaxLifeLowerLimitValue:
+    Type: String
+    Default: "3000"
+    Description: Lower limit of the connection pool max life and max idle time
+  ConfigMaxLifeUpperLimitValue:
+    Type: String
+    Default: "210000"
+    Description: Upper limit of the connection pool max life and max idle time
+  ConfigReaderMaxPoolSizeValue:
+    Type: String
+    Default: "40"
+    Description: Maximum number of connections per opco pool for reader
+  ConfigReaderInitialPoolSizeValue:
+    Type: String
+    Default: "10"
+    Description: Initial number of connections per opco pool for reader
+  ConfigWriterMaxPoolSizeValue:
+    Type: String
+    Default: "10"
+    Description: Maximum number of connections per opco pool for writer
+  ConfigWriterInitialPoolSizeValue:
+    Type: String
+    Default: "2"
+    Description: Initial number of connections per opco pool for writer
+  ActiveBusinessUnitsValue:
+    Type: String
+    Default: "019"
+    Description: Active business units
+  AuthorizedClientsValue:
+    Type: String
+    Default: "cloud-pci-bff"
+    Description: Authorized Clients ID
+Resources:
+  DBMasterUserName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/USERNAME]]
+      Type: SecureString
+      Description: DB Master username
+      Value: !Ref DBMasterUsernameValue
+  ConfigMaxLifeLowerLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/LIFE/LOWER/LIMIT]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref ConfigMaxLifeLowerLimitValue
+  ConfigMaxLifeUpperLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/LIFE/UPPER/LIMIT]]
+      Type: String
+      Description: Upper limit of the connection pool max life and max idle time
+      Value: !Ref ConfigMaxLifeUpperLimitValue
+  ConfigReaderMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/READER/MAX/POOL/SIZE]]
+      Type: String
+      Description: Maximum number of connections per opco pool for reader
+      Value: !Ref ConfigReaderMaxPoolSizeValue
+  ConfigReaderInitialPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/READER/INITIAL/POOL/SIZE]]
+      Type: String
+      Description: Initial number of connections per opco pool for reader
+      Value: !Ref ConfigReaderInitialPoolSizeValue
+  ConfigWriterMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/WRITER/POOL/SIZE]]
+      Type: String
+      Description: Maximum number of connections per opco pool for writer
+      Value: !Ref ConfigWriterMaxPoolSizeValue
+  ConfigWriterInitialPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/WRITER/INITIAL/POOL/SIZE]]
+      Type: String
+      Description: Initial number of connections per opco pool for writer
+      Value: !Ref ConfigWriterInitialPoolSizeValue
+  ActiveBusinessUnits:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+      Type: String
+      Description: Active business units
+      Value: !Ref ActiveBusinessUnitsValue
+  AuthorizedClients:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS]]
+      Type: String
+      Description: Authorized clients for the customer CIPZs endpoint
+      Value: !Ref AuthorizedClientsValue
