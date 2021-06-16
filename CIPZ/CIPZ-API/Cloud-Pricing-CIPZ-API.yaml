@@ -17,7 +17,7 @@ Parameters:
   ecrImageUri:
     Description: URI of the docker image used to run the api container
     Type: String
-    Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-pricing-factors-api:76a13ba7-3ef9-487a-a6ca-a1c28e61951e"
+    Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-cipz-api:latest"
   containerPort:
     Description: API container port number
     Type: Number
@@ -127,14 +127,14 @@ Resources:
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties:
-      ClusterName: !Join [ "-", [!Ref namingPrefix, api-cluster, !Ref environment]]
+      ClusterName: !Join [ "-", [!Ref namingPrefix, cluster, !Ref environment]]
       ClusterSettings:
         - Name: containerInsights
           Value: enabled
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Join [ "-", [!Ref namingPrefix, api-task-definition, !Ref environment]]
+      Family: !Join [ "-", [!Ref namingPrefix, task-definition, !Ref environment]]
       Cpu: 2048
       Memory: 4096
       NetworkMode: awsvpc
@@ -143,7 +143,7 @@ Resources:
       TaskRoleArn: !Ref taskRoleArn
       ExecutionRoleArn: !Ref taskExecutionRoleArn
       ContainerDefinitions:
-        - Name: !Join [ "-", [!Ref namingPrefix, api]]
+        - Name: !Ref namingPrefix
           Image: !Ref ecrImageUri
           PortMappings:
             - ContainerPort: !Ref containerPort
@@ -188,7 +188,7 @@ Resources:
       - ALBListener
     Properties:
       Cluster: !Ref ECSCluster
-      ServiceName: !Join [ "-", [!Ref namingPrefix, api-service, !Ref environment]]
+      ServiceName: !Join [ "-", [!Ref namingPrefix, service, !Ref environment]]
       TaskDefinition: !Ref TaskDefinition
       LaunchType: FARGATE
       HealthCheckGracePeriodSeconds: 60
@@ -203,7 +203,7 @@ Resources:
             - !Ref ECSServiceSecurityGroup
           Subnets: !Ref subnets
       LoadBalancers:
-        - ContainerName: !Join [ "-", [!Ref namingPrefix, api]]
+        - ContainerName: !Ref namingPrefix
           ContainerPort: !Ref containerPort
           TargetGroupArn: !Ref TargetGroup
       Tags:
@@ -234,12 +234,12 @@ Resources:
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Join [ "-", [!Ref namingPrefix, api-log-group, !Ref environment]]
+      LogGroupName: !Join [ "-", [!Ref namingPrefix, log-group, !Ref environment]]
       RetentionInDays: !Ref retentionPeriod
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Join [ "-", [!Ref namingPrefix, api-alb, !Ref environment]]
+      Name: !Join [ "-", [!Ref namingPrefix, alb, !Ref environment]]
       Scheme: internal
       Subnets: !Ref subnets
       SecurityGroups:
@@ -247,7 +247,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Join [ "-", [!Ref namingPrefix, api-target-group, !Ref environment]]
+      Name: !Join [ "-", [!Ref namingPrefix, target-group, !Ref environment]]
       Port: !Ref containerPort
       Protocol: HTTP
       TargetType: ip
@@ -269,7 +269,7 @@ Resources:
   ECSServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Join [ "-", [!Ref namingPrefix, api-sg, !Ref environment]]
+      GroupName: !Join [ "-", [!Ref namingPrefix, sg, !Ref environment]]
       GroupDescription: PFA ecs service security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
@@ -280,7 +280,7 @@ Resources:
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: !Join [ "-", [!Ref namingPrefix, api-alb-sg, !Ref environment]]
+      GroupName: !Join [ "-", [!Ref namingPrefix, alb-sg, !Ref environment]]
       GroupDescription: PFA load balancer security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
