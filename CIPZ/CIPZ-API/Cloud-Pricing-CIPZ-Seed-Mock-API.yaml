@@ -269,7 +269,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, sg, !Ref environment]]
-      GroupDescription: PFA ecs service security group
+      GroupDescription: CIPZ Seed Mock API ecs service security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"
@@ -280,7 +280,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, alb-sg, !Ref environment]]
-      GroupDescription: PFA load balancer security group
+      GroupDescription: CIPZ Seed Mock API load balancer security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"
