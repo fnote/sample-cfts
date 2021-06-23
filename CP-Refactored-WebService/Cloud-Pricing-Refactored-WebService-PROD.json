@@ -234,7 +234,8 @@
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationSubName", "Value": "Pricing Refactored Web Service", "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Automation:SnapshotMgmt", "Value": "Disabled", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {

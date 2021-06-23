@@ -214,8 +214,8 @@
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
 				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
-				"MinSize" : "4",
-				"DesiredCapacity" : "4",
+				"MinSize" : "1",
+				"DesiredCapacity" : "1",
 				"MaxSize" : "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
@@ -234,7 +234,8 @@
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "2WTAGGER", "Value" : { "Ref" : "2WTAGGER" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Automation:SnapshotMgmt", "Value": "Disabled", "PropagateAtLaunch" : "true" }
 				]
 			},
 			"UpdatePolicy" : {
