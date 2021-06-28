@@ -249,7 +249,7 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       VpcId: !Ref vpcId
-      HealthCheckPath: '//v1/cipz/health'
+      HealthCheckPath: '/v1/cipz/health'
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 5
