@@ -153,7 +153,7 @@ Resources:
               awslogs-stream-prefix: !Ref namingPrefix
           Environment:
             - Name: spring_profiles_active
-              Value: local
+              Value: !Ref environment
       Tags:
         - Key: Name
           Value: !Join ["-", [!Ref namingPrefix, task-definition, !Ref environment]]
