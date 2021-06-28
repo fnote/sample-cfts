@@ -448,7 +448,7 @@
 								"yum install -y ruby\n",
 								"cd /tmp\n",
 								"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
-								"yum install -y jdk-8u131-linux-x64.rpm\n",
+								"yum install -y jdk-11.0.10_linux-x64_bin.rpm\n",
 
 								"##############################################\n",
 								"# DD APM - Configuration\n",
@@ -769,7 +769,7 @@
 						"Ref": "WebServiceGroup"
 					}
 				],
-				"DeploymentConfigName": "CodeDeployDefault.OneAtATime",
+				"DeploymentConfigName": "CodeDeployDefault.HalfAtATime",
 				"DeploymentGroupName": {
 					"Fn::Join": [
 						"",
@@ -780,6 +780,20 @@
 							}
 						]
 					]
+				},
+				"LoadBalancerInfo": {
+					"TargetGroupInfoList": [{
+						"Name": { "Fn::Join": [
+							"",
+							[
+								"target-group-pricing-service-",
+								{
+									"Ref": "EnvironmentShort"
+								}
+							]
+						]
+						}
+					}]
 				},
 				"ServiceRoleArn": "arn:aws:iam::037295147636:role/CloudPricing-CodeDeploy-Role"
 			}
