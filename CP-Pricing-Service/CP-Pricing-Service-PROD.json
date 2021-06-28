@@ -783,7 +783,7 @@
 						"Ref": "WebServiceGroup"
 					}
 				],
-				"DeploymentConfigName": "CodeDeployDefault.OneAtATime",
+				"DeploymentConfigName": "CodeDeployDefault.HalfAtATime",
 				"DeploymentGroupName": {
 					"Fn::Join": [
 						"",
@@ -794,6 +794,21 @@
 							}
 						]
 					]
+				},
+				"LoadBalancerInfo": {
+					"TargetGroupInfoList": [{
+						"Name": {
+							"Fn::Join": [
+								"",
+								[
+									"target-grp-pricing-service-",
+									{
+										"Ref": "EnvironmentShort"
+									}
+								]
+							]
+						}
+					}]
 				},
 				"ServiceRoleArn": "arn:aws:iam::130227353653:role/CloudPricing-CodeDeploy-Role"
 			}
