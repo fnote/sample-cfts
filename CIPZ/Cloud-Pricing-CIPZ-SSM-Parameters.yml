@@ -50,6 +50,30 @@ Parameters:
     Type: String
     Default: "cloud-pci-bff"
     Description: Authorized Clients ID
+  SEEDAPITimeout:
+    Type: String
+    Default: "2000"
+    Description: Seed API timeout
+  SeedApiPaginationLimit:
+    Type: String
+    Default: "100"
+    Description: Pagination limit
+  SeedApiHost:
+    Type: String
+    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com/"
+    Description: Seed API host
+  SeedApiServiceUrl:
+    Type: String
+    Default: "v1/edwp/"
+    Description: Seed API Service URL path
+  SEEDAPICustomerPZEndpoint:
+    Type: String
+    Default: "item-price-zone/customer-attribute-group"
+    Description: Customer PZ Endpoint
+  SeedCustomerGroupPZEndpoint:
+    Type: String
+    Default: "item-price-zone/customer-group-attribute-group"
+    Description: Customer Group PZ Endpoint
 Resources:
   DBMasterUserName:
     Type: AWS::SSM::Parameter
@@ -114,3 +138,45 @@ Resources:
       Type: String
       Description: Authorized clients for the customer CIPZs endpoint
       Value: !Ref AuthorizedClientsValue
+  SEEDAPITimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/TIMEOUT]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedApiTimeout
+  SEEDAPIPaginationLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/PAGINATION/LIMIT]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedApiPaginationLimit
+  SEEDAPIHostUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/HOST]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedApiHost
+  SEEDAPIServiceUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/SERVICE/URL]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedApiServiceUrl
+  SEEDAPICustomerPZEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER/PRICE_ZONE_DETAILS]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedCustomerPZEndpoint
+  SEEDAPICustomerGroupPZEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER_GROUP/PRICE_ZONE_DETAILS]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref SeedCustomerGroupPZEndpoint
