@@ -1,24 +1,27 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "Infrastructure of CIPZ API"
+Description: "Infrastructure of CIPZ Seed MockAPI"
 Parameters:
   environment:
     Description: Name of the environment
     Type: String
-    Default: PROD
+    Default: DEV
     AllowedValues:
+      - DEV
+      - EXE
+      - STG
       - PROD
   namingPrefix:
     Description: Naming prefix for the components created using this script
     Type: String
-    Default: cp-cipz-api
+    Default: cp-cipz-seed-mock-api
   ecrImageUri:
     Description: URI of the docker image used to run the api container
     Type: String
-    Default: "130227353653.dkr.ecr.us-east-1.amazonaws.com/cp-cipz-api:latest"
+    Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-cipz-seed-mock-api-dev:latest"
   containerPort:
     Description: API container port number
     Type: Number
-    Default: 8082
+    Default: 8080
   albListenerPort:
     Description: ALB Listener port number
     Type: Number
@@ -31,10 +34,10 @@ Parameters:
     Default: "subnet-0186b43162a344d9a,subnet-0ad1216eb31e15186"
   taskRoleArn:
     Type: String
-    Default: "arn:aws:iam::130227353653:role/cp-cipz-api-task-role"
+    Default: "arn:aws:iam::037295147636:role/cp-cipz-api-task-role"
   taskExecutionRoleArn:
     Type: String
-    Default: "arn:aws:iam::130227353653:role/cp-cipz-api-task-execution-role"
+    Default: "arn:aws:iam::037295147636:role/cp-cipz-api-task-execution-role"
   retentionPeriod:
     Description: Log retention period in days
     Type: Number
@@ -152,8 +155,8 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Ref namingPrefix
           Environment:
-            - Name: spring_profiles_active
-              Value: !Ref environment
+            - Name: SERVER_ENVIRONMENT_VARIABLE
+              Value: DEV
       Tags:
         - Key: Name
           Value: !Join ["-", [!Ref namingPrefix, task-definition, !Ref environment]]
@@ -244,12 +247,12 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Join [ "-", [!Ref namingPrefix, target-group, !Ref environment]]
+      Name: !Join [ "-", [cp-cipz-seed, target-group, !Ref environment]]
       Port: !Ref containerPort
       Protocol: HTTP
       TargetType: ip
       VpcId: !Ref vpcId
-      HealthCheckPath: '/v1/cipz/health'
+      HealthCheckPath: '/v1/edwp/health-check'
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 5
@@ -267,7 +270,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, sg, !Ref environment]]
-      GroupDescription: CIPZ API ecs service security group
+      GroupDescription: CIPZ Seed Mock API ecs service security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"
@@ -278,7 +281,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, alb-sg, !Ref environment]]
-      GroupDescription: CIPZ API load balancer security group
+      GroupDescription: CIPZ Seed Mock API load balancer security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"

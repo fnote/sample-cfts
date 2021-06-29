@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "Infrastructure of CIPZ Seed MockAPI"
+Description: "Infrastructure of CIPZ API"
 Parameters:
   environment:
     Description: Name of the environment
@@ -9,18 +9,19 @@ Parameters:
       - DEV
       - EXE
       - STG
+      - PROD
   namingPrefix:
     Description: Naming prefix for the components created using this script
     Type: String
-    Default: cp-cipz-seed-mock-api
+    Default: cp-cipz-api
   ecrImageUri:
     Description: URI of the docker image used to run the api container
     Type: String
-    Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-cipz-seed-mock-api-dev:latest"
+    Default: "037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-cipz-api:latest"
   containerPort:
     Description: API container port number
     Type: Number
-    Default: 8080
+    Default: 8082
   albListenerPort:
     Description: ALB Listener port number
     Type: Number
@@ -154,8 +155,8 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-stream-prefix: !Ref namingPrefix
           Environment:
-            - Name: SERVER_ENVIRONMENT_VARIABLE
-              Value: DEV
+            - Name: spring_profiles_active
+              Value: !Ref environment
       Tags:
         - Key: Name
           Value: !Join ["-", [!Ref namingPrefix, task-definition, !Ref environment]]
@@ -246,12 +247,12 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Join [ "-", [cp-cipz-seed, target-group, !Ref environment]]
+      Name: !Join [ "-", [!Ref namingPrefix, target-group, !Ref environment]]
       Port: !Ref containerPort
       Protocol: HTTP
       TargetType: ip
       VpcId: !Ref vpcId
-      HealthCheckPath: '/v1/edwp/health-check'
+      HealthCheckPath: '/v1/cipz/health'
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 5
@@ -269,7 +270,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, sg, !Ref environment]]
-      GroupDescription: CIPZ Seed Mock API ecs service security group
+      GroupDescription: CIPZ API ecs service security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"
@@ -280,7 +281,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: !Join [ "-", [!Ref namingPrefix, alb-sg, !Ref environment]]
-      GroupDescription: CIPZ Seed Mock API load balancer security group
+      GroupDescription: CIPZ API load balancer security group
       VpcId: !Ref vpcId
       SecurityGroupIngress:
         - CidrIp: "10.0.0.0/8"
