@@ -64,7 +64,7 @@ Parameters:
     Description: Seed API host
   SeedApiServiceUrl:
     Type: String
-    Default: "v1/edwp/"
+    Default: "services/v1/edwp/"
     Description: Seed API Service URL path
   SEEDAPICustomerPZEndpoint:
     Type: String
@@ -143,40 +143,40 @@ Resources:
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/TIMEOUT]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Seed API timeout
       Value: !Ref SeedApiTimeout
   SEEDAPIPaginationLimit:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/PAGINATION/LIMIT]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Seed API pagination limit
       Value: !Ref SeedApiPaginationLimit
   SEEDAPIHostUrl:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/HOST]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Seed API host url
       Value: !Ref SeedApiHost
   SEEDAPIServiceUrl:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/SERVICE/URL]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Seed API Service URI path
       Value: !Ref SeedApiServiceUrl
   SEEDAPICustomerPZEndpoint:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER/PRICE_ZONE_DETAILS]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Customer PZ Endpoint
       Value: !Ref SeedCustomerPZEndpoint
   SEEDAPICustomerGroupPZEndpoint:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER_GROUP/PRICE_ZONE_DETAILS]]
       Type: String
-      Description: Lower limit of the connection pool max life and max idle time
+      Description: Customer Group PZ Endpoint
       Value: !Ref SeedCustomerGroupPZEndpoint
