@@ -252,7 +252,7 @@ Resources:
       Protocol: HTTP
       TargetType: ip
       VpcId: !Ref vpcId
-      HealthCheckPath: '/v1/edwp/health-check'
+      HealthCheckPath: '/support/health-check'
       HealthCheckIntervalSeconds: 30
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 5
