@@ -79,7 +79,7 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/USERNAME]]
-      Type: SecureString
+      Type: String
       Description: DB Master username
       Value: !Ref DBMasterUsernameValue
   ConfigMaxLifeLowerLimit:
