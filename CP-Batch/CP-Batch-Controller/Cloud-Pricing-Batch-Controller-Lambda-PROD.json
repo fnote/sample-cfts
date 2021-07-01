@@ -118,30 +118,25 @@
 			"MinLength": "1",
 			"MaxLength": "255"
 		},
-		"SplunkHECToken" : {
+		"DDToken" : {
 			"Type" : "String",
-			"Description" : "Splunk token used for publish Splunk logs",
-			"Default": "Splunk FC4A9D4D-026C-4E01-853E-83B9BA430CF0"
+			"Description" : "Datadog token used for publish datadog logs",
+			"Default": "V7N5Ryf5siAz5SXlPHHp7HON3AVojzVsGtxcPmKfZCpIcAS6dV5v99ZajsfCEnv+34OTtKP7axNrTRASvpsuNw=="
 		},
-		"SplunkIndex" : {
+		"DDService" : {
 			"Type" : "String",
-			"Description" : "Splunk index used to publish Splunk logs",
-			"Default": "cp_metrics"
+			"Description" : "Service name for Datadog logs",
+			"Default": "cp-batch-service"
 		},
-		"SplunkSourceType" : {
+		"DDSource" : {
 			"Type" : "String",
-			"Description" : "Source type of the Splunk Logs",
-			"Default": "cp_batch_controller"
+			"Description" : "Source of the Datadog logs",
+			"Default": "cp-batch-metrics"
 		},
-		"SplunkSource" : {
+		"DDUrl" : {
 			"Type" : "String",
-			"Description" : "Source of the Splunk logs",
-			"Default": "cp_np_HEC"
-		},
-		"SplunkHECURL" : {
-			"Type" : "String",
-			"Description" : "URL of Splunk indexer",
-			"Default": "http://internal-elb-splunkservice-dev-1567888010.us-east-1.elb.amazonaws.com/api/SplunkHEC"
+			"Description" : "URL of datadog log send api",
+			"Default": "https://http-intake.logs.datadoghq.com/v1/input"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -285,11 +280,11 @@
 						"COMMONDB_URL": { "Ref" : "CommonDBURL" },
 						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
 						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
-						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
-						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
-						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
-						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
-						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
+						"DATADOG_TOKEN": { "Ref" : "DDToken" },
+						"DATADOG_SERVICE": { "Ref" : "DDService" },
+						"DATADOG_TAGS": { "Fn::Join" : ["", ["env:development, environment:", { "Ref" : "EnvironmentShort" }, ", application:cp-batch-controller-", { "Ref" : "EnvironmentShort" }, ", lifecycle:prcp-", { "Ref" : "EnvironmentShort" }, ", function:prcp"]]},
+						"DATADOG_SOURCE": { "Ref" : "DDSource" },
+						"DATADOG_URL": { "Ref" : "DDUrl" }
 					}
 				}
 			}
