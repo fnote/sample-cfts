@@ -108,7 +108,7 @@
 		},
 		"DDToken" : {
 			"Type" : "String",
-			"Description" : "Datadog encrypted token used for publish datadog logs",
+			"Description" : "Encrypted Datadog token used for publish datadog logs",
 			"Default": "V7N5Ryf5siAz5SXlPHHp7HON3AVojzVsGtxcPmKfZCpIcAS6dV5v99ZajsfCEnv+34OTtKP7axNrTRASvpsuNw=="
 		},
 		"DDService" : {
