@@ -106,11 +106,6 @@
 			"Description" : "SNS Topic ARN",
 			"Default": "arn:aws:sns:us-east-1:037295147636:CP-Notification-Service-Topic-STG"
 		},
-		"DDToken" : {
-			"Type" : "String",
-            "Description" : "Encrypted Datadog token used for publish datadog logs",
-			"Default": "V7N5Ryf5siAz5SXlPHHp7HON3AVojzVsGtxcPmKfZCpIcAS6dV5v99ZajsfCEnv+34OTtKP7axNrTRASvpsuNw=="
-		},
 		"DDService" : {
 			"Type" : "String",
 			"Description" : "Service name for Datadog logs",
@@ -275,7 +270,7 @@
 						"EnvironmentShort": { "Ref" : "EnvironmentShort" },
 						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
 						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
-						"DATADOG_TOKEN": { "Ref" : "DDToken" },
+						"DATADOG_TOKEN": "{{resolve:ssm:/DATADOG/TOKEN/ENCRYPTED:1}}",
 						"DATADOG_SERVICE": { "Ref" : "DDService" },
 						"DATADOG_TAGS": { "Fn::Join" : ["", ["env:development, environment:", { "Ref" : "EnvironmentShort" }, ", application:cp-batch-controller-", { "Ref" : "EnvironmentShort" }, ", lifecycle:prcp-", { "Ref" : "EnvironmentShort" }, ", function:prcp"]]},
 						"DATADOG_SOURCE": { "Ref" : "DDSource" },
