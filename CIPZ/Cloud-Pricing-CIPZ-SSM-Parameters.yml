@@ -18,6 +18,10 @@ Parameters:
     Type: String
     Description: DB Master username
     Default: "cpuser"
+  DBCIPZNameValue:
+    Type: String
+    Description: CIPZ DB name
+    Default: "PriceZoneReassignments"
   ConfigMaxLifeLowerLimitValue:
     Type: String
     Default: "3000"
@@ -50,7 +54,7 @@ Parameters:
     Type: String
     Default: "cloud-pci-bff"
     Description: Authorized Clients ID
-  SEEDAPITimeout:
+  SeedApiTimeoutValue:
     Type: String
     Default: "2000"
     Description: Seed API timeout
@@ -66,7 +70,7 @@ Parameters:
     Type: String
     Default: "services/v1/edwp/"
     Description: Seed API Service URL path
-  SEEDAPICustomerPZEndpoint:
+  SeedCustomerPZEndpoint:
     Type: String
     Default: "item-price-zone/customer-attribute-group"
     Description: Customer PZ Endpoint
@@ -91,9 +95,16 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/USERNAME]]
-      Type: SecureString
+      Type: String
       Description: DB Master username
       Value: !Ref DBMasterUsernameValue
+  DBCIPZName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/NAME ] ]
+      Type: String
+      Description: CIPZ DB name
+      Value: !Ref DBCIPZNameValue
   ConfigMaxLifeLowerLimit:
     Type: AWS::SSM::Parameter
     Properties:
@@ -170,7 +181,7 @@ Resources:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/TIMEOUT]]
       Type: String
       Description: Seed API timeout
-      Value: !Ref SeedApiTimeout
+      Value: !Ref SeedApiTimeoutValue
   SEEDAPIPaginationLimit:
     Type: AWS::SSM::Parameter
     Properties:
