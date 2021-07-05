@@ -285,6 +285,12 @@
 				"BucketName" : { "Ref" : "S3BucketIn" }
 			}
 		},
+		"BucketOut" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketOut" }
+			}
+		},
 		"BucketPermission": {
 			"Type": "AWS::Lambda::Permission",
 			"Properties" : {
