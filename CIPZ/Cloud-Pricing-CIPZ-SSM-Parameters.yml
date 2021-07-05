@@ -289,7 +289,7 @@ Resources:
       Type: String
       Description: SES - Template Rejected
       Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
-  CIPZAPITimeout:
+  SeedAPIBffTimeout:
     Type: AWS::SSM::Parameter
     Properties:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/BFF/TIMEOUT]]
