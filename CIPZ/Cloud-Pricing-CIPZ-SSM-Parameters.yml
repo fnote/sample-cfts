@@ -78,6 +78,18 @@ Parameters:
     Type: String
     Default: "item-price-zone/customer-group-attribute-group"
     Description: Customer Group PZ Endpoint
+  SeedCustomerGroupEndpoint:
+    Type: String
+    Default: "opcos/{opco_id}/customer-groups/{customer_account}"
+    Description: Customer Group Endpoint
+  ConfigThreadCoreSizeValue:
+    Type: String
+    Default: "8"
+    Description: Thread pool core size
+  ConfigThreadMaxSizeValue:
+    Type: String
+    Default: "25"
+    Description: Thread pool max size
 
   SeedMockAPIJdbcHost:
     Type: String
@@ -167,6 +179,20 @@ Resources:
       Type: String
       Description: Initial number of connections per opco pool for writer
       Value: !Ref ConfigWriterInitialPoolSizeValue
+  ExecutorCorePoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/EXECUTOR/CORE_SIZE]]
+      Type: String
+      Description: Task executor core pool size
+      Value: !Ref ConfigThreadCoreSizeValue
+  ExecutorMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/EXECUTOR/MAX_SIZE]]
+      Type: String
+      Description: Task executor max pool size
+      Value: !Ref ConfigThreadMaxSizeValue
   ActiveBusinessUnits:
     Type: AWS::SSM::Parameter
     Properties:
@@ -223,6 +249,13 @@ Resources:
       Type: String
       Description: Customer Group PZ Endpoint
       Value: !Ref SeedCustomerGroupPZEndpoint
+  SEEDAPICustomerGroupEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER_GROUP_DETAILS]]
+      Type: String
+      Description: Customer Group Details Endpoint
+      Value: !Ref SeedCustomerGroupEndpoint
 
   CIPZSEEDMockAPIJdbcHost:
     Type: AWS::SSM::Parameter
