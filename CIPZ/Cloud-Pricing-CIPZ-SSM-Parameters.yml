@@ -58,6 +58,10 @@ Parameters:
     Type: String
     Default: "2000"
     Description: Seed API timeout
+  CIPZApiTimeoutValue:
+    Type: String
+    Default: "2000"
+    Description: CIPZ API timeout
   SeedApiPaginationLimit:
     Type: String
     Default: "100"
@@ -285,3 +289,11 @@ Resources:
       Type: String
       Description: SES - Template Rejected
       Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
+#CIPZ-API related
+  CIPZAPITimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/TIMEOUT]]
+      Type: String
+      Description: CIPZ API timeout
+      Value: !Ref CIPZApiTimeoutValue
