@@ -256,7 +256,7 @@ Resources:
       Type: String
       Description: Customer Group Details Endpoint
       Value: !Ref SeedCustomerGroupEndpoint
-
+# SES notification related
   CIPZSEEDMockAPIJdbcHost:
     Type: AWS::SSM::Parameter
     Properties:
@@ -264,7 +264,6 @@ Resources:
       Type: String
       Description: SES - Configuration Set Name
       Value: !Ref SeedMockAPIJdbcHost
-
   CIPZSESConfigSetName:
     Type: AWS::SSM::Parameter
     Properties:
@@ -272,7 +271,6 @@ Resources:
       Type: String
       Description: SES - Configuration Set Name
       Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref ConfigSetName]]
-
   CIPZSESSenderEmail:
     Type: AWS::SSM::Parameter
     Properties:
@@ -280,7 +278,6 @@ Resources:
       Type: String
       Description: SES - Sender Email
       Value: !Ref SesSenderEmail
-
   CIPZSESTemplateRejected:
     Type: AWS::SSM::Parameter
     Properties:
