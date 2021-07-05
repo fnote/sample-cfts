@@ -260,6 +260,13 @@ Resources:
       Type: String
       Description: Customer Group Details Endpoint
       Value: !Ref SeedCustomerGroupEndpoint
+  SeedAPIBffTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/BFF/TIMEOUT]]
+      Type: String
+      Description: Seed API timeout for Bff
+      Value: !Ref SeedBffTimeoutValue
 # SES notification related
   CIPZSEEDMockAPIJdbcHost:
     Type: AWS::SSM::Parameter
@@ -289,10 +296,3 @@ Resources:
       Type: String
       Description: SES - Template Rejected
       Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
-  SeedAPIBffTimeout:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/BFF/TIMEOUT]]
-      Type: String
-      Description: Seed API timeout for Bff
-      Value: !Ref SeedBffTimeoutValue
