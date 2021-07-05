@@ -78,6 +78,38 @@ Parameters:
     Type: String
     Default: "item-price-zone/customer-group-attribute-group"
     Description: Customer Group PZ Endpoint
+
+  SeedMockAPIJdbcHost:
+    Type: String
+    Default: jdbc:mysql://cp-cipz-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/SeedMockAPI?enabledTLSProtocols=TLSv1.2
+    Description: Seed Mock API Jdbc Host URL
+
+  SesConfigSetName:
+    Type: String
+    Default: configset
+    Description: Configuration Set Name (Suffix Part only)
+
+  SesSenderEmail:
+    Type: String
+    Default: CloudPricingAlerts@corp.sysco.com
+    Description: Sender email
+
+  SesRejectedEmailTemplateName:
+    Type: String
+    Default: cipz_api_ses_template_rejected
+    Description: Email Template Name (Suffix Part only)
+
+Mappings:
+  environmentLowercaseMap:
+    DEV:
+      environmentLowercaseStr: dev
+    EXE:
+      environmentLowercaseStr: exe
+    STG:
+      environmentLowercaseStr: stg
+    PROD:
+      environmentLowercaseStr: prod
+
 Resources:
   DBMasterUserName:
     Type: AWS::SSM::Parameter
@@ -191,3 +223,35 @@ Resources:
       Type: String
       Description: Customer Group PZ Endpoint
       Value: !Ref SeedCustomerGroupPZEndpoint
+
+  CIPZSEEDMockAPIJdbcHost:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, SEED_MOCK_API/DB/JDBCHOST ] ]
+      Type: String
+      Description: SES - Configuration Set Name
+      Value: !Ref SeedMockAPIJdbcHost
+
+  CIPZSESConfigSetName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/CONFIGSETNAME ] ]
+      Type: String
+      Description: SES - Configuration Set Name
+      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref ConfigSetName]]
+
+  CIPZSESSenderEmail:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMEMAIL ] ]
+      Type: String
+      Description: SES - Sender Email
+      Value: !Ref SesSenderEmail
+
+  CIPZSESTemplateRejected:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/TEMPLATE/REJECTED ] ]
+      Type: String
+      Description: SES - Template Rejected
+      Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
