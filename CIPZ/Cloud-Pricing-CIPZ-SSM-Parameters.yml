@@ -270,7 +270,7 @@ Resources:
       Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/CONFIGSETNAME ] ]
       Type: String
       Description: SES - Configuration Set Name
-      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref ConfigSetName]]
+      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref SesConfigSetName]]
   CIPZSESSenderEmail:
     Type: AWS::SSM::Parameter
     Properties:
