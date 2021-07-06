@@ -64,7 +64,7 @@ Parameters:
     Description: Pagination limit
   SeedApiHost:
     Type: String
-    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com/"
+    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com"
     Description: Seed API host
   SeedApiServiceUrl:
     Type: String
