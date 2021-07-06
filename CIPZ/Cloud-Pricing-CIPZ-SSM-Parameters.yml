@@ -274,7 +274,7 @@ Resources:
   CIPZSESSenderEmail:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMEMAIL ] ]
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMMAIL ] ]
       Type: String
       Description: SES - Sender Email
       Value: !Ref SesSenderEmail
