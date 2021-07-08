@@ -184,9 +184,9 @@
             "Default": "KeyPair-Sysco-CloudPricing-Prod"
         },
         "CommonAMI": {
-            "Description": "Sysco Gold Team managed AMI",
+            "Description": "Sysco Gold Team managed AMI ECS_Optimized",
             "Type": "String",
-            "Default": "ami-070a2dffc6f576a7e",
+            "Default": "ami-0a89ffa3098ba7d21",
             "AllowedPattern": "^ami-[0-9a-fA-F]{17}",
             "ConstraintDescription": "Must be a valid AMI."
         },
@@ -272,7 +272,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                            "Ref": "CPBatchOffpeakComputeEnvironment"
                         }
                     }
                 ]
@@ -298,7 +298,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                            "Ref": "CPBatchOffpeakComputeEnvironment"
                         }
                     }
                 ]
@@ -324,7 +324,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                            "Ref": "CPBatchOffpeakComputeEnvironment"
                         }
                     }
                 ]
@@ -350,7 +350,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalComputeEnvironment"
+                            "Ref": "CPBatchOffpeakComputeEnvironment"
                         }
                     }
                 ]
@@ -376,7 +376,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalPeakComputeEnvironment"
+                            "Ref": "CPBatchPeakComputeEnvironment"
                         }
                     }
                 ]
@@ -402,7 +402,7 @@
                     {
                         "Order": 1,
                         "ComputeEnvironment": {
-                            "Ref": "CPBatchSpotOptimalPeakComputeEnvironment"
+                            "Ref": "CPBatchPeakComputeEnvironment"
                         }
                     }
                 ]
@@ -524,7 +524,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-1-",
+                            "CP-Batch-Compute-Env-2-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -647,7 +647,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Peak-Env-1-",
+                            "CP-Batch-Compute-Peak-Env-2-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
