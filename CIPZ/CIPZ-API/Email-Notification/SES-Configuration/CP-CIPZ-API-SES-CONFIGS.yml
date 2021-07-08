@@ -58,8 +58,6 @@ Parameters:
     Type: String
     Default: Cloud Pricing V4
 
-  EmailTemplateName:
-    Type: String
   Environment:
     Description: Environment for application
     Type: String
