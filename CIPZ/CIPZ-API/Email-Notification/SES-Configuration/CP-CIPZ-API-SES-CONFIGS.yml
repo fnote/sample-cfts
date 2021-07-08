@@ -130,6 +130,14 @@ Parameters:
     Default: email-category
     Type: String
     AllowedPattern: "[a-zA-Z-_][a-zA-Z0-9-_]*"
+  DefaultDimensionValue1:
+    Default: cipz-api-
+    Type: String
+    AllowedPattern: "[a-zA-Z-_][a-zA-Z0-9-_]*"
+  DefaultDimensionValue2:
+    Default: price-request-rejection
+    Type: String
+    AllowedPattern: "[a-zA-Z-_][a-zA-Z0-9-_]*"
 
   DimensionValueSource:
     Default: messageTag
@@ -137,10 +145,6 @@ Parameters:
       - messageTag
       - emailHeader
     Type: String
-  DefaultDimensionValue:
-    Default: cipz-api-
-    Type: String
-    AllowedPattern: "[a-zA-Z-_][a-zA-Z0-9-_]*"
 
 Mappings:
   environmentLowercaseMap:
@@ -232,12 +236,12 @@ Resources:
         Name: !Join ["-",[!FindInMap [environmentLowercaseMap, !Ref "Environment", environmentLowercaseStr],!Ref EventDestinationName]]
         CloudWatchDestination:
           DimensionConfigurations:
-            - DimensionName: !Join ["-",[!FindInMap [environmentLowercaseMap, !Ref "Environment", environmentLowercaseStr],!Ref DimensionName1]]
+            - DimensionName: !Ref DimensionName1
               DimensionValueSource: !Ref DimensionValueSource
-              DefaultDimensionValue: !Ref DefaultDimensionValue
-            - DimensionName: !Join ["-",[!FindInMap [environmentLowercaseMap, !Ref "Environment", environmentLowercaseStr],!Ref DimensionName2]]
+              DefaultDimensionValue: !Ref DefaultDimensionValue1
+            - DimensionName: !Ref DimensionName2
               DimensionValueSource: !Ref DimensionValueSource
-              DefaultDimensionValue: !Ref DefaultDimensionValue
+              DefaultDimensionValue: !Ref DefaultDimensionValue2
         Enabled: true
         MatchingEventTypes: 
           - Fn::If:
