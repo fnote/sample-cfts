@@ -59,7 +59,7 @@
 		"CommonAMI": {
 			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI",
 			"Type": "String",
-			"Default" : "ami-05caa832c03d53087",
+			"Default" : "ami-043a196cce124727a",
 			"AllowedPattern": "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription": "Must be a valid AMI."
 		},
