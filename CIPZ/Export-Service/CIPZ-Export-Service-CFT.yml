@@ -36,7 +36,7 @@ Parameters:
   CIPZFilePrefix:
     Description: file prefix name
     Type: String
-    Default: cipz
+    Default: 'cipz_'
   ChangeSourceName:
     Description: change source name
     Type: String
