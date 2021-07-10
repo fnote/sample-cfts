@@ -49,6 +49,30 @@ Parameters:
     Description: Maximum Concurrency Allowed for cipz export service Glue job
     Type: String
     Default: 2
+  DatabasePassword:
+    Type: String
+    Description: Password of the database used for glue connection
+    Default: ""
+    NoEcho: true
+  AvailabilityZoneForGlueConnection:
+    Type: String
+    Description: The Availability Zone of the glue connection
+    Default: us-east-1b
+    AllowedValues:
+      - us-east-1a
+      - us-east-1b
+      - us-east-1c
+      - us-east-1d
+      - us-east-1e
+      - us-east-1f
+  SecurityGroupListForGlueConnction:
+    Type: CommaDelimitedList
+    Description: Security group list for glue connection
+    Default: sg-06a4893b70fc2f68f
+  SubnetIdForGlueConnection:
+    Type: String
+    Description: The subnetId to be referred
+    Default: subnet-0ad1216eb31e15186
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -176,41 +200,41 @@ Resources:
           Value: !Ref Component
 
   CIPZBackupStorage:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: !Sub
-          - 'cp-cipz-export-service-backup-${env}'
-          - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
-        LifecycleConfiguration:
-          Rules:
-            - Transitions:
-                - StorageClass: GLACIER
-                  TransitionInDays: 30
-              Id: Transition-To-Glacier-Rule
-              Status: Enabled
-        Tags:
-          - Key: Technical:ApplicationName
-            Value: !Ref ApplicationName
-          - Key: Technical:ApplicationID
-            Value: !Ref ApplicationID
-          - Key: Technical:PlatformOwner
-            Value: !Ref Owner
-          - Key: Technical:Environment
-            Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
-          - Key: Support_Email
-            Value: !Ref SupportEmail
-          - Key: Approver
-            Value: !Ref Approver
-          - Key: PO_Number
-            Value: !Ref PONumber
-          - Key: Project_ID
-            Value: !Ref ProjectID
-          - Key: 2WTAGGER
-            Value: !Ref 2WTAGGER
-          - Key: Platform
-            Value: !Ref Platform
-          - Key: Component
-            Value: !Ref Component
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub
+        - 'cp-cipz-export-service-backup-${env}'
+        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
+      LifecycleConfiguration:
+        Rules:
+          - Transitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 30
+            Id: Transition-To-Glacier-Rule
+            Status: Enabled
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
   TriggerExportServiceLambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -246,93 +270,88 @@ Resources:
                   - glue:GetJob
                 Resource: "*"
       Path: '/'
-  ExportServiceGlueRole:
-      Type: AWS::IAM::Role
-      Properties:
-        RoleName: !Sub 'CP-CIPZ-ExportService-GlueRole-${EnvironmentShort}'
-        PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service:
-                  - 'glue.amazonaws.com'
-              Action:
-                - 'sts:AssumeRole'
-        ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
-          - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-          - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
-        Policies:
-          - PolicyName: CP-REF-ETLGlueJobPolicy
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - logs:CreateLogStream
-                    - logs:CreateLogGroup
-                    - logs:PutLogEvents
-                    - logs:AssociateKmsKey
-                  Resource: 'arn:aws:logs:*:*:/aws-glue/*'
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                  Resource:
-                    - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/Export_service/*'
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                  Resource: !Sub
-                    - 'arn:aws:s3:::cp-cipz-export-service-intermediate-${env}/*'
-                    - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                  Resource: !Sub
-                    - 'arn:aws:s3:::cp-cipz-export-service-backup-${env}/*'
-                    - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                  Resource: !Sub
-                    - 'arn:aws:s3:::rp-data-populator-poc/*'
-                    - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
-        Path: '/'
-  CIPZSparkJobLogStorage:
-    Type: AWS::S3::Bucket
+  CommonDatabaseConnection:
+    Type: AWS::Glue::Connection
     Properties:
-      BucketName: !Sub
-        - 'cp-cipz-spark-temp-dir-${env}'
-        - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
-      Tags:
-        - Key: Technical:ApplicationName
-          Value: !Ref ApplicationName
-        - Key: Technical:ApplicationID
-          Value: !Ref ApplicationID
-        - Key: Technical:PlatformOwner
-          Value: !Ref Owner
-        - Key: Technical:Environment
-          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
-        - Key: Support_Email
-          Value: !Ref SupportEmail
-        - Key: Approver
-          Value: !Ref Approver
-        - Key: PO_Number
-          Value: !Ref PONumber
-        - Key: Project_ID
-          Value: !Ref ProjectID
-        - Key: 2WTAGGER
-          Value: !Ref 2WTAGGER
-        - Key: Platform
-          Value: !Ref Platform
-        - Key: Component
-          Value: !Ref Component
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/CIPZ_SERVICE/", !Ref EnvironmentShort, "/CIPZ/DB/ENDPOINT/WRITER:1}}"]],
+          "USERNAME": !Join ['', ["{{resolve:ssm:/CP/CIPZ_SERVICE/", !Ref EnvironmentShort, "/CIPZ/DB/USERNAME:1}}"]],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-cipz-export-service-connection-${EnvironmentShort}'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
 
+  ExportServiceGlueRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'CP-CIPZ-ExportService-GlueRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'glue.amazonaws.com'
+                - rds.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+        - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
+      Policies:
+        - PolicyName: CP-REF-ETLGlueJobPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                  - logs:PutLogEvents
+                  - logs:AssociateKmsKey
+                Resource: 'arn:aws:logs:*:*:/aws-glue/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-cipz-export-service-intermediate-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-cipz-export-service-backup-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::rp-data-populator-poc/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Sub 'arn:aws:sns:us-east-1:${AWS::AccountId}:CP-CIPZ-Export-Service-Notification-${EnvironmentShort}'
+      Path: '/'
   SeedS3:
     Type: AWS::SSM::Parameter
     Properties:
@@ -402,13 +421,20 @@ Resources:
         Name: pythonshell
         PythonVersion: 3
         ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/${EnvironmentShort}/export_service.py'
+      Connections:
+        Connections:
+          - !Ref CommonDatabaseConnection
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/${EnvironmentShort}/libraries/smart_open-2.1.0-py3.6.egg,s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/${EnvironmentShort}/libraries/PyMySQL-1.0.2-py3-none-any.whl,s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/${EnvironmentShort}/libraries/tenacity-7.0.0-py3-none-any.whl"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/libraries/smart_open-2.1.0-py3.6.egg,s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/libraries/PyMySQL-1.0.2-py3-none-any.whl,s3://sysco-us-east-1-prcp-${Account}-codedeploy/CIPZ/ExportService/libraries/tenacity-7.0.0-py3-none-any.whl"
+        "--env": !Ref EnvironmentShort
+        "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
+        "--enable-continuous-cloudwatch-log": "true"
+        "--enable-continuous-log-filter": "true"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref CIPZMaximumConcurrency
       GlueVersion: 1.0
-      MaxRetries: 0
+      MaxRetries: 2
       MaxCapacity: 1.0
       Timeout: 4320
       Name: !Sub 'CP-CIPZ-export-service-job-${EnvironmentShort}'
@@ -440,11 +466,17 @@ Resources:
           import json
           import os
           import logging
+          import boto3
+          from botocore.config import Config
 
           logger = logging.getLogger()
           logger.setLevel(logging.INFO)
 
-          import boto3
+          boto3_config = Config(
+              retries={
+                  'max_attempts': 15
+              }
+          )
           client = boto3.client('glue')
 
           def lambda_handler(event, context):
@@ -461,16 +493,6 @@ Resources:
         Variables:
           env: !Ref EnvironmentShort
       Timeout: 60
-#      Events:
-#        OneMinute: # Trigger every minute
-#          Type: Schedule
-#          Properties:
-#            Schedule: rate(1 minute)
-#      Events:
-#        - schedule:
-#            name: !Sub 'cp-cipz-export-service-lambda-trigger-${EnvironmentShort}'
-#            rate: cron(15 10 * * ? *)
-#            enabled: true
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
