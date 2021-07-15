@@ -64,7 +64,7 @@ Parameters:
     Description: Pagination limit
   SeedApiHost:
     Type: String
-    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com/"
+    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com"
     Description: Seed API host
   SeedApiServiceUrl:
     Type: String
@@ -274,11 +274,11 @@ Resources:
       Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/CONFIGSETNAME ] ]
       Type: String
       Description: SES - Configuration Set Name
-      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref ConfigSetName]]
+      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref SesConfigSetName]]
   CIPZSESSenderEmail:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMEMAIL ] ]
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMMAIL ] ]
       Type: String
       Description: SES - Sender Email
       Value: !Ref SesSenderEmail
