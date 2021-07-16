@@ -434,7 +434,7 @@ Resources:
       ExecutionProperty:
         MaxConcurrentRuns: !Ref CIPZMaximumConcurrency
       GlueVersion: 1.0
-      MaxRetries: 2
+      MaxRetries: 0
       MaxCapacity: 1.0
       Timeout: 4320
       Name: !Sub 'CP-CIPZ-export-service-job-${EnvironmentShort}'
@@ -522,7 +522,7 @@ Resources:
     Properties:
       Description: "ExportServiceInvocationScheduledRule"
       Name: !Sub 'CP-CIPZ-Export-Service-Notification-${EnvironmentShort}'
-      ScheduleExpression: "cron(00 04 * * ? *)"
+      ScheduleExpression: "cron(30 23 ? * MON-FRI *)"
       State: "ENABLED"
       Targets:
         - Arn:
