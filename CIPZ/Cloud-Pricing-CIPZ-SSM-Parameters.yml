@@ -106,6 +106,10 @@ Parameters:
     Type: String
     Default: cipz_api_ses_template_rejected
     Description: Email Template Name (Suffix Part only)
+  SesRejectedEmailSubject:
+    Type: String
+    Default: Price Zone Reassignment Request - Rejected
+    Description: Rejected email subject
   APICentralBase:
     Type: String
     Default: https://api-gateway-dev.sysco.com
@@ -289,6 +293,13 @@ Resources:
       Type: String
       Description: SES - Template Rejected
       Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
+  CIPZSESRejectedMailSubject:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/MAIL/REJECTION/SUBJECT ] ]
+      Type: String
+      Description: SES - Rejected Email Subject
+      Value: !Join [ "-",[ !Ref SesRejectedEmailSubject, !FindInMap [ environmentLowercaseMap, !Ref environment, environmentLowercaseStr ] ] ]
   APICentralBaseUrl:
     Type: AWS::SSM::Parameter
     Properties:
