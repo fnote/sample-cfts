@@ -33,6 +33,10 @@ Parameters:
     Description: seed s3 bucket name
     Type: String
     Default: 'rp-data-populator-poc'
+  SeedS3Path:
+    Description: seed s3 file destination path. Eg - ASE/Inbound/PRC_CUST_ITM_WIL_TO_PAY_AUDT/Source-Data/
+    Type: String
+    Default: 'ASE/Inbound/PRC_CUST_ITM_WIL_TO_PAY_AUDT/Source-Data/'
   CIPZFilePrefix:
     Description: file prefix name
     Type: String
@@ -309,7 +313,7 @@ Resources:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
         - !Sub 'arn:aws:iam::${AWS::AccountId}:policy/CloudPricing-IAM-SSM-Policy'
       Policies:
-        - PolicyName: CP-REF-ETLGlueJobPolicy
+        - PolicyName: CP-CIPZ-ExportServicePolicy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -349,6 +353,13 @@ Resources:
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
               - Effect: Allow
                 Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::${SeedS3Bucket}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
+              - Effect: Allow
+                Action:
                   - sns:Publish
                 Resource: !Sub 'arn:aws:sns:us-east-1:${AWS::AccountId}:CP-CIPZ-Export-Service-Notification-${EnvironmentShort}'
       Path: '/'
@@ -360,6 +371,15 @@ Resources:
       Value: !Ref SeedS3Bucket
       Tier: Standard
       Description: seed s3 bucket name
+
+  SeedS3PathSSM:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/CIPZ/EXPORT_SERVICE/SEED_PATH']]
+      Type: String
+      Value: !Ref SeedS3Path
+      Tier: Standard
+      Description: Seed s3 file destination path. Should not begin the path with "/"
 
   CPCIPZS3:
     Type: AWS::SSM::Parameter
