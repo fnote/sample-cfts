@@ -14,6 +14,10 @@ For STG
 =======
 ./create-ses-template-stack.sh CP-CIPZ-API-SES-Template-Rejected-STG parameters-stg.json
 
+For PROD
+=======
+./create-ses-template-stack.sh CP-CIPZ-API-SES-Template-Rejected-PROD parameters-prod.json
+
 2) Execute the following command to update the stack.
 
 ./update-ses-template-stack.sh <stack-name> <parameter-file-name>
@@ -29,3 +33,7 @@ For EXE
 For STG
 =======
 ./update-ses-template-stack.sh CP-CIPZ-API-SES-Template-Rejected-STG parameters-stg.json
+
+For PROD
+=======
+./update-ses-template-stack.sh CP-CIPZ-API-SES-Template-Rejected-PROD parameters-prod.json
