@@ -26,6 +26,21 @@ Parameters:
     Description: ALB Listener port number
     Type: Number
     Default: 80
+  albListenerPortHttps:
+    Description: ALB HTTPS Listener port number
+    Type: Number
+    Default: 443
+  httpsListenerSslPolicy:
+    Description: HTTPS listener SSL policy
+    Type: String
+    Default: ELBSecurityPolicy-2016-08
+    AllowedValues:
+      - ELBSecurityPolicy-2016-08
+      - ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+  httpsListenerCertificateArn:
+    Description: Certificate to use with the HTTPS listener
+    Type: String
+    Default: arn:aws:acm:us-east-1:037295147636:certificate/bbf0dddf-db65-4222-83b1-25e00a2c5d41
   vpcId:
     Type: String
     Default: "vpc-091c7e3e5578d7a4f"
@@ -263,6 +278,18 @@ Resources:
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+  ALBListenerHttps:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: !Ref albListenerPortHttps
+      Protocol: HTTPS
+      SslPolicy: !Ref httpsListenerSslPolicy
+      Certificates:
+        - CertificateArn: !Ref httpsListenerCertificateArn
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref TargetGroup
