@@ -52,7 +52,7 @@ Parameters:
     Description: Active business units
   AuthorizedClientsValue:
     Type: String
-    Default: "cloud-pci-bff"
+    Default: "cloud-pci-bff,Cloud_PCI"
     Description: Authorized Clients ID
   SeedApiTimeoutValue:
     Type: String
