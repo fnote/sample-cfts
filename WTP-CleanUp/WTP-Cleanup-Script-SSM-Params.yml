@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "WTP Cleanup Script SSM Parameters"
+Parameters:
+  environment:
+    Description: Name of the environment
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - QE
+      - EXE
+      - STG
+      - PROD
+  paramStoreConfigPrefix:
+    Type: String
+    Default: "/CP/WTP_CLEANUP"
+  paramStoreDBHost:
+    Type: String
+    Default: cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com
+  paramStoreDBUser:
+    Type: String
+    Default: cpuser
+Resources:
+  ConfigActiveBusinessUnits:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+      Type: String
+      Description: Active business units
+      Value: "019"
+  ConfigSUPCsPerQuery:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SUPCS/PER/QUERY]]
+      Type: String
+      Description: Default SUPCs per Query
+      Value: 5
+  ConfigDBHost:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/HOST]]
+      Type: String
+      Description: DB host
+      Value: !Ref paramStoreDBHost
+  ConfigDBUsername:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/USERNAME]]
+      Type: String
+      Description: DB username
+      Value: !Ref paramStoreDBUser
