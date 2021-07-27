@@ -14,12 +14,15 @@ Parameters:
   paramStoreConfigPrefix:
     Type: String
     Default: "/CP/WTP_CLEANUP"
+  paramStoreActiveBusinessUnits:
+    Type: String
+    Default: '018,024,035,039,047,057,059,061,064,066,194,195,332'
+  paramLaunchDate:
+    Type: String
+    Default: '2021-06-12 00:00:00.0' 
   paramStoreDBHost:
     Type: String
-    Default: cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com
-  paramStoreDBUser:
-    Type: String
-    Default: cpuser
+    Default: 'cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com'
 Resources:
   ConfigActiveBusinessUnits:
     Type: AWS::SSM::Parameter
@@ -27,14 +30,14 @@ Resources:
       Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
       Type: String
       Description: Active business units
-      Value: "019"
-  ConfigSUPCsPerQuery:
+      Value: !Ref paramStoreActiveBusinessUnits
+  ConfigLaunchDate:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SUPCS/PER/QUERY]]
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, LAUNCH/DATE]]
       Type: String
-      Description: Default SUPCs per Query
-      Value: 5
+      Description: Periscope launch date for the sites
+      Value: !Ref paramLaunchDate
   ConfigDBHost:
     Type: AWS::SSM::Parameter
     Properties:
@@ -42,10 +45,3 @@ Resources:
       Type: String
       Description: DB host
       Value: !Ref paramStoreDBHost
-  ConfigDBUsername:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, PRICING/DB/USERNAME]]
-      Type: String
-      Description: DB username
-      Value: !Ref paramStoreDBUser
