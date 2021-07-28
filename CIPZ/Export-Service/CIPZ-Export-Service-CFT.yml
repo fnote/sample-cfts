@@ -348,6 +348,7 @@ Resources:
                 Action:
                   - s3:GetObject
                   - s3:PutObject
+                  - s3:PutObjectAcl
                 Resource: !Sub
                   - 'arn:aws:s3:::rp-data-populator-poc/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
@@ -355,6 +356,7 @@ Resources:
                 Action:
                   - s3:GetObject
                   - s3:PutObject
+                  - s3:PutObjectAcl
                 Resource: !Sub
                   - 'arn:aws:s3:::${SeedS3Bucket}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
