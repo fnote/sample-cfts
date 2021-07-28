@@ -84,11 +84,11 @@ Parameters:
     Description: Customer Group Endpoint
   ConfigThreadCoreSizeValue:
     Type: String
-    Default: "8"
+    Default: "50"
     Description: Thread pool core size
   ConfigThreadMaxSizeValue:
     Type: String
-    Default: "25"
+    Default: "80"
     Description: Thread pool max size
   SeedMockAPIJdbcHost:
     Type: String
@@ -118,6 +118,26 @@ Parameters:
     Type: String
     Default: value
     Description: Api central access key
+  APICentralTokenEndpoint:
+    Type: String
+    Default: https://api-gateway-dev.sysco.com/token
+    Description: Api central token endpoint
+  APICRequestTimeout:
+    Type: String
+    Default: 750
+    Description: Api central request timeout
+  APICTokenValidityThreshold:
+    Type: String
+    Default: 100
+    Description: Api central token validity threshold
+  APICClientId:
+    Type: String
+    Default: value
+    Description: Api central client id
+  APICClientSecret:
+    Type: String
+    Default: value
+    Description: Api central client secret
 
 Mappings:
   environmentLowercaseMap:
@@ -307,10 +327,38 @@ Resources:
       Type: String
       Description: Api Central Base URL
       Value: !Ref APICentralBase
-  APICentralAccessKey:
+  APICentralTokenEndpoint:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/API_CENTRAL/API/KEY]]
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/ENDPOINT]]
       Type: String
-      Description: API Central Access Key from CIPZ App
-      Value: !Ref APICentralKey
+      Description: API Central Token Endpoint
+      Value: !Ref APICTokenEndpoint
+  APICentralTokenValidityThreshold:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/VALIDITYTHRESHOLD]]
+      Type: String
+      Description: API Central Token Validity Threshold
+      Value: !Ref APICTokenValidityThreshold
+  APICentralRequestTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/REQUEST/TIMEOUT]]
+      Type: String
+      Description: API Central Request Timeout
+      Value: !Ref APICRequestTimeout
+  CIPZAPIAPICentralClientId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/CLIENTID]]
+      Type: String
+      Description: CIPZ API API Central Client Id
+      Value: !Ref APICClientId
+  CIPZAPIAPICentralSecret:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/SECRET]]
+      Type: String
+      Description: CIPZ API API Central Client Secret
+      Value: !Ref APICClientSecret
