@@ -204,7 +204,7 @@
 		"PricingServiceTargetGroup": {
 			"Description": "Target group of the pricing-service",
 			"Type": "String",
-			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-EXE/d00a2b1b6505ba7f"
+			"Default": "arn:aws:elasticloadbalancing:us-east-1:037295147636:targetgroup/target-group-pricing-service-EXE/357649ea02b9abd3"
 		}
 	},
 	"Resources": {
