@@ -2,6 +2,8 @@
 
 ./create-ses-template-stack.sh <stack-name> <parameter-file-name>
 
+*NOTE: You need to manually set the respective SNS topic to the corresponding configurationSet after the CFT creation.
+
 For DEV
 =======
 ./create-ses-template-stack.sh CP-CIPZ-API-SES-Template-Rejected-DEV parameters-dev.json
