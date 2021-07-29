@@ -58,6 +58,10 @@ Parameters:
     Type: String
     Default: "2000"
     Description: Seed API timeout
+  SeedBffTimeoutValue:
+    Type: String
+    Default: "5000"
+    Description: Seed Api timeout for bff
   SeedApiPaginationLimit:
     Type: String
     Default: "100"
@@ -284,6 +288,13 @@ Resources:
       Type: String
       Description: Customer Group Details Endpoint
       Value: !Ref SeedCustomerGroupEndpoint
+  SeedAPIBffTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/BFF/TIMEOUT]]
+      Type: String
+      Description: Seed API timeout for Bff
+      Value: !Ref SeedBffTimeoutValue
 # SES notification related
   CIPZSEEDMockAPIJdbcHost:
     Type: AWS::SSM::Parameter
