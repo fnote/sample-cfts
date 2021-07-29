@@ -1,0 +1,19 @@
+[
+  {
+    "ParameterKey": "EmailTemplateName",
+    "ParameterValue": "cipz_api_ses_template_rejected-stg"
+  },
+  {
+    "ParameterKey": "EmailSubjectPart",
+    "ParameterValue": "{{subject}}"
+  },
+  {
+    "ParameterKey": "EmailTextPart",
+    "ParameterValue": "Hi {{recipient_name}},\n\n \n\nYour price zone reassignment request was rejected by {{reviewer_name}}. ({{reviewed_date}})\n\n \n\nComments:\n\n{{comments}}\n\n \n\nYou may resubmit the your request keeping in mind the comment from the reviewer above.\n\n \n\nThank you!\n\n \n\nPlease do not reply to this email as it is an automated response. Please contact your Sysco representative."
+
+  },
+  {
+    "ParameterKey": "EmailHtmlPart",
+    "ParameterValue": "<!DOCTYPE html><html> <link rel=\"stylesheet\" href=\"https://cpcipz.github.io/cipz-email/rejection/style.css\"> <body width=\"100%\" bgcolor=\"#f4f7fb\" style=\"Margin: 0;\"> <center style=\"width: 100%; background: #f4f7fb;\"> <div style=\"display:none;font-size:1px;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;font-family: sans-serif;\"> Price Zone Reassignment - Request Rejection </div> <div style=\"max-width: 680px; margin: auto;\"> <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" width=\"100%\" style=\"max-width: 680px;\"> <tr> <td style=\"padding: 20px 0; text-align: center\"> </td> </tr> </table> <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" bgcolor=\"#ffffff\" width=\"100%\" style=\"max-width: 680px; border:none; border-radius: 15px;\"> <tr> <td> <img src=\"https://cpcipz.github.io/cipz-email/rejection/header.png\" width=\"100%\" height=\"auto\" alt=\"Sysco PayPlus\" border=\"0\" align=\"center\" style=\"width: 100%; height: auto; max-width: 680px; font-family: sans-serif; font-weight: bold; line-height: 60px; font-size: 29px; color:#1aa9cb;\"> </td> </tr> <tr> <td> <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"100%\"> <tr> <td style=\"padding: 20px 40px 50px 40px; text-align: left; font-family: sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #707070;\"> Hi {{recipient_name}}, <br><br> Your price zone update request was <b style=\"color: red;\">rejected</b> by <b>{{reviewer_name}}</b>. ({{reviewed_date}}) <br> <br> <b>Comments</b><br> <i>{{comments}}</i> <br> <br><br> You may <a href=\"#\" style=\"font-weight: bold; color: #707070;\">resubmit</a> your request keeping in mind the comment from the reviewer above. <br><br><br> Thank you! <br><br><br> <span style=\"font-size: 12px; font-style: italic; color: #aaa; margin-top:20px;\">Please do not reply to this email as this is an automated response. Please contact your Sysco representative.</span> <br><br> <img src=\"https://cpcipz.github.io/cipz-email/rejection/logo.png\" width=\"94\" height=\"\" alt=\"Sysco\" border=\"0\" align=\"center\" style=\"width: 17vw; max-width: 94px;\"> </td> </tr> </table> </td> </tr> </table> <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" align=\"center\" width=\"100%\" style=\"max-width: 680px;\"> <tr> <td style=\"padding: 20px 10px;width: 100%;font-size: 12px; font-family: sans-serif; mso-height-rule: exactly; line-height:18px; text-align: center; color: #888888;\"> Sysco Inc.<span class=\"mobile-link--footer\">1390 Enclave Parkway Houston, TX, 77077, USA</span><br/> <webversion style=\"color:#cccccc; text-decoration:underline; \">View as a Web Page</webversion> </td> </tr> </table> </div> </center> </body></html>"
+  }
+]

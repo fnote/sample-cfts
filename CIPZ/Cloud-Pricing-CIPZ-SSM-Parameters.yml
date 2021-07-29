@@ -52,7 +52,7 @@ Parameters:
     Description: Active business units
   AuthorizedClientsValue:
     Type: String
-    Default: "cloud-pci-bff"
+    Default: "cloud-pci-bff,Cloud_PCI"
     Description: Authorized Clients ID
   SeedApiTimeoutValue:
     Type: String
@@ -68,7 +68,7 @@ Parameters:
     Description: Pagination limit
   SeedApiHost:
     Type: String
-    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com/"
+    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com"
     Description: Seed API host
   SeedApiServiceUrl:
     Type: String
@@ -88,32 +88,60 @@ Parameters:
     Description: Customer Group Endpoint
   ConfigThreadCoreSizeValue:
     Type: String
-    Default: "8"
+    Default: "50"
     Description: Thread pool core size
   ConfigThreadMaxSizeValue:
     Type: String
-    Default: "25"
+    Default: "80"
     Description: Thread pool max size
-
   SeedMockAPIJdbcHost:
     Type: String
     Default: jdbc:mysql://cp-cipz-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/SeedMockAPI?enabledTLSProtocols=TLSv1.2
     Description: Seed Mock API Jdbc Host URL
-
   SesConfigSetName:
     Type: String
     Default: configset
     Description: Configuration Set Name (Suffix Part only)
-
   SesSenderEmail:
     Type: String
     Default: CloudPricingAlerts@corp.sysco.com
     Description: Sender email
-
   SesRejectedEmailTemplateName:
     Type: String
     Default: cipz_api_ses_template_rejected
     Description: Email Template Name (Suffix Part only)
+  SesRejectedEmailSubject:
+    Type: String
+    Default: Price Zone Reassignment Request - Rejected
+    Description: Rejected email subject
+  APICentralBase:
+    Type: String
+    Default: https://api-gateway-dev.sysco.com
+    Description: Api central base url
+  APICentralKey:
+    Type: String
+    Default: value
+    Description: Api central access key
+  APICentralTokenEndpoint:
+    Type: String
+    Default: https://api-gateway-dev.sysco.com/token
+    Description: Api central token endpoint
+  APICRequestTimeout:
+    Type: String
+    Default: 750
+    Description: Api central request timeout
+  APICTokenValidityThreshold:
+    Type: String
+    Default: 100
+    Description: Api central token validity threshold
+  APICClientId:
+    Type: String
+    Default: value
+    Description: Api central client id
+  APICClientSecret:
+    Type: String
+    Default: value
+    Description: Api central client secret
 
 Mappings:
   environmentLowercaseMap:
@@ -281,11 +309,11 @@ Resources:
       Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/CONFIGSETNAME ] ]
       Type: String
       Description: SES - Configuration Set Name
-      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref ConfigSetName]]
+      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref SesConfigSetName]]
   CIPZSESSenderEmail:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMEMAIL ] ]
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMMAIL ] ]
       Type: String
       Description: SES - Sender Email
       Value: !Ref SesSenderEmail
@@ -296,3 +324,52 @@ Resources:
       Type: String
       Description: SES - Template Rejected
       Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
+  CIPZSESRejectedMailSubject:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/MAIL/REJECTION/SUBJECT ] ]
+      Type: String
+      Description: SES - Rejected Email Subject
+      Value: !Join [ "-",[ !Ref SesRejectedEmailSubject, !FindInMap [ environmentLowercaseMap, !Ref environment, environmentLowercaseStr ] ] ]
+  APICentralBaseUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, API_CENTRAL/BASE/URL]]
+      Type: String
+      Description: Api Central Base URL
+      Value: !Ref APICentralBase
+  APICentralTokenEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/ENDPOINT]]
+      Type: String
+      Description: API Central Token Endpoint
+      Value: !Ref APICTokenEndpoint
+  APICentralTokenValidityThreshold:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/VALIDITYTHRESHOLD]]
+      Type: String
+      Description: API Central Token Validity Threshold
+      Value: !Ref APICTokenValidityThreshold
+  APICentralRequestTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/REQUEST/TIMEOUT]]
+      Type: String
+      Description: API Central Request Timeout
+      Value: !Ref APICRequestTimeout
+  CIPZAPIAPICentralClientId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/CLIENTID]]
+      Type: String
+      Description: CIPZ API API Central Client Id
+      Value: !Ref APICClientId
+  CIPZAPIAPICentralSecret:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/SECRET]]
+      Type: String
+      Description: CIPZ API API Central Client Secret
+      Value: !Ref APICClientSecret
