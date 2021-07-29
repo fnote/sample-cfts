@@ -608,7 +608,8 @@
 							"Values": [
 								"/v1/pricing/product-prices",
 								"/v1/pricing/order-prices",
-								"/v1/pricing/pci-prices"
+								"/v1/pricing/pci-prices",
+								"/v1/pricing/transaction-history"
 							]
 						}
 					}
