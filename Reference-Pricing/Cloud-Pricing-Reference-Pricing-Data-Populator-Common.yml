@@ -81,6 +81,10 @@ Parameters:
     Type: String
     Description: Cloud Pricing Notification service host
     Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
+  DatadogAPIKey:
+    Type: String
+    Description: datadog api key to send post requests to datadog
+    Default: "Add api key here"
   TeamsUrlProd:
     Type: String
     Description: Cloud Pricing ref teams url prod alerts
@@ -226,6 +230,7 @@ Resources:
           teams_webhook_url_DEV: !Ref TeamsUrlNonProd
           teams_webhook_url_EXE: !Ref TeamsUrlNonProd
           teams_webhook_url_STG: !Ref TeamsUrlNonProd
+          DD_API_KEY: !Ref DatadogAPIKey
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName

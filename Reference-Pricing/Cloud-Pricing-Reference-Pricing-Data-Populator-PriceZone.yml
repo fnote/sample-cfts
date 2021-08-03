@@ -21,6 +21,10 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  DatadogAPIKey:
+    Description: datadog api key
+    Type: String
+    Default: 'Add key here'
   ETLDataBackUpStorage:
     Description: S3 bucket to archive files
     Type: String
@@ -597,6 +601,10 @@ Resources:
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/TakeBackupDecisionLambda.zip'
+      Environment:
+        Variables:
+          DD_API_KEY: !Ref DatadogAPIKey
+          env: !Ref EnvironmentShort
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
