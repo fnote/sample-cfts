@@ -146,6 +146,11 @@
 			"Type": "String",
 			"Default": "Aurora DB"
 		},
+		"Component": {
+			"Description": "Component name Tag",
+			"Type": "String",
+			"Default": "Aurora DB"
+		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
 			"Type": "String",
@@ -224,7 +229,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -255,7 +260,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -286,7 +291,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -338,7 +343,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -370,7 +375,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Pricing service" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -402,7 +407,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -438,7 +443,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -490,7 +495,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -522,7 +527,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -554,7 +559,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -590,7 +595,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -642,7 +647,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -674,7 +679,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -706,7 +711,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -742,7 +747,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -794,7 +799,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -826,7 +831,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -858,7 +863,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
@@ -894,7 +899,7 @@
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": { "Ref" : "Component"}}
 				]
 			}
 		},
