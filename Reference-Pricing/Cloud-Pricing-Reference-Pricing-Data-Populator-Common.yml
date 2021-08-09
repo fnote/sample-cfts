@@ -212,7 +212,7 @@ Resources:
       FunctionName: !Sub 'CP-REF-etl-notifier-${EnvironmentShort}'
       Runtime: python3.8
       Role: !GetAtt ETLTriggerLambaRole.Arn
-      Handler: index.lambda_handler
+      Handler: datadog_lambda.handler.handler
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
@@ -231,6 +231,10 @@ Resources:
           teams_webhook_url_EXE: !Ref TeamsUrlNonProd
           teams_webhook_url_STG: !Ref TeamsUrlNonProd
           DD_API_KEY: !Ref DatadogAPIKey
+          DD_ENHANCED_METRICS: false
+          DD_LAMBDA_HANDLER: index.lambda_handler
+          DD_S3_BUCKET_NAME: datadog-forwarder-prcp-np
+          DD_TRACE_ENABLED: true
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName

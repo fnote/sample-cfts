@@ -595,16 +595,20 @@ Resources:
     Properties:
       Description: Lambda function that analyzes status of previous job runs
       FunctionName: !Sub 'CP-REF-etl-price-zone-job-status-analyzer-${EnvironmentShort}'
-      Runtime: python3.7
+      Runtime: python3.8
       Role: !Ref LambdaRole
-      Handler: index.lambda_handler
+      Handler: datadog_lambda.handler.handler
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/TakeBackupDecisionLambda.zip'
       Environment:
         Variables:
-          DD_API_KEY: !Ref DatadogAPIKey
           env: !Ref EnvironmentShort
+          DD_API_KEY: !Ref DatadogAPIKey
+          DD_ENHANCED_METRICS: false
+          DD_LAMBDA_HANDLER: index.lambda_handler
+          DD_S3_BUCKET_NAME: datadog-forwarder-prcp-np
+          DD_TRACE_ENABLED: true
       VpcConfig:
         SecurityGroupIds:
           !Ref NotifierLambdaSecutyGroup
