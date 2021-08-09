@@ -175,6 +175,7 @@ Parameters:
     Description: discount name list
     Type: String
     Default: '123'
+    NoEcho: true
   commonDBUsername:
     Description: discount name list
     Type: String
