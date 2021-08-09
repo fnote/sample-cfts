@@ -149,7 +149,7 @@
 		"Component": {
 			"Description": "Component name Tag",
 			"Type": "String",
-			"Default": "Aurora DB"
+			"Default": "Pricing service"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
