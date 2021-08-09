@@ -25,6 +25,7 @@ Parameters:
     Description: datadog api key
     Type: String
     Default: 'Add key here'
+    NoEcho: true
   ETLDataBackUpStorage:
     Description: S3 bucket to archive files
     Type: String

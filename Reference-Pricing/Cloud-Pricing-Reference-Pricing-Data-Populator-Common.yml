@@ -85,6 +85,7 @@ Parameters:
     Type: String
     Description: datadog api key to send post requests to datadog
     Default: "Add api key here"
+    NoEcho: true
   TeamsUrlProd:
     Type: String
     Description: Cloud Pricing ref teams url prod alerts
