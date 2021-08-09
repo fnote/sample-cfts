@@ -330,7 +330,7 @@ Resources:
       Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/MAIL/REJECTION/SUBJECT ] ]
       Type: String
       Description: SES - Rejected Email Subject
-      Value: !Join [ "-",[ !Ref SesRejectedEmailSubject, !FindInMap [ environmentLowercaseMap, !Ref environment, environmentLowercaseStr ] ] ]
+      Value: !Ref SesRejectedEmailSubject
   APICentralBaseUrl:
     Type: AWS::SSM::Parameter
     Properties:
