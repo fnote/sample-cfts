@@ -134,7 +134,17 @@
 		"Platform": {
 			"Description": "Platform",
 			"Type": "String",
-			"Default": "Cloud Pricing V4"
+			"Default": "CP Pricing Service"
+		},
+		"ApplicationRole": {
+			"Description": "Application Role Tag",
+			"Type": "String",
+			"Default": "Database Server"
+		},
+		"ApplicationSubName": {
+			"Description": "Application sub name Tag",
+			"Type": "String",
+			"Default": "Aurora DB"
 		},
 		"Environment": {
 			"Description": "Name of logical build environment designated for service.",
@@ -206,6 +216,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -235,6 +247,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -264,6 +278,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -314,6 +330,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -344,13 +362,15 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
 					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
 					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
 					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
-					{ "Key" : "Component", "Value": "Aurora DB" }
+					{ "Key" : "Component", "Value": "Pricing service" }
 				]
 			}
 		},
@@ -374,6 +394,44 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB1Primary03": {
+			"Type": "AWS::RDS::DBInstance",
+			"DependsOn": "DB1Primary01",
+			"Properties": {
+				"DBInstanceIdentifier": "CPE01Prod03",
+				"AllowMajorVersionUpgrade": "true",
+				"AutoMinorVersionUpgrade": "true",
+				"CopyTagsToSnapshot": "true",
+				"DBClusterIdentifier": {
+					"Ref": "CPE01DBCluster"
+				},
+				"DBInstanceClass": "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine": "aurora",
+				"DBSubnetGroupName": {
+					"Ref": "snDB"
+				},
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE01-Database-03-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -424,6 +482,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -454,6 +514,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -484,6 +546,44 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB2Primary03": {
+			"Type": "AWS::RDS::DBInstance",
+			"DependsOn": "DB2Primary01",
+			"Properties": {
+				"DBInstanceIdentifier": "CPE02Prod03",
+				"AllowMajorVersionUpgrade": "true",
+				"AutoMinorVersionUpgrade": "true",
+				"CopyTagsToSnapshot": "true",
+				"DBClusterIdentifier": {
+					"Ref": "CPE02DBCluster"
+				},
+				"DBInstanceClass": "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine": "aurora",
+				"DBSubnetGroupName": {
+					"Ref": "snDB"
+				},
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE02-Database-03-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -534,6 +634,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -564,6 +666,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -594,6 +698,44 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB3Primary03": {
+			"Type": "AWS::RDS::DBInstance",
+			"DependsOn": "DB3Primary01",
+			"Properties": {
+				"DBInstanceIdentifier": "CPE03Prod03",
+				"AllowMajorVersionUpgrade": "true",
+				"AutoMinorVersionUpgrade": "true",
+				"CopyTagsToSnapshot": "true",
+				"DBClusterIdentifier": {
+					"Ref": "CPE03DBCluster"
+				},
+				"DBInstanceClass": "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine": "aurora",
+				"DBSubnetGroupName": {
+					"Ref": "snDB"
+				},
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE03-Database-03-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -644,6 +786,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -674,6 +818,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -704,6 +850,44 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
+					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectID" } },
+					{ "Key" : "2WTAGGER", "Value" : "team_managed" },
+					{ "Key" : "Platform", "Value" : { "Ref" : "Platform" } },
+					{ "Key" : "Component", "Value": "Aurora DB" }
+				]
+			}
+		},
+		"DB4Primary03": {
+			"Type": "AWS::RDS::DBInstance",
+			"DependsOn": "DB4Primary01",
+			"Properties": {
+				"DBInstanceIdentifier": "CPE04Prod03",
+				"AllowMajorVersionUpgrade": "true",
+				"AutoMinorVersionUpgrade": "true",
+				"CopyTagsToSnapshot": "true",
+				"DBClusterIdentifier": {
+					"Ref": "CPE04DBCluster"
+				},
+				"DBInstanceClass": "db.r4.8xlarge",
+				"CACertificateIdentifier": "rds-ca-2019",
+				"Engine": "aurora",
+				"DBSubnetGroupName": {
+					"Ref": "snDB"
+				},
+				"DBParameterGroupName": "pricing-ro-param-group",
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["CPE04-Database-03-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Technical:ApplicationName", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
+					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
@@ -726,6 +910,8 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" } },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" } },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Technical:ApplicationRole", "Value" : { "Ref" : "ApplicationRole" } },
+					{ "Key" : "Technical:ApplicationSubName", "Value" : { "Ref" : "ApplicationSubName" } },
 					{ "Key" : "Support_Email", "Value": { "Ref" : "SupportEmail" } },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
 					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
