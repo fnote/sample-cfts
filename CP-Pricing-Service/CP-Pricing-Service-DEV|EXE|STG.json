@@ -568,7 +568,7 @@
 				"MetricName": "CPUUtilization",
 				"Statistic": "Average",
 				"ComparisonOperator": "GreaterThanThreshold",
-				"Threshold": "60",
+				"Threshold": "50",
 				"Period": "60",
 				"EvaluationPeriods": "1",
 				"AlarmActions": [
@@ -624,9 +624,20 @@
 				"AutoScalingGroupName": {
 					"Ref": "WebServiceGroup"
 				},
-				"PolicyType": "SimpleScaling",
-				"Cooldown": "300",
-				"ScalingAdjustment": "2"
+				"PolicyType": "StepScaling",
+				"EstimatedInstanceWarmup": "60",
+				"MetricAggregationType": "Average",
+				"StepAdjustments": [
+					{
+						"MetricIntervalLowerBound": 0,
+						"MetricIntervalUpperBound": 15,
+						"ScalingAdjustment": 2
+					},
+					{
+						"MetricIntervalLowerBound": 15,
+						"ScalingAdjustment": 4
+					}
+				]
 			}
 		},
 		"ScaleDownPolicy": {
@@ -668,6 +679,12 @@
 				"HealthCheckTimeoutSeconds": "15",
 				"HealthyThresholdCount": "3",
 				"TargetType": "instance",
+				"TargetGroupAttributes": [
+					{
+						"Key": "load_balancing.algorithm.type",
+						"Value": "least_outstanding_requests"
+					}
+				],
 				"Tags": [
 					{
 						"Key": "Name",
