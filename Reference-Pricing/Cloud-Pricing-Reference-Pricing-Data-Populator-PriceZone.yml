@@ -1008,6 +1008,7 @@ Resources:
                                   "backup_bucket.$":"$.backup_bucket",
                                   "backup_file_path.$":"$.backup_file_path",
                                   "ENV.$":"$.ENV",
+                                  "file_prefix.$":"$.file_prefix",
                                   "cluster":"01"
                                },
                                "Iterator":{
@@ -1026,6 +1027,7 @@ Resources:
                                               "--intermediate_directory_path.$":"$.intermediate_directory_path",
                                               "--etl_timestamp.$":"$.etl_timestamp",
                                               "--ENV.$":"$.ENV",
+                                              "--file_prefix.$":"$.file_prefix",
                                               "--cluster":"01"
                                            }
                                         },
@@ -1260,6 +1262,7 @@ Resources:
                                   "backup_bucket.$":"$.backup_bucket",
                                   "backup_file_path.$":"$.backup_file_path",
                                   "ENV.$":"$.ENV",
+                                  "file_prefix.$":"$.file_prefix",
                                   "cluster":"02"
                                },
                                "Iterator":{
@@ -1278,6 +1281,7 @@ Resources:
                                               "--intermediate_directory_path.$":"$.intermediate_directory_path",
                                               "--etl_timestamp.$":"$.etl_timestamp",
                                               "--ENV.$":"$.ENV",
+                                              "--file_prefix.$":"$.file_prefix",
                                               "--cluster":"02"
                                            }
                                         },
