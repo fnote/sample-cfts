@@ -599,6 +599,8 @@ Resources:
       Runtime: python3.8
       Role: !Ref LambdaRole
       Handler: datadog_lambda.handler.handler
+      Layers:
+        - 'arn:aws:lambda:us-east-1:464622532012:layer:Datadog-Python38:44'
       Code:
         S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/TakeBackupDecisionLambda.zip'
@@ -983,6 +985,7 @@ Resources:
                                      "backup_bucket.$":"$.backup_bucket",
                                      "backup_file_path.$":"$.backup_file_path",
                                      "file_name.$":"$.s3_input_file_key",
+                                     "etl_timestamp.$":"$.etl_timestamp",
                                      "file_prefix.$":"$.file_prefix",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id"
@@ -1060,6 +1063,7 @@ Resources:
                                               "additional_info_file_s3.$":"$.intermediate_s3_name",
                                               "etl_output_path_key.$":"$.etl_output_path_key",
                                               "file_name.$":"$.s3_input_file_key",
+                                              "etl_timestamp.$":"$.etl_timestamp",
                                               "file_prefix.$":"$.file_prefix",
                                               "backup_bucket.$":"$.backup_bucket",
                                               "backup_file_path.$":"$.backup_file_path",
@@ -1234,6 +1238,7 @@ Resources:
                                      "backup_file_path.$":"$.backup_file_path",
                                      "etl_output_path_key.$":"$.etl_output_path_key",
                                      "file_name.$":"$.s3_input_file_key",
+                                     "etl_timestamp.$":"$.etl_timestamp",
                                      "file_prefix.$":"$.file_prefix",
                                      "stepFunctionExecutionId.$":"$$.Execution.Id"
                                   }
@@ -1312,6 +1317,7 @@ Resources:
                                               "backup_bucket.$":"$.backup_bucket",
                                               "backup_file_path.$":"$.backup_file_path",
                                               "file_name.$":"$.s3_input_file_key",
+                                              "etl_timestamp.$":"$.etl_timestamp",
                                               "file_prefix.$":"$.file_prefix",
                                               "stepFunctionExecutionId.$":"$$.Execution.Id"
                                            }
