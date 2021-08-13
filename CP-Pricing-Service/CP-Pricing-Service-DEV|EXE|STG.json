@@ -384,7 +384,7 @@
                     "KeyName": {
 						"Ref": "PemKey"
 					},
-					"SecurityGroups": [
+					"SecurityGroupIds": [
 						{
 							"Ref": "DNSSG"
 						},
@@ -392,9 +392,9 @@
 							"Ref": "SGWebServices"
 						}
 					],
-					"IamInstanceProfile": {
-						"Ref": "InstanceProfile"
-					},
+					"IamInstanceProfile" : {
+                        "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
+                    },
 					"BlockDeviceMappings": [
 						{
 							"DeviceName": "/dev/xvda",
@@ -545,9 +545,8 @@
 								]
 							]
 						}
-					}
-				},
-                "TagSpecifications": [
+					},
+                	"TagSpecifications": [
                         {
                             "ResourceType": "instance",
                             "Tags": [
@@ -743,7 +742,8 @@
 								}
 							]
 						}
-                    ],                
+					]
+				},				             
                 "LaunchTemplateName": {
                     "Fn::Join": [
                         "",
