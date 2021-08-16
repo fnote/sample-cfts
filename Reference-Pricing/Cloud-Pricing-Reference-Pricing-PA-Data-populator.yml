@@ -20,7 +20,7 @@ Parameters:
   DatabaseConnection:
     Description: Name of the databse connection
     Type: String
-    Default: cp-ref-etl-output-bucket-dev
+    Default: cp-ref-etl-common-connection-STG
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
