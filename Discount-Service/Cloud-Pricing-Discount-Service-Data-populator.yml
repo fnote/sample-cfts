@@ -130,6 +130,22 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  ValidationTypeCE:
+    Description: Validation type soft or hard validation in CE flow
+    Type: String
+    Default: '{"CUSTOMER_ID":"False", "ITEM_ID" :"False","DISCOUNT_ID":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","TEMPLATE_DISCOUNT":"False"}'
+  ValidationTypeMDT:
+    Description: Validation type soft or hard validation for each attribute in MDT flow
+    Type: String
+    Default: '{"DISCOUNT_ID":"False", "DISCOUNT_NAME" :"False","DISCOUNT_TYPE":"False","EFFECTIVE_DATE":"False","EXPIRATION_DATE":"False","EXPORT_DATE":"False","SEQUENCE_ID":"False","QUALIFICATION_MAGNITUDE":"False"}'
+  ListOfDiscounts:
+    Description: discount name list
+    Type: String
+    Default: 'NEW_CUSTOMER_DISCOUNT,CASE_VOLUME_DISCOUNT,CASE_SPLIT_UPCHARGE,STRATEGIC_RPA_DISCOUNT,NEW_ATTRIBUTE_GROUP_DISCOUNT'
+  AllowedColumnsMDT:
+    Description: Allowed column names in mdt file
+    Type: String
+    Default: 'DISCOUNT_ID,DISCOUNT_NAME,DISCOUNT_TYPE,QUALIFICATION_MAGNITUDE,EFFECTIVE_DATE,EXPIRATION_DATE,SEQUENCE_ID,EXPORT_DATE'
 
 Mappings:
   EnvMap:
@@ -222,6 +238,42 @@ Resources:
           Value: !Ref Platform
         - Key: Component
           Value: !Ref Component
+
+  SoftOrHardValidationCE:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CE/VALIDATION_TYPE' ] ]
+      Type: String
+      Value: !Ref ValidationTypeCE
+      Tier: Standard
+      Description: validation type for each attribute in CE flow
+
+  SoftOrHardValidationMDT:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/MDT/VALIDATION_TYPE' ] ]
+      Type: String
+      Value: !Ref ValidationTypeMDT
+      Tier: Standard
+      Description: validation type for each attribute in MDT flow
+
+  DiscountNameList:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/DISCOUNT_NAME_LIST' ] ]
+      Type: String
+      Value: !Ref ListOfDiscounts
+      Tier: Standard
+      Description: discount names allowed
+
+  MDTAllowedColumnNameList:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/MDT/ALLOWED_COLUMN_NAMES_IN_ORDER' ] ]
+      Type: String
+      Value: !Ref AllowedColumnsMDT
+      Tier: Standard
+      Description: mdt column names allowed in the right order
 
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -412,7 +464,10 @@ Resources:
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--active_opcos.$": "$.active_opcos"
+                    "--active_opcos.$": "$.active_opcos",
+                    "--validation_type.$": "$.validation_type",
+                    "--discount_names.$": "$.discount_names",
+                    "--mdt_column_names_in_order.$": "$.mdt_column_names_in_order"
                   }
                 },
                 "Catch": [
@@ -457,7 +512,8 @@ Resources:
                   "Arguments": {
                     "--s3_file_path.$": "$.s3_file_path",
                     "--etl_timestamp.$": "$.etl_timestamp",
-                    "--active_opcos.$": "$.active_opcos"
+                    "--active_opcos.$": "$.active_opcos",
+                    "--validation_type_ce.$": "$.validation_type_ce"
                   }
                 },
                 "Catch": [
@@ -848,6 +904,18 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+        - PolicyName: !Sub 'cp-discounts-etl-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}'
+                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}/*'
       Path: '/'
 
 
