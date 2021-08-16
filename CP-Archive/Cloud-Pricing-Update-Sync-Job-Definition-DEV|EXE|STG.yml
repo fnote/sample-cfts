@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is the stack for CP Update Sync Job Definition
+Parameters:
+  EnvironmentShort:
+    Description: Environment for application
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - EXE
+      - STG
+  EcrImage:
+    Description: Environment for application
+    Type: String
+    Default: '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+    AllowedValues:
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-dev:latest'
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync:latest'
+      - '037295147636.dkr.ecr.us-east-1.amazonaws.com/cp-update-sync-stg:latest'
+  TaskRole:
+    Description: ARN of task role attached to Fargate host.
+    Type: String
+    Default: arn:aws:iam::037295147636:role/CloudPricing-Mimix-Purge-Job-Role
+
+Resources:
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      JobDefinitionName:
+        Fn::Join:
+          - ''
+          - - CP-Update-Sync-Job-Definition-
+            - Ref: 'EnvironmentShort'
+      RetryStrategy:
+        Attempts: 1
+      Timeout:
+        AttemptDurationSeconds: 10800
+      PlatformCapabilities:
+        - FARGATE
+      ContainerProperties:
+        Image: !Ref 'EcrImage'
+        ResourceRequirements:
+          - Type: VCPU
+            Value: 4
+          - Type: MEMORY
+            Value: 8192
+        ExecutionRoleArn: !Ref TaskRole
+        Command:
+          - java
+          - "-Xmx6000M"
+          - "-jar"
+          - update-sync-processor.jar
+          - Ref::business_unit
+        JobRoleArn: !Ref 'TaskRole'
+        Environment:
+          - Name: 'SERVER_ENVIRONMENT_VARIABLE'
+            Value: !Ref 'EnvironmentShort'
+          - Name: 'TO_ADDRESSES'
+            Value: 'amoda.dissanayake@sysco.com,chamin.wickramarathna@sysco.com,gayan.herath@sysco.com,asanka.indunil@corp.sysco.com,gothami.karunarathna@syscolabs.com,piyumi.rameshka@sysco.com,
+            muqshid.mohamed@syscolabs.com,jayani.gajanayake@syscolabs.com,chandima.samarasinghe@syscolabs.com,chathurangi.edussuriya@syscolabs.com,sahan.jayawardena@syscolabs.com,
+            osanda.hemachandra@syscolabs.com,chandika.herath@syscolabs.com'
+

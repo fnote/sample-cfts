@@ -145,7 +145,75 @@ Parameters:
   AllowedColumnsMDT:
     Description: Allowed column names in mdt file
     Type: String
-    Default: 'DISCOUNT_ID,DISCOUNT_NAME,DISCOUNT_TYPE,QUALIFICATION_MAGNITUDE,EFFECTIVE_DATE,EXPIRATION_DATE,ACTION,SOURCE,SEQUENCE_ID,EXPORT_DATE'
+    Default: 'DISCOUNT_ID,DISCOUNT_NAME,DISCOUNT_TYPE,QUALIFICATION_MAGNITUDE,EFFECTIVE_DATE,EXPIRATION_DATE,SEQUENCE_ID,EXPORT_DATE'
+  CommonDBEndpointName:
+    Description: Common DB Endpoint of discount service
+    Type: String
+    Default: cp-discounts-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com
+  ActiveDBClusters:
+    Description: Active database clusters of discount service
+    Type: String
+    Default: '01,02'
+  EnableTwoClusters:
+    Description: If two DB Clusters are there, set this to true
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+  GlueConnectionNamePlaceholder:
+    Description: Placeholder name for the AWS Glue Connection
+    Type: String
+    Default: 'cp-DISCOUNTS-etl-connection-{}-cluster-{}'
+  ETLMaximumConcurrency:
+    Description: Maximum Concurrency Allowed for Discount ETL Step Functions
+    Type: String
+    Default: 10
+  ETLGlueJobsMaximumConcurrency:
+    Description: Maximum concurreny for decompress, partition, backup and mdt load jobs. Add larger value than ETLMaximumConcurrency
+    Type: String
+    Default: 20
+  CELoadJobMaximumConcurrency:
+    Description: Maximum Concurrency Allowed for CE load jobs
+    Type: String
+    Default: 4
+  CELoadJobMaximumConcurrencyForCluster01:
+    Description: Maximum allowed load job count for cluster 01
+    Type: String
+    Default: 2
+  CELoadJobMaximumConcurrencyForCluster02:
+    Description: Maximum allowed load job count for cluster 02
+    Type: String
+    Default: 2
+  PartitionJobWorkerType:
+    Description: AWS Glue worker type for Spark job
+    Type: String
+    Default: Standard
+    AllowedValues:
+      - Standard
+      - G.1X
+      - G.2X
+  PartitionJobWorkerCountMin:
+    Description: Minimum Worker Count for the Partition Job
+    Type: String
+    Default: 5
+  PartitionJobWorkerCountMax:
+    Description: Maximum Worker Count for the Partition Job
+    Type: String
+    Default: 50
+  PartialLoadFileSizeUpperBound:
+    Description: Upper bound value of customer eligibility partial load file size in GB
+    Type: String
+    Default: 0.5
+  TeamsWebhookURL:
+    Description: Microsoft teams webhook url for sending error notifications
+    Type: String
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/8e0849f59e584d1ab5c37194ed5a7f4c/b8228f9c-e316-4869-a733-e7af23d9f1e3'
+
+Conditions:
+  twoClustersEnabled: !Equals
+    - !Ref EnableTwoClusters
+    - 'true'
 
 Mappings:
   EnvMap:
@@ -275,6 +343,87 @@ Resources:
       Tier: Standard
       Description: mdt column names allowed in the right order
 
+  CommonDBEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/COMMON/DB/ENDPOINT']]
+      Type: String
+      Value: !Ref CommonDBEndpointName
+      Tier: Standard
+      Description: Common db endpoint of discount service
+
+  ActiveClusters:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ACTIVE/CLUSTERS']]
+      Type: String
+      Value: !Ref ActiveDBClusters
+      Tier: Standard
+      Description: Active clusters of discount service
+
+  DiscountETLMaximumConcurrency:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/MAX_CONCURRENCY']]
+      Type: String
+      Value: !Ref ETLMaximumConcurrency
+      Tier: Standard
+      Description: Maximum Concurrency allowed for Discount ETL
+
+  DiscountETLMaximumConcurrencyForCluster01:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CE/LOAD_JOB/CLUSTER_01/MAX_CONCURRENCY' ] ]
+      Type: String
+      Value: !Ref CELoadJobMaximumConcurrencyForCluster01
+      Tier: Standard
+      Description: Maximum number of load job count allowed for cluster 01
+
+  DiscountETLMaximumConcurrencyForCluster02:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/CE/LOAD_JOB/CLUSTER_02/MAX_CONCURRENCY' ] ]
+      Type: String
+      Value: !Ref CELoadJobMaximumConcurrencyForCluster02
+      Tier: Standard
+      Description: Maximum number of load job count allowed for cluster 02
+
+  CEPartialLoadFileSizeUpperBound:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/CE/PARTIAL_LOAD_FILE_SIZE_UPPER_BOUND' ] ]
+      Type: String
+      Value: !Ref PartialLoadFileSizeUpperBound
+      Tier: Standard
+      Description: Upper bound value of customer eligibility partial load file size in GB
+
+  PartitionGlueJobWorkerType:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_TYPE']]
+      Type: String
+      Value: !Ref PartitionJobWorkerType
+      Tier: Standard
+      Description: Worker type for the ETL Partition Job
+
+  PartitionGlueJobWorkerCountMin:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT/MIN' ] ]
+      Type: String
+      Value: !Ref PartitionJobWorkerCountMin
+      Tier: Standard
+      Description: Minimum worker count for the ETL Partition Job
+
+  PartitionGlueJobWorkerCountMax:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/DISCOUNT_SERVICE/', !Ref EnvironmentShort, '/ETL/WORKER_COUNT/MAX' ] ]
+      Type: String
+      Value: !Ref PartitionJobWorkerCountMax
+      Tier: Standard
+      Description: Maximum worker count for the ETL Partition Job
+
   CELambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -308,6 +457,11 @@ Resources:
       Code:
         S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
         S3Key: !Sub 'DiscountService/${EnvironmentShort}/TriggerLambda.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 180
       Environment:
         Variables:
@@ -337,20 +491,39 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  CommonDatabaseConnection:
+  DatabaseConnectionCluster01:
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/ENDPOINT/WRITER:1}}"]],
+          "JDBC_CONNECTION_URL": !Join ['', ["jdbc:mysql://", "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER01/DISCOUNT/DB/ENDPOINT/WRITER:1}}", ":3306/mysql"]],
           "USERNAME": !Join ['', ["{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}"]],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}'
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-01'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
+
+  DatabaseConnectionCluster02:
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Join ['', ["jdbc:mysql://", "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/CLUSTER0", !If [twoClustersEnabled, "2", "1"], "/DISCOUNT/DB/ENDPOINT/WRITER:1}}", ":3306/mysql"]],
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/DISCOUNT_SERVICE/", !Ref EnvironmentShort, "/DISCOUNT/DB/USERNAME:1}}" ] ],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-DISCOUNTS-etl-connection-${EnvironmentShort}-cluster-02'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -365,16 +538,17 @@ Resources:
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/customer_eligibility.py"
       Connections:
         Connections:
-          - !Ref CommonDatabaseConnection
+          - !Ref DatabaseConnectionCluster01
+          - !Ref DatabaseConnectionCluster02
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref GlueConnectionNamePlaceholder
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref CELoadJobMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -404,16 +578,17 @@ Resources:
         ScriptLocation: !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/mdt.py"
       Connections:
         Connections:
-          - !Ref CommonDatabaseConnection
+          - !Ref DatabaseConnectionCluster01
+          - !Ref DatabaseConnectionCluster02
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/jsonschema-3.2.0-py2.py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/pyspark-2.4.3-py3-none-any.whl,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/py4j-0.10.7-py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref CommonDatabaseConnection
+        "--GLUE_CONNECTION_NAME": !Ref GlueConnectionNamePlaceholder
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ENV": !Ref EnvironmentShort
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -442,9 +617,52 @@ Resources:
       DefinitionString: !Sub
         - |-
           {
-            "Comment": "Transform and Loads PA data from S3 to DB",
-            "StartAt": "ChoiceState",
+            "Comment": "Transform and Loads PV and CE data from S3 to DB",
+            "StartAt": "AnalyzeWaitStatus",
             "States": {
+              "AnalyzeWaitStatus": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "Parameters": {
+                  "FunctionName": "${AnalyzeWaitExecutionLambdaArn}",
+                  "Payload": {
+                    "env.$": "$.ENV",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
+                    "file_type.$": "$.file_type",
+                    "stepFunctionExecutionId.$": "$$.Execution.Id",
+                    "stepFunctionArn.$": "$$.StateMachine.Id"
+                  }
+                },
+                "ResultPath": "$.waitStatus",
+                "Catch": [
+                  {
+                    "ErrorEquals": [
+                      "States.TaskFailed"
+                    ],
+                    "ResultPath": "$.error",
+                    "Next": "Notify ETL Failure"
+                  }
+                ],
+                "Next": "WaitOrContinue"
+              },
+              "WaitOrContinue": {
+                "Comment": "Check on wait status and wait or continue ETL",
+                "Type": "Choice",
+                "Choices": [
+                  {
+                    "Variable": "$.waitStatus.Payload.shouldWait",
+                    "BooleanEquals": true,
+                    "Next": "waitExecution"
+                  }
+                ],
+                "Default": "ChoiceState"
+              },
+              "waitExecution": {
+                "Type": "Wait",
+                "Seconds": 300,
+                "Next": "AnalyzeWaitStatus"
+              },
               "ChoiceState": {
                 "Type": "Choice",
                 "Choices": [
@@ -467,7 +685,9 @@ Resources:
                     "--active_opcos.$": "$.active_opcos",
                     "--validation_type.$": "$.validation_type",
                     "--discount_names.$": "$.discount_names",
-                    "--mdt_column_names_in_order.$": "$.mdt_column_names_in_order"
+                    "--mdt_column_names_in_order.$": "$.mdt_column_names_in_order",
+                    "--active_clusters.$": "$.active_clusters",
+                    "--cluster_n_opcos_key.$": "$.cluster_n_opcos_key"
                   }
                 },
                 "Catch": [
@@ -514,7 +734,9 @@ Resources:
                     "--etl_timestamp.$": "$.etl_timestamp",
                     "--active_opcos.$": "$.active_opcos",
                     "--validation_type_ce.$": "$.validation_type_ce"
-                  }
+                  },
+                  "NumberOfWorkers.$": "$.worker_count",
+                  "WorkerType.$": "$.worker_type"
                 },
                 "Catch": [
                   {
@@ -526,20 +748,22 @@ Resources:
                   }
                 ],
                 "ResultPath": "$.loadJob",
-                "Next": "CE ETL Job"
+                "Next": "FetchFileList"
               },
-              "CE ETL Job": {
+              "FetchFileList": {
                 "Type": "Task",
-                "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                "Resource": "arn:aws:states:::lambda:invoke",
                 "Parameters": {
-                  "JobName": "${CustomerEligibilityDataLoadJob}",
-                  "Arguments": {
-                    "--s3_file_path.$": "$.s3_file_path",
-                    "--etl_timestamp.$": "$.etl_timestamp",
-                    "--active_opcos.$": "$.active_opcos",
-                    "--workflow_file_dir.$": "$.workflow_file_dir"
+                  "FunctionName": "${FetchFileListLambdaArn}",
+                  "Payload": {
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
+                    "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                    "active_clusters.$": "$.active_clusters",
+                    "ENV.$": "$.ENV"
                   }
                 },
+                "ResultPath": "$.opcoList",
                 "Catch": [
                   {
                     "ErrorEquals": [
@@ -549,8 +773,499 @@ Resources:
                     "Next": "Notify ETL Failure"
                   }
                 ],
-                "ResultPath": "$.loadJob",
-                "Next": "Clean and backup Job"
+                "Next": "LoadIntoClusters"
+              },
+              "LoadIntoClusters": {
+                "Type": "Parallel",
+                "End": true,
+                "Branches": [
+                  {
+                    "StartAt": "AnalyseWaitOrLoadStatusC1",
+                    "States": {
+                      "AnalyseWaitOrLoadStatusC1": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "cluster": "01",
+                            "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
+                            "ENV.$": "$.ENV"
+                          }
+                        },
+                        "ResultPath": "$.decision",
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC1"
+                          }
+                        ],
+                        "Next": "WaitLoadOrTerminateC1"
+                      },
+                      "WaitLoadOrTerminateC1": {
+                        "Type": "Choice",
+                        "Choices": [
+                          {
+                            "Variable": "$.decision.Payload.nextStep",
+                            "StringEquals": "wait",
+                            "Next": "WaitLoadingC1"
+                          },
+                          {
+                            "Variable": "$.decision.Payload.nextStep",
+                            "StringEquals": "load",
+                            "Next": "LoadAllC1"
+                          }
+                        ],
+                        "Default": "TerminateC1"
+                      },
+                      "TerminateC1": {
+                        "Type": "Succeed"
+                      },
+                      "WaitLoadingC1": {
+                        "Type": "Wait",
+                        "Seconds": 300,
+                        "Next": "AnalyseWaitOrLoadStatusC1"
+                      },
+                      "LoadAllC1": {
+                        "Type": "Map",
+                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_01",
+                        "MaxConcurrency": ${LoadJobMaximumConcurrencyCluster01},
+                        "Parameters": {
+                          "id.$": "$$.Map.Item.Value",
+                          "s3_file_path.$": "$.s3_file_path",
+                          "etl_timestamp.$": "$.etl_timestamp",
+                          "active_opcos.$": "$.active_opcos",
+                          "workflow_file_dir.$": "$.workflow_file_dir",
+                          "file_type.$": "$.file_type",
+                          "s3_object_key.$": "$.s3_object_key"
+                        },
+                        "Iterator": {
+                          "StartAt": "LoadJobC1",
+                          "States": {
+                            "LoadJobC1": {
+                              "Type": "Task",
+                              "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                              "Parameters": {
+                                "JobName": "${CustomerEligibilityDataLoadJob}",
+                                "Arguments": {
+                                  "--cluster": "01",
+                                  "--opco_id.$": "$.id",
+                                  "--s3_file_path.$": "$.s3_file_path",
+                                  "--etl_timestamp.$": "$.etl_timestamp",
+                                  "--active_opcos.$": "$.active_opcos",
+                                  "--workflow_file_dir.$": "$.workflow_file_dir"
+                                }
+                              },
+                              "Retry": [
+                                {
+                                  "ErrorEquals": [
+                                    "States.TaskFailed"
+                                  ],
+                                  "IntervalSeconds": 3,
+                                  "MaxAttempts": 2,
+                                  "BackoffRate": 10
+                                }
+                              ],
+                              "Catch": [
+                                {
+                                  "ErrorEquals": [
+                                    "States.TaskFailed"
+                                  ],
+                                  "ResultPath": "$.error",
+                                  "Next": "NotifyLoadJobFailureC1"
+                                }
+                              ],
+                              "ResultPath": "$.loadJob",
+                              "End": true
+                            },
+                            "NotifyLoadJobFailureC1": {
+                              "Type": "Task",
+                              "Resource": "arn:aws:states:::lambda:invoke",
+                              "Parameters": {
+                                "FunctionName": "${notifierLambdaArn}",
+                                "Payload": {
+                                  "event": "[ETL] - [Discount Service]",
+                                  "etl_timestamp.$": "$.etl_timestamp",
+                                  "s3_object_key.$": "$.s3_object_key",
+                                  "additional_info_bucket_name": "${IntermediateBucketName}",
+                                  "additional_info_file_dir.$": "$.workflow_file_dir",
+                                  "file_type.$": "$.file_type",
+                                  "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
+                                }
+                              },
+                              "End": true
+                            }
+                          }
+                        },
+                        "ResultPath": "$.clusterloadJobResult",
+                        "Next": "TakeBackupDecisionC1"
+                      },
+                      "TakeBackupDecisionC1": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${TakeBackupDecisionLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "ENV.$": "$.ENV",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "opcos_cluster_01.$": "$.opcoList.Payload.opcos_cluster_01",
+                            "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
+                            "load_job_statuses.$": "$.clusterloadJobResult",
+                            "cluster": "01"
+                          }
+                        },
+                        "Retry": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "IntervalSeconds": 3,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 10
+                          }
+                        ],
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC1"
+                          }
+                        ],
+                        "ResultPath": "$.backupDecision",
+                        "Next": "BackupOrNotC1"
+                      },
+                      "BackupOrNotC1": {
+                        "Type": "Choice",
+                        "Choices": [
+                          {
+                            "Variable": "$.backupDecision.Payload.shouldBackup",
+                            "BooleanEquals": true,
+                            "Next": "BackupC1"
+                          }
+                        ],
+                        "Default": "SkipBackupC1"
+                      },
+                      "SkipBackupC1": {
+                        "Type": "Succeed"
+                      },
+                      "BackupC1": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "Parameters": {
+                          "JobName": "${DiscountDataBackupJob}",
+                          "Arguments": {
+                            "--s3_file_path.$": "$.s3_file_path",
+                            "--s3_bucket.$": "$.s3_bucket",
+                            "--s3_object_key.$": "$.s3_object_key",
+                            "--etl_timestamp.$": "$.etl_timestamp",
+                            "--backup_file_path.$": "$.workflow_file_dir"
+                          }
+                        },
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC1"
+                          }
+                        ],
+                        "ResultPath": "$.backupJob",
+                        "Next": "NotifySuccessC1"
+                      },
+                      "NotifyFailureC1": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${notifierLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "additional_info_bucket_name": "${IntermediateBucketName}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
+                            "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
+                          }
+                        },
+                        "End": true
+                      },
+                      "NotifySuccessC1": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${notifierLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "additional_info_bucket_name": "${ETLDataBackUpStorage}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
+                            "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
+                            "status": "SUCCEEDED"
+                          }
+                        },
+                        "End": true
+                      }
+                    }
+                  },
+                  {
+                    "StartAt": "AnalyseWaitOrLoadStatusC2",
+                    "States": {
+                      "AnalyseWaitOrLoadStatusC2": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${AnalyzeWaitLoadOrTerminateLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "cluster": "02",
+                            "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
+                            "ENV.$": "$.ENV"
+                          }
+                        },
+                        "ResultPath": "$.decision",
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC2"
+                          }
+                        ],
+                        "Next": "WaitLoadOrTerminateC2"
+                      },
+                      "WaitLoadOrTerminateC2": {
+                        "Type": "Choice",
+                        "Choices": [
+                          {
+                            "Variable": "$.decision.Payload.nextStep",
+                            "StringEquals": "wait",
+                            "Next": "WaitLoadingC2"
+                          },
+                          {
+                            "Variable": "$.decision.Payload.nextStep",
+                            "StringEquals": "load",
+                            "Next": "LoadAllC2"
+                          }
+                        ],
+                        "Default": "TerminateC2"
+                      },
+                      "TerminateC2": {
+                        "Type": "Succeed"
+                      },
+                      "WaitLoadingC2": {
+                        "Type": "Wait",
+                        "Seconds": 300,
+                        "Next": "AnalyseWaitOrLoadStatusC2"
+                      },
+                      "LoadAllC2": {
+                        "Type": "Map",
+                        "ItemsPath": "$.opcoList.Payload.opcos_cluster_02",
+                        "MaxConcurrency": ${LoadJobMaximumConcurrencyCluster02},
+                        "Parameters": {
+                          "id.$": "$$.Map.Item.Value",
+                          "s3_file_path.$": "$.s3_file_path",
+                          "etl_timestamp.$": "$.etl_timestamp",
+                          "active_opcos.$": "$.active_opcos",
+                          "workflow_file_dir.$": "$.workflow_file_dir",
+                          "file_type.$": "$.file_type",
+                          "s3_object_key.$": "$.s3_object_key"
+                        },
+                        "Iterator": {
+                          "StartAt": "LoadJobC2",
+                          "States": {
+                            "LoadJobC2": {
+                              "Type": "Task",
+                              "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                              "Parameters": {
+                                "JobName": "${CustomerEligibilityDataLoadJob}",
+                                "Arguments": {
+                                  "--cluster": "02",
+                                  "--opco_id.$": "$.id",
+                                  "--s3_file_path.$": "$.s3_file_path",
+                                  "--etl_timestamp.$": "$.etl_timestamp",
+                                  "--active_opcos.$": "$.active_opcos",
+                                  "--workflow_file_dir.$": "$.workflow_file_dir"
+                                }
+                              },
+                              "Retry": [
+                                {
+                                  "ErrorEquals": [
+                                    "States.TaskFailed"
+                                  ],
+                                  "IntervalSeconds": 3,
+                                  "MaxAttempts": 2,
+                                  "BackoffRate": 10
+                                }
+                              ],
+                              "Catch": [
+                                {
+                                  "ErrorEquals": [
+                                    "States.TaskFailed"
+                                  ],
+                                  "ResultPath": "$.error",
+                                  "Next": "NotifyLoadJobFailureC2"
+                                }
+                              ],
+                              "ResultPath": "$.loadJob",
+                              "End": true
+                            },
+                            "NotifyLoadJobFailureC2": {
+                              "Type": "Task",
+                              "Resource": "arn:aws:states:::lambda:invoke",
+                              "Parameters": {
+                                "FunctionName": "${notifierLambdaArn}",
+                                "Payload": {
+                                  "event": "[ETL] - [Discount Service]",
+                                  "etl_timestamp.$": "$.etl_timestamp",
+                                  "s3_object_key.$": "$.s3_object_key",
+                                  "additional_info_bucket_name": "${IntermediateBucketName}",
+                                  "additional_info_file_dir.$": "$.workflow_file_dir",
+                                  "file_type.$": "$.file_type",
+                                  "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
+                                }
+                              },
+                              "End": true
+                            }
+                          }
+                        },
+                        "ResultPath": "$.clusterloadJobResult",
+                        "Next": "TakeBackupDecisionC2"
+                      },
+                      "TakeBackupDecisionC2": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${TakeBackupDecisionLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "ENV.$": "$.ENV",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "cluster_n_opcos_key.$": "$.cluster_n_opcos_key",
+                            "opcos_cluster_02.$": "$.opcoList.Payload.opcos_cluster_02",
+                            "allocated_job_count.$": "$.decision.Payload.allocatedJobCount",
+                            "load_job_statuses.$": "$.clusterloadJobResult",
+                            "cluster": "02"
+                          }
+                        },
+                        "Retry": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "IntervalSeconds": 3,
+                            "MaxAttempts": 2,
+                            "BackoffRate": 10
+                          }
+                        ],
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC2"
+                          }
+                        ],
+                        "ResultPath": "$.backupDecision",
+                        "Next": "BackupOrNotC2"
+                      },
+                      "BackupOrNotC2": {
+                        "Type": "Choice",
+                        "Choices": [
+                          {
+                            "Variable": "$.backupDecision.Payload.shouldBackup",
+                            "BooleanEquals": true,
+                            "Next": "BackupC2"
+                          }
+                        ],
+                        "Default": "SkipBackupC2"
+                      },
+                      "SkipBackupC2": {
+                        "Type": "Succeed"
+                      },
+                      "BackupC2": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+                        "Parameters": {
+                          "JobName": "${DiscountDataBackupJob}",
+                          "Arguments": {
+                            "--s3_file_path.$": "$.s3_file_path",
+                            "--s3_bucket.$": "$.s3_bucket",
+                            "--s3_object_key.$": "$.s3_object_key",
+                            "--etl_timestamp.$": "$.etl_timestamp",
+                            "--backup_file_path.$": "$.workflow_file_dir"
+                          }
+                        },
+                        "Catch": [
+                          {
+                            "ErrorEquals": [
+                              "States.TaskFailed"
+                            ],
+                            "ResultPath": "$.error",
+                            "Next": "NotifyFailureC2"
+                          }
+                        ],
+                        "ResultPath": "$.backupJob",
+                        "Next": "NotifySuccessC2"
+                      },
+                      "NotifyFailureC2": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${notifierLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "additional_info_bucket_name": "${IntermediateBucketName}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
+                            "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
+                          }
+                        },
+                        "End": true
+                      },
+                      "NotifySuccessC2": {
+                        "Type": "Task",
+                        "Resource": "arn:aws:states:::lambda:invoke",
+                        "Parameters": {
+                          "FunctionName": "${notifierLambdaArn}",
+                          "Payload": {
+                            "event": "[ETL] - [Discount Service]",
+                            "etl_timestamp.$": "$.etl_timestamp",
+                            "s3_object_key.$": "$.s3_object_key",
+                            "additional_info_bucket_name": "${ETLDataBackUpStorage}",
+                            "additional_info_file_dir.$": "$.workflow_file_dir",
+                            "file_type.$": "$.file_type",
+                            "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
+                            "status": "SUCCEEDED"
+                          }
+                        },
+                        "End": true
+                      }
+                    }
+                  }
+                ]
               },
               "Clean and backup Job": {
                 "Type": "Task",
@@ -583,9 +1298,12 @@ Resources:
                 "Parameters": {
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
-                    "event": "ETL-Discount Service",
+                    "event": "[ETL] - [Discount Service]",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
                     "additional_info_bucket_name": "${IntermediateBucketName}",
                     "additional_info_file_dir.$": "$.workflow_file_dir",
+                    "file_type.$": "$.file_type",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
                 },
@@ -598,8 +1316,11 @@ Resources:
                   "FunctionName": "${notifierLambdaArn}",
                   "Payload": {
                     "event": "[ETL] - [Discount Service]",
+                    "etl_timestamp.$": "$.etl_timestamp",
+                    "s3_object_key.$": "$.s3_object_key",
                     "additional_info_bucket_name": "${ETLDataBackUpStorage}",
                     "additional_info_file_dir.$": "$.workflow_file_dir",
+                    "file_type.$": "$.file_type",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_file_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
                   }
@@ -611,12 +1332,18 @@ Resources:
         - {
           MasterDiscountTableDataLoadJob: !Ref MasterDiscountTableDataLoadJob,
           notifierLambdaArn: !GetAtt NotifierLambda.Arn,
+          AnalyzeWaitExecutionLambdaArn: !GetAtt AnalyzeWaitExecutionLambda.Arn,
+          FetchFileListLambdaArn: !GetAtt FetchFileListLambda.Arn,
+          TakeBackupDecisionLambdaArn: !GetAtt TakeBackupDecisionLambda.Arn,
+          AnalyzeWaitLoadOrTerminateLambdaArn: !GetAtt AnalyzeWaitLoadOrTerminateLambda.Arn,
           CustomerEligibilityDataLoadJob: !Ref CustomerEligibilityDataLoadJob,
           DiscountDataBackupJob: !Ref DiscountDataBackupJob,
           CustomerEligibilityDecompressionJob: !Ref CustomerEligibilityDecompressionJob,
           CustomerEligibilityPartitionJob: !Ref CustomerEligibilityPartitionJob,
           IntermediateBucketName: !Ref IntermediateStorage,
-          ETLDataBackUpStorage: !Ref ETLDataBackUpStorage
+          ETLDataBackUpStorage: !Ref ETLDataBackUpStorage,
+          LoadJobMaximumConcurrencyCluster01: !Ref CELoadJobMaximumConcurrencyForCluster01,
+          LoadJobMaximumConcurrencyCluster02: !Ref CELoadJobMaximumConcurrencyForCluster02
         }
       LoggingConfiguration:
         Destinations:
@@ -733,7 +1460,7 @@ Resources:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 2
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -914,8 +1641,28 @@ Resources:
                   - s3:ListBucket
                   - s3:GetObjectVersion
                 Resource:
-                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}'
-                  - !Sub 'arn:aws:s3:::cp-discounts-etl-output-bucket-${EnvironmentShort}/*'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+        - PolicyName: !Sub 'cp-discounts-etl-ce-input-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-discounts-etl-customer-eligibility-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
+        - PolicyName: !Sub 'cp-discounts-etl-mdt-input-s3-read-policy-${EnvironmentShort}'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub
+                  - 'arn:aws:s3:::cp-discounts-etl-mdt-data-storage-${env}/*'
+                  - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ] }
       Path: '/'
 
 
@@ -940,6 +1687,7 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
+          teams_webhook_url: !Ref TeamsWebhookURL
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -1073,7 +1821,7 @@ Resources:
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/libraries/smart_open-2.1.0-py3.6.egg"
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -1111,8 +1859,10 @@ Resources:
         "--METADATA_LAMBDA": !Sub 'CP-DISCOUNTS-etl-metadata-aggregator-${EnvironmentShort}'
         "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/DiscountService/${EnvironmentShort}/constants.py"
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: !Ref ETLGlueJobsMaximumConcurrency
       GlueVersion: 2.0
+      WorkerType: !Ref PartitionJobWorkerType
+      NumberOfWorkers: !Ref PartitionJobWorkerCountMin
       MaxRetries: 0
       Name: !Sub 'CP-DISCOUNTS-etl-customer-eligibility-partition-job-${EnvironmentShort}'
       Role: !Ref ETLGlueRole
@@ -1129,3 +1879,228 @@ Resources:
         'Platform': !Ref Platform,
         'Component': !Ref Component
       }
+
+  StepFunctionHelperLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'CP-DISCOUNTS-StepFunctionHelperLambdaRole-${EnvironmentShort}'
+      PermissionsBoundary: !Sub 'arn:aws:iam::${AWS::AccountId}:policy/PermissionBoundary-DevOps'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: cp-discounts-etl-s3-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetObjectVersion
+                  - s3:DeleteObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${IntermediateStorage}'
+        - PolicyName: cp-discounts-etl-step-function-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - states:ListExecutions
+                  - states:StartExecution
+                Resource:
+                  - '*'
+        - PolicyName: cp-discounts-etl-ssm-access-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource:
+                  - '*'
+      Path: '/'
+
+  FetchFileListLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for identifying OpCos contained in CE file and separte them into clusters
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-fetch-file-list-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/FetchFileListLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Environment:
+        Variables:
+          INTERMEDIATE_S3_BUCKET: !Ref IntermediateStorage
+      Timeout: 180
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  AnalyzeWaitLoadOrTerminateLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for deciding wait, load or teminate status of the load job for a cluster
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-load-or-terminate-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/AnalyzeWaitOrLoadClusterLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 180
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  TakeBackupDecisionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for taking bacup decision based on the load job statues
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-take-backup-decision-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/TakeBackupDecisionLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 180
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
+  AnalyzeWaitExecutionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function for deciding step function execution
+      FunctionName: !Sub 'CP-DISCOUNTS-etl-analyze-wait-execution-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !GetAtt StepFunctionHelperLambdaRole.Arn
+      Handler: AnalyzeWaitExecutionLambda.lambda_handler
+      Code:
+        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Key: !Sub 'DiscountService/${EnvironmentShort}/AnalyzeWaitExecutionLambda.py.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 180
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
