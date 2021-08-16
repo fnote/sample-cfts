@@ -307,7 +307,7 @@ Resources:
   DB01Primary01:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-01-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C01-01-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -345,7 +345,7 @@ Resources:
   DB01Primary02:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-02-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C01-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -434,7 +434,7 @@ Resources:
     Condition: createTwoClusters
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-c02-01-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C02-01-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -474,7 +474,7 @@ Resources:
     Condition: createTwoClusters
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-c02-02-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C02-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
