@@ -1,0 +1,716 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Deployed via Mimix-POC-SBX.json",
+	"Parameters": {
+		"PONumber": {
+			"Description": "PO Number for billing",
+			"Type": "String",
+			"Default": "7000002358",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"PvtSNb": {
+			"Description": "sn_private1_useast1b/vpc_sysco_sandbox_02/confidential IPv4 CIDR:10.168.168.0/25",
+			"Type": "String",
+			"Default": "subnet-d2631789"
+		},
+		"PvtSNd": {
+			"Description": "sn_private1_useast1d/vpc_sysco_sandbox_02/confidential IPv4 CIDR:10.168.168.128/25",
+			"Description": "Confidential us-east-1d subnet",
+			"Type": "String",
+			"Default": "subnet-d0215ffd"
+		},
+		"PvtSNe": {
+			"Description": "sn_private1_useast1e/vpc_sysco_sandbox_02/confidential IPv4 CIDR:10.168.169.0/25",
+			"Type": "String",
+			"Default": "subnet-c451ebf8"
+		},
+		"VPCID": {
+			"Description": "vpc_sysco_sandbox_02",
+			"Type": "String",
+			"Default": "vpc-a78f0ac1"
+		},
+		"CommonAMI": {
+			"Description" : "20170703-RHEL-7-2-CPBASE - ami-b5a79ea3",
+			"Type": "String",
+			"Default" : "ami-b5a79ea3",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+		"CommonAMIWin": {
+			"Description" : "CP-Batch-014 (ami-3aa47a45)",
+			"Type": "String",
+			"Default" : "ami-3aa47a45",
+			"AllowedPattern" : "^ami-[0-9a-fA-F]{8}",
+			"ConstraintDescription" : "Must be a valid AMI."
+		},
+
+		"PemKey": {
+			"Description": "Name of and existing EC2 KeyPair to enable SSH access to the instance",
+			"Type": "String",
+			"Default": "keypair-sandbox-cp"
+		},
+		"InstanceProfile": {
+			"Description" : "Instance Profile Name for MCP",
+			"Type" : "String",
+			"Default" : "Application-InstanceProfile"
+		},
+		"ApplicationName": {
+			"Description": "Name of application",
+			"Type": "String",
+			"Default": "Cloud Pricing",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"ApplicationId": {
+			"Description": "Application ID",
+			"Type": "String",
+			"Default": "APP-001151",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Approver": {
+			"Description": "Name of application approver",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Name of application owner",
+			"Type": "String",
+			"Default": "Owen.James@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"ProjectId": {
+			"Description": "Project ID",
+			"Type": "String",
+			"Default": "BT.001176",
+			"MinLength": "1",
+			"MaxLength": "255",
+			"AllowedPattern": "[\\x20-\\x7E]*",
+			"ConstraintDescription": "Must contain only ASCII characters."
+		},
+		"Environment": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "Sandbox",
+			"AllowedValues": [
+				"Sandbox",
+				"Development",
+				"Quality",
+				"Staging",
+				"Training",
+				"Production"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EnvironmentShort": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "SBX",
+			"AllowedValues": [
+				"SBX",
+				"DEV",
+				"QA",
+				"STG",
+				"PROD"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		}
+	},
+	"Resources": {
+		"lx238shrapp01": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgWebService" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "lx238shrapp01" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"# Install lsof locate and smbclient\n",
+					"yum install -y sysstat lsof mlocate\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname Amazon Linux AMI\n",
+					"##############################################\n",
+					"hostname lx238shrapp01.na.sysco.net\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=lx238shrapp01.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
+					"useradd -m -g aix -c \"Kevin McManis, Principal Enterprise Architect Technical\" kmcm0238",
+					"useradd -m -g aix -c \"Parag Kulkarni, Infosys\" pkul9458",
+					"useradd -m -g aix -c \"Kanaka Mahalakshmi Kadiyala, Lead Performance Test\" kkad6975",
+
+					"##############################################\n",
+					"# Install Dynatrace OneAgent\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget --no-check-certificate -O Dynatrace-OneAgent-Linux-1.141.236.sh https://10.168.143.75/e/c92c58f7-9740-495a-82a1-94db6d78b394/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=hwvAd_HsTBisegmkIi9jm&arch=x86&flavor=default\n",
+					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\\\"application/x-pkcs7-signature\\\"; micalg=\\\"sha-256\\\"; boundary=\\\"--SIGNED-INSTALLER\\\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.141.236.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.141.236.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0\n",
+
+					"##############################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
+				]]}}
+			}
+		},
+		"ms238shadm01": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"AvailabilityZone": "us-east-1e",
+				"DisableApiTermination": "false",
+				"ImageId" : {"Ref" : "CommonAMIWin"},
+				"InstanceType": "t2.large",
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"KeyName": { "Ref": "PemKey" },
+				"SecurityGroupIds": [ { "Ref": "sgWebService" } ],
+				"SubnetId": { "Ref": "PvtSNe" },
+				"BlockDeviceMappings": [
+					{"DeviceName": "/dev/sda1", "Ebs": { "VolumeSize": 300, "VolumeType": "gp2" }}
+				],
+				"Tags": [
+					{ "Key" : "Name", "Value" : "ms238shadm01" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				],
+				"UserData": { "Fn::Base64": { "Fn::Join": [ "", [
+					"<script>\n",
+					"mkdir \\temp\n",
+					"cd \\temp\n",
+					"powershell \"Invoke-WebRequest -Uri 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=windows&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-x64-release.msi&wget=true' -OutFile 'C:/temp/splunkforwarder.msi'\"\n",
+					"msiexec.exe /i splunkforwarder.msi SPLUNK_APP=\"SplunkLightForwarder\" FORWARD_SERVER=\"splunkindex.na.sysco.net:9997\" DEPLOYMENT_SERVER=\"splunkdeploy.na.sysco.net:8089\" AGREETOLICENSE=Yes /passive\n",
+					"powershell timeout 60\n",
+					
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"net stop SplunkForwarder\n",
+					"\"C:\\Program Files\\SplunkUniversalForwarder\\bin\\splunk\" clone-prep-clear-config\n",
+					"del /F/Q \"C:\\Program Files\\SplunkUniversalForwarder\\var\\log\\splunk\\*\"\n",
+					"</script>\n",
+
+					"<powershell>\n",
+					"Rename-Computer -NewName ms238shadm01 -Restart\n",
+					"</powershell>\n"
+				]]}}
+			}
+		},
+		"WebServiceGroup" : {
+			"Type" : "AWS::AutoScaling::AutoScalingGroup",
+			"Properties" : {
+				"AvailabilityZones" : [ "us-east-1e", "us-east-1d" ],
+				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
+				"MinSize" : "1",
+				"DesiredCapacity" : "1",
+				"MaxSize" : "2",
+				"HealthCheckType": "ELB",
+				"HealthCheckGracePeriod": "300",
+				"VPCZoneIdentifier" : [ { "Ref" : "PvtSNe" }, { "Ref" : "PvtSNd" } ],
+				"LoadBalancerNames" : [{ "Ref" : "WebServiceELB" }],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Mimix POC AutoScaling-", { "Ref" : "EnvironmentShort" }]]}, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" }, "PropagateAtLaunch" : "true" },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage", "PropagateAtLaunch" : "true" }
+				]
+			},
+			"UpdatePolicy" : {
+				"AutoScalingScheduledAction" : {
+					"IgnoreUnmodifiedGroupSizeProperties" : "true"
+				},
+				"AutoScalingRollingUpdate" : {
+					"MinInstancesInService" : "1",
+					"MaxBatchSize" : "1",
+					"PauseTime" : "PT1M",
+					"WaitOnResourceSignals" : "false"
+				}
+			}
+		},
+		"WebServiceLaunchConfig" : {
+			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+			"Properties" : {
+				"ImageId" : {"Ref" : "CommonAMI"},
+				"InstanceType" : "t2.xlarge",
+				"KeyName" : { "Ref" : "PemKey" },
+				"SecurityGroups" : [{ "Ref" : "sgWebService" }],
+				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
+				"BlockDeviceMappings" : [
+					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }} 
+				],
+				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+					"#!/bin/bash -v\n",
+					"# Set Timezone\n",
+					"# timedatectl set-timezone UTC\n",
+					"date > /home/ec2-user/starttime\n",
+
+					"yum update -y aws-cfn-bootstrap\n",
+					"yum update -y wget\n",
+					"yum update -y curl\n",
+
+					"# Install lsof locate and smbclient\n",
+					"yum install -y sysstat lsof mlocate\n",
+
+					"##############################################\n",
+					"# Change Name of server to match new hostname\n",
+					"##############################################\n",
+					"sh -c \"hostname cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\"\n",
+					"tee /etc/sysconfig/network <<-EOF\n",
+					"NETWORKING=yes\n",
+					"HOSTNAME=cpwebsvc-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)q.na.sysco.net\n",
+					"NOZEROCONF=yes\n",
+					"EOF\n",
+
+					"##############################################\n",
+					"# Add Users to server\n",
+					"##############################################\n",
+					"useradd -m -g aix -c \"James Owen, AWS Solutions Architect\" jowe6212\n",
+					"useradd -m -g aix -c \"Kevin McManis, Principal Enterprise Architect Technical\" kmcm0238",
+					"useradd -m -g aix -c \"Parag Kulkarni, Infosys\" pkul9458",
+					"useradd -m -g aix -c \"Kanaka Mahalakshmi Kadiyala, Lead Performance Test\" kkad6975",
+
+					"##############################################\n",
+					"# Install Dynatrace OneAgent\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget --no-check-certificate -O Dynatrace-OneAgent-Linux-1.141.236.sh https://10.168.143.75/e/c92c58f7-9740-495a-82a1-94db6d78b394/api/v1/deployment/installer/agent/unix/default/latest?Api-Token=hwvAd_HsTBisegmkIi9jm&arch=x86&flavor=default\n",
+					"wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\\\"application/x-pkcs7-signature\\\"; micalg=\\\"sha-256\\\"; boundary=\\\"--SIGNED-INSTALLER\\\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.141.236.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+					"/bin/sh Dynatrace-OneAgent-Linux-1.141.236.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0\n",
+
+					"##############################################\n",
+					"# Install Splunk Universal Forwarder\n",
+					"##############################################\n",
+					"cd /tmp\n",
+					"wget -O splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.0.2&product=universalforwarder&filename=splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm&wget=true'\n",
+					"chmod 744 splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"rpm -i splunkforwarder-7.0.2-03bbabbd5c0f-linux-2.6-x86_64.rpm\n",
+					"cd /opt/splunkforwarder\n",
+					"./bin/splunk start --accept-license\n",
+					"./bin/splunk enable boot-start\n",
+
+					"# Configure to run as a deployment client\n",
+					"./bin/splunk set deploy-poll splunkdeploy.na.sysco.net:8089 -auth admin:changeme\n",
+
+					"# Configure forwarder to send logs to Splunk Indexer\n",
+					"./bin/splunk add forward-server splunkindex.na.sysco.net:9997 -auth admin:changeme\n",
+					"./bin/splunk restart\n",
+
+					"####################################\n",
+					"# Install CodeDeploy\n",
+					"####################################\n",
+					"cd /tmp\n",
+					"yum install ruby -y\n",
+					"wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install\n",
+					"chmod +x ./install\n",
+					"./install auto\n",
+
+					"date > /home/ec2-user/stoptime\n",
+					"reboot\n"
+				]]}}
+			}
+		},
+		"WebServiceELB": {
+			"Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+			"Properties": {
+				"Subnets" : [{ "Ref" : "PvtSNe" },{ "Ref" : "PvtSNd" }],
+				"LoadBalancerName" : { "Fn::Join" : ["", ["elb-mimix-", { "Ref" : "EnvironmentShort" }]]},
+				"Scheme": "internal",
+				"CrossZone": "true",
+				"SecurityGroups": [ { "Ref": "sgELB" } ],
+				"Listeners": [
+					{
+						"LoadBalancerPort": "80",
+						"InstancePort": "8080",
+						"Protocol": "HTTP"
+					},
+					{
+						"LoadBalancerPort": "443",
+						"InstancePort": "8080",
+						"Protocol": "TCP"
+					}
+				],
+				"HealthCheck": {
+					"Target" : "TCP:22",
+					"HealthyThreshold": "3",
+					"UnhealthyThreshold": "7",
+					"Interval": "120",
+					"Timeout": "15"
+				},
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["Mimix-ELB-private-", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"sgELB": {
+			"Type": "AWS::EC2::SecurityGroup",
+			"Properties": {
+				"GroupDescription": "Web Services",
+				"VpcId": {
+					"Ref": "VPCID"
+				},
+				"SecurityGroupIngress": [{
+					"IpProtocol": "tcp",
+					"FromPort": "80",
+					"ToPort": "80",
+					"CidrIp": "10.0.0.0/8"
+				}, {
+					"IpProtocol": "tcp",
+					"FromPort": "443",
+					"ToPort": "443",
+					"CidrIp": "10.0.0.0/8"
+				} , {
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags": [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/mimix_elb_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Id", "Value" : { "Ref": "ApplicationId" } },
+					{ "Key" : "Application_Name", "Value" : { "Ref": "ApplicationName" } },
+					{ "Key" : "Environment", "Value" :  { "Ref": "Environment" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref": "PONumber" } },
+					{ "Key" : "Owner", "Value" : { "Ref": "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref": "Approver" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"sgWebService" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Mimix SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "80",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "80",
+					"ToPort" : "8080",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3389",
+					"ToPort" : "3389",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "51701",
+					"ToPort" : "51701",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "449",
+					"ToPort" : "449",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "8470",
+					"ToPort" : "8479",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "22",
+					"ToPort" : "22",
+					"CidrIp" : "10.0.0.0/8"
+				},
+				{
+					"IpProtocol" : "icmp",
+					"FromPort" : "-1",
+					"ToPort" : "-1",
+					"CidrIp" : "10.0.0.0/8"
+				}
+				],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : { "Fn::Join" : ["", ["sg/vpc_sysco_nonprod_02/mimix_", { "Ref" : "EnvironmentShort" }]]}},
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"MysqlRDS01" : {
+			"Type" : "AWS::RDS::DBInstance",
+			"Properties" : {
+				"PubliclyAccessible" : "false",
+				"MultiAZ" : "false",
+				"DBInstanceIdentifier" : "mysql-MIMIX-01",
+				"DBName" : "mimixdb",
+				"VPCSecurityGroups" : [ { "Fn::GetAtt" : [ "sgDB", "GroupId" ] } ],
+				"AllocatedStorage" : "20",
+				"StorageType" : "gp2",
+				"DBInstanceClass" : "db.t2.medium",
+				"DBSubnetGroupName" : { "Ref" : "RDSSubnetGroup" },
+				"Engine" : "MySQL",
+				"EngineVersion" : "5.7.17",
+				"MasterUsername" : "root",
+				"MasterUserPassword" : "Sysco-0531",
+				"BackupRetentionPeriod" : "30",
+				"Tags" : [
+					{ "Key" : "Name", "Value": "Mimix POC RDS MySQL" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"sgDB" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Mimix DB SG",
+				"VpcId" : { "Ref" : "VPCID" },
+				"SecurityGroupIngress" : [
+				{
+					"IpProtocol" : "tcp",
+					"FromPort" : "3306",
+					"ToPort" : "3306",
+					"CidrIp" : "10.0.0.0/8"
+				}],
+				"Tags" : [
+					{ "Key" : "Name", "Value" : "sg/vpc_sysco_prod_01/mimix_sbx_db" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"RDSSubnetGroup" : {
+			"Type" : "AWS::RDS::DBSubnetGroup",
+			"Properties" : {
+				"DBSubnetGroupDescription" : "Mimix POC RDS Subnet Group",
+				"SubnetIds" : [ { "Ref" : "PvtSNe" }, { "Ref" : "PvtSNd" } ]
+			}
+		},
+		"KinesisStream" : {
+			"Type" : "AWS::Kinesis::Stream",
+			"Properties" : {
+				"Name" : "Mimix_POC_KinesisStream_07",
+				"RetentionPeriodHours" : 24,
+				"ShardCount" : 1,
+				"Tags" : [
+					{ "Key" : "Name", "Value": "Mimix POC Kinesis Stearm" },
+					{ "Key" : "Application_Name", "Value" : { "Ref" : "ApplicationName" } },
+					{ "Key" : "Application_Id", "Value" : { "Ref" : "ApplicationId" } },
+					{ "Key" : "Owner", "Value" : { "Ref" : "Owner" } },
+					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" } },
+					{ "Key" : "PO_Number", "Value" : { "Ref" : "PONumber" } },
+					{ "Key" : "Environment", "Value" : { "Ref" : "Environment" } },
+					{ "Key" : "Project_ID", "Value" : { "Ref" : "ProjectId" } },
+					{ "Key" : "2WTAGGER", "Value" : "un_manage" }
+				]
+			}
+		},
+		"KinesisFirehose" : {
+			"Type" : "AWS::KinesisFirehose::DeliveryStream",
+			"DependsOn": ["S3Policy"],
+			"Properties" : {
+				"DeliveryStreamName" : "MimixFireHose",
+				"DeliveryStreamType" : "KinesisStreamAsSource",
+				"S3DestinationConfiguration" : {
+					"BucketARN" : "arn:aws:s3:::sysco-sbx-revman-kinesis-us-east-1",
+					"BufferingHints" :  {
+						"IntervalInSeconds": "60",
+						"SizeInMBs": "50"
+					},
+					"CompressionFormat" : "UNCOMPRESSED",
+					"Prefix": "firehose/",
+					"RoleARN": {"Fn::GetAtt" : ["RevManFirehostRole", "Arn"] }
+				},
+				"KinesisStreamSourceConfiguration" : {
+					"KinesisStreamARN" : {"Fn::GetAtt" : ["KinesisStream", "Arn"] },
+					"RoleARN" : {"Fn::GetAtt" : ["RevManFirehostRole", "Arn"] }
+				}
+			}
+		},
+		"CloudWatchPolicy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "Sysco-SBX-RevMan-CloudWatchPolicy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "CloudWatch01",
+						"Effect": "Allow",
+						"Action": [
+							"cloudwatch:*",
+							"logs:*",
+							"events:*"
+						],
+						"Resource": "*"
+					}]
+				}
+			}
+		},
+		"S3Policy": {
+			"Type": "AWS::IAM::ManagedPolicy",
+			"Properties": {
+				"ManagedPolicyName": "Sysco-SBX-RevMan-S3Policy",
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [{
+						"Sid": "RevManS300",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Describe*",
+							"s3:List*"
+						],
+						"Resource": "*"
+					},{
+						"Sid": "RevManS301",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*"
+						],
+						"Resource": [
+							"arn:aws:s3:::sysco-sbx-*"
+						]
+					},{
+						"Sid": "RevManS302",
+						"Effect": "Allow",
+						"Action": [
+							"s3:Get*",
+							"s3:Put*",
+							"s3:Delete*"
+						],
+						"Resource": [
+							"arn:aws:s3:::sysco-sbx-revman-*"
+						]
+					}]
+				}
+			}
+		},
+		"RevManFirehostRole": {
+			"Type": "AWS::IAM::Role",
+			"DependsOn": ["CloudWatchPolicy", "S3Policy"],
+			"Properties": {
+				"Path": "/",
+				"AssumeRolePolicyDocument": {
+					"Statement": [{
+						"Action": ["sts:AssumeRole"],
+						"Effect": "Allow",
+						"Principal": { "Service": ["firehose.amazonaws.com"] }
+					}]
+				},
+				"ManagedPolicyArns": [
+					"arn:aws:iam::aws:policy/CloudWatchFullAccess",
+					"arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess",
+					"arn:aws:iam::aws:policy/AmazonKinesisAnalyticsFullAccess",
+					"arn:aws:iam::029039063068:policy/CPAutoscalingServicePolicy",
+					{ "Ref": "CloudWatchPolicy" },
+					{ "Ref": "S3Policy" }
+				]
+			}
+		}
+	}
+}
