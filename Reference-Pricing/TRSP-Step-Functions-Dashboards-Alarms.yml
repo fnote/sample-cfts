@@ -1,0 +1,386 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description:
+  CloudFormation template for step function monitoring
+Parameters:
+  DashboardName:
+    Type: String
+    Default: TRSP-Step-Function-Metrics
+  Env:
+    Type: String
+    Default: EXE
+    AllowedValues:
+      - DEV
+      - EXE
+      - STG
+      - PROD
+
+Resources:
+  MetricsDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Ref DashboardName
+      DashboardBody: !Sub |
+            {
+              "widgets": [
+                {
+                  "type": "metric",
+                  "x": 0,
+                  "y": 0,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}", { "label": "PA" }],
+                      [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "label": "Price Zone" }],
+                      [ "AWS/States", "ExecutionsSucceeded", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}", { "label": "Discount" } ]
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Successful Executions",
+                    "stat":"Sum",
+                    "setPeriodToTimeRange": true
+                  }
+                },
+                {
+                  "type": "metric",
+                  "x": 12,
+                  "y": 0,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}" , { "label": "PA" }],
+                      [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "label": "Price Zone" }],
+                      [ "AWS/States", "ExecutionsFailed", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}" , { "label": "Discount" }]
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Failed Executions",
+                    "stat":"Sum",
+                    "setPeriodToTimeRange": true
+                  }
+                },
+                {
+                  "type": "metric",
+                  "x": 0,
+                  "y": 7,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}" , { "label": "PA" }],
+                      [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "label": "Price Zone" }],
+                      [ "AWS/States", "ExecutionsAborted", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}" , { "label": "Discount" }]
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Aborted Executions",
+                    "stat":"Sum",
+                    "setPeriodToTimeRange": true
+                  }
+                },
+                {
+                  "type": "metric",
+                  "x": 12,
+                  "y": 7,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}" , { "label": "PA" }],
+                      [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "label": "Price Zone" }],
+                      [ "AWS/States", "ExecutionsTimedOut", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}" , { "label": "Discount" }]
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Timed Out Executions",
+                    "stat":"Sum",
+                    "setPeriodToTimeRange": true
+                  }
+                },
+                {
+                  "type": "metric",
+                  "x": 0,
+                  "y": 14,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}", { "label": "PA" }],
+                      [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "label": "Price Zone" }],
+                      [ "AWS/States", "ExecutionThrottled", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}", { "label": "Discount" } ]
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Throttled Executions",
+                    "stat":"Sum",
+                    "setPeriodToTimeRange": true
+                  }
+                },
+                {
+                  "type": "metric",
+                  "x": 12,
+                  "y": 14,
+                  "width": 12,
+                  "height": 7,
+                  "properties": {
+                    "view": "timeSeries",
+                    "stacked": false,
+                    "metrics": [
+                      [ "AWS/States", "ExecutionTime", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}", {"id": "m1", "visible": false }],
+                      [ "AWS/States", "ExecutionTime", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}" , { "id": "m2", "visible": false }],
+                      [ "AWS/States", "ExecutionTime", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}", { "id": "m3", "visible": false } ],
+                      [{"expression":"m1 / 1000", "label":"PA"}],
+                      [{"expression":"m2 / 1000", "label":"Price Zone"}],
+                      [{"expression":"m3 / 1000", "label":"Discount"}]                      
+                    ],
+                    "region": "${AWS::Region}",
+                    "title": "Average Execution Time (seconds)",
+                    "stat":"Average",
+                    "showUnits": false,
+                    "setPeriodToTimeRange": true
+                  }
+                }                
+              ]
+            }
+            
+  PAExecutionsAbortedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Aborted Executions Alarm for PA Step function
+      AlarmName: !Sub TRS-StepFunction-PA-Executions-Aborted-Alarm-${Env}
+      MetricName: ExecutionsAborted
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}"
+        
+  PriceZoneExecutionsAbortedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Aborted Executions Alarm for Price Zone Step function
+      AlarmName: !Sub TRS-StepFunction-Price-Zone-Executions-Aborted-Alarm-${Env}
+      MetricName: ExecutionsAborted
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}"
+        
+  DiscountsExecutionsAbortedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Aborted Executions Alarm for Discounts Step function
+      AlarmName: !Sub TRS-StepFunction-Discounts-Executions-Aborted-Alarm-${Env}
+      MetricName: ExecutionsAborted
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}"
+        
+  PAExecutionsFailedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Failed Executions Alarm for PA Step function
+      AlarmName: !Sub TRS-StepFunction-PA-Executions-Failed-Alarm-${Env}
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}"
+        
+  PriceZoneExecutionsFailedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Failed Executions Alarm for Price Zone Step function
+      AlarmName: !Sub TRS-StepFunction-Price-Zone-Executions-Failed-Alarm-${Env}
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}"
+        
+  DiscountsExecutionsFailedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Failed Executions Alarm for Discounts Step function
+      AlarmName: !Sub TRS-StepFunction-Discounts-Executions-Failed-Alarm-${Env}
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}"
+        
+  PAExecutionsThrottledAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Throttled Executions Alarm for PA Step function
+      AlarmName: !Sub TRS-StepFunction-PA-Executions-Throttled-Alarm-${Env}
+      MetricName: ExecutionThrottled
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}"
+        
+  PriceZoneExecutionsThrottledAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Throttled Executions Alarm for Price Zone Step function
+      AlarmName: !Sub TRS-StepFunction-Price-Zone-Executions-Throttled-Alarm-${Env}
+      MetricName: ExecutionThrottled
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}"
+        
+  DiscountsExecutionsThrottledAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: Throttled Executions Alarm for Discounts Step function
+      AlarmName: !Sub TRS-StepFunction-Discounts-Executions-Throttled-Alarm-${Env}
+      MetricName: ExecutionThrottled
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}"
+        
+  PAExecutionsTimedOutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: TimedOut Executions Alarm for PA Step function
+      AlarmName: !Sub TRS-StepFunction-PA-Executions-TimedOut-Alarm-${Env}
+      MetricName: ExecutionsTimedOut
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${Env}"
+        
+  PriceZoneExecutionsTimedOutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: TimedOut Executions Alarm for Price Zone Step function
+      AlarmName: !Sub TRS-StepFunction-Price-Zone-Executions-TimedOut-Alarm-${Env}
+      MetricName: ExecutionsTimedOut
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-etl-price-zone-state-machine-${Env}"
+        
+  DiscountsExecutionsTimedOutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: StepFunctionExecutionsAlarmSNSTopic
+    Properties:
+      AlarmDescription: TimedOut Executions Alarm for Discounts Step function
+      AlarmName: !Sub TRS-StepFunction-Discounts-Executions-TimedOut-Alarm-${Env}
+      MetricName: ExecutionsTimedOut
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: '300'
+      EvaluationPeriods: '1'
+      Threshold: '0'
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref StepFunctionExecutionsAlarmSNSTopic
+      Dimensions:
+      - Name: StateMachineArn
+        Value: !Sub "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-DISCOUNTS-state-machine-${Env}"
+
+  StepFunctionExecutionsAlarmSNSTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: !Sub TRS-StepFunction-Executions-Alarm-SNSTopic-${Env}
+      Subscription:
+        - Endpoint: "TRSPAlerts@Sysco.com"
+          Protocol: email
