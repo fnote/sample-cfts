@@ -17,7 +17,7 @@ Parameters:
   TeamsWebhookURL:
     Description: Teams channnel webhook url for sending the logging related alerts
     Type: String
-    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/b97773a8730a4c4898547617d48e6100/b8228f9c-e316-4869-a733-e7af23d9f1e3
+    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/52d8d5fcd0de4fb4b194890875af8778/b8228f9c-e316-4869-a733-e7af23d9f1e3
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -139,6 +139,29 @@ Resources:
                   - logs:DescribeLogStreams
                 Resource:
                   - '*'
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref Environment, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
       Path: '/'
   LoggingStatusMonitor:
     Type: AWS::Lambda::Function
@@ -149,7 +172,7 @@ Resources:
       Role: !GetAtt LoggingStatusMonitorLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: sysco-us-east-1-prcp-prod-codedeploy
         S3Key: !Sub 'TRSPLoggingStatusMonitor/${Environment}/TRSPLoggingStatusMonitor.zip'
       Environment:
         Variables:
@@ -184,7 +207,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: ScheduleRule
-      ScheduleExpression: 'rate(12 hours)'
+      ScheduleExpression: 'cron(30 23,11 * * ? *)'
       State: ENABLED
       Targets:
         - Arn: !GetAtt LoggingStatusMonitor.Arn
