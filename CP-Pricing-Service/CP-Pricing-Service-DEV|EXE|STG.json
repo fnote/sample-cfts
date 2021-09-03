@@ -200,6 +200,50 @@
 				""
 			],
 			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EC2InstanceSize": {
+			"Description": "EC2 Instance Size (Recommended DEV - t3.medium, EXE, STG - t3.xlarge)",
+			"Type": "String",
+			"Default": "t3.xlarge",
+			"AllowedValues": [
+				"t3.xlarge",
+				"t3.large",
+				"t3.medium"
+			]
+		},
+		"ASGMinSize": {
+			"Description": "ASG Min size (Recommended DEV - 1, EXE, STG - 2)",
+			"Type": "Number",
+			"Default": "2",
+			"MinValue": "0",
+			"MaxValue": "50",
+			"ConstraintDescription": "must be between 0 and 50"
+		},
+		"ASGDesiredSze": {
+			"Description": "ASG Desired size (Recommended DEV - 1, EXE, STG - 2)",
+			"Type": "Number",
+			"Default": "2",
+			"MinValue": "0",
+			"MaxValue": "50",
+			"ConstraintDescription": "must be between 0 and 50"
+		},
+		"CPUAlarmHighThreshold": {
+			"Description": "CPU Alarm High Threshold (Recommended DEV - 70%, EXE, STG - 50%)",
+			"Type": "Number",
+			"Default": "50",
+			"AllowedValues": [
+				"50",
+				"80"
+			]
+		},
+		"CPUAlarmLowThreshold": {
+			"Description": "CPU Alarm Low Threshold CPU Alarm High Threshold (Recommended DEV - 50%, EXE, STG - 35%)",
+			"Type": "Number",
+			"Default": "35",
+			"AllowedValues": [
+				"35",
+				"50"
+			]
 		}
 	},
 	"Resources": {
@@ -228,8 +272,12 @@
 						"Ref": "TargetGroup"
 					}
 				],
-				"MinSize": "2",
-				"DesiredCapacity": "2",
+				"MinSize": 	{
+					"Ref": "ASGMinSize"
+				},
+				"DesiredCapacity": 	{
+					"Ref": "ASGDesiredSze"
+				},
 				"MaxSize": "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
@@ -372,7 +420,9 @@
 				"ImageId": {
 					"Ref": "CommonAMI"
 				},
-				"InstanceType": "t3.xlarge",
+				"InstanceType": {
+					"Ref": "EC2InstanceSize"
+				},
 				"KeyName": {
 					"Ref": "PemKey"
 				},
@@ -568,7 +618,9 @@
 				"MetricName": "CPUUtilization",
 				"Statistic": "Average",
 				"ComparisonOperator": "GreaterThanThreshold",
-				"Threshold": "50",
+				"Threshold": {
+					"Ref": "CPUAlarmHighThreshold"
+				},
 				"Period": "60",
 				"EvaluationPeriods": "1",
 				"AlarmActions": [
@@ -606,7 +658,9 @@
 				"MetricName": "CPUUtilization",
 				"Statistic": "Average",
 				"ComparisonOperator": "LessThanThreshold",
-				"Threshold": "35",
+				"Threshold": {
+					"Ref": "CPUAlarmHighThreshold"
+				},
 				"Period": "300",
 				"EvaluationPeriods": "3",
 				"AlarmActions": [
