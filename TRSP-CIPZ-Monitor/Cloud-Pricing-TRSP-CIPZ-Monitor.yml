@@ -14,6 +14,10 @@ Parameters:
     Description: Verification interval for the mismatches in seconds
     Type: String
     Default: 9000
+  ScheduleRule:
+    Description: cron schedule expression
+    Type: String
+    Default: 'cron(45 1 * * ? *)'
   TeamsWebhookURL:
     Description: Teams channnel webhook url for sending the logging related alerts
     Type: String
@@ -223,7 +227,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: ScheduleRule
-      ScheduleExpression: 'cron(45 1 * * ? *)'
+      ScheduleExpression: !Ref ScheduleRule
       State: ENABLED
       Targets:
         - Arn: !GetAtt CIPZMonitor.Arn
