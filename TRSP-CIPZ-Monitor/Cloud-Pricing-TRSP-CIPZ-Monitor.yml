@@ -17,7 +17,7 @@ Parameters:
   TeamsWebhookURL:
     Description: Teams channnel webhook url for sending the logging related alerts
     Type: String
-    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/22c9ed30726d41ecbdb791acf7b8bc4a/b8228f9c-e316-4869-a733-e7af23d9f1e3
+    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/536a82fc642c4d899a3a8cfb1130e221/b8228f9c-e316-4869-a733-e7af23d9f1e3
   SecurityGroups:
     Description: The list of security groups to access the vpc resources
     Type: List<AWS::EC2::SecurityGroup::Id>
@@ -119,6 +119,10 @@ Mappings:
     PROD:
       val: prod
       name: Production
+Conditions:
+  IsProdDeployment: !Equals
+    - !Ref Environment
+    - 'PROD'
 Resources:
   CIPZMonitorLambdaRole:
     Type: AWS::IAM::Role
@@ -179,7 +183,7 @@ Resources:
       Role: !GetAtt CIPZMonitorLambdaRole.Arn
       Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-prod-codedeploy
+        S3Bucket: !If [IsProdDeployment, sysco-us-east-1-prcp-prod-codedeploy, sysco-us-east-1-prcp-nonprod-codedeploy]
         S3Key: !Sub 'CIPZMonitor/${Environment}/CIPZMonitor.zip'
       VpcConfig:
         SecurityGroupIds:
