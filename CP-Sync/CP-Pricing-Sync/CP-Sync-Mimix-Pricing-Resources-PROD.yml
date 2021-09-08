@@ -285,7 +285,7 @@ Resources:
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
-          MemoryReservation: !Ref 'MemoryReserved'
+          Image: !Ref 'DockerImageArn'
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -328,7 +328,7 @@ Resources:
       ContainerDefinitions:
         - Name: cp-sync-mimix-pricing-container
           Essential: 'true'
-          MemoryReservation: !Ref 'MemoryReserved'
+          Image: !Ref 'DockerImageArn'
           LogConfiguration:
             LogDriver: awslogs
             Options:
