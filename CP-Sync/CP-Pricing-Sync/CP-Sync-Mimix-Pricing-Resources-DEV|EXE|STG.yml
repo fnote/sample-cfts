@@ -178,7 +178,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -221,7 +220,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -264,7 +262,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -307,7 +304,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -350,7 +346,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -393,7 +388,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -436,7 +430,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -479,7 +472,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -522,7 +514,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -565,7 +556,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
