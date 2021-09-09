@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI -> ami-043a196cce124727a",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI -> ami-01dbd53027bf7e826",
 			"Type": "String",
-			"Default" : "ami-043a196cce124727a",
+			"Default" : "ami-01dbd53027bf7e826",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
