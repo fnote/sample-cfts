@@ -266,7 +266,7 @@
                     {
                         "Ref": "CommonAMI"
                     },
-					"InstanceType": "t3.xlarge",
+					"InstanceType" : "t3.medium",
                     "KeyName": {
 						"Ref": "PemKey"
 					},
@@ -433,12 +433,12 @@
                         {
                             "ResourceType": "instance",
                             "Tags": [
-								{ 
-									"Key" : "Name", 
-									"Value" : { 
-										"Fn::Join" : 
-										["", 
-											["CP Refactored Web Service AutoScaling-", 
+								{
+									"Key" : "Name",
+									"Value" : {
+										"Fn::Join" :
+										["",
+											["CP Refactored Web Service AutoScaling-",
 												{ "Ref" : "EnvironmentShort" }]]}
 							    },
 								{
@@ -468,7 +468,7 @@
 								{
 									"Key": "Technical:ApplicationRole",
 									"Value": "Auto Scaling Group"
-				
+
 								},
 								{
 									"Key": "Technical:ApplicationSubName",
@@ -525,12 +525,12 @@
 						{
 							"ResourceType": "volume",
                             "Tags": [
-								{ 
-									"Key" : "Name", 
-									"Value" : { 
-										"Fn::Join" : 
-										["", 
-											["CP Refactored Web Service AutoScaling-", 
+								{
+									"Key" : "Name",
+									"Value" : {
+										"Fn::Join" :
+										["",
+											["CP Refactored Web Service AutoScaling-",
 												{ "Ref" : "EnvironmentShort" }]]}
 							    },
 								{
@@ -614,7 +614,7 @@
 							]
 						}
 					]
-				},				             
+				},
                 "LaunchTemplateName": {
                     "Fn::Join": [
                         "",
@@ -639,7 +639,7 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "50",
+				"Threshold" : "80",
 				"Period" : "60",
 				"EvaluationPeriods" : "1",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -656,7 +656,7 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
-				"Threshold" : "35",
+				"Threshold" : "50",
 				"Period" : "300",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]

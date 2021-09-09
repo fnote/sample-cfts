@@ -13,6 +13,14 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
+  Account:
+    Description: Type of AWS account under which the code deploy S3 bucket is available
+    Type: String
+    Default: nonprod
+    AllowedValues:
+      - nonprod
+      - prod
+    ConstraintDescription: Must be a valid account name
   NotifierLambdaSecutyGroup:
     Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
     Type: List<AWS::EC2::SecurityGroup::Id>
@@ -25,6 +33,10 @@ Parameters:
     Description: S3 bucket name to store intermediate files
     Type: String
     Default: cp-ref-etl-output-bucket-dev
+  InputStorage:
+    Description: S3 bucket name to receive input files
+    Type: String
+    Default: cp-ref-etl-price-zone-storage-dev
   SubnetIdForGlueConnection:
     Type: String
     Description: The subnetId to be referred
@@ -43,7 +55,15 @@ Parameters:
   DatabaseJDBCUrl:
     Type: String
     Description: JDBC url of the database used to persist Reference pricing data
-    Default: "jdbc:mysql://cp-ref-price-01-exe.c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+  DatabaseJDBCUrlCluster1:
+    Type: String
+    Description: JDBC url of the database used to persist Reference pricing data
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
+  DatabaseJDBCUrlCluster2:
+    Type: String
+    Description: JDBC url of the database used to persist Reference pricing data
+    Default: "jdbc:mysql://cp-ref-price-db-cluster-02-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/REF_PRICE_011"
   DatabasePassword:
     Type: String
     Description: Password of the database used for glue connection
@@ -61,6 +81,14 @@ Parameters:
     Type: String
     Description: Cloud Pricing Notification service host
     Default: ivsgfq5vdl.execute-api.us-east-1.amazonaws.com
+  TeamsUrlProd:
+    Type: String
+    Description: Cloud Pricing ref teams url prod alerts
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/1f484c9fcbe7469d88caf88effbcd40f/8feac8da-972c-4405-8a3a-96bd633d14e0'
+  TeamsUrlNonProd:
+    Type: String
+    Description: Cloud Pricing ref teams url non prod alerts
+    Default: 'https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/a21120594854442cad98ea00a41885f9/8feac8da-972c-4405-8a3a-96bd633d14e0'
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -134,6 +162,22 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  commonDBName:
+    Description: discount name list
+    Type: String
+    Default: 'METADATA'
+  commonDBPassword:
+    Description: discount name list
+    Type: String
+    Default: '123'
+  commonDBUsername:
+    Description: discount name list
+    Type: String
+    Default: 'cpuser'
+  commonDBURL:
+    Description: discount name list
+    Type: String
+    Default: 'cp-ref-price-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com'
 
 Mappings:
   EnvMap:
@@ -166,7 +210,7 @@ Resources:
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/Notifier.zip'
       VpcConfig:
         SecurityGroupIds:
@@ -178,6 +222,10 @@ Resources:
           env: !Ref EnvironmentShort
           cp_notification_url: !Ref NotificationURL
           cp_notification_host: !Ref NotificationHost
+          teams_webhook_url_PROD: !Ref TeamsUrlProd
+          teams_webhook_url_DEV: !Ref TeamsUrlNonProd
+          teams_webhook_url_EXE: !Ref TeamsUrlNonProd
+          teams_webhook_url_STG: !Ref TeamsUrlNonProd
       Timeout: 120
       Tags:
         - Key: Technical:ApplicationName
@@ -202,6 +250,42 @@ Resources:
           Value: !Ref Platform
         - Key: Component
           Value: !Ref Component
+
+  CommonDBUsername:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/USERNAME' ] ]
+      Type: String
+      Value: !Ref commonDBUsername
+      Tier: Standard
+      Description: common db username
+
+  CommonDBPassword:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/PASSWORD' ] ]
+      Type: String
+      Value: !Ref commonDBPassword
+      Tier: Standard
+      Description: common db password
+
+  CommonDBURL:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/DB_URL' ] ]
+      Type: String
+      Value: !Ref commonDBURL
+      Tier: Standard
+      Description: common db url
+
+  CommonDBName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/COMMON/DB_NAME' ] ]
+      Type: String
+      Value: !Ref commonDBName
+      Tier: Standard
+      Description: common db name
 
   ETLTriggerLambaRole:
     Type: AWS::IAM::Role
@@ -245,6 +329,7 @@ Resources:
                 Resource:
                   - !Sub 'arn:aws:s3:::${IntermediateStorage}/*'
                   - !Sub 'arn:aws:s3:::${ETLDataBackUpStorage}/*'
+                  - !Sub 'arn:aws:s3:::${InputStorage}/*'
               - Effect: Allow
                 Action:
                   - s3:ListBucket
@@ -338,7 +423,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/*'
+                  - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -370,20 +455,39 @@ Resources:
                   - 'arn:aws:s3:::cp-ref-etl-price-zone-spark-temp-dir-${env}/*'
                   - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Path: '/'
-  CommonDatabaseConnection:
+  CommonDatabaseConnection1:
     Type: AWS::Glue::Connection
     Properties:
       CatalogId: !Ref AWS::AccountId
       ConnectionInput:
         ConnectionProperties: {
-          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrl,
-          "USERNAME": !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]],
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrlCluster1,
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
           # SSM Secure reference is not supported in: [AWS::glue::Connection]
           "PASSWORD": !Ref DatabasePassword
         }
         Description: Glue Connection to Referrence pricing database
         ConnectionType: JDBC
-        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}'
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-01'
+        PhysicalConnectionRequirements:
+          AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
+          SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
+          SubnetId: !Ref SubnetIdForGlueConnection
+
+  CommonDatabaseConnection2:
+    Type: AWS::Glue::Connection
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      ConnectionInput:
+        ConnectionProperties: {
+          "JDBC_CONNECTION_URL": !Ref DatabaseJDBCUrlCluster2,
+          "USERNAME": !Join [ '', [ "{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}" ] ],
+          # SSM Secure reference is not supported in: [AWS::glue::Connection]
+          "PASSWORD": !Ref DatabasePassword
+        }
+        Description: Glue Connection to Referrence pricing database
+        ConnectionType: JDBC
+        Name: !Sub 'cp-ref-etl-common-connection-${EnvironmentShort}-cluster-02'
         PhysicalConnectionRequirements:
           AvailabilityZone: !Ref AvailabilityZoneForGlueConnection
           SecurityGroupIdList: !Ref SecurityGroupListForGlueConnction
@@ -435,7 +539,7 @@ Resources:
       Role: !GetAtt ETLTriggerLambaRole.Arn
       Handler: metadata_aggregator.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/metadata_aggregator.py.zip'
       VpcConfig:
         SecurityGroupIds:
@@ -502,7 +606,7 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - 'arn:aws:s3:::sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/*'
+                  - !Sub 'arn:aws:s3:::sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/*'
               - Effect: Allow
                 Action:
                   - s3:GetObject
@@ -542,9 +646,12 @@ Resources:
       Path: '/'
 
 Outputs:
-  CommonDBConnectionName:
-    Description: Reference price common glue database connection
-    Value: !Ref CommonDatabaseConnection
+  CommonDBConnectionName1:
+    Description: Reference price common glue database connection for cluster 1
+    Value: !Ref CommonDatabaseConnection1
+  CommonDBConnectionName2:
+    Description: Reference price common glue database connection for cluster 2
+    Value: !Ref CommonDatabaseConnection2
   ETLGlueRoleArn:
     Description: ETL glue role arn
     Value: !GetAtt ETLGlueRole.Arn

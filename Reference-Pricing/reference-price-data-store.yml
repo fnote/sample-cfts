@@ -144,6 +144,18 @@ Parameters:
     Description: Maximum permission boundary
     Type: String
     Default: PermissionBoundary-DevOps
+  EnableTwoClusters:
+    Description: If this is set to true, two clusters will be created. Do it only in Production
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+Conditions:
+  createTwoClusters: !Equals
+    - !Ref EnableTwoClusters
+    - 'true'
 
 Resources:
   S3Bucket:
@@ -190,8 +202,8 @@ Resources:
               - s3:ListBucket
               - s3:GetObjectVersion
             Resource: [
-                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]],
-                !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
+            !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]]]],
+            !Join ['', ['arn:aws:s3:::', !Join ['-', [!Ref PartitionedPZS3, !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]]], '/*']]
             ]
 
   ReferencePriceETLS3ReadAccessRole:
@@ -295,7 +307,7 @@ Resources:
   DB01Primary01:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-01-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C01-01-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -333,7 +345,7 @@ Resources:
   DB01Primary02:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceIdentifier: !Sub 'cp-ref-price-02-${EnvironmentShort}'
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C01-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
@@ -346,6 +358,135 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join ['', [!Ref ClusterName, !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  CPRefPriceDBCluster02:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBCluster
+    DependsOn: CpRefLoadFromS3ParameterGroup
+    DeletionPolicy: Snapshot
+    Properties:
+      AssociatedRoles:
+        - RoleArn: !GetAtt ReferencePriceETLS3ReadAccessRole.Arn
+      AvailabilityZones:
+        - us-east-1a
+        - us-east-1c
+        - us-east-1b
+      DBClusterIdentifier: !Join ['-', ['cp-ref-price-db-cluster-02', !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]
+      DBClusterParameterGroupName: !Ref CpRefLoadFromS3ParameterGroup
+      Engine: aurora-mysql
+      EngineMode: provisioned
+      EngineVersion: 5.7.mysql_aurora.2.08.1
+      MasterUsername: !Join ['', ["{{resolve:ssm:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/USERNAME:1}}"]]
+      MasterUserPassword: !Join ['', ["{{resolve:ssm-secure:/CP/", !Ref EnvironmentShort, "/DATABASE/REF_PRICE/PASSWORD:1}}"]]
+      Port: '3306'
+      VpcSecurityGroupIds: [!Ref SGRDSMySQL]
+      DBSubnetGroupName: !Ref snDB
+      Tags:
+        - Key: Name
+          Value: !Join ['', ['cp-ref-price-db-cluster-02', !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  DB02Primary01:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C02-01-${EnvironmentShort}'
+      AllowMajorVersionUpgrade: 'true'
+      AutoMinorVersionUpgrade: 'true'
+      CopyTagsToSnapshot: 'true'
+      DBClusterIdentifier: !Ref CPRefPriceDBCluster02
+      DBInstanceClass: !Ref DBInstanceType
+      CACertificateIdentifier: rds-ca-2019
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref snDB
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: !Join ['', ['cp-ref-price-db-cluster-02', !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  DB02Primary02:
+    Condition: createTwoClusters
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub 'cp-ref-price-C02-02-${EnvironmentShort}'
+      AllowMajorVersionUpgrade: 'true'
+      AutoMinorVersionUpgrade: 'true'
+      CopyTagsToSnapshot: 'true'
+      DBClusterIdentifier: !Ref CPRefPriceDBCluster02
+      DBInstanceClass: !Ref DBInstanceType
+      CACertificateIdentifier: rds-ca-2019
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref snDB
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: !Join ['', ['cp-ref-price-db-cluster-02', !Ref EnvironmentShort]]
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
         - Key: Technical:ApplicationID
@@ -395,31 +536,88 @@ Resources:
         ScaleInCooldown: 300
         DisableScaleIn: false
 
-  DBCLusterReaderEndpointParameter:
+  AutoScalerTarget02:
+    Condition: createTwoClusters
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 15
+      ResourceId: !Sub 'cluster:${CPRefPriceDBCluster02}'
+      ScalableDimension: rds:cluster:ReadReplicaCount
+      ServiceNamespace: rds
+      RoleARN: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/rds.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_RDSCluster'
+
+  AutoScaler02:
+    Condition: createTwoClusters
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      ScalingTargetId: !Ref AutoScalerTarget02
+      ServiceNamespace: rds
+      PolicyName: CPU Auto scale policy
+      PolicyType: TargetTrackingScaling
+      ScalableDimension: rds:cluster:ReadReplicaCount
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: RDSReaderAverageCPUUtilization
+        TargetValue: 40
+        ScaleOutCooldown: 300
+        ScaleInCooldown: 300
+        DisableScaleIn: false
+
+
+  DBCluster01ReaderEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/READER_ENDPOINT']]
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/CLUSTER01/DATABASE/REF_PRICE/READER_ENDPOINT']]
       Type: String
       Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
       Tier: Standard
-      Description: Ref Price DB Cluster Reader Endpoint
+      Description: Ref Price DB Cluster 01 Reader Endpoint
 
-  DBCLusterWriterEndpointParameter:
+  DBCluster01WriterEndpointParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/DATABASE/REF_PRICE/WRITER_ENDPOINT']]
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/CLUSTER01/DATABASE/REF_PRICE/WRITER_ENDPOINT']]
       Type: String
       Value: !Join ['', [!GetAtt CPRefPriceDBCluster.Endpoint.Address]]
       Tier: Standard
-      Description: Ref Price DB Cluster Writer Endpoint
+      Description: Ref Price DB Cluster 01 Writer Endpoint
+
+  DBCluster02ReaderEndpointParameter:
+    Condition: createTwoClusters
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/CLUSTER02/DATABASE/REF_PRICE/READER_ENDPOINT']]
+      Type: String
+      Value: !Join ['', [!GetAtt CPRefPriceDBCluster02.ReadEndpoint.Address]]
+      Tier: Standard
+      Description: Ref Price DB Cluster 02 Reader Endpoint
+
+  DBCluster02WriterEndpointParameter:
+    Condition: createTwoClusters
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/CLUSTER02/DATABASE/REF_PRICE/WRITER_ENDPOINT']]
+      Type: String
+      Value: !Join ['', [!GetAtt CPRefPriceDBCluster02.Endpoint.Address]]
+      Tier: Standard
+      Description: Ref Price DB Cluster 02 Writer Endpoint
 
 Outputs:
   dbUrl00:
-    Description: Endpoint for Cluster
+    Description: Endpoint for Cluster 01
     Value: !Join ['', [!GetAtt CPRefPriceDBCluster.Endpoint.Address]]
   dbUrl01:
-    Description: Read Endpoint Cluster
+    Description: Read Endpoint Cluster 01
     Value: !Join ['', [!GetAtt CPRefPriceDBCluster.ReadEndpoint.Address]]
+  dbUrl10:
+    Condition: createTwoClusters
+    Description: Endpoint for Cluster 02
+    Value: !Join ['', [!GetAtt CPRefPriceDBCluster02.Endpoint.Address]]
+  dbUrl11:
+    Condition: createTwoClusters
+    Description: Read Endpoint Cluster 02
+    Value: !Join ['', [!GetAtt CPRefPriceDBCluster02.ReadEndpoint.Address]]
   etlOutputBucket:
     Description: ETL Output Bucket Name
     Value: !Join ['-', [!Ref PartitionedPZS3, !FindInMap [EnvMap, !Ref EnvironmentShort, val]]]

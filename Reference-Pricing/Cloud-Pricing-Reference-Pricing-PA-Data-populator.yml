@@ -17,10 +17,14 @@ Parameters:
     Description: ARN of the iam role for the glue job to backup data
     Type: String
     Default: arn:aws:iam::037295147636:role/CP-REF-ETLDataBackupGlueRole-DEV
-  DatabaseConnection:
-    Description: Name of the databse connection
+  DatabaseConnectionCluster1:
+    Description: Name of the database connection cluster 1
     Type: String
-    Default: cp-ref-etl-output-bucket-dev
+    Default: cp-ref-etl-common-connection-DEV-cluster-01
+  DatabaseConnectionCluster2:
+    Description: Name of the database connection cluster 2
+    Type: String
+    Default: cp-ref-etl-common-connection-DEV-cluster-02
   IntermediateStorage:
     Description: S3 bucket name to store intermediate files
     Type: String
@@ -28,6 +32,14 @@ Parameters:
   ETLDataBackUpStorage:
     Description: S3 bucket to archive files
     Type: String
+  NotifierLambdaSecutyGroup:
+    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Default: sg-014f39d2fd8370bf6
+  NotifierLambdaSubnets:
+      Type: List<AWS::EC2::Subnet::Id>
+      Description: The list of Subnets to use the Cloud Pricing Notification Service Api
+      Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -40,6 +52,14 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
+  Account:
+    Description: Type of AWS account under which the code deploy S3 bucket is available
+    Type: String
+    Default: nonprod
+    AllowedValues:
+      - nonprod
+      - prod
+    ConstraintDescription: Must be a valid account name
   NotifierLambdaArn:
     Description: Arn of the notifier Lambda
     Type: String
@@ -117,6 +137,10 @@ Parameters:
     Description: Platform
     Type: String
     Default: Cloud Pricing V4
+  maxAllowedConcurrentExecutions:
+    Description: max Allowed Concurrent Executions of PA step function
+    Type: String
+    Default: '5'
 
 Mappings:
   EnvMap:
@@ -180,6 +204,15 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  MaxAllowedConcurrentExecutions:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PA/MAX_ALLOWED_CONCURRENT_EXECUTIONS' ] ]
+      Type: String
+      Value: !Ref maxAllowedConcurrentExecutions
+      Tier: Standard
+      Description: maximum allowed concurrent executions of the PA step function
+
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -200,7 +233,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/s3_trigger_lambda.zip'
       Environment:
         Variables:
@@ -231,19 +264,64 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  AnalyseWaitLoadLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Lambda function that analyses waits or loads for pa
+      FunctionName: !Sub 'CP-REF-etl-pa-Analyse-Load-or-wait-${EnvironmentShort}'
+      Runtime: python3.8
+      Role: !Ref LambdaRole
+      Handler: index.lambda_handler
+      Code:
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/PAAnalyzeWaitOrLoadClusterLambda.zip'
+      Environment:
+        Variables:
+          stepFunctionArn: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:CP-REF-pa-state-machine-${EnvironmentShort}'
+          env: !Ref EnvironmentShort
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
+      Timeout: 120
+      Tags:
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: !Ref 2WTAGGER
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: !Ref Component
+
   PADataBackupJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/data_backup_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/data_backup_job.py'
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: 5
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
@@ -272,14 +350,65 @@ Resources:
         - |-
           {
             "Comment": "Transform and Loads PA data from S3 to DB",
-            "StartAt": "PA ETL Job",
+            "StartAt": "Analyze wait or load status",
             "States": {
+              "Analyze wait or load status":{
+              	         "Type":"Task",
+              	         "Next":"WaitOrLoadOrTerminate",
+              	         "Resource":"arn:aws:states:::lambda:invoke",
+              	         "Parameters":{
+              	            "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
+              	            "Payload":{
+              	               "ENV.$":"$.env",
+                               "s3_input_file_key.$":"$.s3_input_file_key",
+                               "etl_timestamp.$":"$.etl_timestamp",
+              	               "stepFunctionExecutionId.$":"$$.Execution.Id",
+              	               "stepFunctionArn.$":"$$.StateMachine.Id"
+              	            }
+              	         },
+              	         "ResultPath":"$.nextStep",
+                         "Catch":[
+                            {
+                                 "ErrorEquals":[
+                                    "States.TaskFailed"
+                                 ],
+                                 "ResultPath":"$.error",
+                                 "Next":"Notify ETL Failure"
+                            }
+                         ]
+              	      },
+              	      "WaitOrLoadOrTerminate":{
+              	         "Comment":"Check on wait status load or terminate",
+              	         "Type":"Choice",
+              	         "Choices":[
+              	            {
+              	               "Variable":"$.nextStep.Payload.shouldWait",
+              	               "BooleanEquals":true,
+              	               "Next":"Wait"
+              	            },
+              	            {
+              	               "Variable":"$.nextStep.Payload.shouldWait",
+              	               "BooleanEquals":false,
+              	               "Next":"PA ETL Job"
+              	            }
+              	         ],
+              	         "Default":"Terminate"
+              	      },
+              	      "Terminate":{
+              	         "Type":"Succeed"
+              	      },
+              	      "Wait":{
+              	         "Type":"Wait",
+              	         "Seconds":300,
+              	         "Next":"Analyze wait or load status"
+              },
               "PA ETL Job": {
                 "Type": "Task",
                 "Resource": "arn:aws:states:::glue:startJobRun.sync",
                 "Parameters": {
                   "JobName": "${PADataETLJobName}",
                   "Arguments": {
+                    "--ENV.$": "$.env",
                     "--s3_input_bucket.$": "$.s3_input_bucket",
                     "--s3_input_file_key.$": "$.s3_input_file_key",
                     "--etl_output_path_key.$": "$.etl_output_path_key",
@@ -346,6 +475,7 @@ Resources:
                     "additional_info_file_s3": "${intermediateS3Name}",
                     "backup_file_path.$" : "$.backup_file_path",
                     "etl_timestamp.$" : "$.etl_timestamp",
+                    "file_name.$": "$.s3_input_file_key",
                     "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)"
                   }
@@ -363,6 +493,7 @@ Resources:
                     "backup_file_path.$" : "$.backup_file_path",
                     "additional_info_file_s3": "${backupS3Name}",
                     "etl_timestamp.$" : "$.etl_timestamp",
+                    "file_name.$": "$.s3_input_file_key",
                     "etl_output_path_key.$" : "$.etl_output_path_key",
                     "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
                     "status": "SUCCEEDED"
@@ -375,6 +506,7 @@ Resources:
         - {
             PADataETLJobName: !Ref PAETLGlueJob,
             notifierLambdaArn: !Ref NotifierLambdaArn,
+            AnalyseLoadOrWaitLambdaArn: !GetAtt AnalyseWaitLoadLambda.Arn,
             paDataBackupJobName: !Ref PADataBackupJob,
             backupS3Name: !Ref ETLDataBackUpStorage,
             intermediateS3Name: !Ref IntermediateStorage
@@ -424,18 +556,18 @@ Resources:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/scripts/pa_etl_script.py'
       Connections:
         Connections:
-          - !Ref DatabaseConnection
+          - !Ref DatabaseConnectionCluster1
+          - !Ref DatabaseConnectionCluster2
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
-        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/pa/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl"
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
-        MaxConcurrentRuns: 1
+        MaxConcurrentRuns: 5
       MaxCapacity: 1.0
       MaxRetries: 0
       Timeout: 2880

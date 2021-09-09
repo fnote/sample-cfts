@@ -200,6 +200,50 @@
 				""
 			],
 			"ConstraintDescription": "Must be a valid environment."
+		},
+		"EC2InstanceSize": {
+			"Description": "EC2 Instance Size (Recommended DEV - t3.medium, EXE, STG - t3.xlarge)",
+			"Type": "String",
+			"Default": "t3.xlarge",
+			"AllowedValues": [
+				"t3.xlarge",
+				"t3.large",
+				"t3.medium"
+			]
+		},
+		"ASGMinSize": {
+			"Description": "ASG Min size (Recommended DEV - 1, EXE, STG - 2)",
+			"Type": "Number",
+			"Default": "2",
+			"MinValue": "0",
+			"MaxValue": "50",
+			"ConstraintDescription": "must be between 0 and 50"
+		},
+		"ASGDesiredSze": {
+			"Description": "ASG Desired size (Recommended DEV - 1, EXE, STG - 2)",
+			"Type": "Number",
+			"Default": "2",
+			"MinValue": "0",
+			"MaxValue": "50",
+			"ConstraintDescription": "must be between 0 and 50"
+		},
+		"CPUAlarmHighThreshold": {
+			"Description": "CPU Alarm High Threshold (Recommended DEV - 70%, EXE, STG - 50%)",
+			"Type": "Number",
+			"Default": "50",
+			"AllowedValues": [
+				"50",
+				"80"
+			]
+		},
+		"CPUAlarmLowThreshold": {
+			"Description": "CPU Alarm Low Threshold CPU Alarm High Threshold (Recommended DEV - 50%, EXE, STG - 35%)",
+			"Type": "Number",
+			"Default": "35",
+			"AllowedValues": [
+				"35",
+				"50"
+			]
 		}
 	},
 	"Resources": {
@@ -234,8 +278,12 @@
 						"Ref": "TargetGroup"
 					}
 				],
-				"MinSize": "2",
-				"DesiredCapacity": "2",
+				"MinSize": 	{
+					"Ref": "ASGMinSize"
+				},
+				"DesiredCapacity": 	{
+					"Ref": "ASGDesiredSze"
+				},
 				"MaxSize": "50",
 				"HealthCheckType": "ELB",
 				"HealthCheckGracePeriod": "300",
@@ -380,7 +428,9 @@
                     {
                         "Ref": "CommonAMI"
                     },
-					"InstanceType": "t3.xlarge",
+					"InstanceType": {
+						"Ref": "EC2InstanceSize"
+					},
                     "KeyName": {
 						"Ref": "PemKey"
 					},
@@ -411,7 +461,7 @@
 								[
 									"#!/bin/bash -v\n",
 									"date > /home/ec2-user/starttime\n",
-	
+
 									"##############################################\n",
 									"# Change Name of server to match new hostname\n",
 									"##############################################\n",
@@ -421,7 +471,7 @@
 									"HOSTNAME=cppricingservice-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
 									"NOZEROCONF=yes\n",
 									"EOF\n",
-	
+
 									"##############################################\n",
 									"# Add Users to server\n",
 									"##############################################\n",
@@ -435,19 +485,19 @@
 									"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
 									"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 									"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
-	
+
 									"##############################################\n",
 									"# Increase open file limits\n",
 									"##############################################\n",
 									"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
 									"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
-	
+
 									"##############################################\n",
 									"# Set System Environment \n",
 									"##############################################\n",
 									"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
 									"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-	
+
 									"##############################################\n",
 									"# Install Dependencies.\n",
 									"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
@@ -457,20 +507,20 @@
 									"cd /tmp\n",
 									"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
 									"yum install -y jdk-11.0.10_linux-x64_bin.rpm\n",
-	
+
 									"##############################################\n",
 									"# DD APM - Configuration\n",
 									"##############################################\n",
-	
+
 									"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
 									"chmod +x /etc/profile.d/javaopts.sh\n",
-	
+
 									"mkdir /etc/dd-java-agent/\n",
 									"cd /etc/dd-java-agent/\n",
 									"cp /tmp/dd-java-agent.jar /etc/dd-java-agent/\n",
 									"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
 									"cd /tmp\n",
-	
+
 									"count=1\n",
 									"currentStatus=$(service codedeploy-agent status)\n",
 									"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
@@ -478,7 +528,7 @@
 									"if [ $count -le 3 ]\n",
 									"then\n",
 									"rm -f codeDeployInstaller\n",
-	
+
 									"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
 									"chmod +x ./codeDeployInstaller\n",
 									"./codeDeployInstaller auto\n",
@@ -488,15 +538,15 @@
 									"shutdown now\n",
 									"fi\n",
 									"done\n",
-	
+
 									"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
 									"rpm -U ./amazon-cloudwatch-agent.rpm\n",
-	
+
 									"##############################################\n",
 									"# DD log - Configuration\n",
 									"##############################################\n",
 									"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
-	
+
 									"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
 									"api_key: $DATADOG_TOKEN\n",
 									"site: datadoghq.com\n",
@@ -510,7 +560,7 @@
 									"apm_config:\n",
 									"  enabled: true\n",
 									"EOF\n",
-	
+
 									"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
 									"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
 									"logs:\n",
@@ -521,26 +571,26 @@
 									"EOF\n",
 									"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
 									"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
-	
+
 									"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
 									"instances:\n",
 									"    - use_mount: false\n",
 									"      mount_point_blacklist:\n",
 									"      - /opt/sentinelone/mount\n",
 									"EOF\n",
-	
+
 									"chown -R dd-agent:dd-agent /var/log/datadog/\n",
 									"systemctl restart datadog-agent\n",
-	
+
 									"##############################################\n",
 									"# CloudWatch Configuration\n",
 									"##############################################\n",
-	
+
 									"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
 									"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/PRICING_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
-	
+
 									"cd /tmp\n",
-	
+
 									"date > /home/ec2-user/stoptime"
 								]
 							]
@@ -591,7 +641,7 @@
 								{
 									"Key": "Technical:ApplicationRole",
 									"Value": "Auto Scaling Group"
-				
+
 								},
 								{
 									"Key": "Technical:ApplicationSubName",
@@ -743,7 +793,7 @@
 							]
 						}
 					]
-				},				             
+				},
                 "LaunchTemplateName": {
                     "Fn::Join": [
                         "",
@@ -785,7 +835,9 @@
 				"MetricName": "CPUUtilization",
 				"Statistic": "Average",
 				"ComparisonOperator": "GreaterThanThreshold",
-				"Threshold": "50",
+				"Threshold": {
+					"Ref": "CPUAlarmHighThreshold"
+				},
 				"Period": "60",
 				"EvaluationPeriods": "1",
 				"AlarmActions": [
@@ -823,7 +875,9 @@
 				"MetricName": "CPUUtilization",
 				"Statistic": "Average",
 				"ComparisonOperator": "LessThanThreshold",
-				"Threshold": "35",
+				"Threshold": {
+					"Ref": "CPUAlarmHighThreshold"
+				},
 				"Period": "300",
 				"EvaluationPeriods": "3",
 				"AlarmActions": [

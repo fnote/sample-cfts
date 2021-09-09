@@ -102,11 +102,11 @@ Parameters:
   CPUReserved:
     Description: The number of cpu units reserved for the task. Add valid CPU, Memory combination for fargate
     Type: Number
-    Default: '2048'
+    Default: '4096'
   MemoryReserved:
     Description: The soft limit (in MiB) of memory to reserve for the task. Add valid CPU, Memory combination for fargate
     Type: Number
-    Default: '4096'
+    Default: '8192'
   RetentionTime:
     Description: The number of days to retain the log events in the specified log group. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.
     Type: Number
@@ -178,7 +178,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -221,7 +220,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -264,7 +262,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -307,7 +304,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -350,7 +346,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -393,7 +388,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -436,7 +430,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -479,7 +472,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -522,7 +514,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'
@@ -565,7 +556,6 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs/ALL_TABLES
-              awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%L'
           Environment:
             - Name: SERVER_ENVIRONMENT_VARIABLE
               Value: !Ref 'EnvironmentShort'

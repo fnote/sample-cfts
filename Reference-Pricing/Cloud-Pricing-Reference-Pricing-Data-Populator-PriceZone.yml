@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: "Reference Price Data Populator for Prize Zone data"
+Description: "Reference Price Data Populator for Price Zone data"
 Parameters:
   LambdaRole:
     Description: ARN of the iam role for the lambda function
@@ -24,6 +24,14 @@ Parameters:
   ETLDataBackUpStorage:
     Description: S3 bucket to archive files
     Type: String
+  NotifierLambdaSecutyGroup:
+    Description: The list of Securty groups to use the Cloud Pricing Notification Service Api
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Default: sg-014f39d2fd8370bf6
+  NotifierLambdaSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: The list of Subnets to use the Cloud Pricing Notification Service Api
+    Default: subnet-0a5d9eea71b9c97c6, subnet-0186b43162a344d9a, subnet-0ad1216eb31e15186
   EnvironmentShort:
     Description: Environment for application
     Type: String
@@ -36,10 +44,22 @@ Parameters:
       - TST
       - PROD
     ConstraintDescription: Must be a valid environment
-  DatabaseConnection:
+  Account:
+    Description: Type of AWS account under which the code deploy S3 bucket is available
+    Type: String
+    Default: nonprod
+    AllowedValues:
+      - nonprod
+      - prod
+    ConstraintDescription: Must be a valid account name
+  DatabaseConnectionCluster1:
     Description: Name of the databse connection
     Type: String
-    Default: cp-ref-etl-common-connection-DEV
+    Default: cp-ref-etl-common-connection-DEV-cluster-01
+  DatabaseConnectionCluster2:
+    Description: Name of the databse connection
+    Type: String
+    Default: cp-ref-etl-common-connection-DEV-cluster-02
   NotifierLambdaArn:
     Description: Arn of the notifier Lambda
     Type: String
@@ -47,7 +67,7 @@ Parameters:
   ETLMaximumConcurrency:
     Description: Maximum Concurrency Allowed for Price Zone Glue jobs
     Type: String
-    Default: 5
+    Default: 20
   LoadJobMaximumConcurrency:
     Description: Maximum Concurrency Allowed for Price Zone load jobs
     Type: String
@@ -55,25 +75,46 @@ Parameters:
   TransformJobMaxDPUCount:
     Description: Maximum DPU count allocated for Transform spark job
     Type: String
-    Default: 100
+    Default: 149
   TransformJobMinDPUCount:
     Description: Minimum DPU count allocated for Transform spark job
     Type: String
-    Default: 5
-  ActiveOpcos:
-    Description: Active Opcos
-    Type: String
-    Default: '019'
+    Default: 10
   PriceZoneFilePartialLoadPrefixes:
     Description: List of prefixes for price zone file partial load prefixes
     Type: String
     Default: ctt,itt
+  PriceZoneFileFullLoadPrefixes:
+    Description: List of prefixes for price zone file full load prefixes
+    Type: String
+    Default: wtp
+  ActiveOpcos:
+    Description: Active Opcos
+    Type: String
+    Default: '019'
+  LoadJobMaxConcurrencyCluster1:
+    Description: cluster 1 load job max concurrency
+    Type: String
+    Default: '4'
+  LoadJobMaxConcurrencyCluster2:
+    Description: cluster 2 load job max concurrency
+    Type: String
+    Default: '4'
+  PartialLoadMaxSize:
+    Description: Max size of the file carrying partial load in GBs beyond this it will be considered a full load
+    Type: String
+    Default: '5'
+  LoadJobSoftValidation:
+    Description: if this value is 0 let it pass , if 1 throw error , if 2 load future table , if anything else throw error
+    Type: String
+    Default: '0'
   TransformJobWorkerType:
     Description: AWS Glue worker type for Spark job
     Type: String
-    Default: Standard
+    Default: G.2X
     AllowedValues:
       - Standard
+      - G.2X
   PONumber:
     Description: PO Number for billing
     Type: String
@@ -186,6 +227,13 @@ Resources:
                 Rules:
                   - Name: suffix
                     Value: gz
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt PriceZoneInputTrigger.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: bz2
       Tags:
         - Key: Technical:ApplicationName
           Value: !Ref ApplicationName
@@ -210,11 +258,11 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  PrizeZoneSparkJobLogStorage:
+  PriceZoneSparkJobLogStorage:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub
-        - 'cp-ref-etl-prize-zone-spark-temp-dir-${env}'
+        - 'cp-ref-etl-price-zone-spark-temp-dir-${env}'
         - { env: !FindInMap [ EnvMap, !Ref EnvironmentShort, val ]}
       Tags:
         - Key: Technical:ApplicationName
@@ -276,14 +324,6 @@ Resources:
       Tier: Standard
       Description: DPU count for ETL spark job for New customer
 
-  PriceZoneETLActiveOpcos:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/ACTIVE/BUSINESS/UNITS']]
-      Type: String
-      Value: !Ref ActiveOpcos
-      Description: Active opcos available for prize zone
-
   PriceZoneETLPartialLoadPrefixes:
     Type: AWS::SSM::Parameter
     Properties:
@@ -292,6 +332,55 @@ Resources:
       Value: !Ref PriceZoneFilePartialLoadPrefixes
       Tier: Standard
       Description: List of prefixes for price zone file partial load prefixes
+
+  PriceZoneETLFullLoadPrefixes:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/FULL_LOAD_PREFIXES' ] ]
+      Type: String
+      Value: !Ref PriceZoneFileFullLoadPrefixes
+      Tier: Standard
+      Description: List of prefixes for price zone file full load prefixes
+
+  PriceZoneETLActiveOpcos:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ['', ['/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/ACTIVE/BUSINESS/UNITS']]
+      Type: String
+      Value: !Ref ActiveOpcos
+      Description: Active opcos available for price zone
+
+  PriceZoneLoadJobMaxConcurrencyCluster1:
+    Type: AWS::SSM::Parameter
+    Properties:
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_01/MAX_CONCURRENCY' ] ]
+        Type: String
+        Value: !Ref LoadJobMaxConcurrencyCluster1
+        Description: cluster 1 max load job count
+
+  PriceZoneLoadJobMaxConcurrencyCluster2:
+    Type: AWS::SSM::Parameter
+    Properties:
+        Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/LOAD_JOB/CLUSTER_02/MAX_CONCURRENCY' ] ]
+        Type: String
+        Value: !Ref LoadJobMaxConcurrencyCluster2
+        Description: cluster 2 max load job count
+
+  PriceZoneInputFileSizePartialLoadUpperBound:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/PARTIAL_LOAD_FILE_SIZE_UPPER_BOUND' ] ]
+      Type: String
+      Value: !Ref PartialLoadMaxSize
+      Description: min file size of the input file to be considered a full load
+
+  PriceZoneLoadJobSoftValidation:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ '', [ '/CP/', !Ref EnvironmentShort, '/ETL/REF_PRICE/PRICE_ZONE/FULL_EXPORT_LOADING/SOFT_VALIDATION' ] ]
+      Type: String
+      Value: !Ref LoadJobSoftValidation
+      Description: future table is not empty when full export is received and we load looking at the value set here if 0 throw error
 
   LambdaInvokePermission:
     Type: AWS::Lambda::Permission
@@ -313,7 +402,7 @@ Resources:
       Role: !Ref LambdaRole
       Handler: s3_trigger_lambda.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
         S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/s3_trigger_lambda.zip'
       Environment:
         Variables:
@@ -345,23 +434,23 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  PrizeZoneDecompressJob:
+  PriceZoneDecompressJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/decompress_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/decompress_job.py'
       DefaultArguments:
         "--job-bookmark-option": "job-bookmark-disable"
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/smart_open-2.1.0-py3.6.egg"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/smart_open-2.1.0-py3.6.egg"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
       Timeout: 4320
-      Name: !Sub 'CP-REF-etl-prize-zone-decompression-job-${EnvironmentShort}'
+      Name: !Sub 'CP-REF-etl-price-zone-decompression-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
       Tags: {
         'Technical:ApplicationName': !Ref ApplicationName,
@@ -377,21 +466,21 @@ Resources:
         'Component': !Ref Component
       }
 
-  PrizeZoneTransformJob:
+  PriceZoneTransformJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: glueetl
         PythonVersion: 3
-        ScriptLocation: !Sub s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/transform_spark_job.py'
       DefaultArguments:
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/validator.py,s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/constants.py"
         "--enable-metrics": ""
         "--enable-continuous-cloudwatch-log": "true"
         "--enable-continuous-log-filter": "true"
         "--enable-spark-ui": 'true'
-        "--spark-event-logs-path": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
-        "--TempDir": !Sub "s3://${PrizeZoneSparkJobLogStorage}"
+        "--spark-event-logs-path": !Sub "s3://${PriceZoneSparkJobLogStorage}"
+        "--TempDir": !Sub "s3://${PriceZoneSparkJobLogStorage}"
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
@@ -399,7 +488,7 @@ Resources:
       WorkerType: !Ref TransformJobWorkerType
       NumberOfWorkers: !Ref TransformJobMaxDPUCount
       MaxRetries: 0
-      Name: !Sub 'CP-REF-etl-prize-zone-transform-job-${EnvironmentShort}'
+      Name: !Sub 'CP-REF-etl-price-zone-transform-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
       Tags: {
         'Technical:ApplicationName': !Ref ApplicationName,
@@ -424,27 +513,13 @@ Resources:
       Role: !Ref LambdaRole
       Handler: index.lambda_handler
       Code:
-        ZipFile: |
-          import boto3
-          import re
-
-          def extract_opco_id(x):
-               p = re.search('opco_id=(\d+?)/', x['Key'])
-               return p and p.group(1)
-          def lambda_handler(event, context):
-              client = boto3.client('s3')
-
-              paginator = client.get_paginator('list_objects_v2')
-              pages = paginator.paginate(Bucket=event['intermediate_s3_name'], Prefix=event['partitioned_files_key'])
-
-              opco_id_set = set()
-              for page in pages:
-                  opco_ids = map(extract_opco_id, page['Contents'])
-                  for opco_id in set(opco_ids):
-                      opco_id_set.add(opco_id)
-
-              print(list(opco_id_set))
-              return list(opco_id_set)
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/FetchFileListLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 180
       Tags:
         - Key: Technical:ApplicationName
@@ -470,6 +545,47 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
+  PriceZoneAnalyseLoadOrWaitLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+        Description: Lambda function that analyzes status of previous job runs
+        FunctionName: !Sub 'CP-REF-etl-price-zone-Analyse-Load-or-wait-${EnvironmentShort}'
+        Runtime: python3.7
+        Role: !Ref LambdaRole
+        Handler: index.lambda_handler
+        Code:
+          S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+          S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/AnalyzeWaitOrLoadClusterLambda.zip'
+        VpcConfig:
+          SecurityGroupIds:
+            !Ref NotifierLambdaSecutyGroup
+          SubnetIds:
+            !Ref NotifierLambdaSubnets
+        Timeout: 60
+        Tags:
+          - Key: Technical:ApplicationName
+            Value: !Ref ApplicationName
+          - Key: Technical:ApplicationID
+            Value: !Ref ApplicationID
+          - Key: Technical:PlatformOwner
+            Value: !Ref Owner
+          - Key: Technical:Environment
+            Value: !FindInMap [ EnvMap, !Ref EnvironmentShort, name ]
+          - Key: Support_Email
+            Value: !Ref SupportEmail
+          - Key: Approver
+            Value: !Ref Approver
+          - Key: PO_Number
+            Value: !Ref PONumber
+          - Key: Project_ID
+            Value: !Ref ProjectID
+          - Key: 2WTAGGER
+            Value: !Ref 2WTAGGER
+          - Key: Platform
+            Value: !Ref Platform
+          - Key: Component
+            Value: !Ref Component
+
   PriceZoneJobStatusAnalyzerLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -479,24 +595,13 @@ Resources:
       Role: !Ref LambdaRole
       Handler: index.lambda_handler
       Code:
-        ZipFile: |
-          def lambda_handler(event, context):
-
-              jobStatuses = event['loadJobStatuses']
-
-              isAllSuccess = True
-              for jobStatus in jobStatuses:
-                  if 'loadJob' in jobStatus:
-                      if 'JobRunState' in jobStatus['loadJob']:
-                          if jobStatus['loadJob']['JobRunState'] != "SUCCEEDED":
-                              isAllSuccess = False
-                              break
-                  else:
-                      isAllSuccess = False
-                      break
-              return {
-                  'isAllSuccess': isAllSuccess
-                    }
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/TakeBackupDecisionLambda.zip'
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -529,14 +634,19 @@ Resources:
       FunctionName: !Sub 'CP-REF-etl-price-zone-wait-status-analyzer-${EnvironmentShort}'
       Runtime: python3.8
       Role: !Ref LambdaRole
-      Handler: analyze_etl_wait_status.lambda_handler
+      Handler: index.lambda_handler
       Code:
-        S3Bucket: sysco-us-east-1-prcp-nonprod-codedeploy
-        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/analyze_etl_wait_status.zip'
+        S3Bucket: !Sub 'sysco-us-east-1-prcp-${Account}-codedeploy'
+        S3Key: !Sub 'ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/AnalyzeEtlWaitStatusLambda.zip'
       Environment:
         Variables:
           intermediateStorageS3: !Ref IntermediateStorage
           env: !Ref EnvironmentShort
+      VpcConfig:
+        SecurityGroupIds:
+          !Ref NotifierLambdaSecutyGroup
+        SubnetIds:
+          !Ref NotifierLambdaSubnets
       Timeout: 60
       Tags:
         - Key: Technical:ApplicationName
@@ -562,16 +672,15 @@ Resources:
         - Key: Component
           Value: !Ref Component
 
-  PrizeZoneDataLoadJob:
+  PriceZoneDataLoadJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/load_job.py'
       DefaultArguments:
-        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
-        "--GLUE_CONNECTION_NAME": !Ref DatabaseConnection
+        "--extra-py-files": !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/SQLAlchemy-1.3.17-cp35-cp35m-manylinux2010_x86_64.whl,s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/libraries/PyMySQL-0.9.3-py2.py3-none-any.whl'
         "--METADATA_LAMBDA": !Sub 'CP-REF-PRICE-etl-metadata-aggregator-${EnvironmentShort}'
       ExecutionProperty:
         MaxConcurrentRuns: !Ref LoadJobMaximumConcurrency
@@ -580,8 +689,9 @@ Resources:
       MaxCapacity: 1.0
       Connections:
         Connections:
-          - !Ref DatabaseConnection
-      Name: !Sub 'CP-REF-etl-prize-zone-load-job-${EnvironmentShort}'
+          - !Ref DatabaseConnectionCluster1
+          - !Ref DatabaseConnectionCluster2
+      Name: !Sub 'CP-REF-etl-price-zone-load-job-${EnvironmentShort}'
       Role: !Ref GlueJobExecutionRole
       Tags: {
         'Technical:ApplicationName': !Ref ApplicationName,
@@ -597,23 +707,23 @@ Resources:
         'Component': !Ref Component
       }
 
-  PrizeZoneDataBackupJob:
+  PriceZoneDataBackupJob:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: 3
-        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/data_backup_job.py'
+        ScriptLocation: !Sub 's3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/price_zone/data_backup_job.py'
       DefaultArguments:
         "--INTERMEDIATE_S3_BUCKET": !Ref IntermediateStorage
         "--ARCHIVING_S3_BUCKET": !Ref ETLDataBackUpStorage
-        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-nonprod-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
+        "--extra-py-files": !Sub "s3://sysco-us-east-1-prcp-${Account}-codedeploy/ReferencePricingApi/DataPopulator/${EnvironmentShort}/common_scripts/move_s3_objects.py"
       ExecutionProperty:
         MaxConcurrentRuns: !Ref ETLMaximumConcurrency
       GlueVersion: 1.0
       MaxRetries: 0
       MaxCapacity: 1.0
-      Name: !Sub 'CP-REF-etl-prize-zone-backup-job-${EnvironmentShort}'
+      Name: !Sub 'CP-REF-etl-price-zone-backup-job-${EnvironmentShort}'
       Role: !Ref GlueJobDataBackupRole
       Tags: {
         'Technical:ApplicationName': !Ref ApplicationName,
@@ -632,317 +742,673 @@ Resources:
   PriceZoneStepFunctionExecutionLogs:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub 'cp-ref-etl-prize-zone-step-function-logs-${EnvironmentShort}'
+      LogGroupName: !Sub 'cp-ref-etl-price-zone-step-function-logs-${EnvironmentShort}'
       RetentionInDays: 30
 
   PriceZoneStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      StateMachineName: !Sub 'CP-REF-etl-prize-zone-state-machine-${EnvironmentShort}'
+      StateMachineName: !Sub 'CP-REF-etl-price-zone-state-machine-${EnvironmentShort}'
       StateMachineType: STANDARD
       DefinitionString: !Sub
         - |-
           {
-            "Comment": "Transform and Loads EATs data from S3 to DB",
-            "StartAt": "Analyze wait status",
-            "States": {
-            "Analyze wait status": {
-               "Type": "Task",
-               "Resource": "arn:aws:states:::lambda:invoke",
-               "Parameters": {
-                 "FunctionName": "${waitStatusAnalyzerLambdaArn}",
-                 "Payload": {
-                   "stepFunctionExecutionId.$": "$$.Execution.Id",
-                   "stepFunctionArn.$": "$$.StateMachine.Id"
-                 }
-               },
-               "ResultPath": "$.waitStatus",
-               "Catch": [
-                 {
-                   "ErrorEquals": [
-                     "States.TaskFailed"
+             "Comment":"Transform and Loads EATs data from S3 to DB",
+             "StartAt":"Analyze wait status",
+             "States":{
+                "Analyze wait status":{
+                   "Type":"Task",
+                   "Resource":"arn:aws:states:::lambda:invoke",
+                   "Parameters":{
+                      "FunctionName":"${waitStatusAnalyzerLambdaArn}",
+                      "Payload":{
+                         "s3_input_file_key.$":"$.s3_input_file_key",
+                         "etl_timestamp.$":"$.etl_timestamp",
+                         "file_prefix.$":"$.file_prefix",
+                         "partial_load.$":"$.partial_load",
+                         "stepFunctionExecutionId.$":"$$.Execution.Id",
+                         "stepFunctionArn.$":"$$.StateMachine.Id"
+                      }
+                   },
+                   "ResultPath":"$.waitStatus",
+                   "Catch":[
+                      {
+                         "ErrorEquals":[
+                            "States.TaskFailed"
+                         ],
+                         "ResultPath":"$.error",
+                         "Next":"Notify Failure2"
+                      }
                    ],
-                   "ResultPath": "$.error",
-                   "Next": "Notify Failure"
-                 }
-               ],
-               "Next": "WaitOrContinue"
-             },
-             "WaitOrContinue": {
-               "Comment": "Check on wait status and wait or continue ETL",
-               "Type": "Choice",
-               "Choices": [
-                 {
-                   "Variable": "$.waitStatus.Payload.shouldWait",
-                   "BooleanEquals": true,
-                   "Next": "waitExecution"
-                 }
-               ],
-               "Default": "Decompress"
-             },
-             "waitExecution": {
-               "Type": "Wait",
-               "Seconds": 300,
-               "Next": "Analyze wait status"
-             },
-              "Decompress": {
-                "Comment": "Decompress python shell job",
-                "Type": "Task",
-                "Resource": "arn:aws:states:::glue:startJobRun.sync",
-                  "Parameters": {
-                  "JobName": "${prizeZoneDecompressJobName}",
-                  "Arguments": {
-                    "--s3_path.$": "$.s3_path",
-                    "--decompressed_file_path.$": "$.decompressed_file_path"
-                  }
+                   "Next":"WaitOrContinue"
                 },
-                "ResultPath": "$.response",
-                "Catch": [
-                  {
-                    "ErrorEquals": [
-                      "States.TaskFailed"
-                    ],
-                    "ResultPath": "$.error",
-                    "Next": "Notify Failure"
-                  }
-                ],
-                "Next": "Transform"
-              },
-              "Transform": {
-                "Comment": "Transform spark job",
-                "Type": "Task",
-                "Resource": "arn:aws:states:::glue:startJobRun.sync",
-                  "Parameters": {
-                  "JobName": "${prizeZoneTransformJobName}",
-                  "Arguments": {
-                    "--decompressed_file_path.$": "$.decompressed_file_path",
-                    "--partitioned_files_path.$": "$.partitioned_files_path",
-                    "--enable-continuous-cloudwatch-log": "true",
-                    "--active_opcos.$": "$.active_opcos",
-                    "--intermediate_s3_name.$": "$.intermediate_s3_name",
-                    "--intermediate_directory_path.$": "$.intermediate_directory_path",
-                    "--metadata_aggregator": "${metadataAggregator}"
-                  },
-                  "NumberOfWorkers.$": "$.worker_count",
-                  "WorkerType.$": "$.worker_type"
+                "WaitOrContinue":{
+                   "Comment":"Check on wait status and wait or continue ETL",
+                   "Type":"Choice",
+                   "Choices":[
+                      {
+                         "Variable":"$.waitStatus.Payload.shouldWait",
+                         "BooleanEquals":true,
+                         "Next":"waitExecution"
+                      }
+                   ],
+                   "Default":"BzipOrGzip"
                 },
-                "ResultPath": "$.response",
-                "Catch": [
-                  {
-                    "ErrorEquals": [
-                      "States.TaskFailed"
-                    ],
-                    "ResultPath": "$.error",
-                    "Next": "Notify Failure"
-                  }
-                ],
-                "Next": "Fetch File List"
-              },
-              "Fetch File List": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke",
-                "Parameters": {
-                  "FunctionName": "${opCoFilesFetchLambdaArn}",
-                  "Payload":{
-                     "intermediate_s3_name.$":"$.intermediate_s3_name",
-                     "partitioned_files_key.$":"$.partitioned_files_key"
-                  }
+                "waitExecution":{
+                   "Type":"Wait",
+                   "Seconds":300,
+                   "Next":"Analyze wait status"
                 },
-                "ResultPath": "$.opcoList",
-                "Catch": [
-                  {
-                    "ErrorEquals": [
-                      "States.TaskFailed"
-                    ],
-                    "ResultPath": "$.error",
-                    "Next": "Notify Failure"
-                  }
-                ],
-                "Next": "Load All"
-              },
-              "Notify Failure": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke",
-                "Parameters": {
-                  "FunctionName": "${notifierLambdaArn}",
-                  "Payload": {
-                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
-                    "event": "ETL-PRICE_ZONE",
-                    "additional_info_file_s3.$": "$.intermediate_s3_name",
-                    "additional_info_file_key.$": "$.intermediate_directory_path",
-                    "backup_bucket.$": "$.backup_bucket",
-                    "backup_file_path.$" : "$.backup_file_path",
-                    "etl_output_path_key.$": "$.etl_output_path_key",
-                    "stepFunctionExecutionId.$": "$$.Execution.Id"
-                  }
-                },
-                "End": true
-              },
-              "Load All": {
-                "Type": "Map",
-                "ItemsPath": "$.opcoList.Payload",
-                "MaxConcurrency": 2,
-                "Parameters": {
-                  "id.$": "$$.Map.Item.Value",
-                  "partitioned_files_key.$": "$.partitioned_files_key",
-                  "intermediate_s3_name.$": "$.intermediate_s3_name",
-                  "intermediate_directory_path.$": "$.intermediate_directory_path",
-                  "etl_timestamp.$": "$.etl_timestamp"
-                },
-                "Iterator": {
-                  "StartAt": "Load Job",
-                  "States": {
-                    "Load Job": {
-                      "Type": "Task",
-                      "Resource": "arn:aws:states:::glue:startJobRun.sync",
-                      "Parameters": {
-                        "JobName": "${prizeZoneDataLoadJobName}",
-                        "Arguments": {
-                          "--opco_id.$": "$.id",
-                          "--partitioned_files_key.$": "$.partitioned_files_key",
-                          "--intermediate_s3_name.$": "$.intermediate_s3_name",
-                          "--intermediate_directory_path.$": "$.intermediate_directory_path",
-                          "--etl_timestamp.$": "$.etl_timestamp"
-                        }
+                "BzipOrGzip":{
+                   "Comment":"Check file type",
+                   "Type":"Choice",
+                   "Choices":[
+                      {
+                         "Variable":"$.file_type",
+                         "StringEquals":"gz",
+                         "Next":"Decompress"
                       },
-                      "Retry": [
-                        {
-                          "ErrorEquals": [
+                      {
+                         "Variable":"$.file_type",
+                         "StringEquals":"bz2",
+                         "Next":"Transform"
+                      }
+                   ],
+                   "Default":"Notify Failure2"
+                },
+                "Decompress":{
+                   "Comment":"Decompress python shell job",
+                   "Type":"Task",
+                   "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                   "Parameters":{
+                      "JobName":"${priceZoneDecompressJobName}",
+                      "Arguments":{
+                         "--s3_path.$":"$.s3_path",
+                         "--decompressed_file_path.$":"$.decompressed_file_path"
+                      }
+                   },
+                   "ResultPath":"$.response",
+                   "Catch":[
+                      {
+                         "ErrorEquals":[
                             "States.TaskFailed"
-                          ],
-                          "IntervalSeconds": 3,
-                          "MaxAttempts": 2,
-                          "BackoffRate": 10
-                        }
-                      ],
-                      "Catch": [
-                        {
-                          "ErrorEquals": [
-                            "States.TaskFailed"
-                          ],
-                          "ResultPath": "$.error",
-                          "Next": "Notify Job Failure"
-                        }
-                      ],
-                      "ResultPath": "$.loadJob",
-                      "End": true
-                    },
-                    "Notify Job Failure": {
-                      "Type": "Task",
-                      "Resource": "arn:aws:states:::lambda:invoke",
-                      "Parameters": {
-                        "FunctionName": "${notifierLambdaArn}",
-                        "Payload":{
-                           "opco_id.$":"$.id",
-                           "message.$":"$.error.Cause",
-                           "event": "ETL-PRICE_ZONE",
-                           "additional_info_file_s3.$": "$.intermediate_s3_name",
-                           "etl_output_path_key.$": "$.etl_output_path_key",
-                           "backup_bucket.$": "$.backup_bucket",
-                           "backup_file_path.$" : "$.backup_file_path",
-                           "stepFunctionExecutionId.$": "$$.Execution.Id"
-                        }
+                         ],
+                         "ResultPath":"$.error",
+                         "Next":"Notify Failure2"
+                      }
+                   ],
+                   "Next":"Transform"
+                },
+                "Transform":{
+                   "Comment":"Transform spark job",
+                   "Type":"Task",
+                   "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                   "Parameters":{
+                      "JobName":"${priceZoneTransformJobName}",
+                      "Arguments":{
+                         "--s3_path.$":"$.s3_path",
+                         "--file_type.$":"$.file_type",
+                         "--decompressed_file_path.$":"$.decompressed_file_path",
+                         "--partitioned_files_path.$":"$.partitioned_files_path",
+                         "--enable-continuous-cloudwatch-log":"true",
+                         "--active_opcos.$":"$.active_opcos",
+                         "--intermediate_s3_name.$":"$.intermediate_s3_name",
+                         "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                         "--metadata_aggregator":"${metadataAggregator}"
                       },
-                      "End": true
-                    }
-                  }
+                      "NumberOfWorkers.$":"$.worker_count",
+                      "WorkerType.$":"$.worker_type"
+                   },
+                   "ResultPath":"$.response",
+                   "Catch":[
+                      {
+                         "ErrorEquals":[
+                            "States.TaskFailed"
+                         ],
+                         "ResultPath":"$.error",
+                         "Next":"Notify Failure2"
+                      }
+                   ],
+                   "Next":"Fetch File List"
                 },
-                "ResultPath": "$.loadJobsResult",
-                "Next": "Analyze load job statuses"
-              },
-              "Analyze load job statuses": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke",
-                "Parameters": {
-                  "FunctionName": "${jobStatusAnalyzerLambdaArn}",
-                  "Payload": {
-                    "loadJobStatuses.$": "$.loadJobsResult"
-                  }
+                "Fetch File List":{
+                   "Type":"Task",
+                   "Resource":"arn:aws:states:::lambda:invoke",
+                   "Parameters":{
+                      "FunctionName":"${opCoFilesFetchLambdaArn}",
+                      "Payload":{
+                         "ENV.$":"$.ENV",
+                         "s3_object_key.$":"$.s3_input_file_key",
+                         "etl_timestamp.$":"$.etl_timestamp",
+                         "active_opcos.$":"$.active_opcos",
+                         "intermediate_s3_name.$":"$.intermediate_s3_name",
+                         "partitioned_files_key.$":"$.partitioned_files_key",
+                         "file_type.$":"$.file_prefix",
+                         "partial_load.$":"$.partial_load"
+                      }
+                   },
+                   "ResultPath":"$.opcoList",
+                   "Catch":[
+                      {
+                         "ErrorEquals":[
+                            "States.TaskFailed"
+                         ],
+                         "ResultPath":"$.error",
+                         "Next":"Notify Failure2"
+                      }
+                   ],
+                   "Next":"Cluster division"
                 },
-                "ResultPath": "$.loadJobStatuses",
-                "Catch": [
-                  {
-                    "ErrorEquals": [
-                      "States.TaskFailed"
-                    ],
-                    "ResultPath": "$.error",
-                    "Next": "Notify Failure"
-                  }
-                ],
-                "Next": "BackupOrNot"
-              },
-              "BackupOrNot": {
-                "Comment": "Check on load job statuses and decide data backup",
-                "Type": "Choice",
-                "Choices": [
-                  {
-                    "Variable": "$.loadJobStatuses.Payload.isAllSuccess",
-                    "BooleanEquals": true,
-                    "Next": "Backup Data"
-                  }
-                ],
-                "Default": "Skip Backup"
-              },
-              "Backup Data": {
-                "Comment": "Backup data python shell job",
-                "Type": "Task",
-                "Resource": "arn:aws:states:::glue:startJobRun.sync",
-                "Parameters": {
-                  "JobName": "${prizeZoneDataBackupJobName}",
-                  "Arguments": {
-                    "--s3_input_bucket.$": "$.s3_input_bucket",
-                    "--s3_input_file_key.$": "$.s3_input_file_key",
-                    "--etl_timestamp.$": "$.etl_timestamp",
-                    "--partitioned_files_key.$": "$.partitioned_files_key",
-                    "--decompressed_file_path.$": "$.decompressed_file_path",
-                    "--etl_output_path_key.$": "$.etl_output_path_key",
-                    "--backup_file_path.$": "$.backup_file_path",
-                    "--intermediate_directory_path.$": "$.intermediate_directory_path"
-                  }
+                "Cluster division":{
+                   "Type":"Parallel",
+                   "End":true,
+                   "Branches":[
+                      {
+                         "Comment":"Transform and Loads EATs data from S3 to DB",
+                         "StartAt":"Analyze wait or load status",
+                         "States":{
+                            "Analyze wait or load status":{
+                               "Type":"Task",
+                               "Next":"WaitOrLoadOrTerminate",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
+                                  "Payload":{
+                                     "Input.$":"$.opcoList.Payload.cluster_01",
+                                     "cluster":"01",
+                                     "ENV.$":"$.ENV",
+                                     "stepFunctionExecutionId.$":"$$.Execution.Id",
+                                     "stepFunctionArn.$":"$$.StateMachine.Id"
+                                  }
+                               },
+                               "ResultPath":"$.nextStep"
+                            },
+                            "WaitOrLoadOrTerminate":{
+                               "Comment":"Check on wait status load or terminate",
+                               "Type":"Choice",
+                               "Choices":[
+                                  {
+                                     "Variable":"$.nextStep.Payload.nextStep",
+                                     "StringEquals":"Wait",
+                                     "Next":"Wait"
+                                  },
+                                  {
+                                     "Variable":"$.nextStep.Payload.nextStep",
+                                     "StringEquals":"Load All",
+                                     "Next":"Load All"
+                                  }
+                               ],
+                               "Default":"Terminate"
+                            },
+                            "Terminate":{
+                               "Type":"Succeed"
+                            },
+                            "Wait":{
+                               "Type":"Wait",
+                               "Seconds":300,
+                               "Next":"Analyze wait or load status"
+                            },
+                            "Notify Failure":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${notifierLambdaArn}",
+                                  "Payload":{
+                                     "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
+                                     "event":"ETL-PRICE_ZONE",
+                                     "additional_info_file_s3.$":"$.intermediate_s3_name",
+                                     "additional_info_file_key.$":"$.intermediate_directory_path",
+                                     "backup_bucket.$":"$.backup_bucket",
+                                     "backup_file_path.$":"$.backup_file_path",
+                                     "etl_output_path_key.$":"$.etl_output_path_key",
+                                     "stepFunctionExecutionId.$":"$$.Execution.Id"
+                                  }
+                               },
+                               "End":true
+                            },
+                            "Load All":{
+                               "Type":"Map",
+                               "ItemsPath":"$.opcoList.Payload.cluster_01",
+                               "MaxConcurrency":4,
+                               "Parameters":{
+                                  "id.$":"$$.Map.Item.Value",
+                                  "partitioned_files_key.$":"$.partitioned_files_key",
+                                  "intermediate_s3_name.$":"$.intermediate_s3_name",
+                                  "intermediate_directory_path.$":"$.intermediate_directory_path",
+                                  "etl_timestamp.$":"$.etl_timestamp",
+                                  "partial_load.$":"$.partial_load",
+                                  "etl_output_path_key.$":"$.etl_output_path_key",
+                                  "backup_bucket.$":"$.backup_bucket",
+                                  "backup_file_path.$":"$.backup_file_path",
+                                  "ENV.$":"$.ENV",
+                                  "cluster":"01"
+                               },
+                               "Iterator":{
+                                  "StartAt":"Load Job",
+                                  "States":{
+                                     "Load Job":{
+                                        "Type":"Task",
+                                        "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                                        "Parameters":{
+                                           "JobName":"${priceZoneDataLoadJobName}",
+                                           "Arguments":{
+                                              "--opco_id.$":"$.id",
+                                              "--partial_load.$":"$.partial_load",
+                                              "--partitioned_files_key.$":"$.partitioned_files_key",
+                                              "--intermediate_s3_name.$":"$.intermediate_s3_name",
+                                              "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                              "--etl_timestamp.$":"$.etl_timestamp",
+                                              "--ENV.$":"$.ENV",
+                                              "--cluster":"01"
+                                           }
+                                        },
+                                        "Retry":[
+                                           {
+                                              "ErrorEquals":[
+                                                 "States.TaskFailed"
+                                              ],
+                                              "IntervalSeconds":3,
+                                              "MaxAttempts":2,
+                                              "BackoffRate":10
+                                           }
+                                        ],
+                                        "Catch":[
+                                           {
+                                              "ErrorEquals":[
+                                                 "States.TaskFailed"
+                                              ],
+                                              "ResultPath":"$.error",
+                                              "Next":"Notify Job Failure"
+                                           }
+                                        ],
+                                        "ResultPath":"$.loadJob",
+                                        "End":true
+                                     },
+                                     "Notify Job Failure":{
+                                        "Type":"Task",
+                                        "Resource":"arn:aws:states:::lambda:invoke",
+                                        "Parameters":{
+                                           "FunctionName":"${notifierLambdaArn}",
+                                           "Payload":{
+                                              "opco_id.$":"$.id",
+                                              "message.$":"$.error.Cause",
+                                              "event":"ETL-PRICE_ZONE",
+                                              "additional_info_file_s3.$":"$.intermediate_s3_name",
+                                              "etl_output_path_key.$":"$.etl_output_path_key",
+                                              "backup_bucket.$":"$.backup_bucket",
+                                              "backup_file_path.$":"$.backup_file_path",
+                                              "stepFunctionExecutionId.$":"$$.Execution.Id"
+                                           }
+                                        },
+                                        "End":true
+                                     }
+                                  }
+                               },
+                               "ResultPath":"$.loadJobsResult",
+                               "Next":"Analyze load job statuses"
+                            },
+                            "Analyze load job statuses":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${jobStatusAnalyzerLambdaArn}",
+                                  "Payload":{
+                                     "allocated_job_count.$":"$.nextStep.Payload.allocatedJobCount",
+                                     "loadJobStatuses.$":"$.loadJobsResult",
+                                     "s3_object_key.$":"$.s3_input_file_key",
+                                     "etl_timestamp.$":"$.etl_timestamp",
+                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_01",
+                                     "cluster": "01",
+                                     "ENV.$":"$.ENV"
+                                  }
+                               },
+                               "ResultPath":"$.loadJobStatuses",
+                               "Catch":[
+                                  {
+                                     "ErrorEquals":[
+                                        "States.TaskFailed"
+                                     ],
+                                     "ResultPath":"$.error",
+                                     "Next":"Notify Failure"
+                                  }
+                               ],
+                               "Next":"BackupOrNot"
+                            },
+                            "BackupOrNot":{
+                               "Comment":"Check on load job statuses and decide data backup",
+                               "Type":"Choice",
+                               "Choices":[
+                                  {
+                                     "Variable":"$.loadJobStatuses.Payload.shouldBackup",
+                                     "BooleanEquals":true,
+                                     "Next":"Backup Data"
+                                  }
+                               ],
+                               "Default":"Skip Backup"
+                            },
+                            "Backup Data":{
+                               "Comment":"Backup data python shell job",
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                               "Parameters":{
+                                  "JobName":"${priceZoneDataBackupJobName}",
+                                  "Arguments":{
+                                     "--s3_input_bucket.$":"$.s3_input_bucket",
+                                     "--s3_input_file_key.$":"$.s3_input_file_key",
+                                     "--etl_timestamp.$":"$.etl_timestamp",
+                                     "--partitioned_files_key.$":"$.partitioned_files_key",
+                                     "--decompressed_file_path.$":"$.decompressed_file_path",
+                                     "--etl_output_path_key.$":"$.etl_output_path_key",
+                                     "--backup_file_path.$":"$.backup_file_path",
+                                     "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                     "--file_type.$" : "$.file_type"
+                                  }
+                               },
+                               "ResultPath":"$.response",
+                               "Catch":[
+                                  {
+                                     "ErrorEquals":[
+                                        "States.TaskFailed"
+                                     ],
+                                     "ResultPath":"$.error",
+                                     "Next":"Notify Failure"
+                                  }
+                               ],
+                               "Next":"Notify ETL Success"
+                            },
+                            "Skip Backup":{
+                               "Type":"Succeed"
+                            },
+                            "Notify ETL Success":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${notifierLambdaArn}",
+                                  "Payload":{
+                                     "event":"[ETL] - [Ref Price] [Price Zone Data]",
+                                     "backup_bucket.$":"$.backup_bucket",
+                                     "backup_file_path.$":"$.backup_file_path",
+                                     "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                                     "additional_info_file_s3":"${backupS3Name}",
+                                     "etl_timestamp.$":"$.etl_timestamp",
+                                     "file_name.$":"$.s3_input_file_key",
+                                     "etl_output_path_key.$":"$.etl_output_path_key",
+                                     "status":"SUCCEEDED"
+                                  }
+                               },
+                               "End":true
+                            }
+                         }
+                      },
+                      {
+                         "StartAt":"Analyze wait or load statusC2",
+                         "States":{
+                            "Analyze wait or load statusC2":{
+                               "Type":"Task",
+                               "Next":"WaitOrLoadOrTerminateC2",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${AnalyseLoadOrWaitLambdaArn}",
+                                  "Payload":{
+                                     "Input.$":"$.opcoList.Payload.cluster_02",
+                                     "cluster":"02",
+                                     "ENV.$":"$.ENV",
+                                     "stepFunctionExecutionId.$":"$$.Execution.Id",
+                                     "stepFunctionArn.$":"$$.StateMachine.Id"
+                                  }
+                               },
+                               "ResultPath":"$.nextStep"
+                            },
+                            "WaitOrLoadOrTerminateC2":{
+                               "Comment":"Check on wait status load or terminate",
+                               "Type":"Choice",
+                               "Choices":[
+                                  {
+                                     "Variable":"$.nextStep.Payload.nextStep",
+                                     "StringEquals":"Wait",
+                                     "Next":"WaitC2"
+                                  },
+                                  {
+                                     "Variable":"$.nextStep.Payload.nextStep",
+                                     "StringEquals":"Load All",
+                                     "Next":"Load AllC2"
+                                  }
+                               ],
+                               "Default":"TerminateC2"
+                            },
+                            "TerminateC2":{
+                               "Type":"Succeed"
+                            },
+                            "WaitC2":{
+                               "Type":"Wait",
+                               "Seconds":300,
+                               "Next":"Analyze wait or load statusC2"
+                            },
+                            "Notify FailureC2":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${notifierLambdaArn}",
+                                  "Payload":{
+                                     "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
+                                     "event":"ETL-PRICE_ZONE",
+                                     "additional_info_file_s3.$":"$.intermediate_s3_name",
+                                     "additional_info_file_key.$":"$.intermediate_directory_path",
+                                     "backup_bucket.$":"$.backup_bucket",
+                                     "backup_file_path.$":"$.backup_file_path",
+                                     "etl_output_path_key.$":"$.etl_output_path_key",
+                                     "stepFunctionExecutionId.$":"$$.Execution.Id"
+                                  }
+                               },
+                               "End":true
+                            },
+                            "Load AllC2":{
+                               "Type":"Map",
+                               "ItemsPath":"$.opcoList.Payload.cluster_02",
+                               "MaxConcurrency":4,
+                               "Parameters":{
+                                  "id.$":"$$.Map.Item.Value",
+                                  "partitioned_files_key.$":"$.partitioned_files_key",
+                                  "intermediate_s3_name.$":"$.intermediate_s3_name",
+                                  "intermediate_directory_path.$":"$.intermediate_directory_path",
+                                  "etl_timestamp.$":"$.etl_timestamp",
+                                  "partial_load.$":"$.partial_load",
+                                  "etl_output_path_key.$":"$.etl_output_path_key",
+                                  "backup_bucket.$":"$.backup_bucket",
+                                  "backup_file_path.$":"$.backup_file_path",
+                                  "ENV.$":"$.ENV",
+                                  "cluster":"02"
+                               },
+                               "Iterator":{
+                                  "StartAt":"Load JobC2",
+                                  "States":{
+                                     "Load JobC2":{
+                                        "Type":"Task",
+                                        "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                                        "Parameters":{
+                                           "JobName":"${priceZoneDataLoadJobName}",
+                                           "Arguments":{
+                                              "--opco_id.$":"$.id",
+                                              "--partial_load.$":"$.partial_load",
+                                              "--partitioned_files_key.$":"$.partitioned_files_key",
+                                              "--intermediate_s3_name.$":"$.intermediate_s3_name",
+                                              "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                              "--etl_timestamp.$":"$.etl_timestamp",
+                                              "--ENV.$":"$.ENV",
+                                              "--cluster":"02"
+                                           }
+                                        },
+                                        "Retry":[
+                                           {
+                                              "ErrorEquals":[
+                                                 "States.TaskFailed"
+                                              ],
+                                              "IntervalSeconds":3,
+                                              "MaxAttempts":2,
+                                              "BackoffRate":10
+                                           }
+                                        ],
+                                        "Catch":[
+                                           {
+                                              "ErrorEquals":[
+                                                 "States.TaskFailed"
+                                              ],
+                                              "ResultPath":"$.error",
+                                              "Next":"Notify Job FailureC2"
+                                           }
+                                        ],
+                                        "ResultPath":"$.loadJob",
+                                        "End":true
+                                     },
+                                     "Notify Job FailureC2":{
+                                        "Type":"Task",
+                                        "Resource":"arn:aws:states:::lambda:invoke",
+                                        "Parameters":{
+                                           "FunctionName":"${notifierLambdaArn}",
+                                           "Payload":{
+                                              "opco_id.$":"$.id",
+                                              "message.$":"$.error.Cause",
+                                              "event":"ETL-PRICE_ZONE",
+                                              "additional_info_file_s3.$":"$.intermediate_s3_name",
+                                              "etl_output_path_key.$":"$.etl_output_path_key",
+                                              "backup_bucket.$":"$.backup_bucket",
+                                              "backup_file_path.$":"$.backup_file_path",
+                                              "stepFunctionExecutionId.$":"$$.Execution.Id"
+                                           }
+                                        },
+                                        "End":true
+                                     }
+                                  }
+                               },
+                               "ResultPath":"$.loadJobsResult",
+                               "Next":"Analyze load job statusesC2"
+                            },
+                            "Analyze load job statusesC2":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${jobStatusAnalyzerLambdaArn}",
+                                  "Payload":{
+                                     "allocated_job_count.$":"$.nextStep.Payload.allocatedJobCount",
+                                     "loadJobStatuses.$":"$.loadJobsResult",
+                                     "s3_object_key.$":"$.s3_input_file_key",
+                                     "etl_timestamp.$":"$.etl_timestamp",
+                                     "cluster_opcos.$":"$.opcoList.Payload.cluster_02",
+                                     "cluster": "02",
+                                     "ENV.$":"$.ENV"
+                                  }
+                               },
+                               "ResultPath":"$.loadJobStatuses",
+                               "Catch":[
+                                  {
+                                     "ErrorEquals":[
+                                        "States.TaskFailed"
+                                     ],
+                                     "ResultPath":"$.error",
+                                     "Next":"Notify FailureC2"
+                                  }
+                               ],
+                               "Next":"BackupOrNotC2"
+                            },
+                            "BackupOrNotC2":{
+                               "Comment":"Check on load job statuses and decide data backup",
+                               "Type":"Choice",
+                               "Choices":[
+                                  {
+                                     "Variable":"$.loadJobStatuses.Payload.shouldBackup",
+                                     "BooleanEquals":true,
+                                     "Next":"Backup DataC2"
+                                  }
+                               ],
+                               "Default":"Skip BackupC2"
+                            },
+                            "Backup DataC2":{
+                               "Comment":"Backup data python shell job",
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::glue:startJobRun.sync",
+                               "Parameters":{
+                                  "JobName":"${priceZoneDataBackupJobName}",
+                                  "Arguments":{
+                                     "--s3_input_bucket.$":"$.s3_input_bucket",
+                                     "--s3_input_file_key.$":"$.s3_input_file_key",
+                                     "--etl_timestamp.$":"$.etl_timestamp",
+                                     "--partitioned_files_key.$":"$.partitioned_files_key",
+                                     "--decompressed_file_path.$":"$.decompressed_file_path",
+                                     "--etl_output_path_key.$":"$.etl_output_path_key",
+                                     "--backup_file_path.$":"$.backup_file_path",
+                                     "--intermediate_directory_path.$":"$.intermediate_directory_path",
+                                     "--file_type.$" : "$.file_type"
+                                  }
+                               },
+                               "ResultPath":"$.response",
+                               "Catch":[
+                                  {
+                                     "ErrorEquals":[
+                                        "States.TaskFailed"
+                                     ],
+                                     "ResultPath":"$.error",
+                                     "Next":"Notify FailureC2"
+                                  }
+                               ],
+                               "Next":"Notify ETL SuccessC2"
+                            },
+                            "Skip BackupC2":{
+                               "Type":"Succeed"
+                            },
+                            "Notify ETL SuccessC2":{
+                               "Type":"Task",
+                               "Resource":"arn:aws:states:::lambda:invoke",
+                               "Parameters":{
+                                  "FunctionName":"${notifierLambdaArn}",
+                                  "Payload":{
+                                     "event":"[ETL] - [Ref Price] [Price Zone Data]",
+                                     "backup_bucket.$":"$.backup_bucket",
+                                     "backup_file_path.$":"$.backup_file_path",
+                                     "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
+                                     "additional_info_file_s3":"${backupS3Name}",
+                                     "etl_timestamp.$":"$.etl_timestamp",
+                                     "file_name.$":"$.s3_input_file_key",
+                                     "etl_output_path_key.$":"$.etl_output_path_key",
+                                     "status":"SUCCEEDED"
+                                  }
+                               },
+                               "End":true
+                            }
+                         }
+                      }
+                   ]
                 },
-                "ResultPath": "$.response",
-                "Catch": [
-                  {
-                    "ErrorEquals": [
-                      "States.TaskFailed"
-                    ],
-                    "ResultPath": "$.error",
-                    "Next": "Notify Failure"
-                  }
-                ],
-                "Next": "Notify ETL Success"
-              },
-              "Skip Backup": {
-                "Type": "Succeed"
-              },
-              "Notify ETL Success": {
-                "Type": "Task",
-                "Resource": "arn:aws:states:::lambda:invoke",
-                "Parameters": {
-                  "FunctionName": "${notifierLambdaArn}",
-                  "Payload": {
-                    "event": "[ETL] - [Ref Price] [Price Zone Data]",
-                    "backup_bucket.$": "$.backup_bucket",
-                    "backup_file_path.$" : "$.backup_file_path",
-                    "message.$": "States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id)",
-                    "additional_info_file_s3": "${backupS3Name}",
-                    "etl_timestamp.$": "$.etl_timestamp",
-                    "etl_output_path_key.$": "$.etl_output_path_key",
-                    "status": "SUCCEEDED"
-                  }
-                },
-                "End": true
-              }
-            }
+                "Notify Failure2":{
+                   "Type":"Task",
+                   "Resource":"arn:aws:states:::lambda:invoke",
+                   "Parameters":{
+                      "FunctionName":"${notifierLambdaArn}",
+                      "Payload":{
+                         "message.$":"States.Format('S3 Path: {}, ETL timestamp: {}, Execution Id: {}, Error: {}', $.s3_path, $.etl_timestamp, $$.Execution.Id, $.error.Cause)",
+                         "event":"ETL-PRICE_ZONE-OUTSIDE-FAILURE",
+                         "additional_info_file_s3.$":"$.intermediate_s3_name",
+                         "additional_info_file_key.$":"$.intermediate_directory_path",
+                         "backup_bucket.$":"$.backup_bucket",
+                         "backup_file_path.$":"$.backup_file_path",
+                         "etl_output_path_key.$":"$.etl_output_path_key",
+                         "stepFunctionExecutionId.$":"$$.Execution.Id",
+                         "etl_timestamp.$":"$.etl_timestamp",
+                         "file_name.$":"$.s3_input_file_key"
+                      }
+                   },
+                   "End":true
+                }
+             }
           }
         - {
-            prizeZoneDecompressJobName: !Ref PrizeZoneDecompressJob,
-            prizeZoneTransformJobName: !Ref PrizeZoneTransformJob,
-            prizeZoneDataLoadJobName: !Ref PrizeZoneDataLoadJob,
-            prizeZoneDataBackupJobName: !Ref PrizeZoneDataBackupJob,
+            priceZoneDecompressJobName: !Ref PriceZoneDecompressJob,
+            priceZoneTransformJobName: !Ref PriceZoneTransformJob,
+            priceZoneDataLoadJobName: !Ref PriceZoneDataLoadJob,
+            priceZoneDataBackupJobName: !Ref PriceZoneDataBackupJob,
             opCoFilesFetchLambdaArn: !GetAtt OpCoFilesFetchLambda.Arn,
             jobStatusAnalyzerLambdaArn: !GetAtt PriceZoneJobStatusAnalyzerLambda.Arn,
             waitStatusAnalyzerLambdaArn: !GetAtt PriceZoneETLWaitStatusAnalyzerLambda.Arn,
+            AnalyseLoadOrWaitLambdaArn: !GetAtt PriceZoneAnalyseLoadOrWaitLambda.Arn,
             notifierLambdaArn: !Ref NotifierLambdaArn,
             metadataAggregator: !Sub 'CP-REF-PRICE-ETL-metadata-aggregator-${EnvironmentShort}',
             backupS3Name: !Ref ETLDataBackUpStorage,
