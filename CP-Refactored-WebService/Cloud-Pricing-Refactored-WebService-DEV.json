@@ -254,7 +254,7 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.xlarge",
+				"InstanceType" : "t3.medium",
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
@@ -406,7 +406,7 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "50",
+				"Threshold" : "80",
 				"Period" : "60",
 				"EvaluationPeriods" : "1",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -423,7 +423,7 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
-				"Threshold" : "35",
+				"Threshold" : "50",
 				"Period" : "300",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]

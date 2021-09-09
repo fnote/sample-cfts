@@ -213,6 +213,34 @@
 				"sysco-us-east-1-prcp-nonprod-codedeploy",
 				"sysco-us-east-1-prcp-prod-codedeploy"
 			]
+		},
+		"EC2InstanceSize": {
+			"Description": "EC2 Instance Size (Recommended DEV - t3.medium, EXE, STG - t3.xlarge)",
+			"Type": "String",
+			"Default": "t3.xlarge",
+			"AllowedValues": [
+				"t3.xlarge",
+				"t3.large",
+				"t3.medium"
+			]
+		},
+		"CPUAlarmHighThreshold": {
+			"Description": "CPU Alarm High Threshold (Recommended DEV - 80%, EXE, STG - 50%)",
+			"Type": "Number",
+			"Default": "50",
+			"AllowedValues": [
+				"50",
+				"80"
+			]
+		},
+		"CPUAlarmLowThreshold": {
+			"Description": "CPU Alarm Low Threshold CPU Alarm High Threshold (Recommended DEV - 50%, EXE, STG - 30%)",
+			"Type": "Number",
+			"Default": "30",
+			"AllowedValues": [
+				"30",
+				"50"
+			]
 		}
 	},
 	"Resources": {
@@ -262,7 +290,9 @@
 			"Type" : "AWS::AutoScaling::LaunchConfiguration",
 			"Properties" : {
 				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.xlarge",
+				"InstanceType" : {
+					"Ref": "EC2InstanceSize"
+				},
 				"KeyName" : { "Ref" : "PemKey" },
 				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
 				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
@@ -406,7 +436,9 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "GreaterThanThreshold",
-				"Threshold" : "50",
+				"Threshold" : {
+					"Ref": "CPUAlarmHighThreshold"
+				},
 				"Period" : "60",
 				"EvaluationPeriods" : "2",
 				"AlarmActions" : [ { "Ref" : "ScaleUpPolicy" } ]
@@ -423,7 +455,9 @@
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
 				"ComparisonOperator" : "LessThanThreshold",
-				"Threshold" : "30",
+				"Threshold" : {
+					"Ref": "CPUAlarmLowThreshold"
+				},
 				"Period" : "60",
 				"EvaluationPeriods" : "3",
 				"AlarmActions" : [ { "Ref" : "ScaleDownPolicy" } ]
