@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI",
+			"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI - ami-01dbd53027bf7e826",
 			"Type": "String",
-			"Default" : "ami-043a196cce124727a",
+			"Default" : "ami-01dbd53027bf7e826",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -69,7 +69,7 @@
 			"Default" : "Cloud-Pricing-Web-Service-Instance-Profile"
 		},
 		"SSLCertificate": {
-			"Description": "The SSL acertificate ARN",
+			"Description": "The SSL certificate ARN",
 			"Type": "String",
 			"ConstraintDescription": "must be a valid SSL ARN",
 			"Default": "arn:aws:acm:us-east-1:037295147636:certificate/4989cc83-c793-4031-901d-16596f06af05"
