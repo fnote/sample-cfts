@@ -619,7 +619,7 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["Ecomm-WebService-CPU-ScaleUp-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-up if Avg CPU > 50% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-up if Avg CPU > 80% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
@@ -636,7 +636,7 @@
 			"Properties" : {
 				"AlarmName" : { "Fn::Join" : ["", ["Ecomm-WebService-CPU-ScaleDown-", { "Ref" : "EnvironmentShort" }]]},
 				"Dimensions" : [{ "Name" : "AutoScalingGroupName", "Value" : { "Ref" : "WebServiceGroup" }}],
-				"AlarmDescription" : "Scale-down if Avg CPU < 30% for 3 minutes or 3-1 minute periods",
+				"AlarmDescription" : "Scale-down if Avg CPU < 50% for 3 minutes or 3-1 minute periods",
 				"Namespace" : "AWS/EC2",
 				"MetricName" : "CPUUtilization",
 				"Statistic" : "Average",
