@@ -59,7 +59,7 @@
 	  "CommonAMI": {
 		"Description" : "Latest Sysco Gold Team Managed Amazon Linux 2 AMI",
 		"Type": "String",
-		"Default" : "ami-043a196cce124727a",
+		"Default" : "ami-01dbd53027bf7e826",
 		"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 		"ConstraintDescription" : "Must be a valid AMI."
 	},
@@ -221,7 +221,15 @@
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
-				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
+				"LaunchTemplate" : {
+					"LaunchTemplateId": { "Ref": "BatchPricingRefactoredWSLaunchTemplate" },
+					"Version":{
+						"Fn::GetAtt":[
+							"BatchPricingRefactoredWSLaunchTemplate",
+							"LatestVersionNumber"
+						]
+					}
+				},
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
 				"MinSize" : "1",
 				"DesiredCapacity" : "1",
@@ -259,145 +267,365 @@
 				}
 			}
 		},
-		"WebServiceLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+		"BatchPricingRefactoredWSLaunchTemplate": {
+			"Type" : "AWS::EC2::LaunchTemplate",
 			"Properties" : {
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.xlarge",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "65", "VolumeType": "gp2" }}
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"date > /home/ec2-user/starttime\n",
+				"LaunchTemplateData" : {
+					"ImageId":
+					{
+						"Ref": "CommonAMI"
+					},
+					"InstanceType" : "t3.xlarge",
+					"KeyName": {
+						"Ref": "PemKey"
+					},
+					"SecurityGroupIds": [
+						{
+							"Ref": "DNSSG"
+						},
+						{
+							"Ref": "SGWebServices"
+						}
+					],
+					"IamInstanceProfile" : {
+						"Arn" : "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
+					},
+					"BlockDeviceMappings": [
+						{
+							"DeviceName": "/dev/xvda",
+							"Ebs": {
+								"VolumeSize": "65",
+								"VolumeType": "gp2"
+							}
+						}
+					],
+					"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+						"#!/bin/bash -v\n",
+						"date > /home/ec2-user/starttime\n",
 
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"sh -c \"hostname cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
+						"##############################################\n",
+						"# Change Name of server to match new hostname\n",
+						"##############################################\n",
+						"sh -c \"hostname cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
+						"tee /etc/sysconfig/network <<-EOF\n",
+						"NETWORKING=yes\n",
+						"HOSTNAME=cpbatchrefwebsvc04-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
+						"NOZEROCONF=yes\n",
+						"EOF\n",
 
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Chamin Wickramarathna\" cwic0864\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-					"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
+						"##############################################\n",
+						"# Add Users to server\n",
+						"##############################################\n",
+						"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
+						"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
+						"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
+						"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+						"useradd -m -g aix -c \"Chamin Wickramarathna\" cwic0864\n",
+						"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
+						"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+						"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
+						"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+						"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
 
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
+						"##############################################\n",
+						"# Increase open file limits\n",
+						"##############################################\n",
+						"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
+						"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
 
-					"##############################################\n",
-					"# Set System Environment \n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export BATCH_MODE=TRUE'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'BATCH_MODE=TRUE'\" >> /etc/environment\n",
+						"##############################################\n",
+						"# Set System Environment \n",
+						"##############################################\n",
+						"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+						"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+						"sh -c \"echo 'export BATCH_MODE=TRUE'\" >> /etc/profile.d/jvmsettings.sh\n",
+						"sh -c \"echo 'BATCH_MODE=TRUE'\" >> /etc/environment\n",
 
-					"##############################################\n",
-					"# Install Dependencies.\n",
-					"# JavaJDK, code deploy agent, cloud watch agent\n",
-					"##############################################\n",
-					"yum -y update\n",
-					"yum install -y ruby\n",
-					"cd /tmp\n",
-					"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" },"/Tools/ . --recursive\n",
-					"yum install -y jdk-8u131-linux-x64.rpm\n",
+						"##############################################\n",
+						"# Install Dependencies.\n",
+						"# JavaJDK, code deploy agent, cloud watch agent\n",
+						"##############################################\n",
+						"yum -y update\n",
+						"yum install -y ruby\n",
+						"cd /tmp\n",
+						"aws s3 cp s3://", { "Ref" : "CodeDeployBucket" },"/Tools/ . --recursive\n",
+						"yum install -y jdk-8u131-linux-x64.rpm\n",
 
-					"####################################\n",
-					"# Install Dynatrace Agent\n",
-					"####################################\n",
-					"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
-					"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
-					"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, "\n",
+						"####################################\n",
+						"# Install Dynatrace Agent\n",
+						"####################################\n",
+						"wget --no-check-certificate -t 1 -O Dynatrace-OneAgent-Linux-1.183.151.sh \"https://dynatrace-nonprodmanaged.aws.na.sysco.net/e/ddee8820-c5cf-4682-b596-ab45f9ff46d3/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default\" --header=\"Authorization: Api-Token ep6cuiq7Ty6VyDWjf-yXC\"\n",
+						"wget -t 1 https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol=\"application/x-pkcs7-signature\"; micalg=\"sha-256\"; boundary=\"--SIGNED-INSTALLER\"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.183.151.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null\n",
+						"/bin/sh Dynatrace-OneAgent-Linux-1.183.151.sh APP_LOG_CONTENT_ACCESS=1 INFRA_ONLY=0 HOST_GROUP=", { "Ref" : "DynatraceApplicationName" }, "\n",
 
 
-					"count=1\n",
-                    "currentStatus=$(service codedeploy-agent status)\n",
-                    "while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
-                    "do\n",
-                    "if [ $count -le 3 ]\n",
-                    "then\n",
-                    "rm -f codeDeployInstaller\n",
-                    "wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
-                    "chmod +x ./codeDeployInstaller\n",
-                    "./codeDeployInstaller auto\n",
-                    "currentStatus=$(service codedeploy-agent status)\n",
-                    "((count++))\n",
-                    "else\n",
-                    "shutdown now\n",
-                    "fi\n",
-                    "done\n",
+						"count=1\n",
+						"currentStatus=$(service codedeploy-agent status)\n",
+						"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+						"do\n",
+						"if [ $count -le 3 ]\n",
+						"then\n",
+						"rm -f codeDeployInstaller\n",
+						"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+						"chmod +x ./codeDeployInstaller\n",
+						"./codeDeployInstaller auto\n",
+						"currentStatus=$(service codedeploy-agent status)\n",
+						"((count++))\n",
+						"else\n",
+						"shutdown now\n",
+						"fi\n",
+						"done\n",
 
-					"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
-					"rpm -U ./amazon-cloudwatch-agent.rpm\n",
+						"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
+						"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
-					"##############################################\n",
-					"# Datadog - Configuration\n",
-					"##############################################\n",
-					"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
+						"##############################################\n",
+						"# Datadog - Configuration\n",
+						"##############################################\n",
+						"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
 
-					"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
-					"api_key: $DATADOG_TOKEN\n",
-					"site: datadoghq.com\n",
-					"tags:\n",
-					"   - application:cpbatchrefwebsvc-",{ "Ref" : "EnvironmentShort" },"\n",
-					"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
-					"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
-					"   - environment:",{ "Ref" : "EnvironmentShort" },"\n",
-					"env: production\n",
-					"logs_enabled: true\n",
-					"EOF\n",
+						"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
+						"api_key: $DATADOG_TOKEN\n",
+						"site: datadoghq.com\n",
+						"tags:\n",
+						"   - application:cpbatchrefwebsvc-",{ "Ref" : "EnvironmentShort" },"\n",
+						"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
+						"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
+						"   - environment:",{ "Ref" : "EnvironmentShort" },"\n",
+						"env: production\n",
+						"logs_enabled: true\n",
+						"EOF\n",
 
-					"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
-					"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
-					"logs:\n",
-					"    - type: file\n",
-					"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
-					"      source: cp_batch_metrics\n",
-					"      service: cpbatchrefwebsvc\n",
-					"EOF\n",
-					"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
-					"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
+						"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
+						"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
+						"logs:\n",
+						"    - type: file\n",
+						"      path: /cpwsng-refac/service/logs/cpwsng-refac-metrics.log\n",
+						"      source: cp_batch_metrics\n",
+						"      service: cpbatchrefwebsvc\n",
+						"EOF\n",
+						"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
+						"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
 
-					"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
-					"instances:\n",
-					"    - use_mount: false\n",
-					"      mount_point_blacklist:\n",
-					"      - /opt/sentinelone/mount\n",
-					"EOF\n",
+						"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
+						"instances:\n",
+						"    - use_mount: false\n",
+						"      mount_point_blacklist:\n",
+						"      - /opt/sentinelone/mount\n",
+						"EOF\n",
 
-					"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-					"systemctl restart datadog-agent\n",
+						"chown -R dd-agent:dd-agent /var/log/datadog/\n",
+						"systemctl restart datadog-agent\n",
 
-					"##############################################\n",
-					"# CloudWatch Configuration\n",
-					"##############################################\n",
-					"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-					"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+						"##############################################\n",
+						"# CloudWatch Configuration\n",
+						"##############################################\n",
+						"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
+						"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/REFACTORED_BATCH_WEB_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
-					"cd /tmp\n",
+						"cd /tmp\n",
 
-                    "date > /home/ec2-user/stoptime\n"
-				]]}}
+						"date > /home/ec2-user/stoptime\n"
+					]]}},
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
+								{ "Key" : "Name",
+									"Value" : {
+										"Fn::Join" : [
+											"",
+											["CP BatchPricing Refactored WS AS-",
+												{
+													"Ref" : "EnvironmentShort"
+												}]]}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "Batch Pricing Refactored Web Service"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": {
+										"Ref": "Component"
+									}
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						},
+						{
+							"ResourceType": "volume",
+							"Tags": [
+								{ "Key" : "Name",
+									"Value" : {
+										"Fn::Join" : [
+											"",
+											["CP BatchPricing Refactored WS AS-",
+												{
+													"Ref" : "EnvironmentShort"
+												}]]}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "Batch Pricing Refactored Web Service"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": {
+										"Ref": "Component"
+									}
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						}
+					]
+				},
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-CP-Batch-Pricing-Refactored-Web-Service-",
+							{
+								"Ref": "EnvironmentShort"
+							}
+						]
+					]
+				}
 			}
 		},
 		"CPUAlarmHigh" : {
