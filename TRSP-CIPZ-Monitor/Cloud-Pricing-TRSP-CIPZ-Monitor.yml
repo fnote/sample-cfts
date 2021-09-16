@@ -14,7 +14,7 @@ Parameters:
     Description: Verification interval for the mismatches in seconds
     Type: String
     Default: 9000
-  ScheduleRule:
+  ScheduleExpression:
     Description: cron schedule expression
     Type: String
     Default: 'cron(45 1 * * ? *)'
@@ -227,7 +227,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties:
       Description: ScheduleRule
-      ScheduleExpression: !Ref ScheduleRule
+      ScheduleExpression: !Ref ScheduleExpression
       State: ENABLED
       Targets:
         - Arn: !GetAtt CIPZMonitor.Arn
