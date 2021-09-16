@@ -524,7 +524,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Env-2-",
+                            "CP-Batch-Compute-Env-1-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -647,7 +647,7 @@
                     "Fn::Join": [
                         "",
                         [
-                            "CP-Batch-Compute-Peak-Env-2-",
+                            "CP-Batch-Compute-Peak-Env-1-",
                             {
                                 "Ref": "EnvironmentShort"
                             }
@@ -694,22 +694,22 @@
                             "Ref": "ApplicationName"
                         }
                     ,
-        
+
                         "Technical:ApplicationID": {
                             "Ref": "ApplicationID"
                         }
                     ,
-        
+
                         "Technical:PlatformOwner": {
                             "Ref": "Owner"
                         }
                     ,
-        
+
                         "Technical:Environment": {
                             "Ref": "Environment"
                         }
                     ,
-        
+
                         "Technical:ApplicationSubName": {
                             "Ref": "ApplicationSubName"
                         }
@@ -730,26 +730,26 @@
                             "Ref": "PONumber"
                         }
                     ,
-        
+
                         "Project_ID": {
                             "Ref": "ProjectID"
                         }
                     ,
-        
+
                         "Support_Email": {
                             "Ref": "SupportEmail"
                         }
                     ,
-        
+
                         "2WTAGGER": {
                             "Ref": "2WTAGGER"
                         }
                     ,
-        
+
                         "Platform": {
                             "Ref": "Platform"
                         },
-        
+
                         "Component": {
                             "Ref": "Component"
                         }
