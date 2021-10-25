@@ -13,7 +13,7 @@ Parameters:
   TeamsWebhookURL:
     Description: Teams channnel webhook url for sending the logging related alerts
     Type: String
-    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/879b2f3a3ea44e5c9fad5b806edbee62/eafcf9ee-9c3d-4323-8034-7d694b1c37ad
+    Default: https://sysco.webhook.office.com/webhookb2/333723ea-275d-4f46-bf5a-4591e9c67d25@b7aa4308-bf33-414f-9971-6e0c972cbe5d/IncomingWebhook/7c6de8e4765345a7ad306f70f7029310/eafcf9ee-9c3d-4323-8034-7d694b1c37ad
   SecurityGroups:
     Description: The list of security groups to access the vpc resources
     Type: List<AWS::EC2::SecurityGroup::Id>
