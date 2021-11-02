@@ -999,6 +999,7 @@ Resources:
                                "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
+                                  "s3_input_file_key.$": "$.s3_input_file_key",
                                   "partitioned_files_key.$":"$.partitioned_files_key",
                                   "intermediate_s3_name.$":"$.intermediate_s3_name",
                                   "intermediate_directory_path.$":"$.intermediate_directory_path",
@@ -1253,6 +1254,7 @@ Resources:
                                "MaxConcurrency":4,
                                "Parameters":{
                                   "id.$":"$$.Map.Item.Value",
+                                  "s3_input_file_key.$": "$.s3_input_file_key",
                                   "partitioned_files_key.$":"$.partitioned_files_key",
                                   "intermediate_s3_name.$":"$.intermediate_s3_name",
                                   "intermediate_directory_path.$":"$.intermediate_directory_path",
