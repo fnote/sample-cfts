@@ -139,6 +139,11 @@ Parameters:
     Type: String
     Default: PermissionBoundary-DevOps
 
+Conditions:
+  createReaderInstance: !Equals
+    - !Ref EnvironmentShort
+    - PROD
+
 Resources:
   CIPZDBCluster:
     Type: AWS::RDS::DBCluster
@@ -187,6 +192,46 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceIdentifier: !Sub 'cp-cipz-01-${EnvironmentShort}'
+      AllowMajorVersionUpgrade: 'true'
+      AutoMinorVersionUpgrade: 'true'
+      CopyTagsToSnapshot: 'true'
+      DBClusterIdentifier: !Ref CIPZDBCluster
+      DBInstanceClass: !Ref DBInstanceType
+      CACertificateIdentifier: rds-ca-2019
+      Engine: aurora-mysql
+      DBSubnetGroupName: !Ref snDB
+      PubliclyAccessible: false
+      Tags:
+        - Key: Name
+          Value: !Join ['', [!Ref ClusterName, !Ref EnvironmentShort]]
+        - Key: Technical:ApplicationName
+          Value: !Ref ApplicationName
+        - Key: Technical:ApplicationID
+          Value: !Ref ApplicationID
+        - Key: Technical:PlatformOwner
+          Value: !Ref Owner
+        - Key: Technical:Environment
+          Value: !Ref Environment
+        - Key: Support_Email
+          Value: !Ref SupportEmail
+        - Key: Approver
+          Value: !Ref Approver
+        - Key: PO_Number
+          Value: !Ref PONumber
+        - Key: Project_ID
+          Value: !Ref ProjectID
+        - Key: 2WTAGGER
+          Value: team_managed
+        - Key: Platform
+          Value: !Ref Platform
+        - Key: Component
+          Value: Aurora DB
+
+  DB01Primary02:
+    Condition: createReaderInstance
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub 'cp-cipz-02-${EnvironmentShort}'
       AllowMajorVersionUpgrade: 'true'
       AutoMinorVersionUpgrade: 'true'
       CopyTagsToSnapshot: 'true'
