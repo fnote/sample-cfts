@@ -1417,7 +1417,7 @@ Resources:
         - - CP-Mimix-Purge-Sync-Compute-Environment-
           - Ref: 'EnvironmentShort'
       ComputeResources:
-        MaxvCpus: 22
+        MaxvCpus: 20
         SecurityGroupIds:
           - !Ref 'SGDNS'
           - !Ref 'SGWebServices'
