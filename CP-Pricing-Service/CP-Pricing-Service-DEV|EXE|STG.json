@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-NonProd"
 		},
 		"CommonAMI": {
-			"Description": "Latest Sysco Gold Team Managed Amazon Linux 2 AMI",
+			"Description": "Latest Sysco Gold Team Managed Amazon Linux 2 AMI - ami-01dbd53027bf7e826",
 			"Type": "String",
-			"Default": "ami-043a196cce124727a",
+			"Default": "ami-01dbd53027bf7e826",
 			"AllowedPattern": "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription": "Must be a valid AMI."
 		},
@@ -173,6 +173,20 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
+		"EnvironmentShortSimple": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "exe",
+			"AllowedValues": [
+				"dev",
+				"qa",
+				"stg",
+				"exe",
+				"tst",
+				"prod"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -244,28 +258,39 @@
 				"35",
 				"50"
 			]
+		},
+		"InstanceProfileARN": {
+			"Description": "ARN associated with the group",
+			"Type": "String",
+			"Default": "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
 		}
 	},
 	"Resources": {
 		"WebServiceGroup": {
 			"Type": "AWS::AutoScaling::AutoScalingGroup",
 			"Properties": {
-                                "AutoScalingGroupName": {
-                                    "Fn::Join": [
-                                         "",
-                                           [
-                                                "CP-Pricing-Service-Auto-Scaling-Group-",
-                                                 { "Ref": "EnvironmentShort" }
-                                           ]
-                                    ]
-                                },
+				"AutoScalingGroupName": {
+					"Fn::Join": [
+						"",
+						[
+							"CP-Pricing-Service-Auto-Scaling-Group-",
+							{ "Ref": "EnvironmentShort" }
+						]
+					]
+				},
 				"AvailabilityZones": [
 					"us-east-1a",
 					"us-east-1b",
 					"us-east-1c"
 				],
-				"LaunchConfigurationName": {
-					"Ref": "WebServiceLaunchConfig"
+				"LaunchTemplate" : {
+					"LaunchTemplateId": { "Ref": "PricingServiceLaunchTemplate" },
+					"Version":{
+						"Fn::GetAtt":[
+							"PricingServiceLaunchTemplate",
+							"LatestVersionNumber"
+						]
+					}
 				},
 				"TargetGroupARNs": [
 					{
@@ -414,179 +439,392 @@
 				}
 			}
 		},
-		"WebServiceLaunchConfig": {
-			"Type": "AWS::AutoScaling::LaunchConfiguration",
-			"Properties": {
-				"ImageId": {
-					"Ref": "CommonAMI"
-				},
-				"InstanceType": {
-					"Ref": "EC2InstanceSize"
-				},
-				"KeyName": {
-					"Ref": "PemKey"
-				},
-				"SecurityGroups": [
+		"PricingServiceLaunchTemplate": {
+			"Type" : "AWS::EC2::LaunchTemplate",
+			"Properties" : {
+				"LaunchTemplateData" : {
+					"ImageId":
 					{
-						"Ref": "DNSSG"
+						"Ref": "CommonAMI"
 					},
-					{
-						"Ref": "SGWebServices"
-					}
-				],
-				"IamInstanceProfile": {
-					"Ref": "InstanceProfile"
-				},
-				"BlockDeviceMappings": [
-					{
-						"DeviceName": "/dev/xvda",
-						"Ebs": {
-							"VolumeSize": "65",
-							"VolumeType": "gp2"
+					"InstanceType": {
+						"Ref": "EC2InstanceSize"
+					},
+					"KeyName": {
+						"Ref": "PemKey"
+					},
+					"SecurityGroupIds": [
+						{
+							"Ref": "DNSSG"
+						},
+						{
+							"Ref": "SGWebServices"
 						}
-					}
-				],
-				"UserData": {
-					"Fn::Base64": {
-						"Fn::Join": [
-							"",
-							[
-								"#!/bin/bash -v\n",
-								"date > /home/ec2-user/starttime\n",
+					],
+					"IamInstanceProfile" : {
+						"Arn" : {
+							"Ref": "InstanceProfileARN"
+						}
+					},
+					"BlockDeviceMappings": [
+						{
+							"DeviceName": "/dev/xvda",
+							"Ebs": {
+								"VolumeSize": "65",
+								"VolumeType": "gp2"
+							}
+						}
+					],
+					"UserData": {
+						"Fn::Base64": {
+							"Fn::Join": [
+								"",
+								[
+									"#!/bin/bash -v\n",
+									"date > /home/ec2-user/starttime\n",
 
-								"##############################################\n",
-								"# Change Name of server to match new hostname\n",
-								"##############################################\n",
-								"sh -c \"hostname cppricingservice-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
-								"tee /etc/sysconfig/network <<-EOF\n",
-								"NETWORKING=yes\n",
-								"HOSTNAME=cppricingservice-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
-								"NOZEROCONF=yes\n",
-								"EOF\n",
+									"##############################################\n",
+									"# Change Name of server to match new hostname\n",
+									"##############################################\n",
+									"sh -c \"hostname cppricingservice-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\"\n",
+									"tee /etc/sysconfig/network <<-EOF\n",
+									"NETWORKING=yes\n",
+									"HOSTNAME=cppricingservice-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s)",{ "Ref" : "EnvironmentChar" },".na.sysco.net\n",
+									"NOZEROCONF=yes\n",
+									"EOF\n",
 
-								"##############################################\n",
-								"# Add Users to server\n",
-								"##############################################\n",
-								"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-								"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-								"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-								"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-								"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-								"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-								"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-								"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-								"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
-								"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
+									"##############################################\n",
+									"# Add Users to server\n",
+									"##############################################\n",
+									"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
+									"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
+									"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
+									"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+									"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
+									"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
+									"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+									"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
+									"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+									"useradd -m -g aix -c \"Piyumi Rameshka\" pram3932\n",
 
-								"##############################################\n",
-								"# Increase open file limits\n",
-								"##############################################\n",
-								"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
-								"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
+									"##############################################\n",
+									"# Increase open file limits\n",
+									"##############################################\n",
+									"sh -c \"echo \\\"*   soft   nofile   50000\\\" >> /etc/security/limits.conf\"\n",
+									"sh -c \"echo \\\"*   hard   nofile   102400\\\" >> /etc/security/limits.conf\"\n",
 
-								"##############################################\n",
-								"# Set System Environment \n",
-								"##############################################\n",
-								"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-								"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+									"##############################################\n",
+									"# Set System Environment \n",
+									"##############################################\n",
+									"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+									"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
 
-								"##############################################\n",
-								"# Install Dependencies.\n",
-								"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
-								"##############################################\n",
-								"yum -y update\n",
-								"yum install -y ruby\n",
-								"cd /tmp\n",
-								"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
-								"yum install -y jdk-11.0.10_linux-x64_bin.rpm\n",
+									"##############################################\n",
+									"# Install Dependencies.\n",
+									"# JavaJDK, Dynatrace Agent, code delpoy agent, cloud watch agent\n",
+									"##############################################\n",
+									"yum -y update\n",
+									"yum install -y ruby\n",
+									"cd /tmp\n",
+									"aws s3 cp s3://sysco-us-east-1-prcp-nonprod-codedeploy/Tools/ . --recursive\n",
+									"yum install -y jdk-11.0.10_linux-x64_bin.rpm\n",
 
-								"##############################################\n",
-								"# DD APM - Configuration\n",
-								"##############################################\n",
+									"##############################################\n",
+									"# DD APM - Configuration\n",
+									"##############################################\n",
 
-								"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
-								"chmod +x /etc/profile.d/javaopts.sh\n",
+									"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=", { "Ref" : "EnvironmentShortSimple" },"\\\"'\" > /etc/profile.d/javaopts.sh\n",
+									"chmod +x /etc/profile.d/javaopts.sh\n",
 
-								"mkdir /etc/dd-java-agent/\n",
-								"cd /etc/dd-java-agent/\n",
-								"cp /tmp/dd-java-agent.jar /etc/dd-java-agent/\n",
-								"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
-								"cd /tmp\n",
+									"mkdir /etc/dd-java-agent/\n",
+									"cd /etc/dd-java-agent/\n",
+									"cp /tmp/dd-java-agent.jar /etc/dd-java-agent/\n",
+									"chmod +x /etc/dd-java-agent/dd-java-agent.jar\n",
+									"cd /tmp\n",
 
-								"count=1\n",
-								"currentStatus=$(service codedeploy-agent status)\n",
-								"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
-								"do\n",
-								"if [ $count -le 3 ]\n",
-								"then\n",
-								"rm -f codeDeployInstaller\n",
+									"count=1\n",
+									"currentStatus=$(service codedeploy-agent status)\n",
+									"while [[ ! $currentStatus == *\"running as PID\"* ]]\n",
+									"do\n",
+									"if [ $count -le 3 ]\n",
+									"then\n",
+									"rm -f codeDeployInstaller\n",
 
-								"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
-								"chmod +x ./codeDeployInstaller\n",
-								"./codeDeployInstaller auto\n",
-								"currentStatus=$(service codedeploy-agent status)\n",
-								"((count++))\n",
-								"else\n",
-								"shutdown now\n",
-								"fi\n",
-								"done\n",
+									"wget -cO - https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install > codeDeployInstaller\n",
+									"chmod +x ./codeDeployInstaller\n",
+									"./codeDeployInstaller auto\n",
+									"currentStatus=$(service codedeploy-agent status)\n",
+									"((count++))\n",
+									"else\n",
+									"shutdown now\n",
+									"fi\n",
+									"done\n",
 
-								"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
-								"rpm -U ./amazon-cloudwatch-agent.rpm\n",
+									"wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm\n",
+									"rpm -U ./amazon-cloudwatch-agent.rpm\n",
 
-								"##############################################\n",
-								"# DD log - Configuration\n",
-								"##############################################\n",
-								"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
+									"##############################################\n",
+									"# DD log - Configuration\n",
+									"##############################################\n",
+									"DATADOG_TOKEN=$(aws --region=us-east-1 ssm get-parameter --name \"/DATADOG/AGENT/TOKEN\"  --output text --query \"Parameter.Value\")\n",
 
-								"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
-								"api_key: $DATADOG_TOKEN\n",
-								"site: datadoghq.com\n",
-								"tags:\n",
-								"   - application:cp-pricing-service-",{ "Ref" : "EnvironmentShort" },"\n",
-								"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
-								"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
-								"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
-								"env: development\n",
-								"logs_enabled: true\n",
-								"apm_config:\n",
-								"  enabled: true\n",
-								"EOF\n",
+									"cat > /etc/datadog-agent/datadog.yaml <<EOF\n",
+									"api_key: $DATADOG_TOKEN\n",
+									"site: datadoghq.com\n",
+									"tags:\n",
+									"   - application:cp-pricing-service-",{ "Ref" : "EnvironmentShort" },"\n",
+									"   - lifecycle:prcp-",{ "Ref" : "EnvironmentShort" },"\n",
+									"   - function:prcp-",{ "Ref" : "EnvironmentShort" },"-ingest\n",
+									"   - environment:non-prod-",{ "Ref" : "EnvironmentShort" },"\n",
+									"env: development\n",
+									"logs_enabled: true\n",
+									"apm_config:\n",
+									"  enabled: true\n",
+									"EOF\n",
 
-								"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
-								"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
-								"logs:\n",
-								"    - type: file\n",
-								"      path: /cp-pricing-service/service/logs/cp-pricing-service-metrics.log\n",
-								"      source: cp_metrics\n",
-								"      service: cp-pricing-service\n",
-								"EOF\n",
-								"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
-								"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
+									"mkdir /etc/datadog-agent/conf.d/custom.d/\n",
+									"cat > /etc/datadog-agent/conf.d/custom.d/conf.yml <<EOF\n",
+									"logs:\n",
+									"    - type: file\n",
+									"      path: /cp-pricing-service/service/logs/cp-pricing-service-metrics.log\n",
+									"      source: cp_metrics\n",
+									"      service: cp-pricing-service\n",
+									"EOF\n",
+									"chown -R dd-agent:dd-agent /etc/datadog-agent/conf.d/custom.d/\n",
+									"chmod -R -c 755 /etc/datadog-agent/conf.d/custom.d/\n",
 
-								"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
-								"instances:\n",
-								"    - use_mount: false\n",
-								"      mount_point_blacklist:\n",
-								"      - /opt/sentinelone/mount\n",
-								"EOF\n",
+									"cat > /etc/datadog-agent/conf.d/disk.d/conf.yaml.default <<EOF\n",
+									"instances:\n",
+									"    - use_mount: false\n",
+									"      mount_point_blacklist:\n",
+									"      - /opt/sentinelone/mount\n",
+									"EOF\n",
 
-								"chown -R dd-agent:dd-agent /var/log/datadog/\n",
-								"systemctl restart datadog-agent\n",
+									"chown -R dd-agent:dd-agent /var/log/datadog/\n",
+									"systemctl restart datadog-agent\n",
 
-								"##############################################\n",
-								"# CloudWatch Configuration\n",
-								"##############################################\n",
+									"##############################################\n",
+									"# CloudWatch Configuration\n",
+									"##############################################\n",
 
-								"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
-								"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/PRICING_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
+									"cd /opt/aws/amazon-cloudwatch-agent/bin\n",
+									"./amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:/CP/PRICING_SERVICE/", { "Ref" : "EnvironmentShort" } ,"/CLOUDWATCH -s\n",
 
-								"cd /tmp\n",
+									"cd /tmp\n",
 
-								"date > /home/ec2-user/stoptime"
+									"date > /home/ec2-user/stoptime"
+								]
 							]
+						}
+					},
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
+								{
+									"Key": "Name",
+									"Value": {
+										"Fn::Join": [
+											"",
+											[
+												"CP-Pricing-Service-AutoScaling-",
+												{
+													"Ref": "EnvironmentShort"
+												}
+											]
+										]
+									}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "CP-Pricing-Service-Server"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": {
+										"Ref": "Component"
+									}
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						},
+						{
+							"ResourceType": "volume",
+							"Tags": [
+								{
+									"Key": "Name",
+									"Value": {
+										"Fn::Join": [
+											"",
+											[
+												"CP-Pricing-Service-AutoScaling-",
+												{
+													"Ref": "EnvironmentShort"
+												}
+											]
+										]
+									}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "CP-Pricing-Service-Server"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": {
+										"Ref": "Component"
+									}
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						}
+					]
+				},
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-CP-Pricing-Service-",
+							{
+								"Ref": "EnvironmentShort"
+							}
 						]
-					}
+					]
 				}
 			}
 		},

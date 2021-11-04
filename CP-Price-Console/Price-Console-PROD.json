@@ -57,9 +57,9 @@
 			"Default": "KeyPair-Sysco-CloudPricing-Prod"
 		},
 		"CommonAMI": {
-			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.07.02 -> ami-043a196cce124727a",
+			"Description" : "SYSCOGOLD-TEAMMANAGED-AMZL2-2021.09.03 -> ami-01dbd53027bf7e826",
 			"Type": "String",
-			"Default" : "ami-043a196cce124727a",
+			"Default" : "ami-01dbd53027bf7e826",
 			"AllowedPattern" : "^ami-[0-9a-fA-F]{17}",
 			"ConstraintDescription" : "Must be a valid AMI."
 		},
@@ -188,7 +188,15 @@
 			"Type" : "AWS::AutoScaling::AutoScalingGroup",
 			"Properties" : {
 				"AvailabilityZones" : [ "us-east-1a", "us-east-1b", "us-east-1c" ],
-				"LaunchConfigurationName" : { "Ref" : "WebServiceLaunchConfig" },
+				"LaunchTemplate" : {
+					"LaunchTemplateId": { "Ref": "PricingConsoleLaunchTemplate" },
+					"Version":{
+						"Fn::GetAtt":[
+							"PricingConsoleLaunchTemplate",
+							"LatestVersionNumber"
+						]
+					}
+				},
 				"TargetGroupARNs": [ {"Ref" : "TargetGroup"} ],
 				"MinSize" : "1",
 				"DesiredCapacity" : "1",
@@ -225,104 +233,330 @@
 				}
 			}
 		},
-		"WebServiceLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
+		"PricingConsoleLaunchTemplate": {
+			"Type" : "AWS::EC2::LaunchTemplate",
 			"Properties" : {
-				"ImageId" : {"Ref" : "CommonAMI"},
-				"InstanceType" : "t3.medium",
-				"KeyName" : { "Ref" : "PemKey" },
-				"SecurityGroups" : [{ "Ref" : "DNSSG" }, { "Ref" : "SGWebServices" }],
-				"IamInstanceProfile" : { "Ref" : "InstanceProfile" },
-				"BlockDeviceMappings" : [
-					{"DeviceName": "/dev/xvda", "Ebs": { "VolumeSize": "80", "VolumeType": "gp2" }}
-				],
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
-					"#!/bin/bash -v\n",
-					"# Set Timezone\n",
-					"# timedatectl set-timezone UTC\n",
-					"date > /home/ec2-user/starttime\n",
-					"yum --security update --assumeyes\n",
+				"LaunchTemplateData" : {
+					"ImageId":
+					{
+						"Ref": "CommonAMI"
+					},
+					"InstanceType" : "t3.medium",
+					"KeyName": {
+						"Ref": "PemKey"
+					},
+					"SecurityGroupIds": [
+						{
+							"Ref": "DNSSG"
+						},
+						{
+							"Ref": "SGWebServices"
+						}
+					],
+					"IamInstanceProfile" : {
+						"Arn" : "arn:aws:iam::130227353653:instance-profile/Price-Console-WebService-Role"
+					},
+					"BlockDeviceMappings": [
+						{
+							"DeviceName": "/dev/xvda",
+							"Ebs": {
+								"VolumeSize": "65",
+								"VolumeType": "gp2"
+							}
+						}
+					],
+					"UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
+						"#!/bin/bash -v\n",
+						"# Set Timezone\n",
+						"# timedatectl set-timezone UTC\n",
+						"date > /home/ec2-user/starttime\n",
+						"yum --security update --assumeyes\n",
 
-					"##############################################\n",
-					"# Change Name of server to match new hostname\n",
-					"##############################################\n",
-					"hostname price-console-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
-					"tee /etc/sysconfig/network <<-EOF\n",
-					"NETWORKING=yes\n",
-					"HOSTNAME=price-console-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
-					"NOZEROCONF=yes\n",
-					"EOF\n",
+						"##############################################\n",
+						"# Change Name of server to match new hostname\n",
+						"##############################################\n",
+						"hostname price-console-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
+						"tee /etc/sysconfig/network <<-EOF\n",
+						"NETWORKING=yes\n",
+						"HOSTNAME=price-console-$(curl http://169.254.169.254/latest/meta-data/local-ipv4/ -s).na.sysco.net\n",
+						"NOZEROCONF=yes\n",
+						"EOF\n",
 
-					"##############################################\n",
-					"# Install Ruby/Java/Tomcat/CodeDeploy\n",
-					"##############################################\n",
-					"yum -y update\n",
-					"yum install -y ruby\n",
-					"cd /tmp\n",
-					"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
-					"yum install -y jdk-8u131-linux-x64.rpm\n",
-					"mkdir -p /usr/local/tomcat\n",
-					"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
-					"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
-					"chmod +x ./install\n",
-					"./install auto\n",
+						"##############################################\n",
+						"# Install Ruby/Java/Tomcat/CodeDeploy\n",
+						"##############################################\n",
+						"yum -y update\n",
+						"yum install -y ruby\n",
+						"cd /tmp\n",
+						"aws s3 cp s3://sysco-us-east-1-prcp-prod-codedeploy/Tools/ . --recursive\n",
+						"yum install -y jdk-8u131-linux-x64.rpm\n",
+						"mkdir -p /usr/local/tomcat\n",
+						"tar -zvxf apache-tomcat-8.5.15.tar.gz -C /usr/local/tomcat --strip-components=1\n",
+						"wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install\n",
+						"chmod +x ./install\n",
+						"./install auto\n",
 
-					"##############################################\n",
-					"# Set System Environment and Tomcat JVM Heap size\n",
-					"##############################################\n",
-					"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
-					"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
-					"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/environment\n",
+						"##############################################\n",
+						"# Set System Environment and Tomcat JVM Heap size\n",
+						"##############################################\n",
+						"sh -c \"echo 'export SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/profile.d/jvmsettings.sh\n",
+						"sh -c \"echo 'SERVER_ENVIRONMENT_VARIABLE=", { "Ref" : "EnvironmentShort" }, "'\" > /etc/environment\n",
+						"sh -c \"echo 'export CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/profile.d/jvmsettings.sh\n",
+						"sh -c \"echo 'CATALINA_OPTS=\\\"-Xms3072M -Xmx3072M\\\"'\" >> /etc/environment\n",
 
-					"##############################################\n",
-					"# Add Users to server\n",
-					"##############################################\n",
-					"# usermod -a -G aix jowe6212\n",
-					"useradd -m -g aix -c \"James Owen\" jowe6212\n",
-					"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
-					"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
-					"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
-					"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
-					"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
-					"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
-					"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
-					"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
-					"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
-					"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
-					"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
+						"##############################################\n",
+						"# Add Users to server\n",
+						"##############################################\n",
+						"# usermod -a -G aix jowe6212\n",
+						"useradd -m -g aix -c \"James Owen\" jowe6212\n",
+						"useradd -m -g aix -c \"Krishan Senevirathne\" ksen0887\n",
+						"useradd -m -g aix -c \"Loi Villanueva\" lvil8747\n",
+						"useradd -m -g aix -c \"Sagar Shetty\" sshe7956\n",
+						"useradd -m -g aix -c \"Lohitha Chiranjeewa\" lchi0638\n",
+						"useradd -m -g aix -c \"Roshan Alwis\" ralw0871\n",
+						"useradd -m -g aix -c \"Indunil Asanka\" iasa0862\n",
+						"useradd -m -g aix -c \"Wickramarathna, Chamin\" cwic0864\n",
+						"useradd -m -g aix -c \"Amoda Dissanayake\" adis0892\n",
+						"useradd -m -g aix -c \"Nipuni Gunatilake\" ngun0234\n",
+						"useradd -m -g aix -c \"Gayan Herath\" gher1098\n",
+						"useradd -m -g aix -c \"Gothami Karunarathne\" gkar5861\n",
 
-					"##############################################\n",
-					"# Increase open file limits\n",
-					"##############################################\n",
-					"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
-					"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
+						"##############################################\n",
+						"# Increase open file limits\n",
+						"##############################################\n",
+						"sh -c \"echo \\\"*   soft   nofile   4096\\\" >> /etc/security/limits.conf\"\n",
+						"sh -c \"echo \\\"*   hard   nofile   8192\\\" >> /etc/security/limits.conf\"\n",
 
-					"##############################################\n",
-					"# Setting a cronjob for restart the instance daily\n",
-					"##############################################\n",
-					"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
+						"##############################################\n",
+						"# Setting a cronjob for restart the instance daily\n",
+						"##############################################\n",
+						"sh -c \"echo '0 1 * * * root /sbin/shutdown -r now' >> /etc/crontab\"\n",
 
-					"##############################################\n",
-					"# Setting cronjobs for Tomcat\n",
-					"##############################################\n",
-					"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
+						"##############################################\n",
+						"# Setting cronjobs for Tomcat\n",
+						"##############################################\n",
+						"printf '@reboot root /bin/sleep 20; yum --security update --assumeyes; /usr/local/tomcat/bin/startup.sh; /bin/sleep 10;\n' > /etc/cron.d/tomcat\n",
 
-					"# Start Tomcat\n",
-					"/usr/local/tomcat/bin/startup.sh\n",
+						"# Start Tomcat\n",
+						"/usr/local/tomcat/bin/startup.sh\n",
 
-					"####################################\n",
-					"# Create settings folder\n",
-					"####################################\n",
-					"mkdir /settings\n",
-					"mkdir /settings/properties\n",
-					"mkdir /settings/logs\n",
-					"chown tomcat -R /settings\n",
-					"chgrp -R -c ec2-user /settings\n",
-					"chmod -R -c 777 /settings\n",
+						"####################################\n",
+						"# Create settings folder\n",
+						"####################################\n",
+						"mkdir /settings\n",
+						"mkdir /settings/properties\n",
+						"mkdir /settings/logs\n",
+						"chown tomcat -R /settings\n",
+						"chgrp -R -c ec2-user /settings\n",
+						"chmod -R -c 777 /settings\n",
 
-					"date > /home/ec2-user/stoptime\n"
-				]]}}
+						"date > /home/ec2-user/stoptime\n"
+					]]}},
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
+								{
+									"Key": "Name",
+									"Value": {
+										"Fn::Join": [
+											"",
+											[
+												"Price Console AutoScaling-",
+												{
+													"Ref": "EnvironmentShort"
+												}
+											]
+										]
+									}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "Price Console"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": "Price Console"
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						},
+						{
+							"ResourceType": "volume",
+							"Tags": [
+								{
+									"Key": "Name",
+									"Value": {
+										"Fn::Join": [
+											"",
+											[
+												"Price Console AutoScaling-",
+												{
+													"Ref": "EnvironmentShort"
+												}
+											]
+										]
+									}
+								},
+								{
+									"Key": "Technical:ApplicationName",
+									"Value": {
+										"Ref": "ApplicationName"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationID",
+									"Value": {
+										"Ref": "ApplicationID"
+									}
+								},
+								{
+									"Key": "Technical:PlatformOwner",
+									"Value": {
+										"Ref": "Owner"
+									}
+								},
+								{
+									"Key": "Technical:Environment",
+									"Value": {
+										"Ref": "Environment"
+									}
+								},
+								{
+									"Key": "Technical:ApplicationRole",
+									"Value": "Auto Scaling Group"
+								},
+								{
+									"Key": "Technical:ApplicationSubName",
+									"Value": "Price Console"
+								},
+								{
+									"Key": "Approver",
+									"Value": {
+										"Ref": "Approver"
+									}
+								},
+								{
+									"Key": "PO_Number",
+									"Value": {
+										"Ref": "PONumber"
+									}
+								},
+								{
+									"Key": "Project_ID",
+									"Value": {
+										"Ref": "ProjectID"
+									}
+								},
+								{
+									"Key": "SupportEmail",
+									"Value": {
+										"Ref": "SupportEmail"
+									}
+								},
+								{
+									"Key": "2WTAGGER",
+									"Value": {
+										"Ref": "2WTAGGER"
+									}
+								},
+								{
+									"Key": "Platform",
+									"Value": {
+										"Ref": "Platform"
+									}
+								},
+								{
+									"Key": "Component",
+									"Value": "Price Console"
+								},
+								{
+									"Key" : "Automation:SnapshotMgmt",
+									"Value": "Disabled"
+								}
+							]
+						}
+					]
+				},
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-CP-Pricing-Console-",
+							{
+								"Ref": "EnvironmentShort"
+							}
+						]
+					]
+				}
 			}
 		},
 		"CPUAlarmHigh" : {
