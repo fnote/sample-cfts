@@ -205,6 +205,11 @@
 			"Description": "Target group of the pricing-service",
 			"Type": "String",
 			"Default": "arn:aws:elasticloadbalancing:us-east-1:130227353653:targetgroup/target-grp-pricing-service-PROD/4d1c49263606b40d"
+		},
+		"InstanceProfileARN": {
+			"Description": "ARN associated with the group",
+			"Type": "String",
+			"Default": "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
 		}
 	},
 	"Resources": {
@@ -279,7 +284,9 @@
 						}
 					],
 					"IamInstanceProfile" : {
-						"Arn" : "arn:aws:iam::130227353653:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
+						"Arn" : {
+							"Ref": "InstanceProfileARN"
+						}
 					},
 					"BlockDeviceMappings": [
 						{
