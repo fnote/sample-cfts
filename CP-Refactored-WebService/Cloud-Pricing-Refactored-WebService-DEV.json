@@ -264,15 +264,15 @@
 			}
 		},
 		"WebServiceLaunchTemplate": {
-            "Type" : "AWS::EC2::LaunchTemplate",
-            "Properties" : {
-                "LaunchTemplateData" : {
-                    "ImageId":
-                    {
-                        "Ref": "CommonAMI"
-                    },
+			"Type" : "AWS::EC2::LaunchTemplate",
+			"Properties" : {
+				"LaunchTemplateData" : {
+					"ImageId":
+					{
+						"Ref": "CommonAMI"
+					},
 					"InstanceType" : "t3.medium",
-                    "KeyName": {
+					"KeyName": {
 						"Ref": "PemKey"
 					},
 					"SecurityGroupIds": [
@@ -436,10 +436,10 @@
 							]
 						}
 					},
-                	"TagSpecifications": [
-                        {
-                            "ResourceType": "instance",
-                            "Tags": [
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
 								{
 									"Key" : "Name",
 									"Value" : {
@@ -447,7 +447,7 @@
 										["",
 											["CP Refactored Web Service AutoScaling-",
 												{ "Ref" : "EnvironmentShort" }]]}
-							    },
+								},
 								{
 									"Key": "Technical:ApplicationName",
 									"Value": {
@@ -528,10 +528,10 @@
 									"Value": "Disabled"
 								}
 							]
-                        },
+						},
 						{
 							"ResourceType": "volume",
-                            "Tags": [
+							"Tags": [
 								{
 									"Key" : "Name",
 									"Value" : {
@@ -539,7 +539,7 @@
 										["",
 											["CP Refactored Web Service AutoScaling-",
 												{ "Ref" : "EnvironmentShort" }]]}
-							    },
+								},
 								{
 									"Key": "Technical:ApplicationName",
 									"Value": {
@@ -622,19 +622,19 @@
 						}
 					]
 				},
-                "LaunchTemplateName": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "Launch-Template-CP-Web-Service-",
-                            {
-                                "Ref": "EnvironmentShort"
-                            }
-                        ]
-                    ]
-                }
-            }
-        },
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-CP-Web-Service-",
+							{
+								"Ref": "EnvironmentShort"
+							}
+						]
+					]
+				}
+			}
+		},
 		"CPUAlarmHigh" : {
 			"Type" : "AWS::CloudWatch::Alarm",
 			"DependsOn": "WebServiceGroup",

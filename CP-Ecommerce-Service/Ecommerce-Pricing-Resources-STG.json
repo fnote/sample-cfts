@@ -98,26 +98,26 @@
 			"ConstraintDescription": "Must contain only ASCII characters."
 		},
 		"Approver": {
-            "Description": "Person approving instance funding.  This should be Email address formatted",
-            "Type": "String",
-            "Default": "villanueva.loi@corp.sysco.com",
-            "MinLength": "1",
-            "MaxLength": "255"
-        },
-        "Owner": {
-            "Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
-            "Type": "String",
-            "Default": "krishan.senevirathne@sysco.com",
-            "MinLength": "1",
-            "MaxLength": "255"
-        },
-        "SupportEmail": {
-            "Description": "Email distribution list for technical product/platform team contact",
-            "Type": "String",
-            "Default": "000-BT-PricingPlatform@Corp.sysco.com",
-            "MinLength": "1",
-            "MaxLength": "255"
-        },
+			"Description": "Person approving instance funding.  This should be Email address formatted",
+			"Type": "String",
+			"Default": "villanueva.loi@corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"Owner": {
+			"Description": "Email address usually Product/ Platform Owner, though team distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "krishan.senevirathne@sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
+		"SupportEmail": {
+			"Description": "Email distribution list for technical product/platform team contact",
+			"Type": "String",
+			"Default": "000-BT-PricingPlatform@Corp.sysco.com",
+			"MinLength": "1",
+			"MaxLength": "255"
+		},
 		"ProjectID": {
 			"Description": "Project_ID - BT Project ID for this workload",
 			"Type": "String",
@@ -250,15 +250,15 @@
 			}
 		},
 		"EcommServiceLaunchTemplate": {
-            "Type" : "AWS::EC2::LaunchTemplate",
-            "Properties" : {
-                "LaunchTemplateData" : {
-                    "ImageId":
-                    {
-                        "Ref": "CommonAMI"
-                    },
+			"Type" : "AWS::EC2::LaunchTemplate",
+			"Properties" : {
+				"LaunchTemplateData" : {
+					"ImageId":
+					{
+						"Ref": "CommonAMI"
+					},
 					"InstanceType": "t3.large",
-                    "KeyName": {
+					"KeyName": {
 						"Ref": "PemKey"
 					},
 					"SecurityGroupIds": [
@@ -425,10 +425,10 @@
 							]
 						}
 					},
-                	"TagSpecifications": [
-                        {
-                            "ResourceType": "instance",
-                            "Tags": [
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
 								{ "Key" : "Name", 
 								  "Value" : { 
 									  "Fn::Join" : [
@@ -516,10 +516,10 @@
 									"Value": "Disabled"
 								}
 							]
-                        },
+						},
 						{
 							"ResourceType": "volume",
-                            "Tags": [
+							"Tags": [
 								{ "Key" : "Name", 
 									"Value" : { 
 										"Fn::Join" : [
@@ -609,19 +609,19 @@
 						}
 					]
 				},				             
-                "LaunchTemplateName": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "Launch-Template-Ecomm-Pricing-Web-Service-",
-                            {
-                                "Ref": "EnvironmentShort"
-                            }
-                        ]
-                    ]
-                }
-            }
-        },
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-Ecomm-Pricing-Web-Service-",
+							{
+								"Ref": "EnvironmentShort"
+							}
+						]
+					]
+				}
+			}
+		},
 		"CPUAlarmHigh" : {
 			"Type" : "AWS::CloudWatch::Alarm",
 			"DependsOn": "WebServiceGroup",
