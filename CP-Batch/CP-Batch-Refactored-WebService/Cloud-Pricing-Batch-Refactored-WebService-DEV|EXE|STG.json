@@ -290,17 +290,16 @@
 			}
 		},
 		"BatchPricingRefactoredWSLaunchTemplate": {
-            "Type" : "AWS::EC2::LaunchTemplate",
-            "Properties" : {
-                "LaunchTemplateData" : {
-                    "ImageId":
-                    {
-                        "Ref": "CommonAMI"
-                    },
+			"Type" : "AWS::EC2::LaunchTemplate",
+			"Properties" : {
+				"LaunchTemplateData" : {
+					"ImageId" : {
+						"Ref": "CommonAMI"
+					},
 					"InstanceType" : {
 						"Ref": "EC2InstanceSize"
 					},
-                    "KeyName": {
+					"KeyName": {
 						"Ref": "PemKey"
 					},
 					"SecurityGroupIds": [
@@ -452,18 +451,15 @@
 							]
 						}
 					},
-                	"TagSpecifications": [
-                        {
-                            "ResourceType": "instance",
-                            "Tags": [
+					"TagSpecifications": [
+						{
+							"ResourceType": "instance",
+							"Tags": [
 								{ "Key" : "Name",
 								  "Value" : {
 									  "Fn::Join" : [
 										  "",
-										 ["CP BatchPricing Refactored WS AS-",
-											 {
-												 "Ref" : "EnvironmentShort"
-												 }]]}
+										 ["CP BatchPricing Refactored WS AS-", { "Ref" : "EnvironmentShort"}]]}
 								},
 								{
 									"Key": "Technical:ApplicationName",
@@ -545,10 +541,10 @@
 									"Value": "Disabled"
 								}
 							]
-                        },
+						},
 						{
 							"ResourceType": "volume",
-                            "Tags": [
+							"Tags": [
 								{ "Key" : "Name",
 									"Value" : {
 										"Fn::Join" : [
@@ -640,19 +636,19 @@
 						}
 					]
 				},
-                "LaunchTemplateName": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "Launch-Template-CP-Batch-Pricing-Refactored-Web-Service-",
-                            {
-                                "Ref": "EnvironmentShort"
-                            }
-                        ]
-                    ]
-                }
-            }
-        },
+				"LaunchTemplateName": {
+					"Fn::Join": [
+						"",
+						[
+							"Launch-Template-CP-Batch-Pricing-Refactored-Web-Service-",
+							{
+								"Ref": "EnvironmentShort"
+							}
+						]
+					]
+				}
+			}
+		},
 		"CPUAlarmHigh" : {
 			"Type" : "AWS::CloudWatch::Alarm",
 			"DependsOn": "WebServiceGroup",
