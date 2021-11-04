@@ -173,6 +173,20 @@
 			],
 			"ConstraintDescription": "Must be a valid environment."
 		},
+		"EnvironmentShortSimple": {
+			"Description": "Environment for application",
+			"Type": "String",
+			"Default": "exe",
+			"AllowedValues": [
+				"dev",
+				"qa",
+				"stg",
+				"exe",
+				"tst",
+				"prod"
+			],
+			"ConstraintDescription": "Must be a valid environment."
+		},
 		"EnvironmentShort": {
 			"Description": "Environment for application",
 			"Type": "String",
@@ -519,7 +533,7 @@
 									"# DD APM - Configuration\n",
 									"##############################################\n",
 
-									"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=exe\\\"'\" > /etc/profile.d/javaopts.sh\n",
+									"sh -c \"echo 'export JAVA_OPTS=\\\"-Ddd.logs.injection=true -Ddd.profiling.enabled=false -Ddd.service.mapping=mysql:cp-mysql-db -Ddd.service=cp-pricing-service -Ddd.env=", { "Ref" : "EnvironmentShortSimple" },"\\\"'\" > /etc/profile.d/javaopts.sh\n",
 									"chmod +x /etc/profile.d/javaopts.sh\n",
 
 									"mkdir /etc/dd-java-agent/\n",
