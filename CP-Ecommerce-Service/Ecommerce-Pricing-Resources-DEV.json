@@ -221,7 +221,7 @@
 					{ "Key" : "Technical:ApplicationID", "Value" : { "Ref" : "ApplicationID" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:Environment", "Value" : { "Ref" : "Environment" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:PlatformOwner", "Value" : { "Ref" : "Owner" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "Technical:ApplicationSubName", "Value": "Price Web Service 04", "PropagateAtLaunch" : "true" },
+					{ "Key" : "Technical:ApplicationSubName", "Value": "Ecomm Web Service", "PropagateAtLaunch" : "true" },
 					{ "Key" : "Technical:ApplicationRole", "Value" : "Auto Scaling Group", "PropagateAtLaunch" : "true" },
 					{ "Key" : "SupportEmail", "Value" : { "Ref" : "SupportEmail" }, "PropagateAtLaunch" : "true" },
 					{ "Key" : "Approver", "Value" : { "Ref" : "Approver" }, "PropagateAtLaunch" : "true" },
@@ -465,7 +465,7 @@
 								},
 								{
 									"Key": "Technical:ApplicationSubName",
-									"Value": "Price Web Service 04"
+									"Value": "Ecomm Web Service"
 								},
 								{
 									"Key": "Approver",
@@ -555,7 +555,7 @@
 								},
 								{
 									"Key": "Technical:ApplicationSubName",
-									"Value": "Price Web Service 04"
+									"Value": "Ecomm Web Service"
 								},
 								{
 									"Key": "Approver",
