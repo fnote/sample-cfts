@@ -205,6 +205,11 @@
 			"Default": "",
 			"Description": "Environment for application in single char",
 			"Type": "String"
+		},
+		"InstanceProfileARN": {
+			"Description": "ARN associated with the group",
+			"Type": "String",
+			"Default": "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Ecom-Service-Instance-Profile"
 		}
 	},
 	"Resources": {
@@ -279,8 +284,10 @@
 						}
 					],
 					"IamInstanceProfile" : {
-                        "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Ecom-Service-Instance-Profile"
-                    },
+						"Arn" : {
+							"Ref": "InstanceProfileARN"
+						}
+					},
 					"BlockDeviceMappings": [
 						{
 							"DeviceName": "/dev/xvda",
