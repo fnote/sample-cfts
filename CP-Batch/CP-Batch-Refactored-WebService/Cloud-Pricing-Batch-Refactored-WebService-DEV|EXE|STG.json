@@ -241,6 +241,11 @@
 				"30",
 				"50"
 			]
+		},
+		"InstanceProfileARN": {
+			"Description": "ARN associated with the group",
+			"Type": "String",
+			"Default": "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
 		}
 	},
 	"Resources": {
@@ -317,8 +322,10 @@
 						}
 					],
 					"IamInstanceProfile" : {
-                        "Arn" : "arn:aws:iam::037295147636:instance-profile/Cloud-Pricing-Web-Service-Instance-Profile"
-                    },
+						"Arn" : {
+							"Ref": "InstanceProfileARN"
+						}
+					},
 					"BlockDeviceMappings": [
 						{
 							"DeviceName": "/dev/xvda",
