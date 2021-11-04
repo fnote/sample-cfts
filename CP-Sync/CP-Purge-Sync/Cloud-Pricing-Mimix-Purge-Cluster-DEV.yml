@@ -229,7 +229,7 @@ Resources:
           - - Ref: 'ComputeEnvironmentNamePrefix'
             - Ref: 'EnvironmentShort'
       ComputeResources:
-        MaxvCpus: 34
+        MaxvCpus: 20
         SecurityGroupIds:
           - !Ref 'SGDNS'
           - !Ref 'SGWebServices'

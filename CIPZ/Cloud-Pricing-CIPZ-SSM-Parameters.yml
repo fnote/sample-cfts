@@ -1,0 +1,375 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "SSM Parameters for CIPZ"
+Parameters:
+  environment:
+    Description: Name of the environment
+    Type: String
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - QE
+      - EXE
+      - STG
+      - PROD
+  paramStoreConfigPrefix:
+    Type: String
+    Default: "/CP/CIPZ_SERVICE"
+  DBMasterUsernameValue:
+    Type: String
+    Description: DB Master username
+    Default: "cpuser"
+  DBCIPZNameValue:
+    Type: String
+    Description: CIPZ DB name
+    Default: "PriceZoneReassignments"
+  ConfigMaxLifeLowerLimitValue:
+    Type: String
+    Default: "3000"
+    Description: Lower limit of the connection pool max life and max idle time
+  ConfigMaxLifeUpperLimitValue:
+    Type: String
+    Default: "210000"
+    Description: Upper limit of the connection pool max life and max idle time
+  ConfigReaderMaxPoolSizeValue:
+    Type: String
+    Default: "40"
+    Description: Maximum number of connections per opco pool for reader
+  ConfigReaderInitialPoolSizeValue:
+    Type: String
+    Default: "10"
+    Description: Initial number of connections per opco pool for reader
+  ConfigWriterMaxPoolSizeValue:
+    Type: String
+    Default: "10"
+    Description: Maximum number of connections per opco pool for writer
+  ConfigWriterInitialPoolSizeValue:
+    Type: String
+    Default: "2"
+    Description: Initial number of connections per opco pool for writer
+  ActiveBusinessUnitsValue:
+    Type: String
+    Default: "019"
+    Description: Active business units
+  AuthorizedClientsValue:
+    Type: String
+    Default: "cloud-pci-bff,Cloud_PCI"
+    Description: Authorized Clients ID
+  SeedApiTimeoutValue:
+    Type: String
+    Default: "2000"
+    Description: Seed API timeout
+  SeedBffTimeoutValue:
+    Type: String
+    Default: "5000"
+    Description: Seed Api timeout for bff
+  SeedApiPaginationLimit:
+    Type: String
+    Default: "100"
+    Description: Pagination limit
+  SeedApiHost:
+    Type: String
+    Default: "http://internal-cp-cipz-seed-mock-api-alb-dev-448991051.us-east-1.elb.amazonaws.com"
+    Description: Seed API host
+  SeedApiServiceUrl:
+    Type: String
+    Default: "services/v1/edwp/"
+    Description: Seed API Service URL path
+  SeedCustomerPZEndpoint:
+    Type: String
+    Default: "item-price-zone/customer-attribute-group"
+    Description: Customer PZ Endpoint
+  SeedCustomerGroupPZEndpoint:
+    Type: String
+    Default: "item-price-zone/customer-group-attribute-group"
+    Description: Customer Group PZ Endpoint
+  SeedCustomerGroupEndpoint:
+    Type: String
+    Default: "opcos/{opco_id}/customer-groups/{customer_account}"
+    Description: Customer Group Endpoint
+  ConfigThreadCoreSizeValue:
+    Type: String
+    Default: "50"
+    Description: Thread pool core size
+  ConfigThreadMaxSizeValue:
+    Type: String
+    Default: "80"
+    Description: Thread pool max size
+  SeedMockAPIJdbcHost:
+    Type: String
+    Default: jdbc:mysql://cp-cipz-db-cluster-01-dev.cluster-c6xai0tt38eb.us-east-1.rds.amazonaws.com:3306/SeedMockAPI?enabledTLSProtocols=TLSv1.2
+    Description: Seed Mock API Jdbc Host URL
+  SesConfigSetName:
+    Type: String
+    Default: configset
+    Description: Configuration Set Name (Suffix Part only)
+  SesSenderEmail:
+    Type: String
+    Default: CloudPricingAlerts@corp.sysco.com
+    Description: Sender email
+  SesRejectedEmailTemplateName:
+    Type: String
+    Default: cipz_api_ses_template_rejected
+    Description: Email Template Name (Suffix Part only)
+  SesRejectedEmailSubject:
+    Type: String
+    Default: Price Zone Reassignment Request - Rejected
+    Description: Rejected email subject
+  APICentralBase:
+    Type: String
+    Default: https://api-gateway-dev.sysco.com
+    Description: Api central base url
+  APICentralKey:
+    Type: String
+    Default: value
+    Description: Api central access key
+  APICTokenEndpoint:
+    Type: String
+    Default: https://api-gateway-dev.sysco.com/token
+    Description: Api central token endpoint
+  APICRequestTimeout:
+    Type: String
+    Default: 750
+    Description: Api central request timeout
+  APICTokenValidityThreshold:
+    Type: String
+    Default: 100
+    Description: Api central token validity threshold
+  APICClientId:
+    Type: String
+    Default: value
+    Description: Api central client id
+  APICClientSecret:
+    Type: String
+    Default: value
+    Description: Api central client secret
+
+Mappings:
+  environmentLowercaseMap:
+    DEV:
+      environmentLowercaseStr: dev
+    EXE:
+      environmentLowercaseStr: exe
+    STG:
+      environmentLowercaseStr: stg
+    PROD:
+      environmentLowercaseStr: prod
+
+Resources:
+  DBMasterUserName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/USERNAME]]
+      Type: String
+      Description: DB Master username
+      Value: !Ref DBMasterUsernameValue
+  DBCIPZName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/NAME ] ]
+      Type: String
+      Description: CIPZ DB name
+      Value: !Ref DBCIPZNameValue
+  ConfigMaxLifeLowerLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/LIFE/LOWER/LIMIT]]
+      Type: String
+      Description: Lower limit of the connection pool max life and max idle time
+      Value: !Ref ConfigMaxLifeLowerLimitValue
+  ConfigMaxLifeUpperLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/LIFE/UPPER/LIMIT]]
+      Type: String
+      Description: Upper limit of the connection pool max life and max idle time
+      Value: !Ref ConfigMaxLifeUpperLimitValue
+  ConfigReaderMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/READER/MAX/POOL/SIZE]]
+      Type: String
+      Description: Maximum number of connections per opco pool for reader
+      Value: !Ref ConfigReaderMaxPoolSizeValue
+  ConfigReaderInitialPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/READER/INITIAL/POOL/SIZE]]
+      Type: String
+      Description: Initial number of connections per opco pool for reader
+      Value: !Ref ConfigReaderInitialPoolSizeValue
+  ConfigWriterMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/MAX/WRITER/POOL/SIZE]]
+      Type: String
+      Description: Maximum number of connections per opco pool for writer
+      Value: !Ref ConfigWriterMaxPoolSizeValue
+  ConfigWriterInitialPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/DB/WRITER/INITIAL/POOL/SIZE]]
+      Type: String
+      Description: Initial number of connections per opco pool for writer
+      Value: !Ref ConfigWriterInitialPoolSizeValue
+  ExecutorCorePoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/EXECUTOR/CORE_SIZE]]
+      Type: String
+      Description: Task executor core pool size
+      Value: !Ref ConfigThreadCoreSizeValue
+  ExecutorMaxPoolSize:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/EXECUTOR/MAX_SIZE]]
+      Type: String
+      Description: Task executor max pool size
+      Value: !Ref ConfigThreadMaxSizeValue
+  ActiveBusinessUnits:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, ACTIVE/BUSINESS/UNITS]]
+      Type: String
+      Description: Active business units
+      Value: !Ref ActiveBusinessUnitsValue
+  AuthorizedClients:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, AUTHORIZED/CLIENTS]]
+      Type: String
+      Description: Authorized clients for the customer CIPZs endpoint
+      Value: !Ref AuthorizedClientsValue
+  SEEDAPITimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/TIMEOUT]]
+      Type: String
+      Description: Seed API timeout
+      Value: !Ref SeedApiTimeoutValue
+  SEEDAPIPaginationLimit:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/PAGINATION/LIMIT]]
+      Type: String
+      Description: Seed API pagination limit
+      Value: !Ref SeedApiPaginationLimit
+  SEEDAPIHostUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/HOST]]
+      Type: String
+      Description: Seed API host url
+      Value: !Ref SeedApiHost
+  SEEDAPIServiceUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/SERVICE/URL]]
+      Type: String
+      Description: Seed API Service URI path
+      Value: !Ref SeedApiServiceUrl
+  SEEDAPICustomerPZEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER/PRICE_ZONE_DETAILS]]
+      Type: String
+      Description: Customer PZ Endpoint
+      Value: !Ref SeedCustomerPZEndpoint
+  SEEDAPICustomerGroupPZEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER_GROUP/PRICE_ZONE_DETAILS]]
+      Type: String
+      Description: Customer Group PZ Endpoint
+      Value: !Ref SeedCustomerGroupPZEndpoint
+  SEEDAPICustomerGroupEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/API/ENDPOINT/CUSTOMER_GROUP_DETAILS]]
+      Type: String
+      Description: Customer Group Details Endpoint
+      Value: !Ref SeedCustomerGroupEndpoint
+  SeedAPIBffTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, SEED/BFF/TIMEOUT]]
+      Type: String
+      Description: Seed API timeout for Bff
+      Value: !Ref SeedBffTimeoutValue
+# SES notification related
+  CIPZSEEDMockAPIJdbcHost:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, SEED_MOCK_API/DB/JDBCHOST ] ]
+      Type: String
+      Description: SES - Configuration Set Name
+      Value: !Ref SeedMockAPIJdbcHost
+  CIPZSESConfigSetName:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/CONFIGSETNAME ] ]
+      Type: String
+      Description: SES - Configuration Set Name
+      Value: !Join ["-",["cipz-api",!FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr],!Ref SesConfigSetName]]
+  CIPZSESSenderEmail:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/FROMMAIL ] ]
+      Type: String
+      Description: SES - Sender Email
+      Value: !Ref SesSenderEmail
+  CIPZSESTemplateRejected:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/TEMPLATE/REJECTED ] ]
+      Type: String
+      Description: SES - Template Rejected
+      Value: !Join ["-",[!Ref SesRejectedEmailTemplateName, !FindInMap [environmentLowercaseMap, !Ref environment, environmentLowercaseStr]]]
+  CIPZSESRejectedMailSubject:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join [ "/", [ !Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/SES/MAIL/REJECTION/SUBJECT ] ]
+      Type: String
+      Description: SES - Rejected Email Subject
+      Value: !Ref SesRejectedEmailSubject
+  APICentralBaseUrl:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, API_CENTRAL/BASE/URL]]
+      Type: String
+      Description: Api Central Base URL
+      Value: !Ref APICentralBase
+  APICentralTokenEndpoint:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/ENDPOINT]]
+      Type: String
+      Description: API Central Token Endpoint
+      Value: !Ref APICTokenEndpoint
+  APICentralTokenValidityThreshold:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/TOKEN/VALIDITYTHRESHOLD]]
+      Type: String
+      Description: API Central Token Validity Threshold
+      Value: !Ref APICTokenValidityThreshold
+  APICentralRequestTimeout:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, APIC/REQUEST/TIMEOUT]]
+      Type: String
+      Description: API Central Request Timeout
+      Value: !Ref APICRequestTimeout
+  CIPZAPIAPICentralClientId:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/CLIENTID]]
+      Type: String
+      Description: CIPZ API API Central Client Id
+      Value: !Ref APICClientId
+  CIPZAPIAPICentralSecret:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["/", [!Ref paramStoreConfigPrefix, !Ref environment, CIPZ/API/APIC/SECRET]]
+      Type: String
+      Description: CIPZ API API Central Client Secret
+      Value: !Ref APICClientSecret
