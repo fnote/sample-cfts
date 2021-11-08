@@ -237,7 +237,6 @@ Resources:
           DD_API_KEY: !Ref DatadogAPIKey
           DD_ENHANCED_METRICS: false
           DD_LAMBDA_HANDLER: index.lambda_handler
-          DD_S3_BUCKET_NAME: datadog-forwarder-prcp-np
           DD_TRACE_ENABLED: true
       Timeout: 120
       Tags:
