@@ -106,30 +106,20 @@
 			"Description" : "SNS Topic ARN",
 			"Default": "arn:aws:sns:us-east-1:037295147636:CP-Notification-Service-Topic-STG"
 		},
-		"SplunkHECToken" : {
+		"DDService" : {
 			"Type" : "String",
-			"Description" : "Splunk token used for publish Splunk logs",
-			"Default": "Splunk FC4A9D4D-026C-4E01-853E-83B9BA430CF0"
+			"Description" : "Service name for Datadog logs",
+			"Default": "cp-batch-service"
 		},
-		"SplunkIndex" : {
+		"DDSource" : {
 			"Type" : "String",
-			"Description" : "Splunk index used to publish Splunk logs",
-			"Default": "cp_metrics_nonprod"
+			"Description" : "Source of the Datadog logs",
+			"Default": "cp-batch-metrics"
 		},
-		"SplunkSourceType" : {
+		"DDUrl" : {
 			"Type" : "String",
-			"Description" : "Source type of the Splunk Logs",
-			"Default": "cp_batch_controller_dev"
-		},
-		"SplunkSource" : {
-			"Type" : "String",
-			"Description" : "Source of the Splunk logs",
-			"Default": "cp_np_HEC"
-		},
-		"SplunkHECURL" : {
-			"Type" : "String",
-			"Description" : "URL of Splunk indexer",
-			"Default": "http://internal-elb-splunkservice-dev-1567888010.us-east-1.elb.amazonaws.com/api/SplunkHEC"
+			"Description" : "URL of datadog log send api",
+			"Default": "https://http-intake.logs.datadoghq.com/v1/input"
 		},
 		"ApplicationName": {
 			"Description": "Name of application",
@@ -243,7 +233,7 @@
 				"Runtime": "java8",
 				"Description": "Controller function for Cloud Pricing Batch process",
 				"MemorySize": 512,
-				"Timeout": 300,
+				"Timeout": 900,
 				"Role": { "Ref": "IAMRole" },
 				"VpcConfig": {
                     "SecurityGroupIds": [{ "Ref" : "SGDNS" }, { "Ref" : "SGRDSMySQL" }, { "Ref" : "SGWebServices" }],
@@ -280,11 +270,11 @@
 						"EnvironmentShort": { "Ref" : "EnvironmentShort" },
 						"OUTPUT_BUCKET": { "Ref" : "S3BucketOut" },
 						"SNS_TOPIC_ARN": { "Ref" : "SnsTopicArn" },
-						"SPLUNK_HEC_TOKEN": { "Ref" : "SplunkHECToken" },
-						"SPLUNK_INDEX": { "Ref" : "SplunkIndex" },
-						"SPLUNK_SOURCE_TYPE": { "Ref" : "SplunkSourceType" },
-						"SPLUNK_SOURCE": { "Ref" : "SplunkSource" },
-						"SPLUNK_HEC_URL": { "Ref" : "SplunkHECURL" }
+						"DATADOG_TOKEN": "{{resolve:ssm:/DATADOG/TOKEN/ENCRYPTED:1}}",
+						"DATADOG_SERVICE": { "Ref" : "DDService" },
+						"DATADOG_TAGS": { "Fn::Join" : ["", ["env:development, environment:", { "Ref" : "EnvironmentShort" }, ", application:cp-batch-controller-", { "Ref" : "EnvironmentShort" }, ", lifecycle:prcp-", { "Ref" : "EnvironmentShort" }, ", function:prcp"]]},
+						"DATADOG_SOURCE": { "Ref" : "DDSource" },
+						"DATADOG_URL": { "Ref" : "DDUrl" }
 					}
 				}
 			}
@@ -293,6 +283,12 @@
 			"Type" : "AWS::S3::Bucket",
 			"Properties" : {
 				"BucketName" : { "Ref" : "S3BucketIn" }
+			}
+		},
+		"BucketOut" : {
+			"Type" : "AWS::S3::Bucket",
+			"Properties" : {
+				"BucketName" : { "Ref" : "S3BucketOut" }
 			}
 		},
 		"BucketPermission": {
